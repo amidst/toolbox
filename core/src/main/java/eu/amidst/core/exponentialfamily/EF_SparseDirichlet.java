@@ -143,8 +143,6 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
      */
     @Override
     public EF_UnivariateDistribution randomInitialization(Random random) {
-        throw new UnsupportedOperationException("Dirichlet is not included yet in the Distributions package.");
-        /*
         for (int i = 0; i < this.nOfStates; i++) {
             this.getNaturalParameters().set(i, 5*random.nextDouble() + 1 + 1e-5);
         }
@@ -152,7 +150,6 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
         this.updateMomentFromNaturalParameters();
 
         return this;
-        */
     }
 
     /**

@@ -21,6 +21,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
+import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.utils.DataSetUtils;
 
@@ -40,6 +41,10 @@ public interface DataFlink<T extends DataInstance> {
 
     default DataSet<DataOnMemory<T>> getBatchedDataSet(int batchSize){
         return ConversionToBatches.toBatches(this,batchSize);
+    }
+
+    default DataSet<DataOnMemory<T>> getBatchedDataSet(int batchSize, Function2<DataFlink<T>,Integer,DataSet<DataOnMemory<T>>> batchFunction){
+        return batchFunction.apply(this,batchSize);
     }
 
     default DataOnMemory<T> subsample(long seed, int samples) {
@@ -93,4 +98,6 @@ public interface DataFlink<T extends DataInstance> {
             return null;
         }
     }
+
+
 }

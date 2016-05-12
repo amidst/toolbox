@@ -18,10 +18,7 @@
 package eu.amidst.flinklink.core.utils;
 
 
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.flinklink.core.data.DataFlink;
 import org.apache.flink.api.common.functions.RichMapPartitionFunction;
@@ -64,6 +61,18 @@ public class ConversionToBatches {
         }
     }
 
+    public static <T extends DataInstance> DataSet<DataOnMemory<T>> toBatchesBySeqID(DataFlink<T> data, int batchSize){
+
+        try{
+            Configuration config = new Configuration();
+            config.setInteger(BATCH_SIZE, batchSize);
+            config.setBytes(ATTRIBUTES, Serialization.serializeObject(data.getAttributes()));
+
+            return data.getDataSet().mapPartition(new DataBatchBySeqID<T>()).withParameters(config);
+        }catch(Exception ex){
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
 
     static class BatchMAP<T> extends RichMapPartitionFunction<T, Batch<T>> {
@@ -143,4 +152,59 @@ public class ConversionToBatches {
             }
         }
     }
+
+
+    static class DataBatchBySeqID<T extends DataInstance> extends RichMapPartitionFunction<T, DataOnMemory<T>> {
+
+
+        int nDocsPerBatch;
+        Attributes attributes;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            nDocsPerBatch = parameters.getInteger(BATCH_SIZE, 100);
+            attributes = Serialization.deserializeObject(parameters.getBytes(ATTRIBUTES, null));
+        }
+
+        @Override
+        public void mapPartition(Iterable<T> values, Collector<DataOnMemory<T>> out) throws Exception {
+
+            int index = this.getRuntimeContext().getIndexOfThisSubtask()*100000;
+
+            int batchCount = 0;
+            DataOnMemoryListContainer<T> batch = new DataOnMemoryListContainer<T>(this.attributes);
+            Attribute seqID = this.attributes.getSeq_id();
+            int currentDocID = -1;
+            int nDocs = 0;
+
+            for (T value : values) {
+
+                if (currentDocID==-1)
+                    currentDocID= (int) value.getValue(seqID);
+
+                if (currentDocID!=(int) value.getValue(seqID)){
+                    nDocs++;
+                    currentDocID= (int) value.getValue(seqID);
+                }
+
+                if (nDocs<nDocsPerBatch){
+                    batch.add(value);
+                }else {
+                    batch.setId(batchCount+index);
+                    out.collect(batch);
+                    batch = new DataOnMemoryListContainer<T>(this.attributes);
+                    batch.add(value);
+                    batchCount++;
+                    nDocs=0;
+                }
+            }
+
+            if (batch.getNumberOfDataInstances()>0) {
+                batch.setId(batchCount+index);
+                out.collect(batch);
+            }
+        }
+    }
+
 }

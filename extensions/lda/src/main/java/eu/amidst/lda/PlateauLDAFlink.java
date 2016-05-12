@@ -23,6 +23,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.core.learning.parametric.GlobalvsLocalUpdate;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 28/4/16.
  */
-public class PlateauLDA extends PlateuStructure {
+public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpdate {
 
     Variable word;
     Variable topicIndicator;
@@ -50,10 +51,21 @@ public class PlateauLDA extends PlateuStructure {
 
     DAG dagLDA;
 
-    public PlateauLDA(Attributes attributes, String wordDocumentName, String wordCountName) {
+    boolean globalUpdate = false;
+
+    public PlateauLDAFlink(Attributes attributes, String wordDocumentName, String wordCountName) {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
         this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
+    }
+
+
+    public boolean isGlobalUpdate() {
+        return globalUpdate;
+    }
+
+    public void setGlobalUpdate(boolean globalUpdate) {
+        this.globalUpdate = globalUpdate;
     }
 
     public DAG getDagLDA() {
@@ -122,6 +134,8 @@ public class PlateauLDA extends PlateuStructure {
         this.getReplicatedNodes().filter(node -> !node.isObserved()).forEach(node -> {
             node.resetQDist(this.vmp.getRandom());
         });
+
+
     }
 
 
@@ -220,6 +234,12 @@ public class PlateauLDA extends PlateuStructure {
         allNodes.addAll(this.nonReplictedNodes);
 
         this.vmp.setNodes(allNodes);
+
+
+        //And reset the Q's of the new replicated nodes.
+        this.getNonReplictedNodes().filter(node -> node.isActive()).forEach(node -> {
+            node.resetQDist(this.vmp.getRandom());
+        });
     }
 
     /**
@@ -232,36 +252,20 @@ public class PlateauLDA extends PlateuStructure {
     /**
      * Runs inference.
      */
-    public void runInference() {
+    public void runInferenceLocal() {
 
         boolean convergence = false;
         local_elbo = Double.NEGATIVE_INFINITY;
         local_iter = 0;
+
+        convergence = this.testConvergence();
+
         while (!convergence && (local_iter++) < this.vmp.getMaxIter()) {
 
             long start = System.nanoTime();
 
-            this.nonReplictedNodes
-                    .parallelStream()
-                    .filter(node -> node.isActive() && !node.isObserved())
-                    .forEach(node -> {
-                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
-
-                        Optional<Message<NaturalParameters>> message = node.getChildren()
-                                .stream()
-                                .filter(children -> children.isActive())
-                                .map(children -> this.vmp.newMessageToParent(children, node))
-                                .reduce(Message::combineNonStateless);
-
-                        if (message.isPresent())
-                            selfMessage.combine(message.get());
-
-
-                        this.vmp.updateCombinedMessage(node, selfMessage);
-                    });
-
             this.replicatedNodes
-                    .parallelStream()
+                    .stream()
                     .forEach(nodes -> {
                         for (Node node : nodes) {
 
@@ -296,9 +300,116 @@ public class PlateauLDA extends PlateuStructure {
 
         }
 
+        this.nonReplictedNodes
+                .stream()
+                .filter(node -> node.isActive() && !node.isObserved())
+                .forEach(node -> {
+                    Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                    Optional<Message<NaturalParameters>> message = node.getChildren()
+                            .stream()
+                            .filter(children -> children.isActive())
+                            .map(children -> this.vmp.newMessageToParent(children, node))
+                            .reduce(Message::combineNonStateless);
+
+                    if (message.isPresent())
+                        selfMessage.combine(message.get());
+
+
+                    this.vmp.updateCombinedMessage(node, selfMessage);
+                });
+
         if (this.vmp.isOutput()) {
             System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
         }
+    }
+
+
+    /**
+     * Runs inference.
+     */
+    public void runInferenceGlobal() {
+
+        boolean convergence = false;
+        local_elbo = Double.NEGATIVE_INFINITY;
+        local_iter = 0;
+
+        convergence = this.testConvergence();
+
+        while (!convergence && (local_iter++) < this.vmp.getMaxIter()) {
+
+            long start = System.nanoTime();
+
+            this.replicatedNodes
+                    .stream()
+                    .forEach(nodes -> {
+                        for (Node node : nodes) {
+
+
+                            if (!node.isActive() || node.isObserved())
+                                continue;
+
+                            Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                            Optional<Message<NaturalParameters>> message = node.getChildren()
+                                    .stream()
+                                    .filter(children -> children.isActive())
+                                    .map(children -> this.vmp.newMessageToParent(children, node))
+                                    .reduce(Message::combineNonStateless);
+
+                            if (message.isPresent())
+                                selfMessage.combine(message.get());
+
+                            //for (Node child: node.getChildren()){
+                            //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
+                            //}
+
+                            this.vmp.updateCombinedMessage(node, selfMessage);
+                        }
+                    });
+
+            this.nonReplictedNodes
+                    .stream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
+
+            convergence = this.testConvergence();
+
+            //System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
+
+        }
+
+
+
+        if (this.vmp.isOutput()) {
+            System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
+        }
+    }
+
+    /**
+     * Runs inference.
+     */
+    public void runInference() {
+
+        if (this.globalUpdate)
+            this.runInferenceGlobal();
+        else
+            this.runInferenceLocal();
+
     }
 
     /**
