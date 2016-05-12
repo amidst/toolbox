@@ -59,13 +59,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     TransitionMethod transitionMethod = null;
 
     /** Represents a {@link EF_LearningBayesianNetwork} object. */
-    EF_LearningBayesianNetwork ef_extendedBN;
+    protected EF_LearningBayesianNetwork ef_extendedBN;
 
     /** Represents the plateu structure {@link PlateuStructure}*/
-    PlateuStructure plateuStructure = new PlateuIIDReplication();
+    protected PlateuStructure plateuStructure = new PlateuIIDReplication();
 
     /** Represents a directed acyclic graph {@link DAG}. */
-    DAG dag;
+    protected DAG dag;
 
     /** Represents the data stream to be used for parameter learning. */
     transient DataStream<DataInstance> dataStream;

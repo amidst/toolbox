@@ -104,7 +104,7 @@ public class DriftSVB extends SVB{
         boolean convergence = false;
         double elbo = Double.NaN;
         double niter=0;
-        while(!convergence && niter<100) {
+        while(!convergence && niter<10) {
 
             //Messages for TExp to Theta
             double lambda = this.ef_TExpQ.getMomentParameters().get(0);
@@ -148,19 +148,20 @@ public class DriftSVB extends SVB{
             newELBO-=this.ef_TExpQ.kl(this.ef_TExpP.getNaturalParameters(),this.ef_TExpP.computeLogNormalizer());
 
             if (!Double.isNaN(elbo) &&  newELBO<elbo){
-                new IllegalStateException("Non increasing lower bound");
+                new IllegalStateException("Non increasing lower bound: " + newELBO + " < " + elbo);
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
             System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
 
-            if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
+            if (!Double.isNaN(elbo) && percentageIncrease<0.0001){//this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
             }
 
             elbo=newELBO;
             niter++;
         }
+
 
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
 

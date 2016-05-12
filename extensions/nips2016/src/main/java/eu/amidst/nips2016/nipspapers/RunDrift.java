@@ -16,11 +16,14 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
+import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.lda.BatchSpliteratorByID;
 import eu.amidst.lda.PlateauLDA;
 
 import java.io.FileWriter;
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 4/5/16.
@@ -30,29 +33,57 @@ public class RunDrift {
     public static int nwords(DataOnMemory<DataInstance> batch) {
         int nwords= 0;
         for (DataInstance dataInstance : batch) {
-            nwords +=
-                    dataInstance.getValue(dataInstance.getAttributes().getAttributeByName("count"));
+            nwords += (int) dataInstance.getValue(dataInstance.getAttributes().getAttributeByName("count"));
         }
 
         return nwords;
     }
 
+    public static void printTopics(CompoundVector vector) {
+        for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
+            SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue)vector.getVectorByPosition(j);
+            System.out.print(sparseVector.sum()+": ");
+
+            List<Map.Entry<Integer,Double>> list = new ArrayList(sparseVector.getValues().entrySet());
+
+            list.sort(new Comparator<Map.Entry<Integer, Double>>() {
+                @Override
+                public int compare(Map.Entry<Integer, Double> o1, Map.Entry<Integer, Double> o2) {
+                    if (o1.getValue() > o2.getValue())
+                        return -1;
+                    else if (o1.getValue() < o2.getValue())
+                        return 1;
+                    else
+                        return 0;
+                }
+            });
+
+            List<Map.Entry<Integer,Double>> top5 = list;//list.subList(0, Math.min(list.size(),100));
+
+            for (Map.Entry<Integer, Double> integerDoubleEntry : top5) {
+                System.out.print("("+integerDoubleEntry.getKey()+", " +integerDoubleEntry.getValue()+"), ");
+            }
+
+            System.out.println();
+        }
+    }
     public static void main(String[] args) throws Exception{
 
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
         String arrffName = "docword.kos.arff";
-        int ntopics = 10;
-        int niter = 10;
+        int ntopics = 5;
+        int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 100;
+        int docsPerBatch = 10;
 
         if (args.length>1){
             dataPath=args[0];
-            ntopics = Integer.parseInt(args[1]);
-            niter = Integer.parseInt(args[2]);
-            threshold = Double.parseDouble(args[3]);
-            docsPerBatch = Integer.parseInt(args[4]);
+            arrffName=args[1];
+            ntopics = Integer.parseInt(args[2]);
+            niter = Integer.parseInt(args[3]);
+            threshold = Double.parseDouble(args[4]);
+            docsPerBatch = Integer.parseInt(args[5]);
 
             args[0]="";
         }
@@ -78,7 +109,7 @@ public class RunDrift {
 
         FileWriter fw = new FileWriter(dataPath+"DriftSVBoutput_"+Arrays.toString(args)+"_.txt");
 
-
+/*
         for (DataOnMemory<DataInstance> batch : BatchSpliteratorByID.iterableOverDocuments(dataInstances, docsPerBatch)) {
             System.out.println("Batch: " + batch.getNumberOfDataInstances());
             double log = svb.predictedLogLikelihood(batch);
@@ -88,5 +119,35 @@ public class RunDrift {
             fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaValue()+"\n");
             fw.flush();
         }
+*/
+        List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
+
+        for (int i = 0; i < batches.size(); i++) {
+
+            System.out.println("Batch: " + batches.get(i).getNumberOfDataInstances());
+
+            double log = 0;
+            int nwords = 0;
+
+            for (int j = i+1; j < (i+1+5) && j< batches.size(); j++) {
+                log += svb.predictedLogLikelihood(batches.get(j));
+                nwords +=nwords(batches.get(j));
+            }
+
+            svb.updateModelWithConceptDrift(batches.get(i));
+
+            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaValue()+"\n");
+            fw.flush();
+
+
+            System.out.println();
+            System.out.println();
+            printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+            System.out.println();
+            System.out.println();
+
+
+        }
+
     }
 }

@@ -234,6 +234,24 @@ public class PlateauLDA extends PlateuStructure {
 
             long start = System.nanoTime();
 
+            this.nonReplictedNodes
+                    .parallelStream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
 
             this.replicatedNodes
                     .parallelStream()
@@ -263,24 +281,7 @@ public class PlateauLDA extends PlateuStructure {
                         }
                     });
 
-            this.nonReplictedNodes
-                    .parallelStream()
-                    .filter(node -> node.isActive() && !node.isObserved())
-                    .forEach(node -> {
-                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
 
-                        Optional<Message<NaturalParameters>> message = node.getChildren()
-                                .stream()
-                                .filter(children -> children.isActive())
-                                .map(children -> this.vmp.newMessageToParent(children, node))
-                                .reduce(Message::combineNonStateless);
-
-                        if (message.isPresent())
-                            selfMessage.combine(message.get());
-
-
-                        this.vmp.updateCombinedMessage(node, selfMessage);
-                    });
 
             convergence = this.testConvergence();
 
@@ -345,7 +346,7 @@ public class PlateauLDA extends PlateuStructure {
                     for (int i = 0; i < topicMoments.size(); i++) {
                         EF_SparseMultinomial_SparseDirichlet dist = (EF_SparseMultinomial_SparseDirichlet)base.getBaseEFConditionalDistribution(i);
                         MomentParameters dirichletMoments = momentParents.get(dist.getDirichletVariable());
-                        localELBO+=node.getSufficientStatistics().get(wordIndex)*dirichletMoments.get(wordIndex)*topicMoments.get(i);
+                        localELBO += node.getSufficientStatistics().get(wordIndex)*dirichletMoments.get(wordIndex)*topicMoments.get(i);
                     }
 
                     return localELBO;

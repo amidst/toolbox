@@ -21,6 +21,7 @@ import eu.amidst.core.io.DataStreamWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 public class Main {
 
 
-    public static void main(String[] args) throws IOException {
+    public static void process2(String[] args) throws IOException {
         DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
 
         double minWord = Double.MAX_VALUE;
@@ -91,8 +92,26 @@ public class Main {
             System.out.println(year+" "+list.size());
         }
 
+    }
 
+    public static void main(String[] args) throws IOException {
 
+        //Utils.shuffleData("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff", "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.shuffled.arff");
 
+        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff");
+
+        List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances, 1).collect(Collectors.toList());
+
+        Collections.shuffle(batches);
+
+        DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<DataInstance>(dataInstances.getAttributes());
+
+        for (DataOnMemory<DataInstance> batch : batches) {
+            for (DataInstance dataInstance : batch) {
+                newData.add(dataInstance);
+            }
+        }
+
+        DataStreamWriter.writeDataToFile(newData,"/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.shuffled.arff");
     }
 }

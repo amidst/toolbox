@@ -21,6 +21,8 @@ import eu.amidst.lda.PlateauLDA;
 
 import java.io.FileWriter;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by andresmasegosa on 4/5/16.
@@ -30,8 +32,7 @@ public class RunSVB {
     public static int nwords(DataOnMemory<DataInstance> batch) {
         int nwords= 0;
         for (DataInstance dataInstance : batch) {
-            nwords +=
-                    dataInstance.getValue(dataInstance.getAttributes().getAttributeByName("count"));
+            nwords += dataInstance.getValue(dataInstance.getAttributes().getAttributeByName("count"));
         }
 
         return nwords;
@@ -42,8 +43,8 @@ public class RunSVB {
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
         String arrffName = "docword.kos.arff";
-        int ntopics = 10;
-        int niter = 10;
+        int ntopics = 5;
+        int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 10;
 
@@ -79,13 +80,42 @@ public class RunSVB {
 
         FileWriter fw = new FileWriter(dataPath+"SVBoutput_"+Arrays.toString(args)+"_.txt");
 
-
+/*
         for (DataOnMemory<DataInstance> batch : BatchSpliteratorByID.iterableOverDocuments(dataInstances, docsPerBatch)) {
             System.out.println("Batch: " + batch.getNumberOfDataInstances());
             double log = svb.predictedLogLikelihood(batch);
             fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\n");
             fw.flush();
             svb.updateModel(batch);
+        }
+*/
+
+
+        List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
+
+        for (int i = 0; i < batches.size(); i++) {
+
+            System.out.println("Batch: " + batches.get(i).getNumberOfDataInstances());
+
+            double log = 0;
+            int nwords = 0;
+
+            for (int j = i+1; j < (i+1+5) && j< batches.size(); j++) {
+                log += svb.predictedLogLikelihood(batches.get(j));
+                nwords += nwords(batches.get(j));
+            }
+
+            fw.write(log/nwords+"\t"+nwords+"\n");
+            fw.flush();
+
+            svb.updateModel(batches.get(i));
+
+            System.out.println();
+            System.out.println();
+            RunDrift.printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+            System.out.println();
+            System.out.println();
+
         }
     }
 }

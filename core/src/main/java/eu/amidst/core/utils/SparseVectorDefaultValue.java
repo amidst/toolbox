@@ -107,7 +107,8 @@ public class SparseVectorDefaultValue implements Vector, NaturalParameters, Mome
 
         if (sparseVector.getDefaultValue()==0){
             for (Integer integer : sparseVector.getNonZeroEntries()) {
-                this.set(integer, this.get(integer) + sparseVector.get(integer));
+                if (Math.abs(sparseVector.get(integer))>0.00001)
+                    this.set(integer, this.get(integer) + sparseVector.get(integer));
             }
         }else {
             for (Integer integer : this.getNonZeroEntries()) {
@@ -264,6 +265,10 @@ public class SparseVectorDefaultValue implements Vector, NaturalParameters, Mome
 
     public Set<Integer> getNonZeroEntries() {
         return this.values.keySet();
+    }
+
+    public Map<Integer, Double> getValues() {
+        return values;
     }
 
     /**
