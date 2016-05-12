@@ -607,12 +607,12 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
-                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
-                // ", "+ (value.getValue() +">" + previousELBO));
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                 ", "+ (value.getValue() +">" + previousELBO));
                 //this.previousELBO=value.getValue();
-                //return false;
+                return true;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
