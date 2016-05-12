@@ -3,7 +3,7 @@
  *
  *       http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
  *
  * See the License for the specific language governing permissions and limitations under the License.
  *
@@ -54,7 +54,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 2/9/15.
  */
-public class dVMPTest extends TestCase {
+public class dVMPv1Test extends TestCase {
 
 
     public static void baseTest(ExecutionEnvironment env, DataStream<DataInstance> data, BayesianNetwork network, int batchSize, double error) throws IOException, ClassNotFoundException {
@@ -69,7 +69,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
@@ -214,7 +214,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(1000);
@@ -266,7 +266,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(1000);
@@ -320,7 +320,7 @@ public class dVMPTest extends TestCase {
         long start = System.nanoTime();
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
@@ -380,7 +380,7 @@ public class dVMPTest extends TestCase {
         long start = System.nanoTime();
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
@@ -427,7 +427,7 @@ public class dVMPTest extends TestCase {
 
 
         //ParallelVB is defined
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
@@ -483,7 +483,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setSeed(0);
         parallelVB.setBatchSize(1000);
         parallelVB.setLocalThreshold(0.001);
@@ -522,7 +522,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
@@ -565,7 +565,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(true);
         parallelVB.setSeed(5);
         parallelVB.setBatchSize(100);
@@ -641,7 +641,7 @@ public class dVMPTest extends TestCase {
         long start = System.nanoTime();
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(globalIter);
         parallelVB.setLocalThreshold(0.1);
@@ -738,7 +738,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(false);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(5);
@@ -818,7 +818,7 @@ public class dVMPTest extends TestCase {
         // and just learn then test the parameter learning
 
         //Parameter Learning
-        dVMP parallelVB = new dVMP();
+        dVMPv1 parallelVB = new dVMPv1();
         parallelVB.setOutput(false);
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(0);
