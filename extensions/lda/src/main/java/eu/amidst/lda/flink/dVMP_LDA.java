@@ -25,24 +25,39 @@ public class dVMP_LDA {
 
     public static void main(String[] args) throws Exception {
 
+        String dataPath = "hdfs:///docword.kos.arff";
+        int ntopics = 5;
+        int niter = 100;
+        double threshold = 0.1;
+        int docsPerBatch = 10;
+
+        dataPath = args[0];
+
+        if (args.length>1){
+            ntopics = Integer.parseInt(args[1]);
+            niter = Integer.parseInt(args[2]);
+            threshold = Double.parseDouble(args[3]);
+            docsPerBatch = Integer.parseInt(args[4]);
+        }
+
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         //env.setParallelism(1);
-        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../../datasets/simulated/docword.simulated.arff", false);
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, dataPath, false);
 
 
         dVMP svb = new dVMP();
         PlateauLDAFlink plateauLDA = new PlateauLDAFlink(dataInstances.getAttributes(),"word","count");
-        plateauLDA.setNTopics(2);
+        plateauLDA.setNTopics(ntopics);
         svb.setPlateuStructure(plateauLDA);
 
         svb.setOutput(true);
-        svb.setMaximumGlobalIterations(10);
-        svb.setMaximumLocalIterations(10);
-        svb.setLocalThreshold(0.01);
-        svb.setGlobalThreshold(0.01);
+        svb.setMaximumGlobalIterations(niter);
+        svb.setMaximumLocalIterations(niter);
+        svb.setLocalThreshold(threshold);
+        svb.setGlobalThreshold(threshold);
         svb.setSeed(5);
 
-        svb.setBatchSize(10);
+        svb.setBatchSize(docsPerBatch);
         svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.runLearning();

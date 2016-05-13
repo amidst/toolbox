@@ -25,25 +25,46 @@ public class SVI_LDA {
 
     public static void main(String[] args) throws Exception {
 
+        String dataPath = "hdfs:///docword.kos.arff";
+        int ntopics = 5;
+        int niter = 100;
+        double threshold = 0.1;
+        int docsPerBatch = 10;
+        double learningRate = 0.75;
+        int timeLimit = 2000;
+        int dataSize;
+
+        dataPath = args[0];
+        dataSize = Integer.parseInt(args[1]);
+
+        if (args.length>1){
+            ntopics = Integer.parseInt(args[2]);
+            niter = Integer.parseInt(args[3]);
+            threshold = Double.parseDouble(args[4]);
+            docsPerBatch = Integer.parseInt(args[5]);
+            learningRate = Double.parseDouble(args[6]);
+            timeLimit = Integer.parseInt(args[7]);
+        }
+
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         //env.setParallelism(1);
-        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../../datasets/simulated/docword.simulated.arff", false);
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, dataPath, false);
 
 
         StochasticVI svb = new StochasticVI();
         PlateauLDAFlink plateauLDA = new PlateauLDAFlink(dataInstances.getAttributes(),"word","count");
-        plateauLDA.setNTopics(2);
+        plateauLDA.setNTopics(ntopics);
         svb.setPlateuStructure(plateauLDA);
 
         svb.setOutput(true);
-        svb.setMaximumLocalIterations(10);
-        svb.setLocalThreshold(0.01);
+        svb.setMaximumLocalIterations(niter);
+        svb.setLocalThreshold(threshold);
         svb.setSeed(5);
 
-        svb.setBatchSize(2);
-        svb.setLearningFactor(0.75);
-        svb.setDataSetSize(100);
-        svb.setTimiLimit(100);
+        svb.setBatchSize(docsPerBatch);
+        svb.setLearningFactor(learningRate);
+        svb.setDataSetSize(dataSize);
+        svb.setTimiLimit(timeLimit);
         svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.runLearning();
