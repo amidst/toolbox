@@ -44,7 +44,7 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
     int nTopics = 2;
 
 
-    List<? extends DataInstance> data;
+    transient List<? extends DataInstance> data;
 
     double local_elbo;
     double local_iter;

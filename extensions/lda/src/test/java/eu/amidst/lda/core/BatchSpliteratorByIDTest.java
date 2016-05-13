@@ -9,13 +9,12 @@
  *
  */
 
-package eu.amidst.lda;
+package eu.amidst.lda.core;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.lda.core.BatchSpliteratorByID;
 import junit.framework.TestCase;
 
 import java.util.List;
@@ -28,7 +27,7 @@ public class BatchSpliteratorByIDTest extends TestCase {
 
     public static void test1() {
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("./datasets/simulated/simulatedText.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("../../datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
                 BatchSpliteratorByID.streamOverDocuments(dataInstances,2).collect(Collectors.toList());

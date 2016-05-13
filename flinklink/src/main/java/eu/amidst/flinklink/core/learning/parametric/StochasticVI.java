@@ -21,8 +21,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
 import eu.amidst.core.learning.parametric.bayesian.utils.VMPLocalUpdates;
 import eu.amidst.core.models.BayesianNetwork;
@@ -31,8 +31,10 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.java.DataSet;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +82,12 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     private long timiLimit;
     private double learningFactor;
 
+    Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter=null;
+
+
+    public void setBatchConverter(Function2<DataFlink<DataInstance>, Integer, DataSet<DataOnMemory<DataInstance>>> batchConverter) {
+        this.batchConverter = batchConverter;
+    }
     public void setLearningFactor(double learningFactor) {
         this.learningFactor = learningFactor;
     }
@@ -175,7 +183,12 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
             long startBatch= System.nanoTime();
 
-            DataOnMemory<DataInstance> batch = this.dataFlink.subsample(this.svb.getSeed(), this.batchSize);
+            DataOnMemory<DataInstance> batch;
+
+            if (batchConverter==null)
+                    batch= this.dataFlink.subsample(this.svb.getSeed(), this.batchSize);
+            else
+                    batch= this.dataFlink.subsample(this.svb.getSeed(), this.batchSize, this.batchConverter);
 
             NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
@@ -226,7 +239,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
     }
 
-
     public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb){
 
         svb.setOutput(false);
@@ -235,7 +247,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         try {
 
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, svb.getDAG().getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(PRIOR, Serialization.serializeObject(svb.getPlateuStructure().getPlateauNaturalParameterPosterior()));
 
@@ -300,7 +311,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         SVB svb;
         CompoundVector prior;
-        String bnName;
 
         @Override
         public Double map(DataOnMemory<DataInstance> dataBatch) throws Exception {
@@ -318,7 +328,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             this.prior = Serialization.deserializeObject(parameters.getBytes(PRIOR, null));
 

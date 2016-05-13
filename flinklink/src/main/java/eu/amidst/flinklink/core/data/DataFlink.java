@@ -20,6 +20,7 @@ package eu.amidst.flinklink.core.data;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.java.DataSet;
@@ -99,5 +100,25 @@ public interface DataFlink<T extends DataInstance> {
         }
     }
 
+
+    default DataOnMemory<T> subsample(long seed, int samples, Function2<DataFlink<T>,Integer,DataSet<DataOnMemory<T>>> batchFunction) {
+
+        try {
+            List<DataOnMemory<T>> subsample = DataSetUtils.sampleWithSize(this.getBatchedDataSet(1,batchFunction), true, samples, seed).collect();
+
+            DataOnMemoryListContainer<T> dataInstances = new DataOnMemoryListContainer(this.getAttributes());
+
+            for (DataOnMemory<T> ts : subsample) {
+                for (T t : ts) {
+                    dataInstances.add(t);
+                }
+            }
+            return dataInstances;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
