@@ -40,7 +40,7 @@ public class SVI_LDA {
         svb.setLocalThreshold(0.01);
         svb.setSeed(5);
 
-        svb.setBatchSize(10);
+        svb.setBatchSize(2);
         svb.setLearningFactor(0.75);
         svb.setDataSetSize(100);
         svb.setTimiLimit(100);

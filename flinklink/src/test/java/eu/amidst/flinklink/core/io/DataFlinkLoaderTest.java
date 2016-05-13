@@ -22,6 +22,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -115,4 +116,25 @@ public class DataFlinkLoaderTest extends TestCase {
 
     }
 
+    public static void test4() throws Exception {
+
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/docword.simulated.arff", false);
+
+
+        for (int i = 0; i < 3; i++) {
+            DataOnMemory<DataInstance> batch = dataInstances.subsample(0, 1, ConversionToBatches::toBatchesBySeqID);
+
+            int docId = -1;
+            for (DataInstance dataInstance : batch) {
+                if (docId == -1) {
+                    docId = (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id());
+                    System.out.println("DOC ID: " + docId);
+                }
+
+                assertEquals(docId, (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id()));
+            }
+        }
+
+    }
 }
