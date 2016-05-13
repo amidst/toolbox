@@ -209,7 +209,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
             long startBatchELBO= System.nanoTime();
             //Compute ELBO
-            double elbo = this.computeELBO(this.dataFlink, svb);
+            double elbo = this.computeELBO(this.dataFlink, svb, this.batchConverter);
 
             long endBatch= System.nanoTime();
 
@@ -238,8 +238,11 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
 
     }
+    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb) {
+            return computeELBO(dataFlink,svb,null);
+    }
 
-    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb){
+    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb, Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter){
 
         svb.setOutput(false);
         double elbo =  svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
@@ -250,8 +253,13 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(PRIOR, Serialization.serializeObject(svb.getPlateuStructure().getPlateauNaturalParameterPosterior()));
 
+            DataSet<DataOnMemory<DataInstance>> batches;
+            if (batchConverter!=null)
+                batches= dataFlink.getBatchedDataSet(svb.getWindowsSize(),batchConverter);
+            else
+                batches= dataFlink.getBatchedDataSet(svb.getWindowsSize());
 
-            elbo += dataFlink.getBatchedDataSet(svb.getWindowsSize()).map(new ParallelVBMapELBO())
+            elbo += batches.map(new ParallelVBMapELBO())
                     .withParameters(config)
                     .reduce(new ReduceFunction<Double>() {
                         @Override
