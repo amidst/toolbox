@@ -1,0 +1,68 @@
+aws emr create-cluster --termination-protected --applications Name=Hadoop --bootstrap-actions '[{"Path":"s3://amidst2/emr_bootstrap_java_8_emr400.sh","Name":"Bootstrap action"}]' --ec2-attributes '{"KeyName":"AmidstToolbox","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-0e205679","EmrManagedSlaveSecurityGroup":"sg-e07dea84","EmrManagedMasterSecurityGroup":"sg-e77dea83"}' --service-role EMR_DefaultRole --enable-debugging --release-label emr-4.3.0 --log-uri 's3n://amidst2/logsForClusters/' --name 'Cluster4Nodes-m3.xlarge-30G-' --instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m3.xlarge","Name":"MASTER"},{"InstanceCount":4,"InstanceGroupType":"CORE","InstanceType":"m3.xlarge","Name":"CORE"}]' --region us-west-2
+
+
+aws emr describe-cluster --cluster-id j-V3ETDRQ37T02
+
+
+ssh hadoop@ec2-54-200-222-179.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+
+wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
+tar xzf flink-*.tgz
+export HADOOP\_CONF\_DIR=/etc/hadoop/conf
+
+scp -i ~/key/AmidstToolbox.pem /Users/ana/core/toolbox/classes/artifacts/lda_jar/lda.jar  hadoop@ec2-54-200-222-179.us-west-2.compute.amazonaws.com:
+
+aws s3 cp s3://amidstdata/docword.nips.arff /mnt/
+cd /mnt
+hadoop fs -copyFromLocal /mnt/docword.nips.arff /
+#hadoop fs -D dfs.block.size=1048576 -copyFromLocal /mnt/docword.nips.arff /
+hadoop fsck /docword.nips.arff -files -blocks -locations
+#hadoop fs -D  dfs.block.size=524288 -put /mnt/docword.nips.arff hdfs:///
+vi /etc/hadoop/conf.empty/hdfs-site.xml
+<property> 
+<name>dfs.block.size<name> 
+<value>134217728<value> 
+<description>Block size<description> 
+<property>
+hadoop balancer [-threshold <threshold>]
+
+aws s3 cp s3://amidstdata/docword.nytimes.arff /mnt/
+hadoop fs -copyFromLocal /mnt/docword.nytimes.arff /
+
+sudo stop hadoop-hdfs-namenode
+sudo start hadoop-hdfs-namenode
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 8 -ys 8 -yjm 3000 -ytm 20000 -c eu.amidst.lda.flink.dVMP_LDA lda.jar hdfs:///docword.nips.arff 5 100 0.1 10 2000 > outputVMP_nips_5_100_0p1_10_2000_3g_20g.txt 2>&1 &
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 8 -yjm 13020 -ytm 10020 -c eu.amidst.lda.flink.SVI_LDA lda.jar hdfs:///docword.nips.arff 1500 5 100 0.1 10 0.75 2000 > outputSVI_nips_5_50_0p1_100_2000_13g_10g.txt 2>&1 &
+
+yarn application -list
+yarn logs -applicationId 
+
+yarn application -kill application_1463227495916_0002
+
+java -cp uai2016.jar eu.amidst.modelExperiments.ParseOutput output100K_1000_100_tiny_100_1_300_0.logs.txt parsedoutput100K_1000_100_tiny_100_1_300_0.txt
+
+--------
+# Download logs from s3 or cluster
+
+aws s3 cp --recursive s3://amidst2/logsForClusters/j-1DKJ8ZH4VWFEB/containers/application_1455180483578_0005 ./
+
+scp -r -i ~/key/AmidstToolbox.pem hadoop@ec2-54-191-66-20.us-west-2.compute.amazonaws.com:/mnt/uai100K.arff /Users/ana/core/extensions/uai2016/doc-experiments/
+————————
+
+-------
+#GUI
+
+http://ip-172-31-41-214.us-west-2.compute.internal:8088/
+ec2-54-191-98-115.us-west-2.compute.amazonaws.com:8088
+
+#Missing values
+hadoop distcp hdfs:///file s3n://amidstdata
+#or
+hadoop fs -get hdfs:///file /mnt
+aws s3 cp --recursive /mnt/file s3://amidstdata
+for i in {1..16}
+do
+	a=(`wc -l $i`) ; lines=`echo $a/4+1 | bc -l` ; split -l${lines%.*} $i $i
+done
