@@ -31,7 +31,7 @@ public class SVI_LDA {
         double threshold = 0.1;
         int docsPerBatch = 10;
         double learningRate = 0.75;
-        int timeLimit = 2000;
+        int timeLimit = -1;
         int dataSize;
 
         dataPath = args[0];

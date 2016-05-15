@@ -30,6 +30,7 @@ public class dVMP_LDA {
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 10;
+        int timeLimit = -1;
 
         dataPath = args[0];
 
@@ -38,6 +39,7 @@ public class dVMP_LDA {
             niter = Integer.parseInt(args[2]);
             threshold = Double.parseDouble(args[3]);
             docsPerBatch = Integer.parseInt(args[4]);
+            timeLimit = Integer.parseInt(args[5]);
         }
 
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -55,6 +57,7 @@ public class dVMP_LDA {
         svb.setMaximumLocalIterations(niter);
         svb.setLocalThreshold(threshold);
         svb.setGlobalThreshold(threshold);
+        svb.setTimeLimit(timeLimit);
         svb.setSeed(5);
 
         svb.setBatchSize(docsPerBatch);
