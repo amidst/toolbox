@@ -26,12 +26,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.4.2</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
-            <version>0.4.1</version>
+            <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -42,7 +37,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.4.1</version>
+            <version>${AMIDSTver}</version>
         </dependency>
     </dependencies>
 
