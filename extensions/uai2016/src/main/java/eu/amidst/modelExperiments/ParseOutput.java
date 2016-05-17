@@ -86,6 +86,7 @@ public class ParseOutput {
                     String[] parts = line.split(",");
                     //output += parts[0]+"\t"; // Iteration
                     //output += parts[1]+"\t"; //Stepsize
+                    output += parts[3]+"\t"; //Total time
                     output += parts[5]+"\t"; //Time without global bound calculation
                     output += parts[2]+"\t"; //Global bound
                     //output += parts[4]; //Time without global bound calculation
