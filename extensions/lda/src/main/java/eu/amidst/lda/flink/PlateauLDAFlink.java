@@ -20,7 +20,6 @@ import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.learning.parametric.GlobalvsLocalUpdate;
@@ -115,8 +114,14 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
 
 
         for (Variable variable : this.nonReplicatedVariablesList) {
-            SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
-            vec.setDefaultValue(0.01);
+            //SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+            //vec.setDefaultValue(0.01);
+
+            NaturalParameters vec = this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+
+            for (int i = 0; i < vec.size(); i++) {
+                vec.set(i,0.01);
+            }
         }
 
     }
@@ -345,7 +350,6 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
                     .forEach(nodes -> {
                         for (Node node : nodes) {
 
-
                             if (!node.isActive() || node.isObserved())
                                 continue;
 
@@ -372,6 +376,7 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
                     .stream()
                     .filter(node -> node.isActive() && !node.isObserved())
                     .forEach(node -> {
+
                         Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
 
                         Optional<Message<NaturalParameters>> message = node.getChildren()
@@ -385,9 +390,11 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
 
 
                         this.vmp.updateCombinedMessage(node, selfMessage);
+
                     });
 
             convergence = this.testConvergence();
+
 
             //System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
 
@@ -425,7 +432,6 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
         boolean convergence = false;
 
         //Compute lower-bound
-        //double newelbo = this.vmp.getNodes().parallelStream().filter(node -> node.isActive()).mapToDouble(node -> this.vmp.computeELBO(node)).sum();
         double newelbo = computeELBO();
 
         double percentage = 100 * Math.abs(newelbo - local_elbo) / Math.abs(local_elbo);
@@ -439,17 +445,43 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
 
 
         local_elbo = newelbo;
-        //System.out.println("ELBO: " + local_elbo);
         return convergence;
     }
 
     private double computeELBO() {
+/*
+        double start = System.nanoTime();
 
 
-        double elbo = this.vmp.getNodes().parallelStream().filter(node -> node.isActive() && !node.isObserved()).mapToDouble(node -> this.vmp.computeELBO(node)).sum();
+        double elbo = this.vmp.getNodes().stream()
+            .filter(node -> this.isNonReplicatedVar(node.getMainVariable()))
+            .filter(node -> node.isActive() && !node.isObserved()).mapToDouble(node -> {
+
+            NaturalParameters a = node.getQDist().getNaturalParameters();
+            NaturalParameters b = node.getPDist().getNaturalParameters();
+
+            double kl = a.dotProduct(node.getQDist().getMomentParameters());
+
+            kl-=b.get(0)*node.getQDist().getMomentParameters().sum();
+
+            kl -= node.getQDist().computeLogNormalizer();
+
+            kl += (b.size()* Gamma.logGamma(b.get(0)) - Gamma.logGamma(b.get(0)*b.size()));
+
+            return kl;
+            //return this.vmp.computeELBO(node);
+        }).sum();
+
+
+        System.out.println("Convergence Dir 1:" + (System.nanoTime()-start)/1.0e09);
+
+*/
+
+
+        double elbo = this.vmp.getNodes().stream().filter(node -> node.isActive() && !node.isObserved()).mapToDouble(node -> this.vmp.computeELBO(node)).sum();
 
         elbo += this.vmp.getNodes()
-                .parallelStream()
+                .stream()
                 .filter(node -> node.isActive() && node.isObserved()).mapToDouble(node -> {
 
                     EF_BaseDistribution_MultinomialParents base = (EF_BaseDistribution_MultinomialParents)node.getPDist();
@@ -462,7 +494,7 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
                     int wordIndex = (int)node.getAssignment().getValue(node.getMainVariable());
 
                     for (int i = 0; i < topicMoments.size(); i++) {
-                        EF_SparseMultinomial_SparseDirichlet dist = (EF_SparseMultinomial_SparseDirichlet)base.getBaseEFConditionalDistribution(i);
+                        EF_SparseMultinomial_Dirichlet dist = (EF_SparseMultinomial_Dirichlet)base.getBaseEFConditionalDistribution(i);
                         MomentParameters dirichletMoments = momentParents.get(dist.getDirichletVariable());
                         localELBO += node.getSufficientStatistics().get(wordIndex)*dirichletMoments.get(wordIndex)*topicMoments.get(i);
                     }

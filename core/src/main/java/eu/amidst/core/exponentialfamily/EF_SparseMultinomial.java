@@ -204,6 +204,17 @@ public class EF_SparseMultinomial extends EF_UnivariateDistribution {
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){
 
+        Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+nameSuffix+"_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
+
+        EF_Dirichlet uni = varDirichlet.getDistributionType().newEFUnivariateDistribution();
+
+        return Arrays.asList(new EF_SparseMultinomial_Dirichlet(this.var, varDirichlet), uni);
+    }
+
+    /*
+        @Override
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){
+
         Variable varDirichlet = variables.newSparseDirichletParameter(this.var.getName()+"_DirichletParameter_"+nameSuffix+"_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
 
         EF_SparseDirichlet uni = varDirichlet.getDistributionType().newEFUnivariateDistribution();
@@ -211,6 +222,8 @@ public class EF_SparseMultinomial extends EF_UnivariateDistribution {
         return Arrays.asList(new EF_SparseMultinomial_SparseDirichlet(this.var, varDirichlet), uni);
     }
 
+
+     */
 
     /**
      * {@inheritDoc}
