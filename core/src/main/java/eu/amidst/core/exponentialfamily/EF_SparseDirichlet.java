@@ -176,7 +176,7 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
 
         double sumOfU_i = this.naturalParameters.sum();
 
-        this.momentParameters.copy(this.naturalParameters);
+        this.momentParameters = this.createZeroMomentParameters();
 
         this.getSparseMomentParameters().apply(new Function<Double, Double>() {
             @Override
@@ -184,6 +184,7 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
                 return Gamma.digamma(aDouble) - Gamma.digamma(sumOfU_i);
             }
         });
+
 
     }
 
