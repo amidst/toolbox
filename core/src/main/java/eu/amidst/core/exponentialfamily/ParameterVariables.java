@@ -133,7 +133,7 @@ public class ParameterVariables implements Iterable<Variable>, Serializable {
      * @param stateSpaceType the {@link StateSpaceType} of the variable.
      * @return a {@link Variable} object.
      */
-    private Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
+    public Variable newVariable(String name, DistributionTypeEnum distributionTypeEnum, StateSpaceType stateSpaceType) {
         VariableBuilder builder = new VariableBuilder();
         builder.setName(name);
         builder.setDistributionType(distributionTypeEnum);

@@ -14,7 +14,9 @@ package eu.amidst.core.exponentialfamily;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.utils.Vector;
+import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.stateSpaceTypes.SparseFiniteStateSpace;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -204,7 +206,7 @@ public class EF_SparseMultinomial extends EF_UnivariateDistribution {
     @Override
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix){
 
-        Variable varDirichlet = variables.newDirichletParameter(this.var.getName()+"_DirichletParameter_"+nameSuffix+"_"+variables.getNumberOfVars(), this.var.getNumberOfStates());
+        Variable varDirichlet = variables.newVariable(this.var.getName()+"_DirichletParameter_"+nameSuffix+"_"+variables.getNumberOfVars(), DistributionTypeEnum.DIRICHLET_PARAMETER, new SparseFiniteStateSpace(this.var.getNumberOfStates()));
 
         EF_Dirichlet uni = varDirichlet.getDistributionType().newEFUnivariateDistribution();
 
