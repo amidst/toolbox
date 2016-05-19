@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.staticmodels.classifiers;
 
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -24,7 +24,8 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.dynamicmodels.classifiers.DynamicLatentClassificationModel;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
 import java.util.List;

@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.staticmodels.classifiers;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.datastream.Attributes;
@@ -27,7 +27,7 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.learning.ParallelTAN;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  * This class implements a Tree Augmente Naive Bayes classifier, TAN. For more details:

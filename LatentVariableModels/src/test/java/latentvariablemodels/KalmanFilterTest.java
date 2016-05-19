@@ -21,6 +21,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.utils.DataSetGenerator;
+import eu.amidst.latentvariablemodels.dynamicmodels.KalmanFilter;
 import junit.framework.TestCase;
 
 /**

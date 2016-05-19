@@ -21,7 +21,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.DataSetGenerator;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import junit.framework.TestCase;
 
 /**

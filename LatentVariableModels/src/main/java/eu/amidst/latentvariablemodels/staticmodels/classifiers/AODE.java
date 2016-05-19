@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.staticmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
@@ -30,7 +30,7 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.DistributionTypeEnum;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 import java.util.ArrayList;
 import java.util.List;

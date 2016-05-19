@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.staticmodels.classifiers;
 
 
 import eu.amidst.core.datastream.Attributes;
@@ -25,8 +25,8 @@ import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.latentvariablemodels.Model;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  * The Classifier abstract class is defined for Bayesian classification models.

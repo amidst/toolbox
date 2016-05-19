@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.exceptions;
+package eu.amidst.latentvariablemodels.staticmodels.exceptions;
 
 /**
  * Created by rcabanas on 08/03/16.

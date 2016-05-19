@@ -1,21 +1,15 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.distribution.Multinomial;
@@ -27,8 +21,8 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
-import eu.amidst.latentvariablemodels.DynamicModel;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  * The DynamicClassifier abstract class is defined for dynamic Bayesian classification models.

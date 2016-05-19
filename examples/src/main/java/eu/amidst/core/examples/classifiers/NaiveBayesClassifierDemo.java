@@ -23,8 +23,8 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.latentvariablemodels.classifiers.NaiveBayesClassifier;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 15/01/15.

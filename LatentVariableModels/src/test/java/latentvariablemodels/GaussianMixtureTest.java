@@ -22,7 +22,8 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.GaussianMixture;
 import junit.framework.TestCase;
 
 /**

@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.classifiers;
+package eu.amidst.latentvariablemodels.staticmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -23,7 +23,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
 import java.util.List;

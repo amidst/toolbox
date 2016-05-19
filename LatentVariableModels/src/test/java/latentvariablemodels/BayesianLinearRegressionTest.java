@@ -28,7 +28,8 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.latentvariablemodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.BayesianLinearRegression;
 import junit.framework.TestCase;
 
 import java.util.List;
