@@ -95,7 +95,7 @@ public class Main {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void shuflle(String[] args) throws IOException {
 
         //Utils.shuffleData("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff", "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.shuffled.arff");
 
@@ -114,5 +114,42 @@ public class Main {
         }
 
         DataStreamWriter.writeDataToFile(newData,"/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.shuffled.arff");
+    }
+
+
+    public static void main(String[] args) throws IOException {
+
+        String path = "/Users/andresmasegosa/Dropbox/amidst_postdoc/abstractByYear/";
+
+      /*  DataOnMemory<DataInstance> dataInstances = DataStreamLoader.loadDataOnMemoryFromFile(path+"abstract_90.arff");
+
+        DataOnMemoryListContainer<DataInstance> container = new DataOnMemoryListContainer<DataInstance>(dataInstances.getAttributes());
+
+        //
+
+        String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+
+        for (String year : years) {
+            dataInstances = DataStreamLoader.loadDataOnMemoryFromFile(path+"abstract_"+year+".arff");
+            container.addAll(dataInstances.getList());
+        }
+
+        DataStreamWriter.writeDataToFile(container,path+"abstracts.all.arff");
+*/
+        DataOnMemory<DataInstance> container = DataStreamLoader.loadDataOnMemoryFromFile(path+"abstracts.all.arff");
+
+        List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(container, 1).collect(Collectors.toList());
+
+        Collections.shuffle(batches);
+
+        DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<DataInstance>(container.getAttributes());
+
+        for (DataOnMemory<DataInstance> batch : batches) {
+            newData.addAll(batch.getList());
+        }
+
+        DataStreamWriter.writeDataToFile(newData,path+"abstracts.all.shuffle.arff");
+
+
     }
 }
