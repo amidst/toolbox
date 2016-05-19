@@ -70,7 +70,7 @@ public class TAN extends Classifier {
      * @param dataStream Object with the data stream
      */
     @Override
-    public void learnModel(DataStream<DataInstance> dataStream){
+    public double updateModel(DataStream<DataInstance> dataStream){
 
         if(classVar==null || rootVarName==null) {
             classVar = this.vars.getListOfVariables().stream()
@@ -101,6 +101,8 @@ public class TAN extends Classifier {
         learningAlgorithm.setDataStream(dataStream);
         learningAlgorithm.initLearning();
         learningAlgorithm.runLearning();
+
+        return learningAlgorithm.getLogMarginalProbability();
     }
 
     /**
@@ -159,7 +161,7 @@ public class TAN extends Classifier {
         model.setClassName(classVarName);
         model.setRootVarName(rootVarName);
 
-        model.learnModel(data);
+        model.updateModel(data);
 
         System.out.println(model.getDAG());
         System.out.println();

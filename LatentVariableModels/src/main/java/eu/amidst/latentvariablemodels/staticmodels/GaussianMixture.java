@@ -170,7 +170,7 @@ public class GaussianMixture extends Model {
         GMM.setDiagonal(false);
         GMM.setNumStatesHiddenVar(2);
 
-        GMM.learnModel(data);
+        GMM.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
             GMM.updateModel(batch);
         }

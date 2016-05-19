@@ -55,7 +55,7 @@ public class BayesianLinearRegressionTest extends TestCase {
         model.setDiagonal(false);
 
         if(model.isValidConfiguration()) {
-            model.learnModel(data);
+            model.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
                 model.updateModel(batch);
             }

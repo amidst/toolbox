@@ -22,15 +22,15 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
-import eu.amidst.latentvariablemodels.staticmodels.MixtureOfFactorAnalysers;
+import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import junit.framework.TestCase;
 
 /**
- * Created by rcabanas on 29/03/16.
+ * Created by rcabanas on 28/03/16.
  */
-public class MixtureOfFactorAnalysersTest extends TestCase {
+public class FactorAnalysisTest extends TestCase {
 
-    protected MixtureOfFactorAnalysers model;
+    protected FactorAnalysis model;
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
@@ -40,11 +40,11 @@ public class MixtureOfFactorAnalysersTest extends TestCase {
 
         data = DataSetGenerator.generate(seed,nSamples,0,nContinuousVars);
 
-        model = new MixtureOfFactorAnalysers(data.getAttributes());
+        model = new FactorAnalysis(data.getAttributes());
 
         System.out.println(model.getDAG());
 
-        model.learnModel(data);
+        model.updateModel(data);
 
     }
 
@@ -55,10 +55,10 @@ public class MixtureOfFactorAnalysersTest extends TestCase {
 
 
 
-        // each observable variable has a number of parents equal to the number of continuous hidden variables plus 1
+        // each observable variable has a number of parents equal to the number of hidden variables
         boolean numParentsCond = model.getModel().getVariables().getListOfVariables().stream()
                 .filter(v -> v.isObservable())
-                .allMatch(v -> model.getDAG().getParentSet(v).getNumberOfParents() == model.getNumberOfLatentVariables()+1);
+                .allMatch(v -> model.getDAG().getParentSet(v).getNumberOfParents() == model.getNumberOfLatentVariables());
 
 
         // the observable variables only have hidden parents
@@ -74,39 +74,19 @@ public class MixtureOfFactorAnalysersTest extends TestCase {
 
 
 
-    public void testMFA() {
+    public void testFA() {
 
 
         boolean passed = false;
 
-
-        /*
-        P(DiscreteLatentVar) follows a Multinomial
-            [ 3.996802557953637E-4, 0.9996003197442046 ]
-        P(LatentVar0) follows a Normal
-            Normal [ mu = 0.6322849166799489, var = 306.16068625831326 ]
-         */
-
-
-        ConditionalDistribution pHD0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("DiscreteLatentVar"));
-        double[] values = pHD0.getParameters();
-
-        if(values[0] == 3.996802557953637E-4 && values[1] == 0.9996003197442046 )
-            passed = true;
-        else
-            passed = false;
-
+        // Normal [ mu = -0.11391269298981004, var = 47.58199351242742 ]
 
         ConditionalDistribution pH0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("LatentVar0"));
 
         double[] params = pH0.getParameters();
 
-        if(params[0] == 0.6322849166799489 && params[1] == 306.16068625831326)
+        if(params[0] == -0.11391269298981004 && params[1] == 47.58199351242742)
             passed = true;
-        else
-            passed = false;
-
-
         assertTrue(passed);
 
 

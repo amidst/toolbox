@@ -119,14 +119,14 @@ public class FactorialHMM extends DynamicModel {
         System.out.println("------------------Factorial HMM (diagonal matrix) from streaming------------------");
         FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
         System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(dataHybrid);
+        factorialHMM.updateModel(dataHybrid);
         System.out.println(factorialHMM.getModel());
 
         System.out.println("------------------Factorial HMM (full cov. matrix) from streaming------------------");
         factorialHMM = new FactorialHMM(dataGaussians.getAttributes());
         factorialHMM.setDiagonal(false);
         System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(dataGaussians);
+        factorialHMM.updateModel(dataGaussians);
         System.out.println(factorialHMM.getModel());
 
         System.out.println("------------------Factorial HMM (diagonal matrix) from batches------------------");

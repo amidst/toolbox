@@ -59,21 +59,7 @@ public abstract class DynamicModel {
         learningAlgorithm = null;
     }
 
-    public void learnModel(DataOnMemory<DynamicDataInstance> dataBatch){
-        learningAlgorithm = new DynamicSVB();
-        learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-        learningAlgorithm.initLearning();
-        learningAlgorithm.updateModel(dataBatch);
-    }
-
-    public void learnModel(DataStream<DynamicDataInstance> dataStream){
-        learningAlgorithm = new DynamicSVB();
-        learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-        learningAlgorithm.setDataStream(dataStream);
-        learningAlgorithm.runLearning();
-    }
-
-    public void updateModel(DataOnMemory<DynamicDataInstance> dataBatch){
+    public double updateModel(DataStream<DynamicDataInstance> dataStream){
         if (learningAlgorithm ==null) {
             learningAlgorithm = new DynamicSVB();
             learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
@@ -81,7 +67,18 @@ public abstract class DynamicModel {
             learningAlgorithm.initLearning();
         }
 
-        learningAlgorithm.updateModel(dataBatch);
+        return dataStream.streamOfBatches(this.windowSize).sequential().mapToDouble(this::updateModel).sum();
+    }
+
+    public double updateModel(DataOnMemory<DynamicDataInstance> dataBatch){
+        if (learningAlgorithm ==null) {
+            learningAlgorithm = new DynamicSVB();
+            learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
+            ((DynamicSVB)learningAlgorithm).setWindowsSize(windowSize);
+            learningAlgorithm.initLearning();
+        }
+
+        return learningAlgorithm.updateModel(dataBatch);
     }
 
     public DynamicBayesianNetwork getModel(){

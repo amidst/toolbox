@@ -112,7 +112,7 @@ public class NaiveBayesClassifier extends Classifier{
         nb.setClassName(classVarName);
 
         if(nb.isValidConfiguration()) {
-            nb.learnModel(data);
+            nb.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
                 nb.updateModel(batch);

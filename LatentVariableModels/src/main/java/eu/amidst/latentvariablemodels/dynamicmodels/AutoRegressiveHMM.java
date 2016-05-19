@@ -109,14 +109,14 @@ public class AutoRegressiveHMM extends DynamicModel  {
         System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from streaming------------------");
         AutoRegressiveHMM autoRegressiveHMM = new AutoRegressiveHMM(dataHybrid.getAttributes());
         System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.learnModel(dataHybrid);
+        autoRegressiveHMM.updateModel(dataHybrid);
         System.out.println(autoRegressiveHMM.getModel());
 
         System.out.println("------------------Auto-Regressive HMM (full cov. matrix) from streaming------------------");
         autoRegressiveHMM = new AutoRegressiveHMM(dataGaussians.getAttributes());
         autoRegressiveHMM.setDiagonal(false);
         System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.learnModel(dataGaussians);
+        autoRegressiveHMM.updateModel(dataGaussians);
         System.out.println(autoRegressiveHMM.getModel());
 
         System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from batches------------------");

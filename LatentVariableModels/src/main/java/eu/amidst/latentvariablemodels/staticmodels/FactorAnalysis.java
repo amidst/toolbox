@@ -134,7 +134,7 @@ public class FactorAnalysis extends Model {
 
         System.out.println(model.getDAG());
 
-        model.learnModel(data);
+        model.updateModel(data);
 
 //        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(1000)) {
 //            model.updateModel(batch);

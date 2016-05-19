@@ -21,15 +21,13 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
+import eu.amidst.latentvariablemodels.dynamicmodels.KalmanFilter;
 import junit.framework.TestCase;
 
 /**
  * Created by ana@cs.aau.dk on 08/03/16.
  */
-public class HiddenMarkovModelTest extends TestCase{
-
-    private static DataStream<DynamicDataInstance> dataHybrid;
+public class KalmanFilterTest extends TestCase{
     private static DataStream<DynamicDataInstance> dataGaussians;
     private static boolean setUpIsDone = false;
 
@@ -37,35 +35,35 @@ public class HiddenMarkovModelTest extends TestCase{
         if (setUpIsDone) {
             return;
         }
-        dataHybrid = DataSetGenerator.generate(1,1000,3,5);
-        dataGaussians = DataSetGenerator.generate(1,1000,0,5);
+        dataGaussians = DataSetGenerator.generate(1,1000,0,10);
         setUpIsDone = true;
     }
 
     public void test1(){
-        System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
-        HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
-        System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(dataHybrid);
-        System.out.println(HMM.getModel());
+        System.out.println("------------------KF (diagonal matrix) from streaming------------------");
+        KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
+        KF.setNumHidden(2);
+        System.out.println(KF.getDynamicDAG());
+        KF.updateModel(dataGaussians);
+        System.out.println(KF.getModel());
     }
     public void test2(){
-        System.out.println("------------------HMM (full cov. matrix) from streaming------------------");
-        HiddenMarkovModel HMM = new HiddenMarkovModel(dataGaussians.getAttributes());
-        HMM.setDiagonal(false);
-        System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(dataGaussians);
-        System.out.println(HMM.getModel());
+        System.out.println("------------------KF (full cov. matrix) from streaming------------------");
+        KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
+        KF.setDiagonal(false);
+        System.out.println(KF.getDynamicDAG());
+        KF.updateModel(dataGaussians);
+        System.out.println(KF.getModel());
     }
 
     public void test3(){
-        System.out.println("------------------HMM (diagonal matrix) from batches------------------");
-        HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
-        System.out.println(HMM.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
-            HMM.updateModel(batch);
+        System.out.println("------------------KF (diagonal matrix) from batches------------------");
+        KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
+        System.out.println(KF.getDynamicDAG());
+        for (DataOnMemory<DynamicDataInstance> batch : dataGaussians.iterableOverBatches(100)) {
+            KF.updateModel(batch);
         }
-        System.out.println(HMM.getModel());
+        System.out.println(KF.getModel());
     }
 
 }

@@ -159,7 +159,7 @@ public class GaussianDiscriminantAnalysis extends Classifier {
         gda.setClassName("DiscreteVar0");
 
         if(gda.isValidConfiguration()) {
-            gda.learnModel(data);
+            gda.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
                 gda.updateModel(batch);
             }

@@ -216,7 +216,7 @@ public class LatentClassificationModel extends Classifier {
 
         //Learning
 
-        lcm.learnModel(data);
+        lcm.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
             lcm.updateModel(batch);
         }

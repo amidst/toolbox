@@ -43,7 +43,7 @@ public class SwitchingKalmanFilterTest extends TestCase{
         System.out.println("------------------SKF (diagonal matrix) from streaming------------------");
         SwitchingKalmanFilter SKF = new SwitchingKalmanFilter(dataGaussians.getAttributes());
         System.out.println(SKF.getDynamicDAG());
-        SKF.learnModel(dataGaussians);
+        SKF.updateModel(dataGaussians);
         System.out.println(SKF.getModel());
 
     }
@@ -52,7 +52,7 @@ public class SwitchingKalmanFilterTest extends TestCase{
         SwitchingKalmanFilter SKF = new SwitchingKalmanFilter(dataGaussians.getAttributes());
         SKF.setDiagonal(false);
         System.out.println(SKF.getDynamicDAG());
-        SKF.learnModel(dataGaussians);
+        SKF.updateModel(dataGaussians);
         System.out.println(SKF.getModel());
     }
 

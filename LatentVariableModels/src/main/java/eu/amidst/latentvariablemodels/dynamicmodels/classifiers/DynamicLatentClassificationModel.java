@@ -171,7 +171,7 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
 
         //Learning
 
-        dLCM.learnModel(data);
+        dLCM.updateModel(data);
         for (DataOnMemory<DynamicDataInstance> batch : data.iterableOverBatches(100)) {
             dLCM.updateModel(batch);
         }

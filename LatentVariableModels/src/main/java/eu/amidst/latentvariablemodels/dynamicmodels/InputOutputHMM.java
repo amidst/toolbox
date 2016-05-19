@@ -136,14 +136,14 @@ public class InputOutputHMM  extends DynamicModel {
         InputOutputHMM IOHMM = new InputOutputHMM(dataAttributes,inputAtts,outputAtts);
         IOHMM.setNumStates(2);
         System.out.println(IOHMM.getDynamicDAG());
-        IOHMM.learnModel(data);
+        IOHMM.updateModel(data);
         System.out.println(IOHMM.getModel());
 
         System.out.println("------------------Input-Output HMM (full cov. matrix) from streaming------------------");
         IOHMM = new InputOutputHMM(dataAttributes,inputAtts,outputAtts);
         IOHMM.setDiagonal(false);
         System.out.println(IOHMM.getDynamicDAG());
-        IOHMM.learnModel(data);
+        IOHMM.updateModel(data);
         System.out.println(IOHMM.getModel());
 
         System.out.println("------------------Input-Output HMM (diagonal matrix) from batches------------------");

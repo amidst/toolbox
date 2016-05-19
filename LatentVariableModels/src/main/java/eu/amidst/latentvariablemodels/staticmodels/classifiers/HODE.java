@@ -99,7 +99,7 @@ public class HODE extends Classifier {
         hode.setClassName(classVarName);
 
         if(hode.isValidConfiguration()) {
-            hode.learnModel(data);
+            hode.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
                 hode.updateModel(batch);

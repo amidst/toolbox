@@ -38,6 +38,8 @@ public abstract class Model {
 
     protected String errorMessage = "";
 
+    protected int windowSize = 100;
+
     public Model(Attributes attributes) throws WrongConfigurationException {
         vars = new Variables(attributes);
 
@@ -45,6 +47,7 @@ public abstract class Model {
             throw new WrongConfigurationException(getErrorMessage());
         }
     }
+
 
     public DAG getDAG() {
         if (dag==null){
@@ -57,29 +60,29 @@ public abstract class Model {
         this.learningAlgorithm = learningAlgorithm;
     }
 
-    public void learnModel(DataOnMemory<DataInstance> datBatch){
-        learningAlgorithm = new SVB();
-        learningAlgorithm.setDAG(this.getDAG());
-        learningAlgorithm.initLearning();
-        learningAlgorithm.updateModel(datBatch);
+    public void setWindowSize(int windowSize){
+        this.windowSize = windowSize;
+        learningAlgorithm = null;
     }
 
-    public void learnModel(DataStream<DataInstance> dataStream){
-        learningAlgorithm = new SVB();
-        learningAlgorithm.setDAG(this.getDAG());
-        learningAlgorithm.setDataStream(dataStream);
-        learningAlgorithm.initLearning();
-        learningAlgorithm.runLearning();
-    }
-
-    public void updateModel(DataOnMemory<DataInstance> datBatch){
+    public double updateModel(DataStream<DataInstance> dataStream){
         if (learningAlgorithm ==null || dag == null ) {
             learningAlgorithm = new SVB();
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
         }
 
-        learningAlgorithm.updateModel(datBatch);
+        return dataStream.streamOfBatches(this.windowSize).sequential().mapToDouble(this::updateModel).sum();
+    }
+
+    public double updateModel(DataOnMemory<DataInstance> datBatch){
+        if (learningAlgorithm ==null || dag == null ) {
+            learningAlgorithm = new SVB();
+            learningAlgorithm.setDAG(this.getDAG());
+            learningAlgorithm.initLearning();
+        }
+
+        return learningAlgorithm.updateModel(datBatch);
     }
 
     public BayesianNetwork getModel(){

@@ -183,7 +183,7 @@ public class BayesianLinearRegression extends Model {
         BLR.setDiagonal(false);
 
         if(BLR.isValidConfiguration()) {
-            BLR.learnModel(data);
+            BLR.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
                 BLR.updateModel(batch);
             }

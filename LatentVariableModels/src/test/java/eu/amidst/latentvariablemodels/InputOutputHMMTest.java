@@ -61,7 +61,7 @@ public class InputOutputHMMTest extends TestCase {
         InputOutputHMM IOHMM = new InputOutputHMM(dataAttributes,inputAtts,outputAtts);
         IOHMM.setNumStates(2);
         System.out.println(IOHMM.getDynamicDAG());
-        IOHMM.learnModel(data);
+        IOHMM.updateModel(data);
         System.out.println(IOHMM.getModel());
 
     }
@@ -70,7 +70,7 @@ public class InputOutputHMMTest extends TestCase {
         InputOutputHMM IOHMM = new InputOutputHMM(dataAttributes,inputAtts,outputAtts);
         IOHMM.setDiagonal(false);
         System.out.println(IOHMM.getDynamicDAG());
-        IOHMM.learnModel(data);
+        IOHMM.updateModel(data);
         System.out.println(IOHMM.getModel());
     }
 

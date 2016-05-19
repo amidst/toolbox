@@ -137,14 +137,14 @@ public class KalmanFilter extends DynamicModel {
         KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
         KF.setNumHidden(2);
         System.out.println(KF.getDynamicDAG());
-        KF.learnModel(dataGaussians);
+        KF.updateModel(dataGaussians);
         System.out.println(KF.getModel());
 
         System.out.println("------------------KF (full cov. matrix) from streaming------------------");
         KF = new KalmanFilter(dataGaussians.getAttributes());
         KF.setDiagonal(false);
         System.out.println(KF.getDynamicDAG());
-        KF.learnModel(dataGaussians);
+        KF.updateModel(dataGaussians);
         System.out.println(KF.getModel());
 
         System.out.println("------------------KF (diagonal matrix) from batches------------------");

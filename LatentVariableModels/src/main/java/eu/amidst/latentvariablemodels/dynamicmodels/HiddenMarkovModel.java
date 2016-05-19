@@ -107,14 +107,14 @@ public class HiddenMarkovModel extends DynamicModel{
         System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
         HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
         System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(dataHybrid);
+        HMM.updateModel(dataHybrid);
         System.out.println(HMM.getModel());
 
         System.out.println("------------------HMM (full cov. matrix) from streaming------------------");
         HMM = new HiddenMarkovModel(dataGaussians.getAttributes());
         HMM.setDiagonal(false);
         System.out.println(HMM.getDynamicDAG());
-        HMM.learnModel(dataGaussians);
+        HMM.updateModel(dataGaussians);
         System.out.println(HMM.getModel());
 
         System.out.println("------------------HMM (diagonal matrix) from batches------------------");

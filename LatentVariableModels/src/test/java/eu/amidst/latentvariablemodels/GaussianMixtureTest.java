@@ -45,7 +45,7 @@ public class GaussianMixtureTest extends TestCase {
         gmm.setDiagonal(false);
         gmm.setNumStatesHiddenVar(3);
 
-        gmm.learnModel(data);
+        gmm.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
             gmm.updateModel(batch);
         }

@@ -21,13 +21,14 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.latentvariablemodels.dynamicmodels.FactorialHMM;
+import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
 import junit.framework.TestCase;
 
 /**
- * Created by ana@cs.aau.dk on 09/03/16.
+ * Created by ana@cs.aau.dk on 08/03/16.
  */
-public class FactorialHMMTest extends TestCase{
+public class HiddenMarkovModelTest extends TestCase{
+
     private static DataStream<DynamicDataInstance> dataHybrid;
     private static DataStream<DynamicDataInstance> dataGaussians;
     private static boolean setUpIsDone = false;
@@ -42,28 +43,29 @@ public class FactorialHMMTest extends TestCase{
     }
 
     public void test1(){
-        System.out.println("------------------Factorial HMM (diagonal matrix) from streaming------------------");
-        FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
-        System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(dataHybrid);
-        System.out.println(factorialHMM.getModel());
+        System.out.println("------------------HMM (diagonal matrix) from streaming------------------");
+        HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
+        System.out.println(HMM.getDynamicDAG());
+        HMM.updateModel(dataHybrid);
+        System.out.println(HMM.getModel());
     }
     public void test2(){
-        System.out.println("------------------Factorial HMM (full cov. matrix) from streaming------------------");
-        FactorialHMM factorialHMM = new FactorialHMM(dataGaussians.getAttributes());
-        factorialHMM.setDiagonal(false);
-        System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.learnModel(dataGaussians);
-        System.out.println(factorialHMM.getModel());
+        System.out.println("------------------HMM (full cov. matrix) from streaming------------------");
+        HiddenMarkovModel HMM = new HiddenMarkovModel(dataGaussians.getAttributes());
+        HMM.setDiagonal(false);
+        System.out.println(HMM.getDynamicDAG());
+        HMM.updateModel(dataGaussians);
+        System.out.println(HMM.getModel());
     }
 
     public void test3(){
-        System.out.println("------------------Factorial HMM (diagonal matrix) from batches------------------");
-        FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
-        System.out.println(factorialHMM.getDynamicDAG());
+        System.out.println("------------------HMM (diagonal matrix) from batches------------------");
+        HiddenMarkovModel HMM = new HiddenMarkovModel(dataHybrid.getAttributes());
+        System.out.println(HMM.getDynamicDAG());
         for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
-            factorialHMM.updateModel(batch);
+            HMM.updateModel(batch);
         }
-        System.out.println(factorialHMM.getModel());
+        System.out.println(HMM.getModel());
     }
+
 }

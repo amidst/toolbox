@@ -199,7 +199,7 @@ public class AODE extends Classifier {
         aode.setClassName(classVarName);
 
         if(aode.isValidConfiguration()) {
-            aode.learnModel(data);
+            aode.updateModel(data);
             for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
                 aode.updateModel(batch);
