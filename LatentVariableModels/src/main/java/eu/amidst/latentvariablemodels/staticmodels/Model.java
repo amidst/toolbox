@@ -30,7 +30,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  */
 public abstract class Model {
 
-    protected ParameterLearningAlgorithm learningAlgorithm;
+    protected ParameterLearningAlgorithm learningAlgorithm = new SVB();
 
     protected DAG dag;
 
@@ -40,6 +40,8 @@ public abstract class Model {
 
     protected int windowSize = 100;
 
+    protected boolean initialized = false;
+
     public Model(Attributes attributes) throws WrongConfigurationException {
         vars = new Variables(attributes);
 
@@ -47,7 +49,6 @@ public abstract class Model {
             throw new WrongConfigurationException(getErrorMessage());
         }
     }
-
 
     public DAG getDAG() {
         if (dag==null){
@@ -66,23 +67,27 @@ public abstract class Model {
     }
 
     public double updateModel(DataStream<DataInstance> dataStream){
-        if (learningAlgorithm ==null || dag == null ) {
-            learningAlgorithm = new SVB();
+        if (!initialized) {
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
+            initialized=true;
         }
 
         return dataStream.streamOfBatches(this.windowSize).sequential().mapToDouble(this::updateModel).sum();
     }
 
     public double updateModel(DataOnMemory<DataInstance> datBatch){
-        if (learningAlgorithm ==null || dag == null ) {
-            learningAlgorithm = new SVB();
+        if (!initialized) {
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
+            initialized=true;
         }
 
         return learningAlgorithm.updateModel(datBatch);
+    }
+
+    public void resetModel(){
+        initialized=false;
     }
 
     public BayesianNetwork getModel(){

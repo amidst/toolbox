@@ -79,17 +79,9 @@ public class GaussianMixture extends Model {
                 for(int j=i+1; j<attrVars.size(); j++) {
                     // Add the links
                     dag.getParentSet(attrVars.get(i)).addParent(attrVars.get(j));
-
-
-
                 }
-
             }
-
-
         }
-
-
     }
 
 
