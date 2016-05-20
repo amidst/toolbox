@@ -250,6 +250,12 @@ public class MAPInference implements PointEstimator {
         }
     }
 
+    private Assignment fullAssignmentToPartialAssignment(Assignment fullAssignment, List<Variable> variablesSubset) {
+        Assignment partialAssignment = new HashMapAssignment(variablesSubset.size());
+        variablesSubset.stream().forEach(var -> partialAssignment.setValue(var, fullAssignment.getValue(var)));
+        return partialAssignment;
+    }
+
     private Assignment fullAssignmentToMAPassignment(Assignment fullAssignment) {
         Assignment MAPassignment = new HashMapAssignment(MAPvariables.size());
         MAPvariables.stream().forEach(MAPvar -> MAPassignment.setValue(MAPvar, fullAssignment.getValue(MAPvar)));

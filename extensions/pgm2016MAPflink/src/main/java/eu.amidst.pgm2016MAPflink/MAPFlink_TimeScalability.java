@@ -30,7 +30,7 @@ public class MAPFlink_TimeScalability {
          *    INITIALIZATION
          *********************************************/
 
-        FileOutputStream fileOutputStream = new FileOutputStream("./MAPFlink_Times.txt");
+        FileOutputStream fileOutputStream = new FileOutputStream("./MAPFlink_SamplingTimes.txt");
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
         BufferedWriter output =  new BufferedWriter(outputStreamWriter);
 
@@ -66,9 +66,9 @@ public class MAPFlink_TimeScalability {
 
 
         int startingPoints=64;
-        int samplingSize=200000;
+        int samplingSize=300000;
 
-        int numberOfIterations=100;
+        int numberOfIterations=20;
 
         int repetitions=5;
 
@@ -176,140 +176,141 @@ public class MAPFlink_TimeScalability {
                 distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_GLOBAL);
                 mapEstimate = distributedMAPInference.getEstimate();
 
-
-                /***********************************************
-                 *        SIMULATED ANNEALING
-                 ************************************************/
-
-
-                // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
-                System.out.println("SA.GLOBAL");
                 double[] timesRepetitions = new double[repetitions];
-                for (int j = 0; j < repetitions; j++) {
 
-                    timeStart = System.nanoTime();
-                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_GLOBAL);
-
-                    mapEstimate = distributedMAPInference.getEstimate();
-                    output.write("MAP estimate  (SA.Global): " + mapEstimate.outputString(varsInterest));
-                    output.newLine();
-                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-                    output.newLine();
-                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-                    output.newLine();
-
-                    timeStop = System.nanoTime();
-                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
-                    output.write("computed in: " + Double.toString(execTime) + " seconds");
-                    //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-                    output.newLine();
-                    output.newLine();
-
-                    timesRepetitions[j] = execTime;
-                }
-
-                executionTimes[0][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
-                output.write("SA.Global Average Time: " + executionTimes[0][i]);
-                output.newLine();
-                output.newLine();
-                timesRepetitions = new double[repetitions];
-
-
-                // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING SOME VARIABLES EACH TIME
-                System.out.println("SA.LOCAL");
-                for (int j = 0; j < repetitions; j++) {
-                    timeStart = System.nanoTime();
-                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_LOCAL);
-
-                    mapEstimate = distributedMAPInference.getEstimate();
-                    output.write("MAP estimate  (SA.Local): " + mapEstimate.outputString(varsInterest));
-                    output.newLine();
-                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-                    output.newLine();
-                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-                    output.newLine();
-                    timeStop = System.nanoTime();
-                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
-                    output.write("computed in: " + Double.toString(execTime) + " seconds");
-                    //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-                    output.newLine();
-                    output.newLine();
-
-                    timesRepetitions[j] = execTime;
-                }
-
-                executionTimes[1][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
-                output.write("SA.Local Average Time: " + executionTimes[1][i]);
-                output.newLine();
-                output.newLine();
-                timesRepetitions = new double[repetitions];
-
-
-                /***********************************************
-                 *        HILL CLIMBING
-                 ************************************************/
-
-                //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
-                System.out.println("HC.GLOBAL");
-                for (int j = 0; j < repetitions; j++) {
-
-                    timeStart = System.nanoTime();
-                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_GLOBAL);
-
-                    mapEstimate = distributedMAPInference.getEstimate();
-                    output.write("MAP estimate  (HC.Global): " + mapEstimate.outputString(varsInterest));
-                    output.newLine();
-                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-                    output.newLine();
-                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-                    output.newLine();
-
-                    timeStop = System.nanoTime();
-                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
-                    output.write("computed in: " + Double.toString(execTime) + " seconds");
-                    output.newLine();
-                    output.newLine();
-
-                    timesRepetitions[j] = execTime;
-                }
-
-                executionTimes[2][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
-                output.write("HC.Global Average Time: " + executionTimes[2][i]);
-                output.newLine();
-                output.newLine();
-                timesRepetitions = new double[repetitions];
-
-
-                //  MAP INFERENCE WITH HILL CLIMBING, MOVING SOME VARIABLES EACH TIME
-                System.out.println("HC.LOCAL");
-                for (int j = 0; j < repetitions; j++) {
-
-                    timeStart = System.nanoTime();
-                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
-
-                    mapEstimate = distributedMAPInference.getEstimate();
-                    output.write("MAP estimate  (HC.Local): " + mapEstimate.outputString(varsInterest));
-                    output.newLine();
-                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-                    output.newLine();
-                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-                    output.newLine();
-
-                    timeStop = System.nanoTime();
-                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
-                    output.write("computed in: " + Double.toString(execTime) + " seconds");
-                    output.newLine();
-                    output.newLine();
-
-
-                    timesRepetitions[j] = execTime;
-                }
-
-                executionTimes[3][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
-                output.write("HC.Local Average Time: " + executionTimes[3][i]);
-                output.newLine();
-                output.newLine();
-                timesRepetitions = new double[repetitions];
+//
+//                /***********************************************
+//                 *        SIMULATED ANNEALING
+//                 ************************************************/
+//
+//
+//                // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
+//                System.out.println("SA.GLOBAL");
+//                for (int j = 0; j < repetitions; j++) {
+//
+//                    timeStart = System.nanoTime();
+//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_GLOBAL);
+//
+//                    mapEstimate = distributedMAPInference.getEstimate();
+//                    output.write("MAP estimate  (SA.Global): " + mapEstimate.outputString(varsInterest));
+//                    output.newLine();
+//                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+//                    output.newLine();
+//                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+//                    output.newLine();
+//
+//                    timeStop = System.nanoTime();
+//                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//                    output.write("computed in: " + Double.toString(execTime) + " seconds");
+//                    //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+//                    output.newLine();
+//                    output.newLine();
+//
+//                    timesRepetitions[j] = execTime;
+//                }
+//
+//                executionTimes[0][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
+//                output.write("SA.Global Average Time: " + executionTimes[0][i]);
+//                output.newLine();
+//                output.newLine();
+//                timesRepetitions = new double[repetitions];
+//
+//
+//                // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING SOME VARIABLES EACH TIME
+//                System.out.println("SA.LOCAL");
+//                for (int j = 0; j < repetitions; j++) {
+//                    timeStart = System.nanoTime();
+//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_LOCAL);
+//
+//                    mapEstimate = distributedMAPInference.getEstimate();
+//                    output.write("MAP estimate  (SA.Local): " + mapEstimate.outputString(varsInterest));
+//                    output.newLine();
+//                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+//                    output.newLine();
+//                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+//                    output.newLine();
+//                    timeStop = System.nanoTime();
+//                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//                    output.write("computed in: " + Double.toString(execTime) + " seconds");
+//                    //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+//                    output.newLine();
+//                    output.newLine();
+//
+//                    timesRepetitions[j] = execTime;
+//                }
+//
+//                executionTimes[1][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
+//                output.write("SA.Local Average Time: " + executionTimes[1][i]);
+//                output.newLine();
+//                output.newLine();
+//                timesRepetitions = new double[repetitions];
+//
+//
+//                /***********************************************
+//                 *        HILL CLIMBING
+//                 ************************************************/
+//
+//                //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
+//                System.out.println("HC.GLOBAL");
+//                for (int j = 0; j < repetitions; j++) {
+//
+//                    timeStart = System.nanoTime();
+//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_GLOBAL);
+//
+//                    mapEstimate = distributedMAPInference.getEstimate();
+//                    output.write("MAP estimate  (HC.Global): " + mapEstimate.outputString(varsInterest));
+//                    output.newLine();
+//                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+//                    output.newLine();
+//                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+//                    output.newLine();
+//
+//                    timeStop = System.nanoTime();
+//                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//                    output.write("computed in: " + Double.toString(execTime) + " seconds");
+//                    output.newLine();
+//                    output.newLine();
+//
+//                    timesRepetitions[j] = execTime;
+//                }
+//
+//                executionTimes[2][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
+//                output.write("HC.Global Average Time: " + executionTimes[2][i]);
+//                output.newLine();
+//                output.newLine();
+//                timesRepetitions = new double[repetitions];
+//
+//
+//                //  MAP INFERENCE WITH HILL CLIMBING, MOVING SOME VARIABLES EACH TIME
+//                System.out.println("HC.LOCAL");
+//                for (int j = 0; j < repetitions; j++) {
+//
+//                    timeStart = System.nanoTime();
+//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
+//
+//                    mapEstimate = distributedMAPInference.getEstimate();
+//                    output.write("MAP estimate  (HC.Local): " + mapEstimate.outputString(varsInterest));
+//                    output.newLine();
+//                    output.write("with (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+//                    output.newLine();
+//                    output.write("with (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+//                    output.newLine();
+//
+//                    timeStop = System.nanoTime();
+//                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+//                    output.write("computed in: " + Double.toString(execTime) + " seconds");
+//                    output.newLine();
+//                    output.newLine();
+//
+//
+//                    timesRepetitions[j] = execTime;
+//                }
+//
+//                executionTimes[3][i] = Arrays.stream(timesRepetitions).average().getAsDouble();
+//                output.write("HC.Local Average Time: " + executionTimes[3][i]);
+//                output.newLine();
+//                output.newLine();
+//                timesRepetitions = new double[repetitions];
 
                 /***********************************************
                  *        SAMPLING
@@ -320,6 +321,7 @@ public class MAPFlink_TimeScalability {
                 // MAP INFERENCE WITH SIMULATION AND PICKING MAX
                 for (int j = 0; j < repetitions; j++) {
 
+                    System.out.println("repetition " + j);
                     distributedMAPInference.setNumberOfStartingPoints(samplingSize);
                     timeStart = System.nanoTime();
                     distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SAMPLING);

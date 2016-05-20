@@ -275,6 +275,43 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     }
 
     /**
+     * Samples an {@link Assignment} randomly from a {@link BayesianNetwork}, given the evidence.
+     * @param network a {@link BayesianNetwork} object.
+     * @param causalOrder a list of variables given in a causal order.
+     * @param random a {@link Random} object.
+     * @param evidence an {@link Assignment} object with the evidence (observations of some variables).
+     * @return the sampled {@link Assignment}.
+     */
+    private static Assignment sampleWithEvidence(BayesianNetwork network, List<Variable> causalOrder, Random random, Assignment evidence) {
+
+        HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
+        for (Variable var : causalOrder) {
+            double sampledValue;
+            if (!evidence.getVariables().contains(var) || Double.isNaN(evidence.getValue(var))) {
+                sampledValue = network.getConditionalDistribution(var).getUnivariateDistribution(assignment).sample(random);
+            }
+            else {
+                sampledValue = evidence.getValue(var);
+            }
+            assignment.setValue(var, sampledValue);
+        }
+        return assignment;
+    }
+
+    /**
+     * Samples an {@link Assignment} randomly given the evidence from this object's {@link BayesianNetwork}.
+     * @param nSamples the number of samples to be drawn.
+     * @param evidence an {@link Assignment} object with the evidence (observations of some variables).
+     * @return the sampled {@link Assignment}.
+     */
+    public Stream<Assignment> sampleWithEvidence(int nSamples, Assignment evidence) {
+        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+        return IntStream.range(0, nSamples)
+                .mapToObj(i -> sampleWithEvidence(network, causalOrder, randomGenerator.current(), evidence))
+                .map(this::filter);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
