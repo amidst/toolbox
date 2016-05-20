@@ -12,11 +12,15 @@
 package eu.amidst.lda.flink;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
+
+import java.util.Arrays;
 
 /**
  * Created by andresmasegosa on 12/5/16.
@@ -25,29 +29,45 @@ public class SVI_LDA {
 
     public static void main(String[] args) throws Exception {
 
-        String dataPath = "hdfs:///docword.kos.arff";
+        String dataPath = "/Users/ana/Dropbox/amidst_postdoc/uci-text/docword.nips.arff";
+        String dataTest = "/Users/ana/Dropbox/amidst_postdoc/uci-text/docword.nips.arff";
+
         int ntopics = 5;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 10;
         double learningRate = 0.75;
         int timeLimit = -1;
-        int dataSize;
-
-        dataPath = args[0];
-        dataSize = Integer.parseInt(args[1]);
+        int dataSize = 1500;
+        int ncores = 4;
+        boolean amazon_cluster = false;
 
         if (args.length>1){
-            ntopics = Integer.parseInt(args[2]);
-            niter = Integer.parseInt(args[3]);
-            threshold = Double.parseDouble(args[4]);
-            docsPerBatch = Integer.parseInt(args[5]);
-            learningRate = Double.parseDouble(args[6]);
-            timeLimit = Integer.parseInt(args[7]);
+            dataPath = args[0];
+            dataTest = args[1];
+            dataSize = Integer.parseInt(args[2]);
+            ntopics = Integer.parseInt(args[3]);
+            niter = Integer.parseInt(args[4]);
+            threshold = Double.parseDouble(args[5]);
+            docsPerBatch = Integer.parseInt(args[6]);
+            learningRate = Double.parseDouble(args[7]);
+            timeLimit = Integer.parseInt(args[8]);
+            ncores = Integer.parseInt(args[9]);
+            amazon_cluster = Boolean.parseBoolean(args[10]);
         }
 
-        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        //env.setParallelism(1);
+        final ExecutionEnvironment env;
+
+        if(amazon_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            conf.setInteger("taskmanager.numberOfTaskSlots",ncores);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(ncores);
+        }
+
         DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, dataPath, false);
 
 
@@ -68,6 +88,22 @@ public class SVI_LDA {
         svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.runLearning();
+
+
+        DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);
+
+        double test_log_likelihood = StochasticVI.computeELBO(instancesTest,svb.getSVB(),ConversionToBatches::toBatchesBySeqID);
+
+        System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
+
+
+        args[0]="";
+        args[1]="";
+        String pathNetwork = "dVMP_"+ Arrays.toString(args)+"_.bn";
+        System.out.println(svb.getLearntBayesianNetwork().toString());
+
+        BayesianNetworkWriter.saveToFile(svb.getLearntBayesianNetwork(),pathNetwork);
+
 
     }
 
