@@ -23,7 +23,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -62,12 +61,15 @@ public class MLTestOneVar {
 
         //Parameter Learning
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        //using Maximum likelihood learnParametersStaticModel
-        BayesianNetwork bn = LearningEngine.learnParameters(net.getDAG(), data);
+
+        parallelMaximumLikelihood.setDAG(net.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork bn = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
         System.out.println(bn.toString());
 
 

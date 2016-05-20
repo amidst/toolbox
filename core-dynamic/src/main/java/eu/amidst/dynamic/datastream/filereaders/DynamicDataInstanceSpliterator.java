@@ -123,9 +123,9 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
         /*
         final HoldingConsumer<DataRow> holder = new HoldingConsumer<>();
         if (!spliterator.tryAdvance(holder)) return null;
-        final Object[] a = new Object[batchSize];
+        final Object[] a = new Object[windowsSize];
         int j = 0;
-        do a[j] = holder.value; while (++j < batchSize && tryAdvance(holder));
+        do a[j] = holder.value; while (++j < windowsSize && tryAdvance(holder));
         if (est != Long.MAX_VALUE) est -= j;
         return spliterator(a, 0, j, characteristics());
         */

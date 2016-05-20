@@ -247,7 +247,7 @@ public class ExperimentsParallelML {
                 "-SPDV, 10, Num of states for super-parent discrete variable\\"+
                 "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
                 "-parallelMode, true, Run in parallel\\"+
-                "-batchSize, 1000, Batch size for comparisons in the number of cores\\";
+                "-windowsSize, 1000, Batch size for comparisons in the number of cores\\";
     }
 
     public static void loadOptions(){
@@ -259,7 +259,7 @@ public class ExperimentsParallelML {
         setSampleSize(getIntOption("-sampleSize"));
         setSampleData(getBooleanOption("-sampleData"));
         setParallel(getBooleanOption("-parallelMode"));
-        setBatchSize(getIntOption("-batchSize"));
+        setBatchSize(getIntOption("-windowsSize"));
     }
 
     public static void main(String[] args) throws Exception {

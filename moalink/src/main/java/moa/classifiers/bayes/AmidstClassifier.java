@@ -85,7 +85,7 @@ public class AmidstClassifier extends AbstractClassifier {
      * Creates a new object of the class {@link moa.options.IntOption}.
      * Specifies the size of the batch used for learning this AmidstClassifier.
      */
-    public IntOption batchSizeOption = new IntOption("batchSize",
+    public IntOption batchSizeOption = new IntOption("windowsSize",
             'w', "Size of the batch in which to perform learning (significant if hidden variables are used)",
             100);
 

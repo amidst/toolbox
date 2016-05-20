@@ -15,8 +15,8 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.dynamic.DynamicBayesianLearningAlgorithm;
-import eu.amidst.dynamic.learning.dynamic.DynamicSVB;
+import eu.amidst.dynamic.learning.parametric.bayesian.BayesianLearningAlgorithm;
+import eu.amidst.dynamic.learning.parametric.bayesian.SVB;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -30,7 +30,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
  */
 public abstract class DynamicModel {
 
-    DynamicBayesianLearningAlgorithm learningAlgorithm;
+    BayesianLearningAlgorithm learningAlgorithm;
 
     protected DynamicDAG dynamicDAG;
 
@@ -50,7 +50,7 @@ public abstract class DynamicModel {
         return dynamicDAG;
     }
 
-    public void setLearningAlgorithm(DynamicBayesianLearningAlgorithm learningAlgorithm) {
+    public void setLearningAlgorithm(BayesianLearningAlgorithm learningAlgorithm) {
         this.learningAlgorithm = learningAlgorithm;
     }
 
@@ -61,9 +61,9 @@ public abstract class DynamicModel {
 
     public double updateModel(DataStream<DynamicDataInstance> dataStream){
         if (learningAlgorithm ==null) {
-            learningAlgorithm = new DynamicSVB();
+            learningAlgorithm = new SVB();
             learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            ((DynamicSVB)learningAlgorithm).setWindowsSize(windowSize);
+            ((SVB)learningAlgorithm).setWindowsSize(windowSize);
             learningAlgorithm.initLearning();
         }
 
@@ -72,9 +72,9 @@ public abstract class DynamicModel {
 
     public double updateModel(DataOnMemory<DynamicDataInstance> dataBatch){
         if (learningAlgorithm ==null) {
-            learningAlgorithm = new DynamicSVB();
+            learningAlgorithm = new SVB();
             learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            ((DynamicSVB)learningAlgorithm).setWindowsSize(windowSize);
+            ((SVB)learningAlgorithm).setWindowsSize(windowSize);
             learningAlgorithm.initLearning();
         }
 

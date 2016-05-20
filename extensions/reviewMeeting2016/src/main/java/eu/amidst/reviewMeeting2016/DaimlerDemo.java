@@ -26,7 +26,7 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.dynamic.DynamicSVB;
+import eu.amidst.dynamic.learning.parametric.bayesian.SVB;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -78,7 +78,7 @@ public class DaimlerDemo {
 
         //Parameter Learning with Streaming variational Bayes VMP
         //Set the desired options
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(1000);   // Samples handled together
         svb.setSeed(0);             // For the random initialization
         svb.setOutput(true);        // Dump learning progress

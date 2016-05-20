@@ -64,7 +64,7 @@ public class BCC {
             DataStream<DataInstance> monthlyData = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month" + i + ".arff");
 
             //We update the model in parallel with the data from data month
-            parallelSVB.updateModelInParallel(monthlyData);
+            parallelSVB.updateModel(monthlyData);
 
             //We query the given var
             Normal normal = parallelSVB.getSVBEngine().getParameterPosterior(hiddenGaussian);

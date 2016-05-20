@@ -1,43 +1,39 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
-package eu.amidst.dynamic.learning;
+package eu.amidst.dynamic.learning.parametric.bayesian;
 
 import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.ConditionalLinearGaussian;
+import eu.amidst.core.distribution.Multinomial_MultinomialParents;
+import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.dynamic.learning.dynamic.DynamicBayesianLearningEngine;
-import eu.amidst.dynamic.learning.dynamic.DynamicMaximumLikelihood;
-import eu.amidst.dynamic.learning.dynamic.DynamicSVB;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Random;
 
-public class SVBForDBNTest extends TestCase {
+public class SVBTest extends TestCase {
 
 
     public static void test0(){
@@ -54,15 +50,21 @@ public class SVBForDBNTest extends TestCase {
 
         //dataStream.stream().forEach(d -> System.out.println(d.getValue(dbn.getDynamicVariables().getVariable("ClassVar"))));
 
+        ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setWindowsSize(1000);
+        parallelMaximumLikelihood.setDynamicDAG(dbn.getDynamicDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(dataStream);
 
-        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dbn.getDynamicDAG(), dataStream);
+        DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
+
 
         System.out.println(bnet);
 
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(10);
         svb.setSeed(5);
-        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
         vmp.setOutput(false);
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
@@ -102,21 +104,21 @@ public class SVBForDBNTest extends TestCase {
         sampler.setSeed(0);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(1,5000);
 
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(1);
         svb.setSeed(5);
-        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
         vmp.setOutput(false);
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-        DynamicBayesianLearningEngine.setDynamicDAG(dbn.getDynamicDAG());
-        DynamicBayesianLearningEngine.setDataStream(dataStream);
-        DynamicBayesianLearningEngine.runLearning();
 
-        DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+        svb.setDynamicDAG(dbn.getDynamicDAG());
+        svb.setDataStream(dataStream);
+        svb.runLearning();
+
+        DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
         for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTimeT()) {
             System.out.println("Real one:");
@@ -140,20 +142,19 @@ public class SVBForDBNTest extends TestCase {
         sampler.setSeed(0);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(1000,1);
 
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(1);
         svb.setSeed(5);
-        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-        DynamicBayesianLearningEngine.setDynamicDAG(dbn.getDynamicDAG());
-        DynamicBayesianLearningEngine.setDataStream(dataStream);
-        DynamicBayesianLearningEngine.runLearning();
+        svb.setDynamicDAG(dbn.getDynamicDAG());
+        svb.setDataStream(dataStream);
+        svb.runLearning();
 
-        DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+        DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
         for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTime0()) {
             System.out.println("Real one:");
@@ -202,7 +203,13 @@ public class SVBForDBNTest extends TestCase {
         sampler.setSeed(10);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(100,500);
 
-        DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dbn.getDynamicDAG(), dataStream);
+        ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setWindowsSize(1000);
+        parallelMaximumLikelihood.setDynamicDAG(dbn.getDynamicDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(dataStream);
+
+        DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
 
 
         System.out.println("--- Learnt DBN ---");
@@ -210,21 +217,20 @@ public class SVBForDBNTest extends TestCase {
 
         //dataStream.stream().forEach(d -> System.out.println(d.getValue(dbn.getDynamicVariables().getVariable("ContinuousVar1")) + ", "+ d.getValue(dbn.getDynamicVariables().getVariable("ContinuousVar2"))));
 
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(500);
         svb.setSeed(5);
-        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
         vmp.setOutput(true);
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.001);
-        DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-        DynamicBayesianLearningEngine.setDynamicDAG(dbn.getDynamicDAG());
-        DynamicBayesianLearningEngine.setDataStream(dataStream);
-        DynamicBayesianLearningEngine.runLearning();
+        svb.setDynamicDAG(dbn.getDynamicDAG());
+        svb.setDataStream(dataStream);
+        svb.runLearning();
 
-        DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+        DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
         for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTimeT()) {
             System.out.println("Real one:");
@@ -248,20 +254,19 @@ public class SVBForDBNTest extends TestCase {
         sampler.setSeed(0);
         DataStream<DynamicDataInstance> dataStream = sampler.sampleToDataBase(10000,1);
 
-        DynamicSVB svb = new DynamicSVB();
+        SVB svb = new SVB();
         svb.setWindowsSize(1);
         svb.setSeed(5);
-        VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);
-        DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-        DynamicBayesianLearningEngine.setDynamicDAG(dbn.getDynamicDAG());
-        DynamicBayesianLearningEngine.setDataStream(dataStream);
-        DynamicBayesianLearningEngine.runLearning();
+        svb.setDynamicDAG(dbn.getDynamicDAG());
+        svb.setDataStream(dataStream);
+        svb.runLearning();
 
-        DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+        DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
         for (ConditionalDistribution dist : learnDBN.getConditionalDistributionsTime0()) {
             System.out.println("Real one:");
@@ -345,16 +350,20 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(100);
-            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
             //data.stream().forEach(d -> System.out.println(d.getValue(varA)));
 
+            ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setWindowsSize(1000);
+            parallelMaximumLikelihood.setDynamicDAG(dynamicNB.getDynamicDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
 
-            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
+
 
             System.out.println(watch.stop());
             System.out.println();
@@ -370,23 +379,22 @@ public class SVBForDBNTest extends TestCase {
 
             System.out.println();
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(10000);
             vmp.setThreshold(0.001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -464,8 +472,6 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(100);
-            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
@@ -473,7 +479,13 @@ public class SVBForDBNTest extends TestCase {
             //data.stream().forEach(d -> System.out.println(d.getValue(varA)));
 
 
-            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setWindowsSize(1000);
+            parallelMaximumLikelihood.setDynamicDAG(dynamicNB.getDynamicDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+
+            DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
 
             System.out.println(watch.stop());
             System.out.println();
@@ -496,23 +508,22 @@ public class SVBForDBNTest extends TestCase {
 
             System.out.println();
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(10000);
             vmp.setThreshold(0.001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -595,10 +606,6 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(100);
-            DynamicMaximumLikelihood.setParallelMode(true);
-
-            Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
             //data.stream().forEach(d -> System.out.println(d.getValue(varA)));
@@ -607,23 +614,22 @@ public class SVBForDBNTest extends TestCase {
 
             System.out.println();
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(10000);
             vmp.setThreshold(0.001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -707,10 +713,6 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(100);
-            DynamicMaximumLikelihood.setParallelMode(true);
-
-            Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
             //data.stream().forEach(d -> System.out.println(d.getValue(varA)));
@@ -719,25 +721,24 @@ public class SVBForDBNTest extends TestCase {
 
             System.out.println();
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(1000);
             svb.setSeed(0);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(10000);
             vmp.setThreshold(0.001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             System.out.println(svb.getLogMarginalProbability());
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -809,15 +810,19 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(1000);
-            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
 
 
-            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setWindowsSize(1000);
+            parallelMaximumLikelihood.setDynamicDAG(dynamicNB.getDynamicDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+
+            DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
 
             System.out.println(watch.stop());
             System.out.println();
@@ -832,22 +837,21 @@ public class SVBForDBNTest extends TestCase {
             }
 
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -916,15 +920,19 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(1000);
-            DynamicMaximumLikelihood.setParallelMode(true);
 
             Stopwatch watch = Stopwatch.createStarted();
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
 
 
-            DynamicBayesianNetwork bnet = DynamicMaximumLikelihood.learnDynamic(dynamicNB.getDynamicDAG(), data);
+            ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+            parallelMaximumLikelihood.setWindowsSize(1000);
+            parallelMaximumLikelihood.setDynamicDAG(dynamicNB.getDynamicDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+
+            DynamicBayesianNetwork bnet = parallelMaximumLikelihood.getLearntDBN();
 
             System.out.println(watch.stop());
             System.out.println();
@@ -939,22 +947,21 @@ public class SVBForDBNTest extends TestCase {
             }
 
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -1024,31 +1031,28 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(1000);
-            DynamicMaximumLikelihood.setParallelMode(true);
 
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
 
 
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(1000);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {
@@ -1122,31 +1126,27 @@ public class SVBForDBNTest extends TestCase {
             // and just apply then test parameter learning
 
             //Parameter Learning
-            DynamicMaximumLikelihood.setBatchSize(1000);
-            DynamicMaximumLikelihood.setParallelMode(true);
-
 
             //data.stream().forEach(d -> System.out.println(d.getValue(varA) + ", "+ d.getValue(varB)));
 
 
 
-            DynamicSVB svb = new DynamicSVB();
+            SVB svb = new SVB();
             svb.setWindowsSize(500);
             svb.setSeed(5);
-            VMP vmp = svb.getDynamicPlateauStructure().getVMPTimeT();
+            VMP vmp = svb.getPlateauStructure().getVMPTimeT();
             vmp.setOutput(true);
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
             vmp.setThreshold(0.0001);
-            DynamicBayesianLearningEngine.setDynamicBayesianLearningAlgorithm(svb);
 
-            DynamicBayesianLearningEngine.setDynamicDAG(dynamicNB.getDynamicDAG());
-            DynamicBayesianLearningEngine.setDataStream(data);
-            DynamicBayesianLearningEngine.runLearning();
+            svb.setDynamicDAG(dynamicNB.getDynamicDAG());
+            svb.setDataStream(data);
+            svb.runLearning();
 
             //System.out.println(svb.getPlateuVMPDBN().toStringTimeT());
 
-            DynamicBayesianNetwork learnDBN = DynamicBayesianLearningEngine.getLearntDBN();
+            DynamicBayesianNetwork learnDBN = svb.getLearntDBN();
 
             //Check if the probability distributions of each node over both time 0 and T
             for (Variable var : dynamicNB.getDynamicVariables()) {

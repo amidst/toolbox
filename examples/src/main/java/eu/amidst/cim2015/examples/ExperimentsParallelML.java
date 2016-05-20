@@ -158,7 +158,7 @@ public final class ExperimentsParallelML {
         parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
         parameterLearningAlgorithm.setDataStream(data);
-        parameterLearningAlgorithm.setBatchSize(getBatchSize());
+        parameterLearningAlgorithm.setWindowsSize(getBatchSize());
 
 
         System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
@@ -201,7 +201,7 @@ public final class ExperimentsParallelML {
         for (int i = 0; i < batchSizes.length; i++) {
             long average = 0L;
             for (int j = 0; j < 15; j++) {
-                parameterLearningAlgorithm.setBatchSize(batchSizes[i]);
+                parameterLearningAlgorithm.setWindowsSize(batchSizes[i]);
                 long start = System.nanoTime();
                 parameterLearningAlgorithm.runLearning();
                 long duration = (System.nanoTime() - start) / 1;
@@ -299,7 +299,7 @@ public final class ExperimentsParallelML {
                 "-sampleData, true, Sample arff data\\"+
                 "-parallelMode, true, Run in parallel\\"+
                 "-coreComparison, true, Perform comparisons varying the number of cores\\"+
-                "-batchSize, 1000, Batch size for comparisons in the number of cores\\"+
+                "-windowsSize, 1000, Batch size for comparisons in the number of cores\\"+
                 "-pathToFile, datasetsTests/tmp.arff,Path to sample file if sampleData is set to false\\";
     }
 
@@ -313,7 +313,7 @@ public final class ExperimentsParallelML {
         setSampleData(getBooleanOption("-sampleData"));
         setParallel(getBooleanOption("-parallelMode"));
         setCoreComparison(getBooleanOption("-coreComparison"));
-        setBatchSize(getIntOption("-batchSize"));
+        setBatchSize(getIntOption("-windowsSize"));
         setPathToFile(getOption("-pathToFile"));
     }
 

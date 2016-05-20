@@ -82,7 +82,7 @@ public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implement
 
         dataInstanceCount = new AtomicDouble(0);
         sumSS = efBayesianNetwork.createZeroSufficientStatistics();
-        for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(batchSize)){
+        for (DataOnMemory<DataInstance> batch : dataStream.iterableOverBatches(windowsSize)){
             SufficientStatistics batchSS = batch.stream()
                     .map(efBayesianNetwork::getSufficientStatistics)
                     .reduce(SufficientStatistics::sumVectorNonStateless).get();
@@ -90,7 +90,7 @@ public class MaximumLikelihoodFading extends ParallelMaximumLikelihood implement
             sumSS.multiplyBy(fadingFactor);
             sumSS.sum(batchSS);
 
-            dataInstanceCount.set(dataInstanceCount.get()*fadingFactor + batchSize);
+            dataInstanceCount.set(dataInstanceCount.get()*fadingFactor + windowsSize);
         }
     }
 

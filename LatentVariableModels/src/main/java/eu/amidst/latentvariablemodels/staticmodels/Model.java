@@ -63,21 +63,22 @@ public abstract class Model {
 
     public void setWindowSize(int windowSize){
         this.windowSize = windowSize;
-        learningAlgorithm = null;
     }
 
     public double updateModel(DataStream<DataInstance> dataStream){
         if (!initialized) {
+            learningAlgorithm.setWindowsSize(windowSize);
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
             initialized=true;
         }
 
-        return dataStream.streamOfBatches(this.windowSize).sequential().mapToDouble(this::updateModel).sum();
+        return this.learningAlgorithm.updateModel(dataStream);
     }
 
     public double updateModel(DataOnMemory<DataInstance> datBatch){
         if (!initialized) {
+            learningAlgorithm.setWindowsSize(windowSize);
             learningAlgorithm.setDAG(this.getDAG());
             learningAlgorithm.initLearning();
             initialized=true;
@@ -108,7 +109,9 @@ public abstract class Model {
 
     protected abstract void buildDAG();
 
-    public abstract boolean isValidConfiguration();
+    public boolean isValidConfiguration(){
+        return true;
+    }
 
     @Override
     public String toString() {

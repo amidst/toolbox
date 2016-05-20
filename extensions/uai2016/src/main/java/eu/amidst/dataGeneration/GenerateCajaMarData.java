@@ -407,7 +407,7 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
                 "-outputFullPath, ./, Path for the output files\\" +
                 "-includeSocioEconomicVars, false, If set then socioeconomic vars are included and " +
                 "data like the SCAI paper is generated.\\"+
-                "-batchSize, 1000, batchSize for learning the dbn.\\"+
+                "-windowsSize, 1000, windowsSize for learning the dbn.\\"+
                 "-printINDEX, false, print index in attribute arff header\\"+
                 "-seed, 0, set seed for data sample generation in Rscript\\"+
                 "-addConceptDrift, false, If set add concept drift at months 35 and 60\\"+
@@ -426,7 +426,7 @@ public class GenerateCajaMarData implements AmidstOptionsHandler {
         this.setRscriptsPath(this.getOption("-RscriptsPath"));
         this.setOutputFullPath(this.getOption("-outputFullPath"));
         this.setIncludeSocioEconomicVars(getBooleanOption("-includeSocioEconomicVars"));
-        this.setBatchSize(this.getIntOption("-batchSize"));
+        this.setBatchSize(this.getIntOption("-windowsSize"));
         this.setPrintINDEX(this.getBooleanOption("-printINDEX"));
         this.setSeed(this.getIntOption("-seed"));
         this.setAddConceptDrift(getBooleanOption("-addConceptDrift"));

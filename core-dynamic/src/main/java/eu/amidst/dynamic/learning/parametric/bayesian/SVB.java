@@ -1,21 +1,14 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-
-package eu.amidst.dynamic.learning.dynamic;
+package eu.amidst.dynamic.learning.parametric.bayesian;
 
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -29,13 +22,13 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import java.util.List;
 
 /**
- * This class implements the {@link DynamicBayesianLearningAlgorithm } interface.
+ * This class implements the {@link BayesianLearningAlgorithm } interface.
  * It defines the Dynamic Streaming Variational Bayes (SVB) algorithm.
  *
  * TODO: By iterating several times over the data we can get better approximations.
  * TODO: Trick. Initialize the Q's of the parameters variables with the final posterios in the previous iterations.
  */
-public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
+public class SVB implements BayesianLearningAlgorithm {
 
     /** Represents an {@link EF_LearningBayesianNetwork} object at time 0. */
     EF_LearningBayesianNetwork ef_extendedBNTime0;
@@ -43,8 +36,8 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
     /** Represents an {@link EF_LearningBayesianNetwork} object at time 0. */
     EF_LearningBayesianNetwork ef_extendedBNTimeT;
 
-    /** Represents the plateau structure {@link DynamicPlateauStructure}*/
-    DynamicPlateauStructure dynamicPlateauStructure = new DynamicPlateauStructure();
+    /** Represents the plateau structure {@link PlateauStructure}*/
+    PlateauStructure plateauStructure = new PlateauStructure();
 
     /** Represents a dynamic directed acyclic graph {@link DynamicDAG}. */
     DynamicDAG dag;
@@ -66,18 +59,18 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
 
     /**
      * Returns the dynamic plateu structure of this DynamicSVB.
-     * @return a {@link DynamicPlateauStructure} object.
+     * @return a {@link PlateauStructure} object.
      */
-    public DynamicPlateauStructure getDynamicPlateauStructure() {
-        return dynamicPlateauStructure;
+    public PlateauStructure getPlateauStructure() {
+        return plateauStructure;
     }
 
     /**
      * Creates a new DynamicSVB.
      */
-    public DynamicSVB(){
-        dynamicPlateauStructure = new DynamicPlateauStructure();
-        dynamicPlateauStructure.setNRepetitions(windowsSize);
+    public SVB(){
+        plateauStructure = new PlateauStructure();
+        plateauStructure.setNRepetitions(windowsSize);
     }
 
     /**
@@ -104,12 +97,22 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
     }
 
     /**
+     * Returns the window size.
+     * @return the window size.
+     */
+    @Override
+    public int getWindowsSize(){
+        return this.windowsSize;
+    }
+
+    /**
      * Sets the window size.
      * @param windowsSize the window size.
      */
+    @Override
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
-        this.dynamicPlateauStructure.setNRepetitions(windowsSize);
+        this.plateauStructure.setNRepetitions(windowsSize);
     }
 
     /**
@@ -117,8 +120,8 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      * @param maxIter a {@code int} that represents the  maximum number of iterations to be set.
      */
     public void setMaxIter(int maxIter){
-        this.dynamicPlateauStructure.getVMPTime0().setMaxIter(maxIter);
-        this.dynamicPlateauStructure.getVMPTimeT().setMaxIter(maxIter);
+        this.plateauStructure.getVMPTime0().setMaxIter(maxIter);
+        this.plateauStructure.getVMPTimeT().setMaxIter(maxIter);
     }
 
     /**
@@ -126,8 +129,8 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      * @param threshold a {@code double} that represents the threshold value to be set.
      */
     public void setThreshold(double threshold) {
-        this.dynamicPlateauStructure.getVMPTime0().setThreshold(threshold);
-        this.dynamicPlateauStructure.getVMPTimeT().setThreshold(threshold);
+        this.plateauStructure.getVMPTime0().setThreshold(threshold);
+        this.plateauStructure.getVMPTimeT().setThreshold(threshold);
     }
 
 
@@ -136,8 +139,8 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      * @param output a {@code boolean} that represents the output value to be set.
      */
     public void setOutput(boolean output){
-        this.dynamicPlateauStructure.getVMPTime0().setOutput(output);
-        this.dynamicPlateauStructure.getVMPTimeT().setOutput(output);
+        this.plateauStructure.getVMPTime0().setOutput(output);
+        this.plateauStructure.getVMPTimeT().setOutput(output);
     }
 
 
@@ -190,15 +193,15 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      * @return a {@code double} value.
      */
     private double updateModelTime0(DynamicDataInstance dataInstance) {
-        this.dynamicPlateauStructure.setEvidenceTime0(dataInstance);
-        this.dynamicPlateauStructure.runInferenceTime0();
+        this.plateauStructure.setEvidenceTime0(dataInstance);
+        this.plateauStructure.runInferenceTime0();
 
-        for (Variable var: dynamicPlateauStructure.getEFLearningBNTime0().getParametersVariables()){
-            EF_UnivariateDistribution uni = dynamicPlateauStructure.getEFParameterPosteriorTime0(var).deepCopy();
-            dynamicPlateauStructure.getEFLearningBNTime0().setDistribution(var, uni);
-            this.dynamicPlateauStructure.getNodeOfVarTime0(var).setPDist(uni);
+        for (Variable var: plateauStructure.getEFLearningBNTime0().getParametersVariables()){
+            EF_UnivariateDistribution uni = plateauStructure.getEFParameterPosteriorTime0(var).deepCopy();
+            plateauStructure.getEFLearningBNTime0().setDistribution(var, uni);
+            this.plateauStructure.getNodeOfVarTime0(var).setPDist(uni);
         }
-        return this.dynamicPlateauStructure.getLogProbabilityOfEvidenceTime0();
+        return this.plateauStructure.getLogProbabilityOfEvidenceTime0();
     }
 
     /**
@@ -207,15 +210,15 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
      * @return a {@code double} value.
      */
     private double updateModelTimeT(List<DynamicDataInstance> batch) {
-        this.dynamicPlateauStructure.setEvidenceTimeT(batch);
-        this.dynamicPlateauStructure.runInferenceTimeT();
+        this.plateauStructure.setEvidenceTimeT(batch);
+        this.plateauStructure.runInferenceTimeT();
 
-        for (Variable var: dynamicPlateauStructure.getEFLearningBNTimeT().getParametersVariables()){
-            EF_UnivariateDistribution uni = dynamicPlateauStructure.getEFParameterPosteriorTimeT(var).deepCopy();
-            dynamicPlateauStructure.getEFLearningBNTimeT().setDistribution(var,uni);
-            this.dynamicPlateauStructure.getNodeOfVarTimeT(var,0).setPDist(uni);
+        for (Variable var: plateauStructure.getEFLearningBNTimeT().getParametersVariables()){
+            EF_UnivariateDistribution uni = plateauStructure.getEFParameterPosteriorTimeT(var).deepCopy();
+            plateauStructure.getEFLearningBNTimeT().setDistribution(var,uni);
+            this.plateauStructure.getNodeOfVarTimeT(var,0).setPDist(uni);
         }
-        return this.dynamicPlateauStructure.getLogProbabilityOfEvidenceTimeT();
+        return this.plateauStructure.getLogProbabilityOfEvidenceTimeT();
     }
 
     /**
@@ -227,11 +230,11 @@ public class DynamicSVB implements DynamicBayesianLearningAlgorithm {
     }
 
     public void initLearning(){
-        this.dynamicPlateauStructure.setSeed(seed);
-        this.dynamicPlateauStructure.setDBNModel(this.dag);
-        this.dynamicPlateauStructure.resetQs();
-        this.ef_extendedBNTime0 = this.dynamicPlateauStructure.getEFLearningBNTime0();
-        this.ef_extendedBNTimeT = this.dynamicPlateauStructure.getEFLearningBNTimeT();
+        this.plateauStructure.setSeed(seed);
+        this.plateauStructure.setDBNModel(this.dag);
+        this.plateauStructure.resetQs();
+        this.ef_extendedBNTime0 = this.plateauStructure.getEFLearningBNTime0();
+        this.ef_extendedBNTimeT = this.plateauStructure.getEFLearningBNTimeT();
     }
 
     /**

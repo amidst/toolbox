@@ -22,7 +22,8 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.dynamic.DynamicMaximumLikelihood;
+import eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
@@ -77,14 +78,16 @@ public class MLforDBNfromDataset {
                 "datasets/simulated/WasteIncineratorSample.arff");
 
         //Parameter Learning
-        //We set the batch size which will be employed to learn the model in parallel
-        DynamicMaximumLikelihood.setBatchSize(1000);
-        DynamicMaximumLikelihood.setParallelMode(true);
-
 
         //We fix the DAG structure, the data and learn the DBN
-        DynamicBayesianNetwork dbn = DynamicMaximumLikelihood.learnDynamic(
-                MLforDBNfromDataset.getNaiveBayesStructure(data.getAttributes(),2), data);
+        ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setWindowsSize(1000);
+        parallelMaximumLikelihood.setDynamicDAG(MLforDBNfromDataset.getNaiveBayesStructure(data.getAttributes(),2));
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+
+        DynamicBayesianNetwork dbn = parallelMaximumLikelihood.getLearntDBN();
+
 
         //We print the model
         System.out.println(dbn.toString());

@@ -142,7 +142,7 @@ public class NaiveBayesClassifierTest extends TestCase {
 
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
 
-        parallelMaximumLikelihood.setBatchSize(100);
+        parallelMaximumLikelihood.setWindowsSize(100);
         parallelMaximumLikelihood.setDAG(nbClassifier.getDAG());
         parallelMaximumLikelihood.setLaplace(true);
         parallelMaximumLikelihood.setDataStream(DataSetGenerator.generate(1234,500, 2, 10));
