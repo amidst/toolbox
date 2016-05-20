@@ -1,4 +1,4 @@
-package eu.amidst.ida2016;/*
+package eu.amidst.icdm2016;/*
  *
  *
  *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.

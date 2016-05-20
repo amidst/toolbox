@@ -1,4 +1,4 @@
-package eu.amidst.ida2016;
+package eu.amidst.icdm2016;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;

@@ -15,7 +15,7 @@
  *
  */
 
-package eu.amidst.ida2016;
+package eu.amidst.icdm2016;
 
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;

@@ -16,7 +16,7 @@
  */
 
 
-package eu.amidst.ida2016;
+package eu.amidst.icdm2016;
 
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
