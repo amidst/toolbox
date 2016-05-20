@@ -47,6 +47,15 @@ public interface ParameterLearningAlgorithm {
      */
     double getLogMarginalProbability();
 
+
+    /**
+     * Updates the model using a given {@link DataFlink} object.
+     * @param dataFlink a {@link DataFlink} object.
+     * @return the log-probability of the data instances of the
+     * data. Or Double.NaN if this log-probability can not be estimated.
+     */
+    double updateModel(DataFlink<DataInstance> dataFlink);
+
     /**
      * Runs the parameter learning process.
      */
@@ -75,4 +84,16 @@ public interface ParameterLearningAlgorithm {
      * @param activateOutput {@code true} if the output is activated, {@code false} otherwise.
      */
     void setOutput(boolean activateOutput);
+
+    /**
+     * Returns the batch size.
+     * @return the window size.
+     */
+    int getBatchSize();
+
+    /**
+     * Sets the batch size.
+     * @param windowsSize the window size.
+     */
+    void setBatchSize(int windowsSize);
 }
