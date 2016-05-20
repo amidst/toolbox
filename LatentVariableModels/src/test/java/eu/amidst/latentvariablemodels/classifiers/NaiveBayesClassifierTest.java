@@ -45,16 +45,13 @@ public class NaiveBayesClassifierTest extends TestCase {
         nb = new NaiveBayesClassifier(data.getAttributes());
         nb.setClassName(classVarName);
 
-        if(nb.isValidConfiguration()) {
-            nb.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        nb.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                nb.updateModel(batch);
-            }
-            System.out.println(nb.getModel());
-            System.out.println(nb.getDAG());
+            nb.updateModel(batch);
         }
-
+        System.out.println(nb.getModel());
+        System.out.println(nb.getDAG());
 
     }
 

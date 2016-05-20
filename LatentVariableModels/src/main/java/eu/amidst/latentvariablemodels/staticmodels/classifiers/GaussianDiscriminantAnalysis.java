@@ -158,14 +158,12 @@ public class GaussianDiscriminantAnalysis extends Classifier {
         gda.setDiagonal(false);
         gda.setClassName("DiscreteVar0");
 
-        if(gda.isValidConfiguration()) {
-            gda.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                gda.updateModel(batch);
-            }
-            System.out.println(gda.getModel());
-            System.out.println(gda.getDAG());
+        gda.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            gda.updateModel(batch);
         }
+        System.out.println(gda.getModel());
+        System.out.println(gda.getDAG());
 
 
 

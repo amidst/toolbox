@@ -42,16 +42,13 @@ public class HODETest extends TestCase{
         hode = new HODE(data.getAttributes());
         hode.setClassName(classVarName);
 
-        if(hode.isValidConfiguration()) {
-            hode.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        hode.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                hode.updateModel(batch);
-            }
-            System.out.println(hode.getModel());
-            System.out.println(hode.getDAG());
+            hode.updateModel(batch);
         }
-
+        System.out.println(hode.getModel());
+        System.out.println(hode.getDAG());
 
     }
 

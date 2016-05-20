@@ -41,16 +41,10 @@ public class GaussianDiscriminantAnalysisTest extends TestCase {
         gda.setDiagonal(false);
         gda.setClassName("DiscreteVar0");
 
-        if(gda.isValidConfiguration()) {
-            gda.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                gda.updateModel(batch);
-            }
-
+        gda.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            gda.updateModel(batch);
         }
-
-
-
 
     }
 

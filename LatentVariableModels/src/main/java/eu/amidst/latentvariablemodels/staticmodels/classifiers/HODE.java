@@ -98,15 +98,13 @@ public class HODE extends Classifier {
         HODE hode = new HODE(data.getAttributes());
         hode.setClassName(classVarName);
 
-        if(hode.isValidConfiguration()) {
-            hode.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        hode.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                hode.updateModel(batch);
-            }
-            System.out.println(hode.getDAG());
-            System.out.println(hode.getModel());
+            hode.updateModel(batch);
         }
+        System.out.println(hode.getDAG());
+        System.out.println(hode.getModel());
 
         // predict the class of one instances
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");

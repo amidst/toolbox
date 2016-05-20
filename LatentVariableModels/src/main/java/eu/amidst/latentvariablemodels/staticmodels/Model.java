@@ -42,7 +42,7 @@ public abstract class Model {
 
     protected boolean initialized = false;
 
-    public Model(Attributes attributes) throws WrongConfigurationException {
+    public Model(Attributes attributes) {
         vars = new Variables(attributes);
 
         if(!this.isValidConfiguration()) {

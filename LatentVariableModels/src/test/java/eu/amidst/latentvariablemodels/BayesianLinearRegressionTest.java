@@ -54,16 +54,12 @@ public class BayesianLinearRegressionTest extends TestCase {
         model.setClassName(className);
         model.setDiagonal(false);
 
-        if(model.isValidConfiguration()) {
-            model.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                model.updateModel(batch);
-            }
-            System.out.println(model.getModel());
-            System.out.println(model.getDAG());
+        model.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            model.updateModel(batch);
         }
-
-
+        System.out.println(model.getModel());
+        System.out.println(model.getDAG());
 
     }
 

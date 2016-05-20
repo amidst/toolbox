@@ -189,7 +189,7 @@ public class AODE extends Classifier {
         return  isValid;
     }
 
-    public static void main(String[] args) throws WrongConfigurationException {
+    public static void main(String[] args) {
 
         DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 1, 5);
 
@@ -198,15 +198,13 @@ public class AODE extends Classifier {
         AODE aode = new AODE(data.getAttributes());
         aode.setClassName(classVarName);
 
-        if(aode.isValidConfiguration()) {
-            aode.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        aode.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                aode.updateModel(batch);
-            }
-            System.out.println(aode.getModel());
-            System.out.println(aode.getDAG());
+            aode.updateModel(batch);
         }
+        System.out.println(aode.getModel());
+        System.out.println(aode.getDAG());
 
         // predict the class of one instances
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");

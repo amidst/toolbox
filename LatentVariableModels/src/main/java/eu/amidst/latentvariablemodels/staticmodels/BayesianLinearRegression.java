@@ -182,14 +182,12 @@ public class BayesianLinearRegression extends Model {
         BLR.setClassName(className);
         BLR.setDiagonal(false);
 
-        if(BLR.isValidConfiguration()) {
-            BLR.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
-                BLR.updateModel(batch);
-            }
-            System.out.println(BLR.getModel());
-            System.out.println(BLR.getDAG());
+        BLR.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+            BLR.updateModel(batch);
         }
+        System.out.println(BLR.getModel());
+        System.out.println(BLR.getDAG());
 
 
 

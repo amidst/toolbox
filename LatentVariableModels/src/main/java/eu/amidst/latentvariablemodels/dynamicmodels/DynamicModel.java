@@ -15,11 +15,12 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.parametric.bayesian.BayesianLearningAlgorithm;
+import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.dynamic.learning.parametric.bayesian.SVB;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  *
@@ -30,7 +31,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
  */
 public abstract class DynamicModel {
 
-    BayesianLearningAlgorithm learningAlgorithm;
+    ParameterLearningAlgorithm learningAlgorithm = new SVB();
 
     protected DynamicDAG dynamicDAG;
 
@@ -38,9 +39,12 @@ public abstract class DynamicModel {
 
     protected int windowSize = 100;
 
+    protected String errorMessage = "";
+
     public DynamicModel(Attributes attributes) {
         this.variables = new DynamicVariables(attributes);
-        this.isValidConfiguration();
+        if (!this.isValidConfiguration())
+            throw new WrongConfigurationException(getErrorMessage());
     }
 
     public DynamicDAG getDynamicDAG() {
@@ -50,31 +54,28 @@ public abstract class DynamicModel {
         return dynamicDAG;
     }
 
-    public void setLearningAlgorithm(BayesianLearningAlgorithm learningAlgorithm) {
+    public void setLearningAlgorithm(ParameterLearningAlgorithm learningAlgorithm) {
         this.learningAlgorithm = learningAlgorithm;
     }
 
     public void setWindowSize(int windowSize){
         this.windowSize = windowSize;
-        learningAlgorithm = null;
     }
 
     public double updateModel(DataStream<DynamicDataInstance> dataStream){
         if (learningAlgorithm ==null) {
-            learningAlgorithm = new SVB();
             learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            ((SVB)learningAlgorithm).setWindowsSize(windowSize);
+            learningAlgorithm.setWindowsSize(windowSize);
             learningAlgorithm.initLearning();
         }
 
-        return dataStream.streamOfBatches(this.windowSize).sequential().mapToDouble(this::updateModel).sum();
+        return learningAlgorithm.updateModel(dataStream);
     }
 
     public double updateModel(DataOnMemory<DynamicDataInstance> dataBatch){
         if (learningAlgorithm ==null) {
-            learningAlgorithm = new SVB();
             learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            ((SVB)learningAlgorithm).setWindowsSize(windowSize);
+            learningAlgorithm.setWindowsSize(windowSize);
             learningAlgorithm.initLearning();
         }
 
@@ -91,7 +92,17 @@ public abstract class DynamicModel {
 
     protected abstract void buildDAG();
 
-    public abstract void isValidConfiguration();
+    public boolean isValidConfiguration(){
+        return true;
+    }
+
+    protected String getErrorMessage() {
+        return errorMessage;
+    }
+
+    protected void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     @Override
     public String toString() {

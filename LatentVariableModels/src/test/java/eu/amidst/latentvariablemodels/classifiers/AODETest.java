@@ -42,15 +42,13 @@ public class AODETest extends TestCase {
         aode = new AODE(data.getAttributes());
         aode.setClassName(classVarName);
 
-        if(aode.isValidConfiguration()) {
-            aode.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        aode.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                aode.updateModel(batch);
-            }
-            System.out.println(aode.getModel());
-            System.out.println(aode.getDAG());
+            aode.updateModel(batch);
         }
+        System.out.println(aode.getModel());
+        System.out.println(aode.getDAG());
 
 
     }

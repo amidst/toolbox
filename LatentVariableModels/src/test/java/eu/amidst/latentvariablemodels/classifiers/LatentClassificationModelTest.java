@@ -41,15 +41,13 @@ public class LatentClassificationModelTest extends TestCase {
         lcm = new LatentClassificationModel(data.getAttributes());
         lcm.setClassName(classVarName);
 
-        if(lcm.isValidConfiguration()) {
-            lcm.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        lcm.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                lcm.updateModel(batch);
-            }
-            System.out.println(lcm.getModel());
-            System.out.println(lcm.getDAG());
+            lcm.updateModel(batch);
         }
+        System.out.println(lcm.getModel());
+        System.out.println(lcm.getDAG());
 
 
     }

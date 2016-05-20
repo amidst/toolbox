@@ -111,15 +111,13 @@ public class NaiveBayesClassifier extends Classifier{
         NaiveBayesClassifier nb = new NaiveBayesClassifier(data.getAttributes());
         nb.setClassName(classVarName);
 
-        if(nb.isValidConfiguration()) {
-            nb.updateModel(data);
-            for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
+        nb.updateModel(data);
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {
 
-                nb.updateModel(batch);
-            }
-            System.out.println(nb.getModel());
-            System.out.println(nb.getDAG());
+            nb.updateModel(batch);
         }
+        System.out.println(nb.getModel());
+        System.out.println(nb.getDAG());
 
         // predict the class of one instances
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
