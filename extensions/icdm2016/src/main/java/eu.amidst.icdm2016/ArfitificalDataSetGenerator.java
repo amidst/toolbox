@@ -29,9 +29,10 @@ public class ArfitificalDataSetGenerator {
     public static void main(String[] args) throws IOException {
 
         String pathFolder = "./datasets/";
-        int predVars = 10;
-        int hiddenVars = 3;
+        int predVars = 1;
+        int hiddenVars = 2;
         int sampleSize = 1000;
+        int nDataSets = 10;
 
         Variables variables = new Variables();
 
@@ -84,7 +85,7 @@ public class ArfitificalDataSetGenerator {
 
 
         //Following Steps
-        for (int K = 1; K < 10; K++) {
+        for (int K = 1; K < nDataSets; K++) {
             for (int i = 0; i < hiddenVars; i++) {
                 Normal dist = bayesianNetwork.getConditionalDistribution(variables.getVariableByName("HiddenVAR_"+i));
                 dist.setMean(dist.getMean()+(i+1));
