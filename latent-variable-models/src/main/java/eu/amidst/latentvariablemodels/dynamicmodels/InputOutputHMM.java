@@ -111,7 +111,8 @@ public class InputOutputHMM  extends DynamicModel {
     }
 
     @Override
-    public void isValidConfiguration() {
+    public boolean isValidConfiguration() {
+        return true;
     }
 
     public static void main(String[] args) {

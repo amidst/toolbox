@@ -19,27 +19,29 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.utils.DataSetGenerator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
- * This class implements an Auto-regressive Hidden Markov Model. HMM with temporal links on the leaves. See e.g.:
+ * This class implements a Factorial Hidden Markov Model. HMM with (unconnected) binary hidden parents. See e.g.:
  *
- * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 626
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 627
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class AutoRegressiveHMM extends DynamicModel  {
+public class FactorialHMM extends DynamicModel {
 
-    private int numStates = 2;
+    private int numHidden = 2;
     private boolean diagonal = true;
 
-    public int getNumStates() {
-        return numStates;
+    public int getNumHidden() {
+        return numHidden;
     }
 
-    public void setNumStates(int numStates) {
-        this.numStates = numStates;
+    public void setNumHidden(int numHidden) {
+        this.numHidden = numHidden;
     }
 
     public boolean isDiagonal() {
@@ -50,24 +52,32 @@ public class AutoRegressiveHMM extends DynamicModel  {
         this.diagonal = diagonal;
     }
 
-    public AutoRegressiveHMM(Attributes attributes) {
+    public FactorialHMM(Attributes attributes) {
         super(attributes);
     }
 
     @Override
     protected void buildDAG() {
 
-        Variable discreteHiddenVar = this.variables.newMultinomialDynamicVariable("discreteHiddenVar", getNumStates());
+        List<Variable> binaryHiddenVars = new ArrayList<>();
+
+        IntStream.range(0, getNumHidden()).forEach(i -> {
+            Variable binaryHiddenVar = this.variables.newMultinomialDynamicVariable("binaryHiddenVar" + i,2);
+            binaryHiddenVars.add(binaryHiddenVar);
+        });
+
         dynamicDAG = new DynamicDAG(this.variables);
         dynamicDAG.getParentSetsTimeT()
                 .stream()
-                .filter(w -> w.getMainVar() != discreteHiddenVar)
-                .forEach(w -> {
-                    w.addParent(discreteHiddenVar);
-                    w.addParent(w.getMainVar().getInterfaceVariable());
+                .filter(w -> !binaryHiddenVars.contains(w.getMainVar()))
+                .forEach(y -> {
+                    binaryHiddenVars.stream()
+                            .forEach(h -> y.addParent(h));
                 });
 
-        dynamicDAG.getParentSetTimeT(discreteHiddenVar).addParent(discreteHiddenVar.getInterfaceVariable());
+        for (Variable gaussianHiddenVar : binaryHiddenVars) {
+            dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(gaussianHiddenVar.getInterfaceVariable());
+        }
 
         /*
          * Learn full covariance matrix
@@ -75,7 +85,7 @@ public class AutoRegressiveHMM extends DynamicModel  {
         if(!isDiagonal()) {
             List<Variable> observedVars = this.variables.getListOfDynamicVariables()
                     .stream()
-                    .filter(v -> !v.equals(discreteHiddenVar))
+                    .filter(w -> !binaryHiddenVars.contains(w))
                     .peek(v-> {
                         if(v.isMultinomial())
                             throw new UnsupportedOperationException("Full covariance matrix cannot be used with" +
@@ -96,7 +106,8 @@ public class AutoRegressiveHMM extends DynamicModel  {
 
 
     @Override
-    public void isValidConfiguration(){
+    public boolean isValidConfiguration(){
+        return true;
     }
 
     public static void main(String[] args) {
@@ -106,26 +117,27 @@ public class AutoRegressiveHMM extends DynamicModel  {
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
         //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
-        System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from streaming------------------");
-        AutoRegressiveHMM autoRegressiveHMM = new AutoRegressiveHMM(dataHybrid.getAttributes());
-        System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.updateModel(dataHybrid);
-        System.out.println(autoRegressiveHMM.getModel());
+        System.out.println("------------------Factorial HMM (diagonal matrix) from streaming------------------");
+        FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
+        System.out.println(factorialHMM.getDynamicDAG());
+        factorialHMM.updateModel(dataHybrid);
+        System.out.println(factorialHMM.getModel());
 
-        System.out.println("------------------Auto-Regressive HMM (full cov. matrix) from streaming------------------");
-        autoRegressiveHMM = new AutoRegressiveHMM(dataGaussians.getAttributes());
-        autoRegressiveHMM.setDiagonal(false);
-        System.out.println(autoRegressiveHMM.getDynamicDAG());
-        autoRegressiveHMM.updateModel(dataGaussians);
-        System.out.println(autoRegressiveHMM.getModel());
+        System.out.println("------------------Factorial HMM (full cov. matrix) from streaming------------------");
+        factorialHMM = new FactorialHMM(dataGaussians.getAttributes());
+        factorialHMM.setDiagonal(false);
+        System.out.println(factorialHMM.getDynamicDAG());
+        factorialHMM.updateModel(dataGaussians);
+        System.out.println(factorialHMM.getModel());
 
-        System.out.println("------------------Auto-Regressive HMM (diagonal matrix) from batches------------------");
-        autoRegressiveHMM = new AutoRegressiveHMM(dataHybrid.getAttributes());
-        System.out.println(autoRegressiveHMM.getDynamicDAG());
+        System.out.println("------------------Factorial HMM (diagonal matrix) from batches------------------");
+        factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
+        System.out.println(factorialHMM.getDynamicDAG());
         for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
-            autoRegressiveHMM.updateModel(batch);
+            factorialHMM.updateModel(batch);
         }
-        System.out.println(autoRegressiveHMM.getModel());
+        System.out.println(factorialHMM.getModel());
 
     }
+
 }

@@ -56,6 +56,7 @@ public interface ParameterLearningAlgorithm {
      */
     double updateModel(DataFlink<DataInstance> dataFlink);
 
+
     /**
      * Initializes the parameter learning process.
      */

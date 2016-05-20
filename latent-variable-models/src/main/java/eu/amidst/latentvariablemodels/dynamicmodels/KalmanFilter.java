@@ -25,24 +25,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * This class implements a Factorial Hidden Markov Model. HMM with (unconnected) binary hidden parents. See e.g.:
+ * This class implements a Kalman Filter (KF) or State Space Model (SSM). See e.g.:
  *
- * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 627
+ * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 640
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class FactorialHMM extends DynamicModel {
-
-    private int numHidden = 2;
+public class KalmanFilter extends DynamicModel {
     private boolean diagonal = true;
-
-    public int getNumHidden() {
-        return numHidden;
-    }
-
-    public void setNumHidden(int numHidden) {
-        this.numHidden = numHidden;
-    }
+    private int numHidden = 2;
 
     public boolean isDiagonal() {
         return diagonal;
@@ -52,32 +43,52 @@ public class FactorialHMM extends DynamicModel {
         this.diagonal = diagonal;
     }
 
-    public FactorialHMM(Attributes attributes) {
+    public int getNumHidden() {
+        return numHidden;
+    }
+
+    public void setNumHidden(int numHidden) {
+        this.numHidden = numHidden;
+    }
+
+    public KalmanFilter(Attributes attributes) {
         super(attributes);
     }
 
     @Override
     protected void buildDAG() {
 
-        List<Variable> binaryHiddenVars = new ArrayList<>();
+        List<Variable> gaussianHiddenVars = new ArrayList<>();
 
-        IntStream.range(0, getNumHidden()).forEach(i -> {
-            Variable binaryHiddenVar = this.variables.newMultinomialDynamicVariable("binaryHiddenVar" + i,2);
-            binaryHiddenVars.add(binaryHiddenVar);
+        IntStream.range(0,getNumHidden()).forEach(i -> {
+            Variable gaussianHiddenVar = this.variables.newGaussianDynamicVariable("gaussianHiddenVar" + i);
+            gaussianHiddenVars.add(gaussianHiddenVar);
         });
 
         dynamicDAG = new DynamicDAG(this.variables);
+
         dynamicDAG.getParentSetsTimeT()
                 .stream()
-                .filter(w -> !binaryHiddenVars.contains(w.getMainVar()))
+                .filter(w -> !gaussianHiddenVars.contains(w.getMainVar()))
                 .forEach(y -> {
-                    binaryHiddenVars.stream()
+                    gaussianHiddenVars.stream()
                             .forEach(h -> y.addParent(h));
                 });
 
-        for (Variable gaussianHiddenVar : binaryHiddenVars) {
+        for (Variable gaussianHiddenVar : gaussianHiddenVars) {
             dynamicDAG.getParentSetTimeT(gaussianHiddenVar).addParent(gaussianHiddenVar.getInterfaceVariable());
         }
+
+
+        for (int i=0; i<gaussianHiddenVars.size()-1; i++){
+            for(int j=i+1; j<gaussianHiddenVars.size(); j++) {
+                dynamicDAG.getParentSetTime0(gaussianHiddenVars.get(i)).addParent(gaussianHiddenVars.get(j));
+                dynamicDAG.getParentSetTimeT(gaussianHiddenVars.get(i)).addParent(gaussianHiddenVars.get(j));
+            }
+
+        }
+
+
 
         /*
          * Learn full covariance matrix
@@ -85,7 +96,7 @@ public class FactorialHMM extends DynamicModel {
         if(!isDiagonal()) {
             List<Variable> observedVars = this.variables.getListOfDynamicVariables()
                     .stream()
-                    .filter(w -> !binaryHiddenVars.contains(w))
+                    .filter(w -> !gaussianHiddenVars.contains(w))
                     .peek(v-> {
                         if(v.isMultinomial())
                             throw new UnsupportedOperationException("Full covariance matrix cannot be used with" +
@@ -106,37 +117,47 @@ public class FactorialHMM extends DynamicModel {
 
 
     @Override
-    public void isValidConfiguration(){
+    public boolean isValidConfiguration() {
+
+        boolean isValid = this.variables.getListOfDynamicVariables()
+                .stream().allMatch(var -> var.isNormal());
+
+        if(!isValid)
+            setErrorMessage("Invalid configuration: all the variables must be real");
+
+        return isValid;
+
+
     }
 
     public static void main(String[] args) {
 
-        DataStream<DynamicDataInstance> dataHybrid= DataSetGenerator.generate(1,1000,3,10);
         DataStream<DynamicDataInstance> dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader
         //        .loadFromFile("datasets/syntheticDataVerdandeScenario3.arff");
 
-        System.out.println("------------------Factorial HMM (diagonal matrix) from streaming------------------");
-        FactorialHMM factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
-        System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.updateModel(dataHybrid);
-        System.out.println(factorialHMM.getModel());
+        System.out.println("------------------KF (diagonal matrix) from streaming------------------");
+        KalmanFilter KF = new KalmanFilter(dataGaussians.getAttributes());
+        KF.setNumHidden(2);
+        System.out.println(KF.getDynamicDAG());
+        KF.updateModel(dataGaussians);
+        System.out.println(KF.getModel());
 
-        System.out.println("------------------Factorial HMM (full cov. matrix) from streaming------------------");
-        factorialHMM = new FactorialHMM(dataGaussians.getAttributes());
-        factorialHMM.setDiagonal(false);
-        System.out.println(factorialHMM.getDynamicDAG());
-        factorialHMM.updateModel(dataGaussians);
-        System.out.println(factorialHMM.getModel());
+        System.out.println("------------------KF (full cov. matrix) from streaming------------------");
+        KF = new KalmanFilter(dataGaussians.getAttributes());
+        KF.setDiagonal(false);
+        System.out.println(KF.getDynamicDAG());
+        KF.updateModel(dataGaussians);
+        System.out.println(KF.getModel());
 
-        System.out.println("------------------Factorial HMM (diagonal matrix) from batches------------------");
-        factorialHMM = new FactorialHMM(dataHybrid.getAttributes());
-        System.out.println(factorialHMM.getDynamicDAG());
-        for (DataOnMemory<DynamicDataInstance> batch : dataHybrid.iterableOverBatches(100)) {
-            factorialHMM.updateModel(batch);
+        System.out.println("------------------KF (diagonal matrix) from batches------------------");
+        KF = new KalmanFilter(dataGaussians.getAttributes());
+        System.out.println(KF.getDynamicDAG());
+        for (DataOnMemory<DynamicDataInstance> batch : dataGaussians.iterableOverBatches(100)) {
+            KF.updateModel(batch);
         }
-        System.out.println(factorialHMM.getModel());
+        System.out.println(KF.getModel());
 
     }
-
 }

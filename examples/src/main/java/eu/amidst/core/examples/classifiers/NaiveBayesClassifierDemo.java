@@ -50,7 +50,7 @@ public class NaiveBayesClassifierDemo {
         long time = System.nanoTime();
         NaiveBayesClassifier model = new NaiveBayesClassifier(data.getAttributes());
         model.setClassName(data.getAttributes().getFullListOfAttributes().get(data.getAttributes().getFullListOfAttributes().size() - 1).getName());
-        model.learnModel(data);
+        model.updateModel(data);
         BayesianNetwork nbClassifier = model.getModel();
         System.out.println(nbClassifier.toString());
 

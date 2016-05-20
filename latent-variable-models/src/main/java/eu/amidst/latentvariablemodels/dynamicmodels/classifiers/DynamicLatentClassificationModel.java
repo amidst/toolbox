@@ -134,7 +134,10 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
     }
 
     @Override
-    public void isValidConfiguration() {
+    public boolean isValidConfiguration() {
+
+
+        boolean isValid = true;
 
         long numReal = variables.getListOfDynamicVariables()
                 .stream()
@@ -148,9 +151,16 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
 
 
         if(numFinite != 1 || numReal != variables.getNumberOfVars()-1) {
-            throw new UnsupportedOperationException("Invalid configuration: wrong number types of variables domains. " +
+            isValid = false;
+            setErrorMessage("Invalid configuration: wrong number types of variables domains. " +
                     "It should contain 1 discrete variable and the rest shoud be real");
+
         }
+
+        return isValid;
+
+
+
     }
 
     public static void main(String[] args) throws WrongConfigurationException {

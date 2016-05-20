@@ -118,7 +118,7 @@
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>standardmodels</artifactId>
+            <artifactId>latent-variable-models</artifactId>
             <version>${AMIDSTver}</version>
         </dependency>
 
