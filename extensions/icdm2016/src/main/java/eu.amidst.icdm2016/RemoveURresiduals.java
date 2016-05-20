@@ -64,7 +64,7 @@ public class RemoveURresiduals {
         DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path+"0.arff");
 
 
-        //We create a eu.amidst.ida2016.NaiveBayesVirtualConceptDriftDetector object
+        //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
         virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
 
         //We set class variable as the last attribute
