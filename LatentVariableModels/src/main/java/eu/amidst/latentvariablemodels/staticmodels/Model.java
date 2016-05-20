@@ -20,6 +20,8 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
@@ -31,6 +33,8 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
 public abstract class Model {
 
     protected ParameterLearningAlgorithm learningAlgorithm = new SVB();
+
+    protected eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithmFlink = new dVMP();
 
     protected DAG dag;
 
@@ -61,8 +65,23 @@ public abstract class Model {
         this.learningAlgorithm = learningAlgorithm;
     }
 
+    public void setFlinkLearningAlgorithm(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithm) {
+        this.learningAlgorithmFlink = learningAlgorithm;
+    }
+
     public void setWindowSize(int windowSize){
         this.windowSize = windowSize;
+    }
+
+    public double updateModel(DataFlink<DataInstance> dataFlink){
+        if (!initialized) {
+            learningAlgorithmFlink.setBatchSize(windowSize);
+            learningAlgorithmFlink.setDAG(this.getDAG());
+            learningAlgorithmFlink.initLearning();
+            initialized=true;
+        }
+
+        return this.learningAlgorithmFlink.updateModel(dataFlink);
     }
 
     public double updateModel(DataStream<DataInstance> dataStream){
@@ -95,6 +114,9 @@ public abstract class Model {
         if (learningAlgorithm !=null){
             return this.learningAlgorithm.getLearntBayesianNetwork();
         }
+
+        if (learningAlgorithmFlink!=null)
+            return this.learningAlgorithmFlink.getLearntBayesianNetwork();
 
         return null;
     }
