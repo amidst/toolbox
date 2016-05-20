@@ -64,6 +64,8 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
 
+    private boolean ommitHiddenVars = false;
+
     /**
      * Creates a new BayesianNetworkSampler given an input {@link BayesianNetwork} object.
      * @param network1 an input {@link BayesianNetwork} object.
@@ -148,6 +150,9 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
         random = new Random(seed);
     }
 
+    public void setOmitHiddenVars(boolean val){
+        this.ommitHiddenVars = val;
+    }
     /**
      * Samples randomly a data stream of size nSamples from this BayesianNetworkSampler.
      * @param nSamples an {@code int} that represents the number of samples in the data stream.
@@ -165,9 +170,16 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
             TemporalDataStream(BayesianNetworkSampler sampler1, int nSamples1){
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
-                List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
-                        .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
-                this.atts= new Attributes(list);
+                if (BayesianNetworkSampler.this.ommitHiddenVars){
+                    List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
+                            .filter(var -> !BayesianNetworkSampler.this.hiddenVars.containsKey(var))
+                            .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
+                    this.atts = new Attributes(list);
+                }else {
+                    List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
+                            .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
+                    this.atts = new Attributes(list);
+                }
             }
 
             @Override
