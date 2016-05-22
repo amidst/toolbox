@@ -17,7 +17,7 @@ import java.util.Random;
 /**
  * Created by dario on 3/5/16.
  */
-public class MAPFlink_PrecisionScalability {
+public class MAPRobust_Precision {
 
     public static void main(String[] args) throws Exception {
 
