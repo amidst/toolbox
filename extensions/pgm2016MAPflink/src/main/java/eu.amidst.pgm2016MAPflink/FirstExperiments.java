@@ -1,6 +1,6 @@
 package eu.amidst.pgm2016MAPflink;
 
-import eu.amidst.core.inference.MAPInferenceRobust;
+import eu.amidst.core.inference.MAPInferenceRobustNew;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -89,7 +89,7 @@ public class FirstExperiments {
          *        RUN INFERENCE
          ************************************************/
 
-        distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
+        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
 
         System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
         System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());
@@ -97,7 +97,7 @@ public class FirstExperiments {
 
 
         distributedMAPInference.setNumberOfStartingPoints(samplingSize);
-        distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SAMPLING);
+        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING);
 
         System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
         System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());

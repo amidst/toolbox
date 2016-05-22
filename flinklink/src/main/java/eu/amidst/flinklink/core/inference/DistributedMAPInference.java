@@ -1,6 +1,6 @@
 package eu.amidst.flinklink.core.inference;
 
-import eu.amidst.core.inference.MAPInferenceRobust;
+import eu.amidst.core.inference.MAPInferenceRobustNew;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.Assignment;
@@ -30,6 +30,7 @@ public class DistributedMAPInference {
     private int seed = 0;
     private int numberOfIterations = 100;
     private int numberOfStartingPoints = 50;
+    private int samplingSize = 5000;
 
     private Assignment MAPEstimate;
     private double MAPEstimateLogProbability;
@@ -60,6 +61,10 @@ public class DistributedMAPInference {
         this.numberOfStartingPoints = numberOfStartingPoints;
     }
 
+    public void setSamplingSize(int samplingSize) {
+        this.samplingSize = samplingSize;
+    }
+
     public void setSeed(int seed) {
         this.seed = seed;
     }
@@ -73,10 +78,10 @@ public class DistributedMAPInference {
     }
 
     public void runInference() throws Exception {
-        this.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
+        this.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
     }
 
-    public void runInference(MAPInferenceRobust.SearchAlgorithm searchAlgorithm) throws Exception {
+    public void runInference(MAPInferenceRobustNew.SearchAlgorithm searchAlgorithm) throws Exception {
 
         //MAPVariables = new ArrayList<>(1);
         //MAPVariables.add(model.getVariables().getVariableByName("ClassVar"));
@@ -92,14 +97,15 @@ public class DistributedMAPInference {
 
 
         int endSequence = numberOfStartingPoints;
-        if (searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING)) {
+        if (searchAlgorithm.equals(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING)) {
             endSequence = 2 * numberOfCoresToUse;
         }
 
+        final int numberOfSamplesOrStartingPoints = searchAlgorithm.equals(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING) ? samplingSize / (2 * numberOfCoresToUse) : 1;
         Tuple2<Assignment, Double> MAPResult = env.generateSequence(1, endSequence)
-                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING) ? numberOfStartingPoints / (2 * numberOfCoresToUse) : 1))
+                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfSamplesOrStartingPoints))
 //                        aa -> {
-//                    if(searchAlgorithm.equals(MAPInferenceRobust.SearchAlgorithm.SAMPLING))
+//                    if(searchAlgorithm.equals(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING))
 //                        return new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfStartingPoints/(2*numberOfCoresToUse));
 //                    else
 //                        return new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, 1);
@@ -130,32 +136,42 @@ public class DistributedMAPInference {
         private int numberOfIterations;
         private String searchAlgorithm;
         private int numberOfStartingPoints;
+        private int samplingSize;
 
-        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobust.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed, int numberOfStartingPoints) {
+        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobustNew.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed, int numberOfStartingPoints) {
             this.model = model;
             this.MAPVariables = MAPVariables;
             this.evidence = evidence;
             this.numberOfIterations = numberOfIterations;
             this.seed = seed;
             this.searchAlgorithm = searchAlgorithm.name();
-            this.numberOfStartingPoints = numberOfStartingPoints;
+
+            if(searchAlgorithm==MAPInferenceRobustNew.SearchAlgorithm.SAMPLING) {
+                this.numberOfStartingPoints = 0;
+                this.samplingSize = numberOfStartingPoints;
+            }
+            else {
+                this.numberOfStartingPoints = numberOfStartingPoints;
+                this.samplingSize = 0;
+            }
         }
 
         @Override
         public Tuple2<Assignment, Double> map(Long value) throws Exception {
 
-            MAPInferenceRobust localMAPInference = new MAPInferenceRobust();
-            localMAPInference.setModel(model);
-            localMAPInference.setMAPVariables(MAPVariables);
-            localMAPInference.setSeed(seed + value.intValue());
+            MAPInferenceRobustNew localMAPInference = new MAPInferenceRobustNew();
+            localMAPInference.setModel(this.model);
+            localMAPInference.setMAPVariables(this.MAPVariables);
+            localMAPInference.setSeed(this.seed + value.intValue());
 
-            localMAPInference.setNumberOfStartingPoints(numberOfStartingPoints);
+            localMAPInference.setNumberOfStartingPoints(this.numberOfStartingPoints);
+            localMAPInference.setSampleSize(this.samplingSize);
 
-            localMAPInference.setNumberOfIterations(numberOfIterations);
+            localMAPInference.setNumberOfIterations(this.numberOfIterations);
             localMAPInference.setParallelMode(false);
-            localMAPInference.setEvidence(evidence);
+            localMAPInference.setEvidence(this.evidence);
 
-            localMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.valueOf(searchAlgorithm));
+            localMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.valueOf(this.searchAlgorithm));
 
             Assignment MAPEstimate = localMAPInference.getEstimate();
             double logProbMAPEstimate = localMAPInference.getLogProbabilityOfEstimate();
@@ -198,7 +214,8 @@ public class DistributedMAPInference {
 
         // Show results
         System.out.println(distributedMAPInference.getEstimate().outputString(MAPVariables));
-        System.out.println(distributedMAPInference.getLogProbabilityOfEstimate());
+        System.out.println("Estimated probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+        System.out.println("Estimated log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
     }
 

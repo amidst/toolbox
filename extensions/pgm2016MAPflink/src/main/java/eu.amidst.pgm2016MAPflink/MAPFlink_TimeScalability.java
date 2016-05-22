@@ -1,6 +1,6 @@
 package eu.amidst.pgm2016MAPflink;
 
-import eu.amidst.core.inference.MAPInferenceRobust;
+import eu.amidst.core.inference.MAPInferenceRobustNew;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.variables.Assignment;
@@ -173,7 +173,7 @@ public class MAPFlink_TimeScalability {
                 // DUMB EXECUTION FOR TRAINING
                 distributedMAPInference.setNumberOfStartingPoints(startingPoints);
 
-                distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_GLOBAL);
+                distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
                 mapEstimate = distributedMAPInference.getEstimate();
 
                 double[] timesRepetitions = new double[repetitions];
@@ -189,7 +189,7 @@ public class MAPFlink_TimeScalability {
 //                for (int j = 0; j < repetitions; j++) {
 //
 //                    timeStart = System.nanoTime();
-//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_GLOBAL);
+//                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
 //
 //                    mapEstimate = distributedMAPInference.getEstimate();
 //                    output.write("MAP estimate  (SA.Global): " + mapEstimate.outputString(varsInterest));
@@ -220,7 +220,7 @@ public class MAPFlink_TimeScalability {
 //                System.out.println("SA.LOCAL");
 //                for (int j = 0; j < repetitions; j++) {
 //                    timeStart = System.nanoTime();
-//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SA_LOCAL);
+//                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_LOCAL);
 //
 //                    mapEstimate = distributedMAPInference.getEstimate();
 //                    output.write("MAP estimate  (SA.Local): " + mapEstimate.outputString(varsInterest));
@@ -255,7 +255,7 @@ public class MAPFlink_TimeScalability {
 //                for (int j = 0; j < repetitions; j++) {
 //
 //                    timeStart = System.nanoTime();
-//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_GLOBAL);
+//                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_GLOBAL);
 //
 //                    mapEstimate = distributedMAPInference.getEstimate();
 //                    output.write("MAP estimate  (HC.Global): " + mapEstimate.outputString(varsInterest));
@@ -286,7 +286,7 @@ public class MAPFlink_TimeScalability {
 //                for (int j = 0; j < repetitions; j++) {
 //
 //                    timeStart = System.nanoTime();
-//                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.HC_LOCAL);
+//                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
 //
 //                    mapEstimate = distributedMAPInference.getEstimate();
 //                    output.write("MAP estimate  (HC.Local): " + mapEstimate.outputString(varsInterest));
@@ -324,7 +324,7 @@ public class MAPFlink_TimeScalability {
                     System.out.println("repetition " + j);
                     distributedMAPInference.setNumberOfStartingPoints(samplingSize);
                     timeStart = System.nanoTime();
-                    distributedMAPInference.runInference(MAPInferenceRobust.SearchAlgorithm.SAMPLING);
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING);
 
                     mapEstimate = distributedMAPInference.getEstimate();
                     output.write("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));

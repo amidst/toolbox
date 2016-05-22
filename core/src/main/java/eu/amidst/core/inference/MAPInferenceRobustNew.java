@@ -50,7 +50,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
     private List<Variable> causalOrder;
 
     private int numberOfStartingPoints = 10;
-    private int sampleSize = 1000;
+    private int sampleSize = 10000;
     private int numberOfIterations=100;
     private int localSearchSteps=3;
 
@@ -63,15 +63,17 @@ public class MAPInferenceRobustNew implements PointEstimator {
     private List<Variable> continuousVarsWithChildrenInEvidence;
 
 
-    private int numberOfDiscreteVariables = 0;
-    private int numberOfDiscreteVariablesInEvidence = 0;
+//    private int numberOfDiscreteVariables = 0;
+//    private int numberOfDiscreteVariablesInEvidence = 0;
     private int numberOfDiscreteVariablesOfInterest = 0;
 
+    private  ImportanceSamplingRobust importanceSamplingRobust;
 
     private boolean parallelMode = true;
 
-    private List<Variable> MAPvariables;
+    private List<Variable> MAPVariables;
     private List<Variable> MAPDiscreteVariables;
+
     private Assignment MAPestimate;
     private double MAPestimateLogProbability;
 
@@ -127,8 +129,8 @@ public class MAPInferenceRobustNew implements PointEstimator {
     public void setModel(BayesianNetwork model_) {
         this.model = model_;
         this.causalOrder = Utils.getTopologicalOrder(this.model.getDAG());
-        this.numberOfDiscreteVariables = (int)model.getVariables().getListOfVariables().stream().filter(Variable::isMultinomial).count();
-        System.out.println("Discrete vars:" + numberOfDiscreteVariables);
+//        this.numberOfDiscreteVariables = (int)model.getVariables().getListOfVariables().stream().filter(Variable::isMultinomial).count();
+//        System.out.println("Discrete vars:" + numberOfDiscreteVariables);
     }
 
     /**
@@ -136,10 +138,14 @@ public class MAPInferenceRobustNew implements PointEstimator {
      */
     @Override
     public void setEvidence(Assignment evidence_) {
+
+        if (evidence_.getVariables().stream().anyMatch(MAPVariables::contains)) {
+            throw new UnsupportedOperationException("The evidence should not include any of the MAP variabes");
+        }
         this.evidence = evidence_;
         this.varsEvidence = evidence.getVariables().stream().collect(Collectors.toList());
-        this.numberOfDiscreteVariablesInEvidence = (int)varsEvidence.stream().filter(Variable::isMultinomial).count();
-        System.out.println("Discrete vars in evidence:" + numberOfDiscreteVariablesInEvidence);
+//        this.numberOfDiscreteVariablesInEvidence = (int)varsEvidence.stream().filter(Variable::isMultinomial).count();
+//        System.out.println("Discrete vars in evidence:" + numberOfDiscreteVariablesInEvidence);
 
         this.findContinuousVariablesWithObservedChildren();
     }
@@ -154,10 +160,10 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
 
     public void setMAPVariables(List<Variable> varsOfInterest1) {
-        this.MAPvariables = varsOfInterest1;
+        this.MAPVariables = varsOfInterest1;
         this.numberOfDiscreteVariablesOfInterest = (int)varsOfInterest1.stream().filter(Variable::isMultinomial).count();
-        MAPDiscreteVariables = MAPvariables.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
-        System.out.println("Discrete vars of interest:" + numberOfDiscreteVariablesOfInterest);
+        MAPDiscreteVariables = MAPVariables.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
+//        System.out.println("Discrete vars of interest:" + numberOfDiscreteVariablesOfInterest);
     }
 
     public void setNumberOfIterations(int numberOfIterations) {
@@ -201,6 +207,13 @@ public class MAPInferenceRobustNew implements PointEstimator {
      */
     @Override
     public void runInference() {
+
+        this.importanceSamplingRobust = new ImportanceSamplingRobust();
+        importanceSamplingRobust.setModel(this.model);
+        importanceSamplingRobust.setParallelMode(this.parallelMode);
+        importanceSamplingRobust.setSampleSize(this.sampleSizeForEtimatingProbabilities);
+        importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+
         this.runInference(SearchAlgorithm.HC_LOCAL); // Uses Hill climbing with local search, by default
     }
 
@@ -213,10 +226,18 @@ public class MAPInferenceRobustNew implements PointEstimator {
      */
     public void runInference(SearchAlgorithm searchAlgorithm) {
 
+        this.importanceSamplingRobust = new ImportanceSamplingRobust();
+        importanceSamplingRobust.setModel(this.model);
+        importanceSamplingRobust.setParallelMode(this.parallelMode);
+        importanceSamplingRobust.setSampleSize(this.sampleSizeForEtimatingProbabilities);
+        importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+
+
         int thisInferenceSampleSize = this.numberOfStartingPoints;
         if(searchAlgorithm==SearchAlgorithm.SAMPLING) {
             thisInferenceSampleSize = this.sampleSize;
         }
+
 
         this.seed = new Random(this.seed).nextInt();
 
@@ -263,7 +284,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
                                 double logProbDenominator = 0;
                                 List<Variable> causalOrder = Utils.getTopologicalOrder(model.getDAG());
                                 for(Variable var: causalOrder) {
-                                    if (!MAPvariables.contains(var) && !varsEvidence.contains(var)) {
+                                    if (!MAPVariables.contains(var) && !varsEvidence.contains(var)) {
                                         Assignment parentsConfig = new HashMapAssignment();
                                         for (Variable parent : model.getDAG().getParentSet(var)) {
                                             parentsConfig.setValue(parent, assignment.getValue(parent));
@@ -343,20 +364,21 @@ public class MAPInferenceRobustNew implements PointEstimator {
     }
 
     private boolean sameMAPConfigurations(Assignment configuration1, Assignment configuration2) {
-        return MAPvariables.stream().allMatch(variable -> configuration1.getValue(variable)==configuration2.getValue(variable));
+        return MAPVariables.stream().allMatch(variable -> configuration1.getValue(variable)==configuration2.getValue(variable));
     }
 
     public Assignment generateNewConfiguration(Assignment initialMAPConfiguration, int nMovementsDiscreteVars, Random random) {
 
-        Assignment newMAPConfiguration = new HashMapAssignment(initialMAPConfiguration);
+        Assignment newMAPConfiguration = new HashMapAssignment(numberOfDiscreteVariablesOfInterest);
+        MAPDiscreteVariables.stream().forEachOrdered(variable -> newMAPConfiguration.setValue(variable,initialMAPConfiguration.getValue(variable)));
 
         /************************************************************************************
          *    MOVE SOME (OR ALL) THE VALUES OF THE DISCRETE VARIABLES OF INTEREST
          ************************************************************************************/
-//        int[] indicesVarsOfInterest = new int[2];
-//        for (int i = 0; i < MAPDiscreteVariables.size(); i++) {
-//            indicesVarsOfInterest[i] = MAPDiscreteVariables.get(i).getVarID();
-//        }
+        int[] indicesDiscreteVarsOfInterest = new int[MAPDiscreteVariables.size()];
+        for (int i = 0; i < MAPDiscreteVariables.size(); i++) {
+            indicesDiscreteVarsOfInterest[i] = MAPDiscreteVariables.get(i).getVarID();
+        }
         ArrayList<Integer> indicesVariablesMoved = new ArrayList<>();
 
         int numberOfMovements = nMovementsDiscreteVars;
@@ -364,69 +386,112 @@ public class MAPInferenceRobustNew implements PointEstimator {
             numberOfMovements = numberOfDiscreteVariablesOfInterest;
         }
 
-        int indexSelectedVariable;
+        int selectedDiscreteMAPVariable;
         Variable selectedVariable;
         int newValue;
 
         while (indicesVariablesMoved.size() < numberOfMovements) {
 
-            indexSelectedVariable = random.nextInt(this.model.getNumberOfVars());
-            selectedVariable = this.model.getVariables().getVariableById(indexSelectedVariable);
-            if ( indicesVariablesMoved.contains(indexSelectedVariable) || !MAPDiscreteVariables.contains(selectedVariable)) {
+            selectedDiscreteMAPVariable = random.nextInt(indicesDiscreteVarsOfInterest.length);
+            selectedVariable = this.model.getVariables().getVariableById(indicesDiscreteVarsOfInterest[selectedDiscreteMAPVariable]);
+            if ( indicesVariablesMoved.contains(selectedDiscreteMAPVariable)) {
                 continue;
             }
-            indicesVariablesMoved.add(indexSelectedVariable);
+            indicesVariablesMoved.add(selectedDiscreteMAPVariable);
             newValue = random.nextInt(selectedVariable.getNumberOfStates());
             newMAPConfiguration.setValue(selectedVariable, newValue);
         }
+//        System.out.println("INITIAL CONFIGURATION");
+//        System.out.println(initialMAPConfiguration.outputString(causalOrder));
+//        System.out.println(initialMAPConfiguration.outputString(MAPVariables));
 
-        Assignment fullConfiguration = new HashMapAssignment(newMAPConfiguration);
 
-//        System.out.println(indicesVariablesMoved);
+        // USE AN AUXILIARY FULL CONFIGURATION TO OBTAIN VALUES FOR THE CONTINUOUS VARIABLES
+        Assignment fullConfiguration = new HashMapAssignment(numberOfDiscreteVariablesOfInterest);
+        MAPDiscreteVariables.stream().forEachOrdered(variable -> fullConfiguration.setValue(variable,newMAPConfiguration.getValue(variable)));
+        evidence.getVariables().forEach(variable -> fullConfiguration.setValue(variable,evidence.getValue(variable)));
+
+        causalOrder.stream().filter(Variable::isMultinomial).forEachOrdered(variable -> {
+            if (Double.isNaN(fullConfiguration.getValue(variable))) {
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(variable).getUnivariateDistribution(fullConfiguration);
+                fullConfiguration.setValue(variable,univariateDistribution.sample(random));
+            }
+        });
+//        System.out.println("NEW MAP CONFIGURATION");
+//        System.out.println(newMAPConfiguration.outputString(causalOrder));
+//        System.out.println(newMAPConfiguration.outputString(MAPVariables));
+//
+//        System.out.println("FULL CONFIGURATION");
+//        System.out.println(fullConfiguration.outputString(causalOrder));
 
         /************************************************************************************************************
          *   SIMULATE VALUES FOR GAUSSIANS, STARTING WITH THOSE WHOSE (CONTINUOUS) CHILDREN ARE OBSERVED
          ************************************************************************************************************/
-        for(Variable current : continuousVarsWithChildrenInEvidence) {
-            if (!varsEvidence.contains(current)) {
+        for(Variable currentContVariable : continuousVarsWithChildrenInEvidence) {
+            if (!varsEvidence.contains(currentContVariable)) {
+
                 Assignment parentsConfiguration = new HashMapAssignment(1);
-                model.getConditionalDistribution(current).getConditioningVariables().forEach(parent -> parentsConfiguration.setValue(parent, newMAPConfiguration.getValue(parent)));
-                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(current).getUnivariateDistribution(parentsConfiguration);
+                model.getConditionalDistribution(currentContVariable).getConditioningVariables().forEach(parent -> parentsConfiguration.setValue(parent, fullConfiguration.getValue(parent)));
+
+                UnivariateDistribution univariateDistribution = model.getConditionalDistribution(currentContVariable).getUnivariateDistribution(parentsConfiguration);
                 double newValue1 = univariateDistribution.sample(random);
-                newMAPConfiguration.setValue(current, newValue1);
+                fullConfiguration.setValue(currentContVariable, newValue1);
+//                System.out.println("UNIV DISTRIB 1 FOR " + currentContVariable.getName() + ": " + univariateDistribution.toString());
+
+
+                if (MAPVariables.contains(currentContVariable)) {
+                    newMAPConfiguration.setValue(currentContVariable, newValue1);
+                }
             }
         }
 
+//        System.out.println("NEW MAP CONFIGURATION");
+//        System.out.println(newMAPConfiguration.outputString(causalOrder));
+//        System.out.println(newMAPConfiguration.outputString(MAPVariables));
+//
+//        System.out.println("FULL CONFIGURATION");
+//        System.out.println(fullConfiguration.outputString(causalOrder));
 
         /************************************************************************************************************
          *   FINALLY, ASSIGN CONT. VARS. THAT DO NOT HAVE OBSERVED DESCENDANTS (ASSIGN THEIR MODE=MEAN VALUE)
          ************************************************************************************************************/
         for( int i=0; i < model.getNumberOfVars(); i++ ) {
             selectedVariable = causalOrder.get(i);
-            if ( selectedVariable.isNormal() && Double.isNaN(newMAPConfiguration.getValue(selectedVariable))) {
+            if ( selectedVariable.isNormal() && Double.isNaN(fullConfiguration.getValue(selectedVariable))) {
+
                 Assignment parentsConfiguration = new HashMapAssignment(1);
-                model.getConditionalDistribution(selectedVariable).getConditioningVariables().forEach(parent -> parentsConfiguration.setValue(parent, newMAPConfiguration.getValue(parent)));
+                model.getConditionalDistribution(selectedVariable).getConditioningVariables().forEach(parent -> parentsConfiguration.setValue(parent, fullConfiguration.getValue(parent)));
+
                 UnivariateDistribution univariateDistribution = model.getConditionalDistribution(selectedVariable).getUnivariateDistribution(parentsConfiguration);
                 double newValue2 = univariateDistribution.getParameters()[0];
-                newMAPConfiguration.setValue(selectedVariable, newValue2);
+                fullConfiguration.setValue(selectedVariable, newValue2);
+//                System.out.println("UNIV DISTRIB 2 FOR " + selectedVariable.getName() + ": " + univariateDistribution.toString());
+
+                if (MAPVariables.contains(selectedVariable)) {
+                    newMAPConfiguration.setValue(selectedVariable, newValue2);
+                }
             }
         }
 
-//        System.out.println(initialMAPConfiguration.outputString(model.getVariables().getListOfVariables()));
-//        System.out.println(newMAPConfiguration.outputString(model.getVariables().getListOfVariables()));
-//        System.out.println("Same configurations: " + this.sameMAPConfigurations(initialMAPConfiguration,newMAPConfiguration));
+//        System.out.println("NEW MAP CONFIGURATION");
+//        System.out.println(newMAPConfiguration.outputString(causalOrder));
+//        System.out.println(newMAPConfiguration.outputString(MAPVariables));
+//
+//        System.out.println("FULL CONFIGURATION");
+//        System.out.println(fullConfiguration.outputString(causalOrder));
+
         return newMAPConfiguration;
     }
 
 
 
     private String getMAPVariablesFromAssignment(Assignment assignment) {
-        if (this.MAPvariables!=null) {
-            Assignment MAPVarsValues = new HashMapAssignment(MAPvariables.size());
-            for(Variable var : MAPvariables) {
+        if (this.MAPVariables !=null) {
+            Assignment MAPVarsValues = new HashMapAssignment(MAPVariables.size());
+            for(Variable var : MAPVariables) {
                 MAPVarsValues.setValue(var,assignment.getValue(var));
             }
-            return MAPVarsValues.outputString(MAPvariables);
+            return MAPVarsValues.outputString(MAPVariables);
         }
         else {
             return assignment.outputString();
@@ -434,20 +499,14 @@ public class MAPInferenceRobustNew implements PointEstimator {
     }
 
     private Assignment fullAssignmentToMAPassignment(Assignment fullAssignment) {
-        Assignment MAPassignment = new HashMapAssignment(MAPvariables.size());
-        MAPvariables.stream().forEach(MAPvar -> MAPassignment.setValue(MAPvar, fullAssignment.getValue(MAPvar)));
+        Assignment MAPassignment = new HashMapAssignment(MAPVariables.size());
+        MAPVariables.stream().forEach(MAPvar -> MAPassignment.setValue(MAPvar, fullAssignment.getValue(MAPvar)));
         return MAPassignment;
     }
 
-    private double estimateLogProbabilityOfPartialAssignment(Assignment MAPAssignment) {
+    public double estimateLogProbabilityOfPartialAssignment(Assignment MAPAssignment) {
 
-        ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
-        importanceSamplingRobust.setModel(this.model);
-        importanceSamplingRobust.setParallelMode(this.parallelMode);
-        importanceSamplingRobust.setSampleSize(this.sampleSizeForEtimatingProbabilities);
-        importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
-
-        Assignment MAPConfigurationPlusEvidence = new HashMapAssignment(MAPvariables.size() + this.varsEvidence.size());
+        Assignment MAPConfigurationPlusEvidence = new HashMapAssignment(MAPVariables.size() + this.varsEvidence.size());
         MAPAssignment.getVariables().forEach(variable -> MAPConfigurationPlusEvidence.setValue(variable,MAPAssignment.getValue(variable)));
         evidence.getVariables().forEach(variable -> MAPConfigurationPlusEvidence.setValue(variable,evidence.getValue(variable)));
 
@@ -547,13 +606,13 @@ public class MAPInferenceRobustNew implements PointEstimator {
         int seedBayesianNetwork = 98983;
         int seedVariablesChoice = 82125;
 
-        int samplingMethodSize = 10000;
+        int samplingMethodSize = 100000;
         int startingPoints = 20;
-        int numberOfIterations = 200;
+        int numberOfIterations = 1000;
 
 
-        int nVarsEvidence = 3;
-        int nVarsInterest = 3;
+        int nVarsEvidence = 5;
+        int nVarsInterest = 8;
 
 
         long timeStart;
@@ -568,18 +627,18 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
         BayesianNetworkGenerator.setSeed(seedBayesianNetwork);
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(5);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(5,2);
-        BayesianNetworkGenerator.setNumberOfLinks(13);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(20);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(20,2);
+        BayesianNetworkGenerator.setNumberOfLinks(50);
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
         System.out.println(bn.toString());
 
 
 
-        /******************************************************
-         *   CHOOSE VARIABLES OF INTEREST AND TO BE OBSERVED
-         ******************************************************/
+        /****************************************************************
+         *   CHOOSE VARIABLES OF INTEREST AND THOSE TO BE OBSERVED
+         ****************************************************************/
 
         Random variablesChoiceRandom = new Random(seedVariablesChoice);
 
@@ -666,196 +725,205 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
         mapInference.setSampleSizeEstimatingProbabilities(100);
 
-        int nVarsMover = 3;
-        Random random = new Random(23326);
-        Assignment config2 = new HashMapAssignment(configuration);
-        config2 = mapInference.fullAssignmentToMAPassignment(config2);
+//        int nVarsMover = 3;
+//        Random random = new Random(23326);
+//        Assignment config2 = new HashMapAssignment(configuration);
+//        config2 = mapInference.fullAssignmentToMAPassignment(config2);
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println("NEW FINAL CONFIG: " + config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//
+//        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
+//        System.out.println(config2.outputString(varsInterest));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+//        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
 
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+
+//         DUMB EXECUTION FOR 'HEATING UP'
+        mapInference.runInference(SearchAlgorithm.SA_GLOBAL);
 
 
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-
-        config2 = (HashMapAssignment)mapInference.generateNewConfiguration(config2, nVarsMover, random);
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
-        System.out.println(mapInference.estimateLogProbabilityOfPartialAssignment(config2));
+        /***********************************************
+         *        SIMULATED ANNEALING
+         ************************************************/
 
 
-        // DUMB EXECUTION FOR 'HEATING UP'
-//        mapInference.runInference(SearchAlgorithm.SA_GLOBAL);
-//
-//
-//        /***********************************************
-//         *        SIMULATED ANNEALING
-//         ************************************************/
-//
-//
-//        // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
-//        timeStart = System.nanoTime();
-//        mapInference.runInference(SearchAlgorithm.SA_GLOBAL);
-//
-//        mapEstimate = mapInference.getEstimate();
-//        System.out.println("MAP estimate  (SA.Global): " + mapEstimate.outputString(varsInterest));
-//        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
-//        System.out.println("with (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
-//
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-//        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-//        System.out.println();
-//
-//
-//        // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
-//        timeStart = System.nanoTime();
-//        mapInference.runInference(SearchAlgorithm.SA_LOCAL);
-//
-//        mapEstimate = mapInference.getEstimate();
-//        System.out.println("MAP estimate  (SA.Local): " + mapEstimate.outputString(varsInterest));
-//        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
-//        System.out.println("with (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
-//
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-//        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-//        System.out.println();
-//
-//
-//        /***********************************************
-//         *        HILL CLIMBING
-//         ************************************************/
-//
-//        //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
-//        timeStart = System.nanoTime();
-//        mapInference.runInference(SearchAlgorithm.HC_GLOBAL);
-//
-//        mapEstimate = mapInference.getEstimate();
-//        System.out.println("MAP estimate  (HC.Global): " + mapEstimate.outputString(varsInterest));
-//        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
-//        System.out.println("with (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
-//
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-//        System.out.println();
-//
-//
-//
-//        //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
-//        timeStart = System.nanoTime();
-//        mapInference.runInference(SearchAlgorithm.HC_LOCAL);
-//
-//        mapEstimate = mapInference.getEstimate();
-//        System.out.println("MAP estimate  (HC.Local): " + mapEstimate.outputString(varsInterest));
-//        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
-//        System.out.println("with (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
-//
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-//        System.out.println();
-//
-//
-//        /************************************************
-//         *        SAMPLING
-//         ************************************************/
-//
-//        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-//        mapInference.setNumberOfStartingPoints(samplingMethodSize);
-//        timeStart = System.nanoTime();
-//        mapInference.runInference(SearchAlgorithm.SAMPLING);
-//
-//        mapEstimate = mapInference.getEstimate();
-//
-//        System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
-//        System.out.println("with (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
-//        System.out.println("with (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
-//
-//        mapInference.setSampleSizeEstimatingProbabilities(5000);
-//        System.out.println("with (estimated unnorm.) probability: " + mapInference.estimateLogProbabilityOfPartialAssignment(mapEstimate));
-//
-//
-//        timeStop = System.nanoTime();
-//        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-//        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-//        System.out.println();
+        // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(SearchAlgorithm.SA_GLOBAL);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (SA.Global): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with estimated (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        System.out.println("with estimated (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
+
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+        // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(SearchAlgorithm.SA_LOCAL);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (SA.Local): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with estimated (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        System.out.println("with estimated (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
+
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        System.out.println();
+
+
+        /***********************************************
+         *        HILL CLIMBING
+         ************************************************/
+
+        //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(SearchAlgorithm.HC_GLOBAL);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (HC.Global): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with estimated (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        System.out.println("with estimated (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
+
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+
+        //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
+        timeStart = System.nanoTime();
+        mapInference.runInference(SearchAlgorithm.HC_LOCAL);
+
+        mapEstimate = mapInference.getEstimate();
+        System.out.println("MAP estimate  (HC.Local): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with estimated (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        System.out.println("with estimated (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
+
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
+
+
+        /************************************************
+         *        SAMPLING
+         ************************************************/
+
+        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
+        mapInference.setNumberOfStartingPoints(samplingMethodSize);
+        timeStart = System.nanoTime();
+        mapInference.runInference(SearchAlgorithm.SAMPLING);
+
+        mapEstimate = mapInference.getEstimate();
+
+        System.out.println("MAP estimate (SAMPLING): " + mapEstimate.outputString(varsInterest));
+        System.out.println("with estimated (unnormalized) probability: " + Math.exp(mapInference.getLogProbabilityOfEstimate()));
+        System.out.println("with estimated (unnormalized) log-probability: " + mapInference.getLogProbabilityOfEstimate());
+
+        timeStop = System.nanoTime();
+        execTime = (double) (timeStop - timeStart) / 1000000000.0;
+
+        mapInference.setSampleSizeEstimatingProbabilities(5000);
+        double estimatedProbability = mapInference.estimateLogProbabilityOfPartialAssignment(mapEstimate);
+        System.out.println("with PRECISE RE-estimated probability: " + Math.exp(estimatedProbability));
+        System.out.println("with PRECISE RE-estimated log-probability: " + estimatedProbability);
+
+        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        System.out.println();
 
 
 
