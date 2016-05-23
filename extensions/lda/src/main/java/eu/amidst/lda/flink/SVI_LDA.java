@@ -99,7 +99,7 @@ public class SVI_LDA {
 
         args[0]="";
         args[1]="";
-        String pathNetwork = "dVMP_"+ Arrays.toString(args)+"_.bn";
+        String pathNetwork = "SVI_"+ Arrays.toString(args)+"_.bn";
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
         BayesianNetworkWriter.saveToFile(svb.getLearntBayesianNetwork(),pathNetwork);

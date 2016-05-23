@@ -121,6 +121,10 @@ public class Main {
 
         String path = "/Users/andresmasegosa/Dropbox/amidst_postdoc/abstractByYear/";
 
+        if(args.length>0){
+            path = args[0];
+        }
+
       /*  DataOnMemory<DataInstance> dataInstances = DataStreamLoader.loadDataOnMemoryFromFile(path+"abstract_90.arff");
 
         DataOnMemoryListContainer<DataInstance> container = new DataOnMemoryListContainer<DataInstance>(dataInstances.getAttributes());
