@@ -54,7 +54,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
     private int numberOfIterations=100;
     private int localSearchSteps=3;
 
-    private int sampleSizeForEtimatingProbabilities = 500;
+    private int sampleSizeForEstimatingProbabilities = 500;
     private int seed = 0;
     private Random MAPRandom;
 
@@ -170,8 +170,11 @@ public class MAPInferenceRobustNew implements PointEstimator {
         this.numberOfIterations = numberOfIterations;
     }
 
-    public void setSampleSizeEstimatingProbabilities(int sampleSizeEstimatingProbabilityPartialAssignment) {
-        this.sampleSizeForEtimatingProbabilities = sampleSizeEstimatingProbabilityPartialAssignment;
+    public void setSampleSizeEstimatingProbabilities(int sampleSizeEstimatingProbability) {
+        this.sampleSizeForEstimatingProbabilities = sampleSizeEstimatingProbability;
+        if(importanceSamplingRobust!=null) {
+            importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+        }
     }
 
     public void setLocalSearchSteps(int localSearchSteps) {
@@ -211,7 +214,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
         this.importanceSamplingRobust = new ImportanceSamplingRobust();
         importanceSamplingRobust.setModel(this.model);
         importanceSamplingRobust.setParallelMode(this.parallelMode);
-        importanceSamplingRobust.setSampleSize(this.sampleSizeForEtimatingProbabilities);
+        importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
         importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
 
         this.runInference(SearchAlgorithm.HC_LOCAL); // Uses Hill climbing with local search, by default
@@ -226,10 +229,11 @@ public class MAPInferenceRobustNew implements PointEstimator {
      */
     public void runInference(SearchAlgorithm searchAlgorithm) {
 
+
         this.importanceSamplingRobust = new ImportanceSamplingRobust();
         importanceSamplingRobust.setModel(this.model);
         importanceSamplingRobust.setParallelMode(this.parallelMode);
-        importanceSamplingRobust.setSampleSize(this.sampleSizeForEtimatingProbabilities);
+        importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
         importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
 
 
@@ -505,6 +509,14 @@ public class MAPInferenceRobustNew implements PointEstimator {
     }
 
     public double estimateLogProbabilityOfPartialAssignment(Assignment MAPAssignment) {
+
+        if(this.importanceSamplingRobust == null) {
+            this.importanceSamplingRobust = new ImportanceSamplingRobust();
+            importanceSamplingRobust.setModel(this.model);
+            importanceSamplingRobust.setParallelMode(this.parallelMode);
+            importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+            importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+        }
 
         Assignment MAPConfigurationPlusEvidence = new HashMapAssignment(MAPVariables.size() + this.varsEvidence.size());
         MAPAssignment.getVariables().forEach(variable -> MAPConfigurationPlusEvidence.setValue(variable,MAPAssignment.getValue(variable)));

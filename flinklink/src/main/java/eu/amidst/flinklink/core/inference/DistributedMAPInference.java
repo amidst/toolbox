@@ -30,6 +30,7 @@ public class DistributedMAPInference {
     private int seed = 0;
     private int numberOfIterations = 100;
     private int numberOfStartingPoints = 50;
+    private int sampleSizeEstimatingProbabilities = 100;
     private int samplingSize = 5000;
 
     private Assignment MAPEstimate;
@@ -61,7 +62,11 @@ public class DistributedMAPInference {
         this.numberOfStartingPoints = numberOfStartingPoints;
     }
 
-    public void setSamplingSize(int samplingSize) {
+    public void setSampleSizeEstimatingProbabilities(int sampleSizeEstimatingProbabilities) {
+        this.sampleSizeEstimatingProbabilities = sampleSizeEstimatingProbabilities;
+    }
+
+    public void setSampleSize(int samplingSize) {
         this.samplingSize = samplingSize;
     }
 
@@ -103,7 +108,7 @@ public class DistributedMAPInference {
 
         final int numberOfSamplesOrStartingPoints = searchAlgorithm.equals(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING) ? samplingSize / (2 * numberOfCoresToUse) : 1;
         Tuple2<Assignment, Double> MAPResult = env.generateSequence(1, endSequence)
-                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfSamplesOrStartingPoints))
+                .map(new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfSamplesOrStartingPoints, sampleSizeEstimatingProbabilities))
 //                        aa -> {
 //                    if(searchAlgorithm.equals(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING))
 //                        return new LocalMAPInference(model, MAPVariables, searchAlgorithm, evidence, numberOfIterations, seed, numberOfStartingPoints/(2*numberOfCoresToUse));
@@ -134,17 +139,20 @@ public class DistributedMAPInference {
         private Assignment evidence;
         private int seed;
         private int numberOfIterations;
-        private String searchAlgorithm;
         private int numberOfStartingPoints;
+        private int sampleSizeForEstimatingProbabilities;
         private int samplingSize;
+        private String searchAlgorithm;
 
-        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobustNew.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed, int numberOfStartingPoints) {
+
+        public LocalMAPInference(BayesianNetwork model, List<Variable> MAPVariables, MAPInferenceRobustNew.SearchAlgorithm searchAlgorithm, Assignment evidence, int numberOfIterations, int seed, int numberOfStartingPoints, int sampleSizeForEstimatingProbabilities) {
             this.model = model;
             this.MAPVariables = MAPVariables;
             this.evidence = evidence;
             this.numberOfIterations = numberOfIterations;
             this.seed = seed;
             this.searchAlgorithm = searchAlgorithm.name();
+            this.sampleSizeForEstimatingProbabilities = sampleSizeForEstimatingProbabilities;
 
             if(searchAlgorithm==MAPInferenceRobustNew.SearchAlgorithm.SAMPLING) {
                 this.numberOfStartingPoints = 0;
@@ -168,6 +176,8 @@ public class DistributedMAPInference {
             localMAPInference.setSampleSize(this.samplingSize);
 
             localMAPInference.setNumberOfIterations(this.numberOfIterations);
+            localMAPInference.setSampleSizeEstimatingProbabilities(this.sampleSizeForEstimatingProbabilities);
+
             localMAPInference.setParallelMode(false);
             localMAPInference.setEvidence(this.evidence);
 

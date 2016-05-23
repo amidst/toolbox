@@ -479,12 +479,12 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
             double tail;
             double aux = Math.exp(aux_min-aux_max);
-            if (aux<0.5) {
-                tail = Math.log1p( -aux );
-            }
-            else {
-                tail = Math.log( 1 - aux );
-            }
+//            if (aux<0.5) {
+//                tail = Math.log1p( -aux );
+//            }
+//            else {
+//                tail = Math.log( 1 - aux );
+//            }
 
             tail = Math.log( 1 - aux );
 //            tail = Math.log( 1+aux );
