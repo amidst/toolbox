@@ -30,15 +30,15 @@ import java.util.stream.Collectors;
  */
 public class HiddenMarkovModel extends DynamicModel{
 
-    private int numStates = 2;
+    private int numStatesHiddenVar = 2;
     private boolean diagonal = true;
 
-    public int getNumStates() {
-        return numStates;
+    public int getNumStatesHiddenVar() {
+        return numStatesHiddenVar;
     }
 
-    public void setNumStates(int numStates) {
-        this.numStates = numStates;
+    public void setNumStatesHiddenVar(int numStates) {
+        this.numStatesHiddenVar = numStates;
     }
 
     public boolean isDiagonal() {
@@ -56,7 +56,7 @@ public class HiddenMarkovModel extends DynamicModel{
     @Override
     protected void buildDAG() {
 
-        Variable discreteHiddenVar = this.variables.newMultinomialDynamicVariable("discreteHiddenVar", getNumStates());
+        Variable discreteHiddenVar = this.variables.newMultinomialDynamicVariable("discreteHiddenVar", getNumStatesHiddenVar());
         dynamicDAG = new DynamicDAG(this.variables);
         dynamicDAG.getParentSetsTimeT()
                 .stream()
