@@ -32,9 +32,9 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  */
 public abstract class Model {
 
-    protected ParameterLearningAlgorithm learningAlgorithm = new SVB();
+    protected ParameterLearningAlgorithm learningAlgorithm = null;
 
-    protected eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithmFlink = new dVMP();
+    protected eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithmFlink = null;
 
     protected DAG dag;
 
@@ -73,35 +73,47 @@ public abstract class Model {
         this.windowSize = windowSize;
     }
 
+
+    private void initLearningFlink() {
+        if(learningAlgorithmFlink==null)
+            learningAlgorithmFlink = new dVMP();
+
+        learningAlgorithmFlink.setBatchSize(windowSize);
+        learningAlgorithmFlink.setDAG(this.getDAG());
+        learningAlgorithmFlink.initLearning();
+        initialized=true;
+    }
+
+
+    private  void initLearning() {
+        if(learningAlgorithm==null)
+            learningAlgorithm = new SVB();
+        learningAlgorithm.setWindowsSize(windowSize);
+        learningAlgorithm.setDAG(this.getDAG());
+        learningAlgorithm.initLearning();
+        initialized=true;
+    }
+
+
+
     public double updateModel(DataFlink<DataInstance> dataFlink){
-        if (!initialized) {
-            learningAlgorithmFlink.setBatchSize(windowSize);
-            learningAlgorithmFlink.setDAG(this.getDAG());
-            learningAlgorithmFlink.initLearning();
-            initialized=true;
-        }
+        if (!initialized)
+            initLearningFlink();
 
         return this.learningAlgorithmFlink.updateModel(dataFlink);
     }
 
     public double updateModel(DataStream<DataInstance> dataStream){
-        if (!initialized) {
-            learningAlgorithm.setWindowsSize(windowSize);
-            learningAlgorithm.setDAG(this.getDAG());
-            learningAlgorithm.initLearning();
-            initialized=true;
-        }
+        if (!initialized)
+            initLearning();
+
 
         return this.learningAlgorithm.updateModel(dataStream);
     }
 
     public double updateModel(DataOnMemory<DataInstance> datBatch){
-        if (!initialized) {
-            learningAlgorithm.setWindowsSize(windowSize);
-            learningAlgorithm.setDAG(this.getDAG());
-            learningAlgorithm.initLearning();
-            initialized=true;
-        }
+        if (!initialized)
+            initLearning();
 
         return learningAlgorithm.updateModel(datBatch);
     }
