@@ -188,7 +188,9 @@ public class MAPFlink_PrecisionAnalysis {
                     distributedMAPInference.setSeed(seedDistributedMAPInference);
 
                     distributedMAPInference.setEvidence(evidence);
+                    distributedMAPInference.setNumberOfCores(maxParallelism);
 
+                    System.out.println("DISTRIBUTED MAP INFERENCE USING " + maxParallelism + " CORES.");
 
                     DataStream<DataInstance> fullSample2 = bayesianNetworkSampler.sampleToDataStream(1);
                     HashMapAssignment configuration = new HashMapAssignment(bn.getNumberOfVars());
