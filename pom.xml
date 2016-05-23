@@ -131,6 +131,7 @@
         <module>extensions/ecai2016</module>
         <module>extensions/uai2016</module>
         <module>extensions/reviewMeeting2016</module>
+        <module>extensions/tutorials</module>
     </modules>
 
 
