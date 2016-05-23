@@ -31,7 +31,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  */
 public abstract class DynamicModel {
 
-    ParameterLearningAlgorithm learningAlgorithm = new SVB();
+    ParameterLearningAlgorithm learningAlgorithm = null;
 
     protected DynamicDAG dynamicDAG;
 
@@ -40,6 +40,8 @@ public abstract class DynamicModel {
     protected int windowSize = 100;
 
     protected String errorMessage = "";
+
+    protected boolean initialized = false;
 
     public DynamicModel(Attributes attributes) {
         this.variables = new DynamicVariables(attributes);
@@ -62,22 +64,26 @@ public abstract class DynamicModel {
         this.windowSize = windowSize;
     }
 
+
+    private void initLearning() {
+        learningAlgorithm = new SVB();
+        learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
+        learningAlgorithm.setWindowsSize(windowSize);
+        learningAlgorithm.initLearning();
+        initialized = true;
+    }
+
+
     public double updateModel(DataStream<DynamicDataInstance> dataStream){
-        if (learningAlgorithm ==null) {
-            learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            learningAlgorithm.setWindowsSize(windowSize);
-            learningAlgorithm.initLearning();
-        }
+        if (!initialized)
+            initLearning();
 
         return learningAlgorithm.updateModel(dataStream);
     }
 
     public double updateModel(DataOnMemory<DynamicDataInstance> dataBatch){
-        if (learningAlgorithm ==null) {
-            learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
-            learningAlgorithm.setWindowsSize(windowSize);
-            learningAlgorithm.initLearning();
-        }
+        if (!initialized)
+            initLearning();
 
         return learningAlgorithm.updateModel(dataBatch);
     }
@@ -88,6 +94,11 @@ public abstract class DynamicModel {
         }
 
         return null;
+    }
+
+
+    public void resetModel(){
+        initialized=false;
     }
 
     protected abstract void buildDAG();

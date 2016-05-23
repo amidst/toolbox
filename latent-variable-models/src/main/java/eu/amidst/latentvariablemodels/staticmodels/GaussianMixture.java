@@ -31,8 +31,6 @@ import java.util.stream.Collectors;
  */
 public class GaussianMixture extends Model {
 
-
-
     /* diagonal flag*/
     private boolean diagonal;
 
