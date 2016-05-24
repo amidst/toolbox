@@ -5,12 +5,10 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
-import java.util.stream.IntStream;
-
 /**
  * Created by ana@cs.aau.dk on 27/04/16.
  */
-public class NaiveBayesCDDetectorICDM2016 {
+public class NaiveBayesCDDetectorIcdm2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
@@ -51,10 +49,11 @@ public class NaiveBayesCDDetectorICDM2016 {
         virtualDriftDetector.setSeed(1);
 
         //We set the data which is going to be used
-        virtualDriftDetector.setData(dataMonth0);
+        //virtualDriftDetector.setData(dataMonth0);
+        virtualDriftDetector.setAttributes(dataMonth0.getAttributes());
 
         //We fix the size of the window
-        int windowSize = 100;
+        int windowSize = 1000;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the number of global latent variables
@@ -97,8 +96,8 @@ public class NaiveBayesCDDetectorICDM2016 {
 
             int currentMonth = i;
 
-            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                continue;
+            //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
+            //    continue;
 
             DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
 

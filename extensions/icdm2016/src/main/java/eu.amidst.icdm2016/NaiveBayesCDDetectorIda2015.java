@@ -5,8 +5,6 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
-import java.util.stream.IntStream;
-
 /**
  * Created by ana@cs.aau.dk on 20/04/16.
  */
@@ -45,7 +43,7 @@ public class NaiveBayesCDDetectorIda2015 {
         virtualDriftDetector.setData(dataMonth0);
 
         //We fix the size of the window
-        int windowSize = 100;
+        int windowSize = 5000;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the number of global latent variables
@@ -76,14 +74,16 @@ public class NaiveBayesCDDetectorIda2015 {
 
             int currentMonth = i;
 
-            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                continue;
+            //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
+            //    continue;
 
             DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
             meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
+
+            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();

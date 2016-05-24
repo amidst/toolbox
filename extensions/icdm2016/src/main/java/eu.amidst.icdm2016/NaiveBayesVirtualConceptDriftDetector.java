@@ -16,10 +16,7 @@ package eu.amidst.icdm2016;/*
  */
 
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
@@ -47,6 +44,8 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
     /** Represents the data stream used for detecting the concepts drifts*/
     DataStream<DataInstance> data;
+
+    Attributes attributes;
 
     /** Represents the size of the window used by the {@link SVB} class*/
     int windowsSize;
@@ -118,7 +117,12 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * @param data, a <code>DataStream</code> object
      */
     public void setData(DataStream<DataInstance> data) {
-        this.data = data;
+        //this.data = data;
+        this.attributes = data.getAttributes();
+    }
+
+    public void setAttributes(Attributes attributes){
+        this.attributes = attributes;
     }
 
     /**
@@ -188,9 +192,9 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * Builds the DAG structure of a Naive Bayes classifier with a global hidden Gaussian variable.
      */
     private void buildGlobalDAG(){
-        Variables variables = new Variables(data.getAttributes());
+        Variables variables = new Variables(this.attributes);
 
-        String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
+        String className = this.attributes.getFullListOfAttributes().get(classIndex).getName();
         Variable classVariable = variables.getVariableByName(className);
 
         Variable unemploymentRateVar = null;
@@ -200,7 +204,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
          * Create indicator variables if includeIndicators is set to true
          */
         if(this.isIncludeIndicators()){
-            for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+            for (Attribute att : this.attributes.getListOfNonSpecialAttributes()) {
                 if(!att.getName().equals(className) && !att.getName().equals(unemploymentRateAttName)) {
                     variables.newIndicatorVariable(variables.getVariableByName(att.getName()), 0.0);
                 }
@@ -231,7 +235,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         DAG dag = new DAG(variables);
 
-        for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+        for (Attribute att : this.attributes.getListOfNonSpecialAttributes()) {
             if (att.getName().equals(className) || att.getName().equals(unemploymentRateAttName))
                 continue;
 
@@ -250,7 +254,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
          * Include indicator variables as parents of its corresponding variables if includeIndicators is set to true
          */
         if(this.isIncludeIndicators()){
-            for (Attribute att : data.getAttributes().getListOfNonSpecialAttributes()) {
+            for (Attribute att : this.attributes.getListOfNonSpecialAttributes()) {
                 if(!att.getName().equals(className) && !att.getName().equals(unemploymentRateAttName)) {
                     Variable predictiveVar = variables.getVariableByName(att.getName());
                     dag.getParentSet(predictiveVar).addParent(variables.getVariableByName(att.getName() + "_INDICATOR"));
@@ -262,7 +266,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIda2015(hiddenVarsWithUR));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
@@ -285,7 +289,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
      */
     public void initLearning() {
         if (classIndex == -1)
-            classIndex = data.getAttributes().getNumberOfAttributes()-1;
+            classIndex = this.attributes.getNumberOfAttributes()-1;
 
 
         switch (this.conceptDriftDetector){
@@ -311,7 +315,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
 
             for (int i = 0; i < meanHiddenVars.length; i++) {
-                meanHiddenVars[i] += out[i];
+                meanHiddenVars[i] = out[i];
             }
         }
         return meanHiddenVars;
