@@ -29,8 +29,8 @@ public class SVI_LDA {
 
     public static void main(String[] args) throws Exception {
 
-        String dataPath = "/Users/ana/Dropbox/amidst_postdoc/uci-text/docword.nips.arff";
-        String dataTest = "/Users/ana/Dropbox/amidst_postdoc/uci-text/docword.nips.arff";
+        String dataPath = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_train.arff";
+        String dataTest = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_test.arff";
 
         int ntopics = 5;
         int niter = 100;
@@ -40,7 +40,7 @@ public class SVI_LDA {
         int timeLimit = -1;
         int dataSize = 1500;
         int ncores = 4;
-        boolean amazon_cluster = false;
+        boolean amazon_cluster = true;
 
         if (args.length>1){
             dataPath = args[0];
