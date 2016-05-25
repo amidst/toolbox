@@ -30,6 +30,9 @@ public class CreateDataSet {
         DataStreamWriter.writeDataToFile(dataGaussians, path+"exampleDS_d"+nOfDisc+"_c"+nOfCont+".arff");
 
 
+        dataGaussians = DataSetGenerator.generate(1,100,nOfDisc,nOfCont);
+        DataStreamWriter.writeDataToFile(dataGaussians, path+"exampleDS_d"+nOfDisc+"_c"+nOfCont+"_small.arff");
+
         nOfCont = 0;
         nOfDisc = 5;
         dataGaussians = DataSetGenerator.generate(1,1000,nOfDisc,nOfCont);

@@ -12,7 +12,6 @@ import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
  * Created by rcabanas on 23/05/16.
  */
 public class DynamicModelLearning {
-
     public static void main(String[] args) {
 
         //Load the datastream
@@ -24,12 +23,9 @@ public class DynamicModelLearning {
         model.setNumStatesHiddenVar(4);
         model.setWindowSize(200);
         model.updateModel(data);
-        DynamicBayesianNetwork bn = model.getModel();
+        DynamicBayesianNetwork dbn = model.getModel();
 
-        System.out.println(bn);
-
+        System.out.println(dbn);
 
     }
-
-
 }

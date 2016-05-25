@@ -17,6 +17,14 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>--Djava.library.path="huginlink/huginlib/"
+                    </argLine>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -33,6 +41,16 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>latent-variable-models</artifactId>
+            <version>0.4.3-alpha</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core-dynamic</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core-dynamic</artifactId>
             <version>0.4.3-alpha</version>
         </dependency>
     </dependencies>
