@@ -37,9 +37,9 @@ public class MAPFlink_PrecisionAnalysis {
             }
 
 
-            int seedBayesianNetwork = 98983;
-            int seedVariablesChoice = 82125;
-            int seedDistributedMAPInference = 3523623;
+            int seedBayesianNetwork = 34234235;
+            int seedVariablesChoice = 236323;
+            int seedDistributedMAPInference = 51612;
 
             int samplesPerCore = 100000;
             int startingPointsPerCore = 100;
@@ -54,8 +54,8 @@ public class MAPFlink_PrecisionAnalysis {
             long timeStop;
             double execTime;
 
-            final int numberOfNetworks = 1;
-            final int numberOfEvidencesPerNetwork = 1;
+            final int numberOfNetworks = 25;
+            final int numberOfEvidencesPerNetwork = 4;
 
             System.out.println("MAP FLINK PRECISION SCALABILITY EXPERIMENT");
             System.out.println("Parameters:");
