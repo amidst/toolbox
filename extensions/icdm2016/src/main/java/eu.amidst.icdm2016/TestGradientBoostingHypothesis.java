@@ -14,7 +14,6 @@ import eu.amidst.core.variables.Variables;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 23/05/16.
@@ -52,9 +51,9 @@ public class TestGradientBoostingHypothesis {
     }
 
     public static void main(String[] args) throws IOException{
-        int NSETS = 4;
+        int NSETS = 10;
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
-        int windowSize = 10000;
+        int windowSize = 100;
         double[] meanHiddenVars;
 
 
@@ -79,7 +78,7 @@ public class TestGradientBoostingHypothesis {
             virtualDriftDetector.setSeed(1);
 
             //We set the data which is going to be used
-            virtualDriftDetector.setAttributes(dataMonth.getAttributes());
+            virtualDriftDetector.setAttributes(attsSubset);
 
             //We fix the size of the window
             virtualDriftDetector.setWindowsSize(windowSize);
@@ -96,10 +95,14 @@ public class TestGradientBoostingHypothesis {
 
             for (int i = 0; i < NSETS; i++) {
 
+                System.out.println();
+                System.out.println();
+                System.out.println("****************** ITERATION/MONTH "+numIter+"/"+i+ " ******************");
+
                 int currentMonth = i;
 
-                if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                    continue;
+                //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
+                //    continue;
 
                 dataMonth = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
 
@@ -121,16 +124,32 @@ public class TestGradientBoostingHypothesis {
                 BayesianNetwork learntBN = virtualDriftDetector.getLearntBayesianNetwork();
                 System.out.println("-------- VIRTUAL CONCEPT DRIFT DETECTOR --------");
                 System.out.println(learntBN);
-                printOutput(meanHiddenVars, currentMonth);
 
-                System.out.println("Learnt Mean for VAR01 = ");
+                //printOutput(meanHiddenVars, currentMonth);
+
+                Variables vars = virtualDriftDetector.getLearntBayesianNetwork().getDAG().getVariables();
+                Variable globalHidden = vars.getVariableByName("GlobalHidden_0");
+                Normal_MultinomialNormalParents distVAR01 = learntBN.getConditionalDistribution(virtualDriftDetector.
+                        getLearntBayesianNetwork().getDAG().getVariables().getVariableByName("VAR01"));
+
+                double globalHiddenMean = ((Normal) learntBN.getConditionalDistribution(globalHidden)).getMean();
+
+                double b0_VAR01_class0 = distVAR01.getNormal_NormalParentsDistribution(0).getIntercept();
+                double b1_VAR01_class0 = distVAR01.getNormal_NormalParentsDistribution(0).getCoeffForParent(globalHidden);
+                double meanVAR01_class0 = b0_VAR01_class0 + b1_VAR01_class0*globalHiddenMean;
+
+                double b0_VAR01_class1 = distVAR01.getNormal_NormalParentsDistribution(1).getIntercept();
+                double b1_VAR01_class1 = distVAR01.getNormal_NormalParentsDistribution(1).getCoeffForParent(globalHidden);
+                double meanVAR01_class1 = b0_VAR01_class1 + b1_VAR01_class1*globalHiddenMean;
+
+
+                System.out.println("Learnt Mean for VAR01[0] = " + meanVAR01_class0);
+                System.out.println("Learnt Mean for VAR01[1] = " + meanVAR01_class1);
 
 
                 //Remove residuals
-                Variables vars = virtualDriftDetector.getLearntBayesianNetwork().getDAG().getVariables();
 
                 Variable classVar = vars.getVariableByName("DEFAULTING");
-                Variable globalHidden = vars.getVariableByName("GlobalHidden_0");
                 dataMonth.restart();
                 dataMonth = dataMonth.map(instance -> {
                     vars.getListOfVariables().stream()
@@ -142,7 +161,6 @@ public class TestGradientBoostingHypothesis {
                                 Normal_MultinomialNormalParents dist = learntBN.getConditionalDistribution(var);
                                 double b0 = dist.getNormal_NormalParentsDistribution(classVal).getIntercept();
                                 double b1 = dist.getNormal_NormalParentsDistribution(classVal).getCoeffForParent(globalHidden);
-                                double globalHiddenMean = ((Normal) learntBN.getConditionalDistribution(globalHidden)).getMean();
 
                                 if (instance.getValue(var) != 0)
                                     instance.setValue(var, instance.getValue(var) - b0 - b1 * globalHiddenMean);
