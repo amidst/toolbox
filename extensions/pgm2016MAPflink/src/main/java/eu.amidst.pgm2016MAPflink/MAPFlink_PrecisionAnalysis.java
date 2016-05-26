@@ -26,7 +26,7 @@ public class MAPFlink_PrecisionAnalysis {
 
         int sizeBayesianNetwork;
 
-        for (int ii = 0; ii < 3; ii++) {
+        for (int ii = 1; ii < 3; ii++) {
 
             if (ii == 0) {
                 sizeBayesianNetwork = 50;
@@ -41,7 +41,7 @@ public class MAPFlink_PrecisionAnalysis {
             int seedVariablesChoice = 82125;
             int seedDistributedMAPInference = 3523623;
 
-            int samplesPerCore = 200000;
+            int samplesPerCore = 100000;
             int startingPointsPerCore = 100;
             int numberOfIterations = 200;
             int sampleSizeForEstimatingProbabilities = 100;
@@ -54,8 +54,8 @@ public class MAPFlink_PrecisionAnalysis {
             long timeStop;
             double execTime;
 
-            final int numberOfNetworks = 100;
-            final int numberOfEvidencesPerNetwork = 20;
+            final int numberOfNetworks = 1;
+            final int numberOfEvidencesPerNetwork = 1;
 
             System.out.println("MAP FLINK PRECISION SCALABILITY EXPERIMENT");
             System.out.println("Parameters:");
