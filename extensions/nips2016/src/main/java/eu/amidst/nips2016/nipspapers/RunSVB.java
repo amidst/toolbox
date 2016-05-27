@@ -43,8 +43,8 @@ public class RunSVB {
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
         String arrffName = "docword.kos.arff";
-        int ntopics = 5;
-        int niter = 100;
+        int ntopics = 2;
+        int niter = 10;
         double threshold = 0.1;
         int docsPerBatch = 10;
 

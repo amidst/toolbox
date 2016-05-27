@@ -413,4 +413,8 @@ public abstract class PlateuStructure implements Serializable {
     }
 
 
+    public double getPosteriorSampleSize(){
+        return Double.NaN;
+    }
+
 }

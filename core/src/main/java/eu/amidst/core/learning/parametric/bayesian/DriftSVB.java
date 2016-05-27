@@ -88,6 +88,8 @@ public class DriftSVB extends SVB{
 
     public double updateModelWithConceptDrift(DataOnMemory<DataInstance> batch) {
 
+        System.out.println("SAMPLE:" + this.plateuStructure.getPosteriorSampleSize());
+
         this.plateuStructure.setEvidence(batch.getList());
 
         if (firstBatch){
@@ -95,19 +97,33 @@ public class DriftSVB extends SVB{
             this.plateuStructure.runInference();
 
             posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
+            this.plateuStructure.updateNaturalParameterPrior(posteriorT_1);
             return this.plateuStructure.getLogProbabilityOfEvidence();
         }
 
         //Restart Truncated-Exp
-        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+        double delta = -1;//-this.plateuStructure.getPosteriorSampleSize()*0.1;
+        this.ef_TExpP.getNaturalParameters().set(0,delta);
+        this.ef_TExpP.updateMomentFromNaturalParameters();
+
+        this.ef_TExpQ.getNaturalParameters().set(0,delta);
+        this.ef_TExpQ.updateMomentFromNaturalParameters();
+
+        this.plateuStructure.getVMP().setMaxIter(1);
 
         boolean convergence = false;
         double elbo = Double.NaN;
         double niter=0;
+        double lambda = 0.5;
         while(!convergence && niter<10) {
 
             //Messages for TExp to Theta
-            double lambda = this.ef_TExpQ.getMomentParameters().get(0);
+            //double lambda = this.ef_TExpQ.getMomentParameters().get(0);
+            if (this.ef_TExpQ.getMomentParameters().get(0)>0)
+                lambda+=0.1;
+            else
+                lambda-=0.1;
+
             CompoundVector newPrior = Serialization.deepCopy(prior);
             newPrior.multiplyBy(1 - lambda);
             CompoundVector newPosterior = Serialization.deepCopy(posteriorT_1);
@@ -137,12 +153,14 @@ public class DriftSVB extends SVB{
                         node.getPDist().getExpectedLogNormalizer(momentParents));
             }).sum();
 
+            System.out.println("DIFF: " + (- kl_q_pt_1 + kl_q_p0));
+            System.out.println("DIFF2: " +  ef_TExpQ.getNaturalParameters().get(0));
+
             ef_TExpQ.getNaturalParameters().set(0,
                     - kl_q_pt_1 + kl_q_p0 +
                     this.ef_TExpP.getNaturalParameters().get(0));
             ef_TExpQ.fixNumericalInstability();
             ef_TExpQ.updateMomentFromNaturalParameters();
-
 
             //Elbo component assocaited to the truncated exponential.
             newELBO-=this.ef_TExpQ.kl(this.ef_TExpP.getNaturalParameters(),this.ef_TExpP.computeLogNormalizer());
@@ -165,13 +183,15 @@ public class DriftSVB extends SVB{
 
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
+        this.plateuStructure.updateNaturalParameterPrior(posteriorT_1);
+
 
         return elbo;
     }
 
 
     public double getLambdaValue(){
-        return this.ef_TExpQ.getMomentParameters().get(0);
+        return this.ef_TExpQ.getNaturalParameters().get(0);
     }
 
 
