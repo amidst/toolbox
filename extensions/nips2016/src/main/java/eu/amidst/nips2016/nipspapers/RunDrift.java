@@ -16,13 +16,14 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
+import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
-import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.lda.core.BatchSpliteratorByID;
 import eu.amidst.lda.core.PlateauLDA;
 
 import java.io.FileWriter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +42,18 @@ public class RunDrift {
 
     public static void printTopics(CompoundVector vector) {
         for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
-            SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue)vector.getVectorByPosition(j);
+
+            ArrayVector arrayVector = (ArrayVector)vector.getVectorByPosition(j);
+
+            int[] index = weka.core.Utils.sort(arrayVector.toArray());
+
+            for (int i = index.length-1; i > index.length-100; i--) {
+                System.out.print("("+index[i]+", "+arrayVector.get(index[i])+"), ");
+            }
+
+            System.out.println();
+
+           /* SparseVectorDefaultValue sparseVector = (SparseVectorDefaultValue)vector.getVectorByPosition(j);
             System.out.print(sparseVector.sum()+": ");
 
             List<Map.Entry<Integer,Double>> list = new ArrayList(sparseVector.getValues().entrySet());
@@ -65,17 +77,18 @@ public class RunDrift {
             }
 
             System.out.println();
+            */
         }
     }
     public static void main(String[] args) throws Exception{
 
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
-        String arrffName = "docword.kos.arff";
-        int ntopics = 5;
-        int niter = 100;
-        double threshold = 0.1;
-        int docsPerBatch = 10;
+        String arrffName = "docword.nips.arff";
+        int ntopics = 2;
+        int niter = 1000;
+        double threshold = 0.01;
+        int docsPerBatch = 100;
 
         if (args.length>1){
             dataPath=args[0];
@@ -120,23 +133,26 @@ public class RunDrift {
             fw.flush();
         }
 */
+
+        System.out.println(svb.getPlateuStructure().getPosteriorSampleSize());
+
         List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
 
         for (int i = 0; i < batches.size(); i++) {
 
-            System.out.println("Batch: " + batches.get(i).getNumberOfDataInstances());
+            System.out.println("Batch: " + batches.get(i).getNumberOfDataInstances()+ ", " + nwords(batches.get(i)));
 
             double log = 0;
             int nwords = 0;
 
-            for (int j = i+1; j < (i+1+5) && j< batches.size(); j++) {
+            for (int j = i+1; j < (i+1+1) && j< batches.size(); j++) {
                 log += svb.predictedLogLikelihood(batches.get(j));
                 nwords +=nwords(batches.get(j));
             }
 
             svb.updateModelWithConceptDrift(batches.get(i));
 
-            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaValue()+"\n");
+            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaValue()+"\t"+svb.getPlateuStructure().getPosteriorSampleSize()+"\n");
             fw.flush();
 
 
@@ -146,6 +162,23 @@ public class RunDrift {
             System.out.println();
             System.out.println();
 
+            System.out.println(svb.getPlateuStructure().getPosteriorSampleSize());
+
+
+            /*if (i>1 && i%20==10){
+                System.out.println("CHANGE");
+                arrffName = "docword.kos.tmp.arff";
+                dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+                batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
+                fw.write("CHANGE\n");
+            }
+            if (i>1 && i%20==0){
+                System.out.println("CHANGE");
+                arrffName = "docword.nips.arff";
+                dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+                batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
+                fw.write("CHANGE\n");
+            }*/
 
         }
 

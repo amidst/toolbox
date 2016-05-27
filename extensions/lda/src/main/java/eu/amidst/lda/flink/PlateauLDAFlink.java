@@ -239,19 +239,16 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
         allNodes.addAll(this.nonReplictedNodes);
 
         this.vmp.setNodes(allNodes);
-
-
-        //And reset the Q's of the new replicated nodes.
-        this.getNonReplictedNodes().filter(node -> node.isActive()).forEach(node -> {
-            node.resetQDist(this.vmp.getRandom());
-        });
     }
 
     /**
      * Resets the exponential family distributions of all nodes for the {@link VMP} object of this PlateuStructure.
      */
     public void resetQs() {
-
+        //And reset the Q's of the new replicated nodes.
+        this.getNonReplictedNodes().filter(node -> node.isActive()).forEach(node -> {
+            node.resetQDist(this.vmp.getRandom());
+        });
     }
 
     /**

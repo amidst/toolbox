@@ -49,6 +49,11 @@
             <artifactId>lda</artifactId>
             <version>0.4.1</version>
         </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.7.12</version>
+        </dependency>
     </dependencies>
 
     <build>

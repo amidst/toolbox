@@ -20,7 +20,6 @@ import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.SparseVectorDefaultValue;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
@@ -98,13 +97,19 @@ public class PlateauLDA extends PlateuStructure {
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a, b) -> a.getVarID() - b.getVarID()).collect(Collectors.toList());
 
         for (int i = 0; i < nTopics; i++) {
-            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i,0.1);
+            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, 0.1);
         }
 
 
         for (Variable variable : this.nonReplicatedVariablesList) {
-            SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
-            vec.setDefaultValue(0.01);
+//            SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+//            vec.setDefaultValue(0.01);
+
+            NaturalParameters vec = this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+
+            for (int i = 0; i < vec.size(); i++) {
+                vec.set(i, 0.01);
+            }
         }
 
     }
@@ -220,13 +225,18 @@ public class PlateauLDA extends PlateuStructure {
         allNodes.addAll(this.nonReplictedNodes);
 
         this.vmp.setNodes(allNodes);
+
+
     }
 
     /**
      * Resets the exponential family distributions of all nodes for the {@link VMP} object of this PlateuStructure.
      */
     public void resetQs() {
-
+        //And reset the Q's of the new replicated nodes.
+        this.getNonReplictedNodes().filter(node -> node.isActive()).forEach(node -> {
+            node.resetQDist(this.vmp.getRandom());
+        });
     }
 
     /**
@@ -240,25 +250,6 @@ public class PlateauLDA extends PlateuStructure {
         while (!convergence && (local_iter++) < this.vmp.getMaxIter()) {
 
             long start = System.nanoTime();
-
-            this.nonReplictedNodes
-                    .parallelStream()
-                    .filter(node -> node.isActive() && !node.isObserved())
-                    .forEach(node -> {
-                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
-
-                        Optional<Message<NaturalParameters>> message = node.getChildren()
-                                .stream()
-                                .filter(children -> children.isActive())
-                                .map(children -> this.vmp.newMessageToParent(children, node))
-                                .reduce(Message::combineNonStateless);
-
-                        if (message.isPresent())
-                            selfMessage.combine(message.get());
-
-
-                        this.vmp.updateCombinedMessage(node, selfMessage);
-                    });
 
             this.replicatedNodes
                     .parallelStream()
@@ -288,7 +279,24 @@ public class PlateauLDA extends PlateuStructure {
                         }
                     });
 
+            this.nonReplictedNodes
+                    .parallelStream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
 
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
 
             convergence = this.testConvergence();
 
@@ -341,17 +349,17 @@ public class PlateauLDA extends PlateuStructure {
                 .parallelStream()
                 .filter(node -> node.isActive() && node.isObserved()).mapToDouble(node -> {
 
-                    EF_BaseDistribution_MultinomialParents base = (EF_BaseDistribution_MultinomialParents)node.getPDist();
-                    Variable topicVariable = (Variable)base.getMultinomialParents().get(0);
+                    EF_BaseDistribution_MultinomialParents base = (EF_BaseDistribution_MultinomialParents) node.getPDist();
+                    Variable topicVariable = (Variable) base.getMultinomialParents().get(0);
                     Map<Variable, MomentParameters> momentParents = node.getMomentParents();
 
-                    double localELBO =0;
+                    double localELBO = 0;
 
                     MomentParameters topicMoments = momentParents.get(topicVariable);
-                    int wordIndex = (int)node.getAssignment().getValue(node.getMainVariable());
+                    int wordIndex = (int) node.getAssignment().getValue(node.getMainVariable());
 
                     for (int i = 0; i < topicMoments.size(); i++) {
-                        EF_SparseMultinomial_SparseDirichlet dist = (EF_SparseMultinomial_SparseDirichlet)base.getBaseEFConditionalDistribution(i);
+                        EF_SparseMultinomial_Dirichlet dist = (EF_SparseMultinomial_Dirichlet)base.getBaseEFConditionalDistribution(i);
                         MomentParameters dirichletMoments = momentParents.get(dist.getDirichletVariable());
                         localELBO += node.getSufficientStatistics().get(wordIndex)*dirichletMoments.get(wordIndex)*topicMoments.get(i);
                     }
@@ -361,5 +369,17 @@ public class PlateauLDA extends PlateuStructure {
 
 
         return elbo;
+    }
+
+    @Override
+    public double getPosteriorSampleSize() {
+
+        double sum = 0;
+        for (Variable variable : this.nonReplicatedVariablesList) {
+            sum+=this.ef_learningmodel.getDistribution(variable).getNaturalParameters().sum();
+
+        }
+
+        return sum;
     }
 }
