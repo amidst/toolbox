@@ -84,6 +84,7 @@ public class dVMP_LDA {
         svb.setBatchSize(docsPerBatch);
         svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
+        svb.setDAG(plateauLDA.getDagLDA());
         svb.runLearning();
 
 
@@ -94,9 +95,13 @@ public class dVMP_LDA {
         System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
 
 
-        args[0]="";
-        args[1]="";
+        if (args.length>0) {
+            args[0] = "";
+            args[1] = "";
+        }
         String pathNetwork = "dVMP_"+ Arrays.toString(args)+"_.bn";
+
+        svb.getSVB().setDAG(((PlateauLDAFlink)svb.getSVB().getPlateuStructure()).getDagLDA());
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
         BayesianNetworkWriter.saveToFile(svb.getLearntBayesianNetwork(),pathNetwork);

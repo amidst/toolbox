@@ -38,7 +38,7 @@ public class SVI_LDA {
         int docsPerBatch = 10;
         double learningRate = 0.75;
         int timeLimit = -1;
-        int dataSize = 1500;
+        int dataSize = 98851; //Number of documents at training
         int ncores = 4;
         boolean amazon_cluster = true;
 
@@ -97,9 +97,13 @@ public class SVI_LDA {
         System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
 
 
-        args[0]="";
-        args[1]="";
+        if(args.length>0) {
+            args[0] = "";
+            args[1] = "";
+        }
         String pathNetwork = "SVI_"+ Arrays.toString(args)+"_.bn";
+
+        svb.getSVB().setDAG(((PlateauLDAFlink)svb.getSVB().getPlateuStructure()).getDagLDA());
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
         BayesianNetworkWriter.saveToFile(svb.getLearntBayesianNetwork(),pathNetwork);
