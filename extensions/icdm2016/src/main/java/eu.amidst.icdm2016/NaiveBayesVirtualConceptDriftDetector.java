@@ -266,7 +266,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
         svb = new SVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIda2015(hiddenVarsWithUR));
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(fading);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);

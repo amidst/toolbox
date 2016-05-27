@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * This class defines a Plateu Structure.
  */
-public class PlateuStructureGlobalAsInIda2015 extends PlateuStructure implements Serializable {
+public class PlateuStructureGlobalAsInIDA2015 extends PlateuStructure implements Serializable {
 
     /**
      * Represents the serial version ID for serializing the object.
@@ -43,7 +43,7 @@ public class PlateuStructureGlobalAsInIda2015 extends PlateuStructure implements
      *
      * @param initialNonReplicatedVariablesList
      */
-    public PlateuStructureGlobalAsInIda2015(List<Variable> initialNonReplicatedVariablesList) {
+    public PlateuStructureGlobalAsInIDA2015(List<Variable> initialNonReplicatedVariablesList) {
         this.initialNonReplicatedVariablesList = new ArrayList<>();
         this.initialNonReplicatedVariablesList.addAll(initialNonReplicatedVariablesList);
     }

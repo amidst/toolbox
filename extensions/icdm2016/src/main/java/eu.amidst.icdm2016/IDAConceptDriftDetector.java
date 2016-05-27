@@ -202,7 +202,7 @@ public class IDAConceptDriftDetector {
 
         svb = new ParallelVB();
         svb.setSeed(this.seed);
-        svb.setPlateuStructure(new PlateuStructureGlobalAsInIda2015(hiddenVars));
+        svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVars));
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
         gaussianHiddenTransitionMethod.setFading(1.0);
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
