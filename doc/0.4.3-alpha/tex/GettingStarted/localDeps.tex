@@ -5,6 +5,12 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 
+%%% formatting the code
+\usepackage{listings}
+\usepackage{color}
+\lstset{%
+	escapeinside={(*}{*)},%
+}
 
 \usepackage{hyperref}
 
@@ -190,7 +196,7 @@ public class TestingAmidst {
   DynamicBayesianNetworkGenerator.setNumberOfStates(3);
 
   DynamicBayesianNetwork extendedDBN = 
-  DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();©  
+  DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();
 
   System.out.println(extendedDBN.toString());
 

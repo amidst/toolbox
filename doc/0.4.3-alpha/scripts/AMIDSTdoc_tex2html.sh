@@ -10,6 +10,7 @@ cd "$(dirname "$0")";
 root='..';
 src='tex';
 tag='html';
+version=`cat ../version.txt`;
 
 
 pandflag=`which pandoc | wc -l`; 
@@ -60,10 +61,18 @@ do
 	sed -i '' 's/<p class="caption">/<p class="caption" style="text-align:center">/g' ${dest};
 	sed -i '' 's/class="figure"/class="figure" style="text-align:center"/g' ${dest};
 	
-	########################
+
+	sed -i '' "s/(\*\\\\amidstversion\*)/${version}/g" ${dest};	
+	
+	########################sed -i '' "s/\\amidstversion/0.4.3-alpha/g" ${dest};
 	
 	
 	rm ${f/'.tex'/'.pdf'};
 	rm $f;
 done
+
+
+
+
+find ${root}/${tag} -name "properties.html" -type f -delete;
 

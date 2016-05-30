@@ -6,11 +6,26 @@
 \usepackage{graphicx}
 
 
+%%% formatting the code
+\usepackage{listings}
+\usepackage{color}
+\lstset{%
+	escapeinside={(*}{*)},%
+}
+
+\newcommand{\amidstversion}{\input{../../version.txt}}
+
+
 \usepackage{hyperref}
+
+
+
+
 
 \begin{document}
 
 \section{Wekalink: using an AMIDST classifier in Weka}\label{requirements-amidst-toolbox}
+
 
 %\subsection{For toolbox users }\label{for-toolbox-users}
  
@@ -22,26 +37,33 @@ One of the greatests points of AMIDST is the integration with other tools for da
 
 The first thing we have to do is to load the required AMIDST dependencies in a Maven project. In this case, we will have to load the modules \textbf{wekalink} and \textbf{latent-variable-models}. For that, add the following code to the file pom.xml of your project.
 
-\begin{verbatim}
+%\begin{verbatim}
+\begin{lstlisting}[
+language=xml,
+mathescape,
+columns=fullflexible,
+basicstyle=\fontfamily{lmvtt}\selectfont,
+]
     <dependencies>
     
       <dependency>
         <groupId>eu.amidst</groupId>
         <artifactId>wekalink</artifactId>
-        <version>0.4.3-alpha</version>
+        <version>(*\amidstversion*)</version>
         <scope>compile</scope>
      </dependency>
      
       <dependency>
         <groupId>eu.amidst</groupId>
         <artifactId>latent-variable-models</artifactId>
-        <version>0.4.3-alpha</version>
+        <version>(*\amidstversion*)</version>
         <scope>compile</scope>
       </dependency>
     
     <!-- ... -->
     </dependencies>
-\end{verbatim}
+\end{lstlisting}
+%\end{verbatim}
 
 
 Further details for creating a project using AMIDST fuctionality is given in the \href{../GettingStarted/}{Getting Started} section.
@@ -58,8 +80,12 @@ A custom classifier that could be handled by weka should inherit from class \tex
 
 Here below we show a minimal example where the Naive Bayes classifier provided by AMIDST is used.
 
-\begin{verbatim}
-
+\begin{lstlisting}[
+language=java,
+mathescape,
+columns=fullflexible,
+basicstyle=\fontfamily{lmvtt}\selectfont,
+]
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
@@ -81,10 +107,15 @@ public class AmidstNaiveBayes extends AbstractClassifier  {
 	@Override
 	public void buildClassifier(Instances data) throws Exception {
 		
-		attributes = Converter.convertAttributes(data.enumerateAttributes(), data.classAttribute());
-		DataOnMemoryListContainer<DataInstance> dataAmidst = new DataOnMemoryListContainer(attributes);
-		data.stream().forEach(instance ->
-		dataAmidst.add(new DataInstanceFromDataRow(new DataRowWeka(instance, attributes)))
+		attributes = Converter.convertAttributes(data.enumerateAttributes(), 
+								data.classAttribute());
+		DataOnMemoryListContainer<DataInstance> dataAmidst = 
+					new DataOnMemoryListContainer(attributes);
+					
+		data.stream()
+			.forEach(instance -> dataAmidst.add(
+				new DataInstanceFromDataRow(
+					new DataRowWeka(instance, attributes)))
 		);
 		
 		model = new NaiveBayesClassifier(attributes);
@@ -94,7 +125,9 @@ public class AmidstNaiveBayes extends AbstractClassifier  {
 	
 	@Override
 	public double[] distributionForInstance(Instance instance) throws Exception {
-		DataInstance amidstInstance = new DataInstanceFromDataRow(new DataRowWeka(instance, this.attributes));
+		DataInstance amidstInstance = 
+			new DataInstanceFromDataRow(new DataRowWeka(instance, 
+								this.attributes));
 		return model.predict(amidstInstance).getParameters();
 		
 	}
@@ -102,7 +135,7 @@ public class AmidstNaiveBayes extends AbstractClassifier  {
 }
 
 
-\end{verbatim}
+\end{lstlisting}
 
 
 Note that previous code does not implement neither the learning \linebreak nor the classification processes, it simply calls to the corresponding methods \textit{eu.amidst.latentvariablemodels.NaiveBayesClassifier} performing such tasks. 
@@ -112,22 +145,28 @@ Note that previous code does not implement neither the learning \linebreak nor t
 
 Now we can evaluate an AMIDST classifier using only calls to functions from Weka. Here we show an example where we load a dataset in format .arff, we learn a naive Bayes classifier and we show the confusion matrix:
 
-\begin{verbatim}
+\begin{lstlisting}[
+language=java,
+mathescape,
+columns=fullflexible,
+basicstyle=\fontfamily{lmvtt}\selectfont,
+]
         //Load the dataset
-        BufferedReader reader = new BufferedReader(new FileReader("exampleDS_d5_c0.arff"));
+        BufferedReader reader = 
+	        new BufferedReader(new FileReader("exampleDS_d5_c0.arff"));
         Instances data = new Instances(reader);
         data.setClassIndex(6);
         
         //Learn and evaluate the classifier
         Evaluation eval = new Evaluation(data);
-        Debug.Random rand = new Debug.Random(1);  // using seed = 1
+        Debug.Random rand = new Debug.Random(1); 
         int folds = 10;
         Classifier cls = new AmidstNaiveBayes();
         eval.crossValidateModel(cls, data, folds, rand);
         
         //Print the confusion matrix
         System.out.println(eval.toMatrixString());
-\end{verbatim}
+\end{lstlisting}
 
 
 
