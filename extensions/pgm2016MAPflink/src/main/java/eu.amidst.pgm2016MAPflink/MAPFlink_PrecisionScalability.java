@@ -13,6 +13,7 @@ import eu.amidst.flinklink.core.inference.DistributedMAPInference;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -23,18 +24,44 @@ public class MAPFlink_PrecisionScalability {
 
     public static void main(String[] args) throws Exception {
 
-        final int sizeBayesianNetwork = 200;
 
-        int seedBayesianNetwork = 98983;
-        int seedVariablesChoice = 82125;
-        int seedDistributedMAPInference = 3523623;
+        int sizeBayesianNetwork;
 
-        int samplesPerCore = 100000;
-        int startingPointsPerCore = 20;
-        int numberOfIterations = 50;
-        int sampleSizeForEstimatingProbabilities=200;
+        int startingPointsPerCore;
+        int numberOfIterations;
+        int sampleSizeForEstimatingProbabilities;
 
-        int nVarsEvidence = 8*sizeBayesianNetwork/10;
+        int samplesPerCore;
+
+        if (args.length!=5) {
+
+            sizeBayesianNetwork = 200;
+
+            startingPointsPerCore = 1;
+            numberOfIterations = 100;
+            sampleSizeForEstimatingProbabilities = 200;
+
+            samplesPerCore = 1500;
+
+        }
+        else {
+            sizeBayesianNetwork = Integer.parseInt(args[0]);
+
+            startingPointsPerCore = Integer.parseInt(args[1]);
+            numberOfIterations = Integer.parseInt(args[2]);
+            sampleSizeForEstimatingProbabilities = Integer.parseInt(args[3]);
+
+            samplesPerCore = Integer.parseInt(args[4]);
+
+        }
+
+
+        int seedBayesianNetwork = 35734;
+        int seedVariablesChoice = 1241;
+        int seedDistributedMAPInference = 616162;
+
+
+        int nVarsEvidence = 7*sizeBayesianNetwork/10;
         int nVarsInterest = sizeBayesianNetwork/10;;
 
 
@@ -42,8 +69,8 @@ public class MAPFlink_PrecisionScalability {
         long timeStop;
         double execTime;
 
-        final int numberOfNetworks = 100;
-        final int numberOfEvidencesPerNetwork = 20;
+        final int numberOfNetworks = 5;
+        final int numberOfEvidencesPerNetwork = 3;
 
         System.out.println("MAP FLINK PRECISION SCALABILITY EXPERIMENT");
         System.out.println("Parameters:");
@@ -59,8 +86,6 @@ public class MAPFlink_PrecisionScalability {
         System.out.println("Number of iterations for each optimization algorithms: " + numberOfIterations);
         System.out.println("Samples per core for the sampling search algorithms: " + samplesPerCore);
 
-
-
         /**********************************************
          *    INITIALIZATION
          *********************************************/
@@ -69,33 +94,42 @@ public class MAPFlink_PrecisionScalability {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         final int maxParallelism = env.getParallelism();
 
-        int log2MaxCores = (int)(Math.log(maxParallelism)/Math.log(2));
+        int log2MaxCores = (int) (Math.log(maxParallelism) / Math.log(2));
+        log2MaxCores = 5; // NOT NECESSARILY THE ACTUAL NUMBER OF CORES, 5: 32 CORES
         System.out.println("Amount of cores available: " + maxParallelism);
 
         System.out.println();
         System.out.println();
 
 
-
-        BayesianNetworkGenerator.setSeed(seedBayesianNetwork);
-
-        BayesianNetworkGenerator.setNumberOfGaussianVars(sizeBayesianNetwork/2);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(sizeBayesianNetwork/2,2);
-        BayesianNetworkGenerator.setNumberOfLinks((int)(1.4*sizeBayesianNetwork));
-
-        BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
-        System.out.println(bn.toString());
+        double[][] resultingLogProbabilities = new double[5][numberOfNetworks * numberOfEvidencesPerNetwork * (log2MaxCores+1)];
+        int experimentCounter = 0;
 
 
+        for (int i = 0; i < numberOfNetworks; i++) {
 
-        /****************************************************************
-         *   CHOOSE VARIABLES OF INTEREST AND THOSE TO BE OBSERVED
-         ****************************************************************/
+            System.out.println("\n\n BAYESIAN NETWORK NUMBER " + i + "\n\n");
+            BayesianNetworkGenerator.setSeed(seedBayesianNetwork + i);
 
-        Random variablesChoiceRandom = new Random(seedVariablesChoice);
+            BayesianNetworkGenerator.setNumberOfGaussianVars(sizeBayesianNetwork / 2);
+            BayesianNetworkGenerator.setNumberOfMultinomialVars(sizeBayesianNetwork / 2, 2);
+            BayesianNetworkGenerator.setNumberOfLinks((int) (1.4 * sizeBayesianNetwork));
 
-        List<Variable> varsEvidence = new ArrayList<>(nVarsEvidence);
-        List<Variable> varsInterest = new ArrayList<>(nVarsInterest);
+            BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+            System.out.println(bn.toString());
+
+            for (int j = 0; j < numberOfEvidencesPerNetwork; j++) {
+
+                System.out.println("\n\n EVIDENCE NUMBER " + j + "\n\n");
+
+                /****************************************************************
+                 *   CHOOSE VARIABLES OF INTEREST AND THOSE TO BE OBSERVED
+                 ****************************************************************/
+
+                Random variablesChoiceRandom = new Random(seedVariablesChoice + j);
+
+                List<Variable> varsEvidence = new ArrayList<>(nVarsEvidence);
+                List<Variable> varsInterest = new ArrayList<>(nVarsInterest);
 
 //        //To choose the first variables as MAP vars and the following ones as evidence
 //        for (int i = 0; i < nVarsInterest; i++) {
@@ -105,77 +139,89 @@ public class MAPFlink_PrecisionScalability {
 //            varsEvidence.add(bn.getVariables().getVariableById(nVarsInterest + i));
 //        }
 
-        //Randomly chooses variables for the evidence and (different) variables of interest.
-        while(varsEvidence.size()<nVarsEvidence) {
-            int varIndex = variablesChoiceRandom.nextInt(bn.getNumberOfVars());
-            Variable variable = bn.getVariables().getVariableById(varIndex);
-            if (! varsEvidence.contains(variable)) {
-                varsEvidence.add(variable);
-            }
-        }
+                //Randomly chooses variables for the evidence and (different) variables of interest.
+                while (varsEvidence.size() < nVarsEvidence) {
+                    int varIndex = variablesChoiceRandom.nextInt(bn.getNumberOfVars());
+                    Variable variable = bn.getVariables().getVariableById(varIndex);
+                    if (!varsEvidence.contains(variable)) {
+                        varsEvidence.add(variable);
+                    }
+                }
 
-        while(varsInterest.size()<nVarsInterest) {
-            int varIndex = variablesChoiceRandom.nextInt(bn.getNumberOfVars());
-            Variable variable = bn.getVariables().getVariableById(varIndex);
-            if (! varsInterest.contains(variable) && ! varsEvidence.contains(variable)) {
-                varsInterest.add(variable);
-            }
-        }
+                while (varsInterest.size() < nVarsInterest) {
+                    int varIndex = variablesChoiceRandom.nextInt(bn.getNumberOfVars());
+                    Variable variable = bn.getVariables().getVariableById(varIndex);
+                    if (!varsInterest.contains(variable) && !varsEvidence.contains(variable)) {
+                        varsInterest.add(variable);
+                    }
+                }
 
-        varsEvidence.sort((variable1,variable2) -> (variable1.getVarID() > variable2.getVarID() ? 1 : -1));
-        varsInterest.sort((variable1,variable2) -> (variable1.getVarID() > variable2.getVarID() ? 1 : -1));
-
-
-        System.out.println("\nVARIABLES OF INTEREST:");
-        varsInterest.forEach(var -> System.out.println(var.getName()));
+                varsEvidence.sort((variable1, variable2) -> (variable1.getVarID() > variable2.getVarID() ? 1 : -1));
+                varsInterest.sort((variable1, variable2) -> (variable1.getVarID() > variable2.getVarID() ? 1 : -1));
 
 
-        System.out.println("\nVARIABLES IN THE EVIDENCE:");
-        varsEvidence.forEach(var -> System.out.println(var.getName()));
+                System.out.println("\nVARIABLES OF INTEREST:");
+                System.out.println("Discrete vars: " + varsInterest.stream().filter(Variable::isMultinomial).count());
+                System.out.println("Continuous vars: " + varsInterest.stream().filter(Variable::isNormal).count());
+//                varsInterest.forEach(var -> System.out.println(var.getName()));
 
 
-
-        /************************************************
-         *     GENERATE AND INCLUDE THE EVIDENCE
-         ************************************************/
-
-        BayesianNetworkSampler bayesianNetworkSampler = new BayesianNetworkSampler(bn);
-        bayesianNetworkSampler.setSeed(variablesChoiceRandom.nextInt());
-        DataStream<DataInstance> fullSample = bayesianNetworkSampler.sampleToDataStream(1);
-
-        HashMapAssignment evidence = new HashMapAssignment(nVarsEvidence);
-        varsEvidence.stream().forEach(variable -> evidence.setValue(variable,fullSample.stream().findFirst().get().getValue(variable)));
-
-        System.out.println("\nEVIDENCE: ");
-        System.out.println(evidence.outputString(varsEvidence));
+                System.out.println("\nVARIABLES IN THE EVIDENCE:");
+                System.out.println("Discrete vars: " + varsEvidence.stream().filter(Variable::isMultinomial).count());
+                System.out.println("Continuous vars: " + varsEvidence.stream().filter(Variable::isNormal).count());
+//                varsEvidence.forEach(var -> System.out.println(var.getName()));
 
 
+                /************************************************
+                 *     GENERATE AND INCLUDE THE EVIDENCE
+                 ************************************************/
 
-        /************************************************
-         *     INITIALIZE MAP INFERENCE OBJECT
-         ************************************************/
+                BayesianNetworkSampler bayesianNetworkSampler = new BayesianNetworkSampler(bn);
+                bayesianNetworkSampler.setSeed(variablesChoiceRandom.nextInt());
+                DataStream<DataInstance> fullSample = bayesianNetworkSampler.sampleToDataStream(1);
 
-        DistributedMAPInference distributedMAPInference = new DistributedMAPInference();
-        distributedMAPInference.setModel(bn);
+                HashMapAssignment evidence = new HashMapAssignment(nVarsEvidence);
+                varsEvidence.stream().forEach(variable -> evidence.setValue(variable, fullSample.stream().findFirst().get().getValue(variable)));
 
-        distributedMAPInference.setMAPVariables(varsInterest);
-
-        distributedMAPInference.setSampleSize(samplesPerCore);
-        distributedMAPInference.setNumberOfStartingPoints(startingPointsPerCore);
-        distributedMAPInference.setNumberOfIterations(numberOfIterations);
-        distributedMAPInference.setSampleSizeEstimatingProbabilities(sampleSizeForEstimatingProbabilities);
-        distributedMAPInference.setSeed(seedDistributedMAPInference);
-
-        distributedMAPInference.setEvidence(evidence);
+                System.out.println("\nEVIDENCE: ");
+                System.out.println(evidence.outputString(varsEvidence));
 
 
-        DataStream<DataInstance> fullSample2 = bayesianNetworkSampler.sampleToDataStream(1);
-        HashMapAssignment configuration = new HashMapAssignment(bn.getNumberOfVars());
+                for (int k = 0; k <= log2MaxCores; k++) {
 
-        bn.getVariables().getListOfVariables().stream().forEach(variable -> configuration.setValue(variable,fullSample2.stream().findFirst().get().getValue(variable)));
+                    int nCoresToUse = (int)Math.pow(2,k);
 
 
-        System.out.println();
+                    int nSamplesToUse = nCoresToUse * samplesPerCore;
+                    int nStartingPointsToUse = nCoresToUse * startingPointsPerCore;
+
+                    /************************************************
+                     *     INITIALIZE MAP INFERENCE OBJECT
+                     ************************************************/
+
+                    DistributedMAPInference distributedMAPInference = new DistributedMAPInference();
+                    distributedMAPInference.setModel(bn);
+
+                    distributedMAPInference.setMAPVariables(varsInterest);
+
+                    distributedMAPInference.setSampleSize(nSamplesToUse);
+                    distributedMAPInference.setNumberOfStartingPoints(nStartingPointsToUse);
+                    distributedMAPInference.setNumberOfIterations(numberOfIterations);
+                    distributedMAPInference.setSampleSizeEstimatingProbabilities(sampleSizeForEstimatingProbabilities);
+                    distributedMAPInference.setSeed(seedDistributedMAPInference);
+
+                    distributedMAPInference.setEvidence(evidence);
+                    distributedMAPInference.setNumberOfCores(maxParallelism);
+
+                    System.out.println("DISTRIBUTED MAP INFERENCE USING " + maxParallelism + " CORES, SIMULATING " + nCoresToUse + " CORES");
+
+                    DataStream<DataInstance> fullSample2 = bayesianNetworkSampler.sampleToDataStream(1);
+                    HashMapAssignment configuration = new HashMapAssignment(bn.getNumberOfVars());
+
+                    bn.getVariables().getListOfVariables().stream().forEach(variable -> configuration.setValue(variable, fullSample2.stream().findFirst().get().getValue(variable)));
+
+
+                    System.out.println();
 
 
 //        int nVarsMover = 3;
@@ -277,308 +323,148 @@ public class MAPFlink_PrecisionScalability {
 
 
 //         DUMB EXECUTION FOR 'HEATING UP'
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
 
 
-        /************************************************
-         *        SIMULATED ANNEALING
-         ************************************************/
+                    /************************************************
+                     *        SIMULATED ANNEALING
+                     ************************************************/
+
+                    // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
+                    timeStart = System.nanoTime();
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
+
+                    Assignment mapEstimate_SAGlobal = distributedMAPInference.getEstimate();
+                    System.out.println("MAP estimate  (SA.Global): " + mapEstimate_SAGlobal.outputString(varsInterest));
+//                    System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+                    System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+
+                    timeStop = System.nanoTime();
+                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+                    System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+                    System.out.println();
 
 
-        // MAP INFERENCE WITH SIMULATED ANNEALING, MOVING ALL VARIABLES EACH TIME
-        timeStart = System.nanoTime();
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_GLOBAL);
+                    // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
+                    timeStart = System.nanoTime();
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_LOCAL);
 
-        Assignment mapEstimate_SAGlobal = distributedMAPInference.getEstimate();
-        System.out.println("MAP estimate  (SA.Global): " + mapEstimate_SAGlobal.outputString(varsInterest));
-        System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-        System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+                    Assignment mapEstimate_SALocal = distributedMAPInference.getEstimate();
+                    System.out.println("MAP estimate  (SA.Local): " + mapEstimate_SALocal.outputString(varsInterest));
+//                    System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+                    System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
-        timeStop = System.nanoTime();
-        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
-
-
-        // MAP INFERENCE WITH SIMULATED ANNEALING, SOME VARIABLES EACH TIME
-        timeStart = System.nanoTime();
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SA_LOCAL);
-
-        Assignment mapEstimate_SALocal = distributedMAPInference.getEstimate();
-        System.out.println("MAP estimate  (SA.Local): " + mapEstimate_SALocal.outputString(varsInterest));
-        System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-        System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-
-        timeStop = System.nanoTime();
-        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+                    timeStop = System.nanoTime();
+                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+                    System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+                    System.out.println();
 
 
-        /************************************************
-         *        HILL CLIMBING
-         ************************************************/
+                    /************************************************
+                     *        HILL CLIMBING
+                     ************************************************/
 
-        //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
-        timeStart = System.nanoTime();
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_GLOBAL);
+                    //  MAP INFERENCE WITH HILL CLIMBING, MOVING ALL VARIABLES EACH TIME
+                    timeStart = System.nanoTime();
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_GLOBAL);
 
-        Assignment mapEstimate_HCGlobal = distributedMAPInference.getEstimate();
-        System.out.println("MAP estimate  (HC.Global): " + mapEstimate_HCGlobal.outputString(varsInterest));
-        System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-        System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
+                    Assignment mapEstimate_HCGlobal = distributedMAPInference.getEstimate();
+                    System.out.println("MAP estimate  (HC.Global): " + mapEstimate_HCGlobal.outputString(varsInterest));
+//                    System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+                    System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
-        timeStop = System.nanoTime();
-        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
-
-
-
-        //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
-        timeStart = System.nanoTime();
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
-
-        Assignment mapEstimate_HCLocal = distributedMAPInference.getEstimate();
-        System.out.println("MAP estimate  (HC.Local): " + mapEstimate_HCLocal.outputString(varsInterest));
-        System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-        System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-
-        timeStop = System.nanoTime();
-        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+                    timeStop = System.nanoTime();
+                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+                    System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+                    System.out.println();
 
 
-        /************************************************
-         *        SAMPLING
-         ************************************************/
+                    //  MAP INFERENCE WITH HILL CLIMBING, SOME VARIABLES EACH TIME
+                    timeStart = System.nanoTime();
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
 
-        // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-        distributedMAPInference.setNumberOfStartingPoints(samplesPerCore);
-        timeStart = System.nanoTime();
-        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING);
+                    Assignment mapEstimate_HCLocal = distributedMAPInference.getEstimate();
+                    System.out.println("MAP estimate  (HC.Local): " + mapEstimate_HCLocal.outputString(varsInterest));
+//                    System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+                    System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
-        Assignment mapEstimate_Sampling = distributedMAPInference.getEstimate();
-
-        System.out.println("MAP estimate (SAMPLING): " + mapEstimate_Sampling.outputString(varsInterest));
-        System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
-        System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
-
-        timeStop = System.nanoTime();
-        execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+                    timeStop = System.nanoTime();
+                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+                    System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+                    System.out.println();
 
 
+                    /************************************************
+                     *        SAMPLING
+                     ************************************************/
 
-        // INDEPENDENT ESTIMATION OF THE LOG-PROBABILITIES OF THE MAP ESTIMATES
-        MAPInferenceRobustNew mapInferenceRobustNew = new MAPInferenceRobustNew();
-        mapInferenceRobustNew.setModel(bn);
-        mapInferenceRobustNew.setMAPVariables(varsInterest);
-        mapInferenceRobustNew.setEvidence(evidence);
-        mapInferenceRobustNew.setSeed(seedBayesianNetwork);
+                    // MAP INFERENCE WITH SIMULATION AND PICKING MAX
+                    distributedMAPInference.setNumberOfStartingPoints(samplesPerCore);
+                    timeStart = System.nanoTime();
+                    distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING);
 
+                    Assignment mapEstimate_Sampling = distributedMAPInference.getEstimate();
 
-        int sampleSizePreciseEstimation = 100000;
-        double estimatedLogProbability;
+                    System.out.println("MAP estimate (SAMPLING): " + mapEstimate_Sampling.outputString(varsInterest));
+//                    System.out.println("with estimated (unnormalized) probability: " + Math.exp(distributedMAPInference.getLogProbabilityOfEstimate()));
+                    System.out.println("with estimated (unnormalized) log-probability: " + distributedMAPInference.getLogProbabilityOfEstimate());
 
-        System.out.println("SA Global");
-        estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_SAGlobal, sampleSizePreciseEstimation);
-        System.out.println(estimatedLogProbability);
-
-
-        System.out.println("SA Local");
-        estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_SALocal, sampleSizePreciseEstimation);
-        System.out.println(estimatedLogProbability);
-
-
-        System.out.println("HC Global");
-        estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_HCGlobal, sampleSizePreciseEstimation);
-        System.out.println(estimatedLogProbability);
-
-        System.out.println("HC Local");
-        estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_HCLocal, sampleSizePreciseEstimation);
-        System.out.println(estimatedLogProbability);
+                    timeStop = System.nanoTime();
+                    execTime = (double) (timeStop - timeStart) / 1000000000.0;
+                    System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+                    System.out.println();
 
 
-        System.out.println("Sampling");
-        estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_Sampling, sampleSizePreciseEstimation);
-        System.out.println(estimatedLogProbability);
+                    // INDEPENDENT ESTIMATION OF THE LOG-PROBABILITIES OF THE MAP ESTIMATES
+                    MAPInferenceRobustNew mapInferenceRobustNew = new MAPInferenceRobustNew();
+                    mapInferenceRobustNew.setModel(bn);
+                    mapInferenceRobustNew.setMAPVariables(varsInterest);
+                    mapInferenceRobustNew.setEvidence(evidence);
+                    mapInferenceRobustNew.setSeed(seedBayesianNetwork);
 
 
+                    int sampleSizePreciseEstimation = 200000;
+                    double estimatedLogProbability;
 
-//
-//        mapInferenceRobustNew.setSampleSizeEstimatingProbabilities(sampleSizePreciseEstimation);
-//
-//        double relativeError = 1;
-//
-//        while(relativeError>0.01) {
-//
-//            mapInferenceRobustNew.setSampleSizeEstimatingProbabilities(sampleSizePreciseEstimation);
-//
-//            estimatedLogProbability1 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SAGlobal);
-//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability1);
-//
-//            estimatedLogProbability2 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SAGlobal);
-//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability2);
-//
-//            estimatedLogProbability3 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SAGlobal);
-//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability3);
-//
-//            double meanEstimatedProbability = (estimatedLogProbability1 + estimatedLogProbability2 + estimatedLogProbability3) / 3;
-//            double varianceEstimatedProbability = (Math.pow(estimatedLogProbability1-meanEstimatedProbability,2) + Math.pow(estimatedLogProbability2-meanEstimatedProbability,2) + Math.pow(estimatedLogProbability3-meanEstimatedProbability,2)) / 2;
-//
-//            double standardErrorEstimatedProbability = Math.sqrt(varianceEstimatedProbability)/Math.sqrt(3);
-//
-//            relativeError=standardErrorEstimatedProbability/Math.abs(meanEstimatedProbability);
-//
-//            System.out.println(meanEstimatedProbability + ", " + varianceEstimatedProbability + ", " + standardErrorEstimatedProbability);
-//            System.out.println("Relative error with " + sampleSizePreciseEstimation + " samples: " + relativeError);
-//
-//            sampleSizePreciseEstimation = 4 * sampleSizePreciseEstimation;
-//
-//        }
+                    System.out.println("SA Global");
+                    estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_SAGlobal, sampleSizePreciseEstimation);
+                    System.out.println("Estimated logProbability: " + estimatedLogProbability);
+                    resultingLogProbabilities[0][experimentCounter] = estimatedLogProbability;
 
 
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SALocal);
-//        System.out.println("SALocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCGlobal);
-//        System.out.println("HCGlobal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCLocal);
-//        System.out.println("HCLocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_Sampling);
-//        System.out.println("Sampling PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//
-//        mapInferenceRobustNew.setSeed(seedBayesianNetwork);
-//
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SAGlobal);
-//        System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SALocal);
-//        System.out.println("SALocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCGlobal);
-//        System.out.println("HCGlobal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCLocal);
-//        System.out.println("HCLocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_Sampling);
-//        System.out.println("Sampling PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//
-//        mapInferenceRobustNew.setSeed(seedBayesianNetwork);
-//
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SAGlobal);
-//        System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_SALocal);
-//        System.out.println("SALocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCGlobal);
-//        System.out.println("HCGlobal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_HCLocal);
-//        System.out.println("HCLocal PRECISE RE-estimated log-probability: " + estimatedProbability);
-//
-//        estimatedProbability = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate_Sampling);
-//        System.out.println("Sampling PRECISE RE-estimated log-probability: " + estimatedProbability);
+                    System.out.println("SA Local");
+                    estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_SALocal, sampleSizePreciseEstimation);
+                    System.out.println("Estimated logProbability: " + estimatedLogProbability);
+                    resultingLogProbabilities[1][experimentCounter] = estimatedLogProbability;
 
 
+                    System.out.println("HC Global");
+                    estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_HCGlobal, sampleSizePreciseEstimation);
+                    System.out.println("Estimated logProbability: " + estimatedLogProbability);
+                    resultingLogProbabilities[2][experimentCounter] = estimatedLogProbability;
 
 
+                    System.out.println("HC Local");
+                    estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_HCLocal, sampleSizePreciseEstimation);
+                    System.out.println("Estimated logProbability: " + estimatedLogProbability);
+                    resultingLogProbabilities[3][experimentCounter] = estimatedLogProbability;
 
+                    System.out.println("Sampling");
+                    estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, mapEstimate_Sampling, sampleSizePreciseEstimation);
+                    System.out.println("Estimated logProbability: " + estimatedLogProbability);
+                    resultingLogProbabilities[4][experimentCounter] = estimatedLogProbability;
 
-//        BayesianNetworkGenerator.setSeed(2152364);
-//
-//        BayesianNetworkGenerator.setNumberOfGaussianVars(100);
-//        BayesianNetworkGenerator.setNumberOfMultinomialVars(100,2);
-//        BayesianNetworkGenerator.setNumberOfLinks(250);
-//
-//        BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
-//
-//        int startingPointsPerCore=30;
-//        int samplingSize=20000;
-//
-//        int numberOfCores=2;
-//
-//
-//        /***********************************************
-//         *        VARIABLES OF INTEREST
-//         ************************************************/
-//
-//        Variable varInterest1 = bn.getVariables().getVariableById(6);
-//        Variable varInterest2 = bn.getVariables().getVariableById(50);
-//        Variable varInterest3 = bn.getVariables().getVariableById(70);
-//
-//        List<Variable> varsInterest = new ArrayList<>(3);
-//        varsInterest.add(varInterest1);
-//        varsInterest.add(varInterest2);
-//        varsInterest.add(varInterest3);
-//        System.out.println("MAP Variables of Interest: " + Arrays.toString(varsInterest.stream().map(Variable::getName).toArray()));
-//        System.out.println();
-//
-//
-//        DistributedMAPInference distributedMAPInference = new DistributedMAPInference();
-//
-//        distributedMAPInference.setModel(bn);
-//        distributedMAPInference.setMAPVariables(varsInterest);
-//
-//        distributedMAPInference.setSeed(1955237);
-//        distributedMAPInference.setNumberOfCores(numberOfCores);
-//        distributedMAPInference.setNumberOfStartingPoints(startingPointsPerCore);
-//        distributedMAPInference.setNumberOfIterations(200);
-//
-//
-//
-//
-//        /***********************************************
-//         *        INCLUDING EVIDENCE
-//         ************************************************/
-//
-//        Variable variable1 = bn.getVariables().getVariableById(10);
-//        Variable variable2 = bn.getVariables().getVariableById(20);
-//        Variable variable3 = bn.getVariables().getVariableById(110);
-//
-//        int var1value=0;
-//        int var2value=1;
-//        int var3value=1;
-//
-//        System.out.println("Evidence: Variable " + variable1.getName() + " = " + var1value + ", Variable " + variable2.getName() + " = " + var2value + ", " + " and Variable " + variable3.getName() + " = " + var3value);
-//        System.out.println();
-//
-//        HashMapAssignment evidence = new HashMapAssignment(3);
-//
-//        evidence.setValue(variable1, var1value);
-//        evidence.setValue(variable2, var2value);
-//        evidence.setValue(variable3, var3value);
-//
-//        distributedMAPInference.setEvidence(evidence);
-//
-//        /***********************************************
-//         *        RUN INFERENCE
-//         ************************************************/
-//
-//        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.HC_LOCAL);
-//
-//        System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
-//        System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());
-//
-//
-//
-//        distributedMAPInference.setNumberOfStartingPoints(samplingSize);
-//        distributedMAPInference.runInference(MAPInferenceRobustNew.SearchAlgorithm.SAMPLING);
-//
-//        System.out.println(distributedMAPInference.getEstimate().outputString(varsInterest));
-//        System.out.println("log-prob of estimate: " + distributedMAPInference.getLogProbabilityOfEstimate());
+                    experimentCounter++;
+                }
+            }
+        }
+
+        System.out.println("LOG PROBABILITIES WITH BN SIZE " + sizeBayesianNetwork);
+        System.out.println("logProbs_SAGlobal = " + Arrays.toString(resultingLogProbabilities[0]).replace("[", "c(").replace("]", ");"));
+        System.out.println("logProbs_SALocal = " + Arrays.toString(resultingLogProbabilities[1]).replace("[", "c(").replace("]", ");"));
+        System.out.println("logProbs_HCGlobal = " + Arrays.toString(resultingLogProbabilities[2]).replace("[", "c(").replace("]", ");"));
+        System.out.println("logProbs_HCLocal = " + Arrays.toString(resultingLogProbabilities[3]).replace("[", "c(").replace("]", ");"));
+        System.out.println("logProbs_Sampling = " + Arrays.toString(resultingLogProbabilities[4]).replace("[", "c(").replace("]", ");"));
 
 
     }
@@ -594,7 +480,7 @@ public class MAPFlink_PrecisionScalability {
 
         double meanEstimatedProbability = 0, varianceEstimatedProbability, standardErrorEstimatedProbability;
 
-        while(relativeError>0.01) {
+        while(relativeError>0.03) {
 
             mapInferenceRobustNew.setSampleSizeEstimatingProbabilities(sampleSizePreciseEstimation);
 
