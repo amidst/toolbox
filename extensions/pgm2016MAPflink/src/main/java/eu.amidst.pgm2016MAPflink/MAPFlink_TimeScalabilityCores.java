@@ -34,7 +34,11 @@ public class MAPFlink_TimeScalabilityCores {
 
         int repetitions;
 
-        if (args.length!=6) {
+        int nCoresToUse;
+
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        if (args.length!=7) {
 
             sizeBayesianNetwork = 50;
 
@@ -45,6 +49,8 @@ public class MAPFlink_TimeScalabilityCores {
             samplingSize = 100000;
 
             repetitions = 1;
+
+            nCoresToUse = env.getParallelism();
 
         }
         else {
@@ -57,6 +63,8 @@ public class MAPFlink_TimeScalabilityCores {
             samplingSize = Integer.parseInt(args[4]);
 
             repetitions = Integer.parseInt(args[5]);
+
+            nCoresToUse = Integer.parseInt(args[6]);
         }
 
 
@@ -64,8 +72,7 @@ public class MAPFlink_TimeScalabilityCores {
          *    INITIALIZATION
          *********************************************/
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        final int maxParallelism = env.getParallelism();
+        env.setParallelism(nCoresToUse);
 
 
         long timeStart;
@@ -85,7 +92,7 @@ public class MAPFlink_TimeScalabilityCores {
 
 
         System.out.println("MAP FLINK TIME SCALABILITY EXPERIMENT");
-        System.out.println("Amount of cores available: " + maxParallelism);
+        System.out.println("Amount of cores available: " + env.getParallelism());
         System.out.println("Parameters:");
         System.out.println("Bayesian Network size " + sizeBayesianNetwork + " with seed " + seedBayesianNetwork);
         System.out.println("(half discrete with 2 states and half Gaussians, number of links " + (int) (1.4 * sizeBayesianNetwork) + ")");
@@ -199,9 +206,9 @@ public class MAPFlink_TimeScalabilityCores {
             distributedMAPInference.setSeed(seedDistributedMAPInference);
 
             distributedMAPInference.setEvidence(evidence);
-            distributedMAPInference.setNumberOfCores(maxParallelism);
+            distributedMAPInference.setNumberOfCores(nCoresToUse);
 
-            System.out.println("DISTRIBUTED MAP INFERENCE USING " + maxParallelism + " CORES.");
+            System.out.println("DISTRIBUTED MAP INFERENCE USING " + env.getParallelism() + " CORES.");
 
             DataStream<DataInstance> fullSample2 = bayesianNetworkSampler.sampleToDataStream(1);
             HashMapAssignment configuration = new HashMapAssignment(bn.getNumberOfVars());
@@ -210,8 +217,8 @@ public class MAPFlink_TimeScalabilityCores {
             System.out.println();
 
 
-            distributedMAPInference.setNumberOfCores(maxParallelism);
-            System.out.println("Computing times with " + maxParallelism + " cores...");
+            distributedMAPInference.setNumberOfCores(nCoresToUse);
+            System.out.println("Computing times with " + env.getParallelism() + " cores...");
 
 
             /***********************************************
