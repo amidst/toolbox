@@ -162,8 +162,8 @@ public class TestGradientBoostingHypothesis {
                                 double b0 = dist.getNormal_NormalParentsDistribution(classVal).getIntercept();
                                 double b1 = dist.getNormal_NormalParentsDistribution(classVal).getCoeffForParent(globalHidden);
 
-                                if (instance.getValue(var) != 0)
-                                    instance.setValue(var, instance.getValue(var) - b0 - b1 * globalHiddenMean);
+                                //if (instance.getValue(var) != 0)
+                                instance.setValue(var, instance.getValue(var) - b0 - b1 * globalHiddenMean);
                             });
                     return instance;
                 });

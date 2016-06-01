@@ -53,7 +53,7 @@ public class NaiveBayesCDDetectorIcdm2016 {
         virtualDriftDetector.setAttributes(dataMonth0.getAttributes());
 
         //We fix the size of the window
-        int windowSize = 1000;
+        int windowSize = 50000;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the number of global latent variables
