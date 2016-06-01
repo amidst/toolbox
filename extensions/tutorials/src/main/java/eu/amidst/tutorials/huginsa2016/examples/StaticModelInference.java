@@ -3,6 +3,7 @@ package eu.amidst.tutorials.huginsa2016.examples;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
+import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.InferenceEngine;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -45,31 +46,14 @@ public class StaticModelInference {
         assignment.setValue(varObserved,6.5);
 
         //we set the algorithm
-        InferenceEngine.setInferenceAlgorithm(new VMP()); //new HuginInference(); new ImportanceSampling();
+        InferenceAlgorithm infer = new ImportanceSampling(); //new HuginInference(); //new VMP();
+        infer.setModel(bn);
+        infer.setEvidence(assignment);
 
         //query
-        Distribution p = InferenceEngine.getPosterior(varTarget, bn, assignment);
+        infer.runInference();
+        Distribution p = infer.getPosterior(varTarget);
         System.out.println("P(LatentVar2|GaussianVar1=6.5) = "+p);
-
-
-        /*
-        //Alternative method:
-
-        //Initialize the inference algorithm
-        InferenceAlgorithm inferenceAlgorithm = new VMP();
-        inferenceAlgorithm.setModel(bn);
-
-        Variable varTarget = bn.getVariables().getVariableByName("LatentVar2");
-        Variable varObserved = null;
-
-        inferenceAlgorithm.setEvidence(assignment);
-        //Then we run inference
-        inferenceAlgorithm.runInference();
-
-        //Then we query the posterior of
-        System.out.println("P(LatentVar2|GaussianVar1=6.5) = " + inferenceAlgorithm.getPosterior(varTarget));
-
-        */
 
 
 

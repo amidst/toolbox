@@ -4,11 +4,12 @@ package eu.amidst.tutorials.huginsa2016.examples;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
+import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -42,29 +43,30 @@ public class DynamicModelInference {
         DataStream<DynamicDataInstance> dataPredict = DynamicDataStreamLoader.loadFromFile(filenamePredict);
 
         //Select the inference algorithm
-        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(new VMP()); // new ImportanceSampling(),  new VMP(),
-        //Intitialize the inference engine
-        InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
-        InferenceEngineForDBN.setModel(dbn);
+        InferenceAlgorithmForDBN infer = new FactoredFrontierForDBN(new VMP()); // new ImportanceSampling(),  new VMP(),
+        infer.setModel(dbn);
 
-        //Variables of interest
+
         Variable varTarget = dbn.getDynamicVariables().getVariableByName("discreteHiddenVar");
         UnivariateDistribution posterior = null;
-
 
         //Classify each instance
         int t = 0;
         for (DynamicDataInstance instance : dataPredict) {
 
-            InferenceEngineForDBN.addDynamicEvidence(instance);
-            InferenceEngineForDBN.runInference();
-            posterior = InferenceEngineForDBN.getFilteredPosterior(varTarget);
+            infer.addDynamicEvidence(instance);
+            infer.runInference();
 
-            //Display the output
+            posterior = infer.getFilteredPosterior(varTarget);
             System.out.println("t="+t+", P(discreteHiddenVar | Evidence)  = " + posterior);
+
+            posterior = infer.getPredictivePosterior(varTarget, 2);
+            //Display the output
+            System.out.println("t="+t+"+5, P(discreteHiddenVar | Evidence)  = " + posterior);
+
+
             t++;
         }
-
 
 
 
