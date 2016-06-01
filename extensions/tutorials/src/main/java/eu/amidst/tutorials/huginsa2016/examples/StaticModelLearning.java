@@ -5,6 +5,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
 
 /**
  * Created by rcabanas on 23/05/16.
@@ -18,9 +19,8 @@ public class StaticModelLearning {
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(filename);
 
         //Learn the model
-        FactorAnalysis model = new FactorAnalysis(data.getAttributes());
-        model.setNumberOfLatentVariables(3);
-        model.setWindowSize(200);
+        Model model = new FactorAnalysis(data.getAttributes());
+        ((FactorAnalysis)model).setNumberOfLatentVariables(3);
         model.updateModel(data);
         BayesianNetwork bn = model.getModel();
 

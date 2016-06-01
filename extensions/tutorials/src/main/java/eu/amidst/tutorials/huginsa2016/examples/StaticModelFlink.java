@@ -7,6 +7,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.io.FileNotFoundException;
@@ -23,9 +24,8 @@ public class StaticModelFlink {
         DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFile(env, filename, false);
 
         //Learn the model
-        FactorAnalysis model = new FactorAnalysis(data.getAttributes());
-        model.setNumberOfLatentVariables(3);
-        model.setWindowSize(200);
+        Model model = new FactorAnalysis(data.getAttributes());
+        ((FactorAnalysis)model).setNumberOfLatentVariables(3);
         model.updateModel(data);
         BayesianNetwork bn = model.getModel();
 

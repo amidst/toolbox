@@ -13,6 +13,7 @@ import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.huginlink.inference.HuginInference;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
 
 /**
  * Created by rcabanas on 23/05/16.
@@ -26,9 +27,8 @@ public class StaticModelInference {
         DataStream<DataInstance> data = DataStreamLoader.openFromFile(filename);
 
         //Learn the model
-        FactorAnalysis model = new FactorAnalysis(data.getAttributes());
-        model.setNumberOfLatentVariables(3);
-        model.setWindowSize(200);
+        Model model = new FactorAnalysis(data.getAttributes());
+        ((FactorAnalysis)model).setNumberOfLatentVariables(3);
         model.updateModel(data);
         BayesianNetwork bn = model.getModel();
 

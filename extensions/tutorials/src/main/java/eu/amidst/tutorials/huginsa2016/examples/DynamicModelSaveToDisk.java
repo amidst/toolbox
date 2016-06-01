@@ -9,6 +9,7 @@ import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.io.DBNWriterToHugin;
+import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
 import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
 
 import java.io.IOException;
@@ -26,11 +27,12 @@ public class DynamicModelSaveToDisk {
 
 
         //Learn the model
-        HiddenMarkovModel model = new HiddenMarkovModel(data.getAttributes());
-        model.setNumStatesHiddenVar(4);
+        DynamicModel model = new HiddenMarkovModel(data.getAttributes());
+        ((HiddenMarkovModel)model).setNumStatesHiddenVar(4);
         model.setWindowSize(200);
         model.updateModel(data);
         DynamicBayesianNetwork dbn = model.getModel();
+
 
         System.out.println(dbn);
 
