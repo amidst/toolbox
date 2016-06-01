@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.huginlink.learning.ParallelTAN;
 
 import java.io.IOException;
 
@@ -16,7 +17,7 @@ import java.io.IOException;
  *
  * Created by ana@cs.aau.dk on 01/06/16.
  */
-public class ParallelTAN {
+public class ParallelTANdemo {
     public static void main(String[] args) throws IOException{
 
         int streamSampleSize = 5000;
@@ -33,7 +34,7 @@ public class ParallelTAN {
             int samplesOnMemory = 1000;
             int numCores = i;
             System.out.println("Learning TAN: " + samplesOnMemory + " samples on memory, " + numCores + "core/s ...");
-            eu.amidst.huginlink.learning.ParallelTAN tan = new eu.amidst.huginlink.learning.ParallelTAN();
+            ParallelTAN tan = new ParallelTAN();
             tan.setNumCores(numCores);
             tan.setNumSamplesOnMemory(samplesOnMemory);
             tan.setNameRoot(bn.getVariables().getListOfVariables().get(0).getName());
