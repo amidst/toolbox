@@ -132,17 +132,17 @@ public class GenerateRandom {
         Variables variables = new Variables();
 
         IntStream.range(0, getNumDiscVars() -1)
-                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, getNumStates()));
+                .forEach(i -> variables.newMultinomialVariable("DiscreteVar" + i, getNumStates()));
 
         IntStream.range(0, getNumGaussVars())
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
-        Variable classVar = variables.newMultionomialVariable("ClassVar", getNumStates());
+        Variable classVar = variables.newMultinomialVariable("ClassVar", getNumStates());
 
         //if(getNumHiddenGaussVars() > 0)
             //IntStream.rangeClosed(0, getNumHiddenGaussVars() - 1).forEach(i -> variables.newGaussianVariable("GaussianSPVar_" + i));
         //if(numStatesHiddenDiscVars > 0)
-        //Variable discreteHiddenVar = variables.newMultionomialVariable("DiscreteSPVar", getNumStatesHiddenDiscVars());
+        //Variable discreteHiddenVar = variables.newMultinomialVariable("DiscreteSPVar", getNumStatesHiddenDiscVars());
 
         DAG dag = new DAG(variables);
 

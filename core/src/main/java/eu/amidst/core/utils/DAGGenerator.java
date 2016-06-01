@@ -60,7 +60,7 @@ public class DAGGenerator {
         Variables modelHeader = new Variables(attributes);
 
         //We define the global latent binary variable
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable(varHiddenName, nstates);
+        Variable globalHiddenVar = modelHeader.newMultinomialVariable(varHiddenName, nstates);
 
         //Then, we create a DAG object with the defined model header
         DAG dag = new DAG(modelHeader);

@@ -85,7 +85,7 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
         String className = data.getAttributes().getFullListOfAttributes().get(classIndex).getName();
         hiddenVars = new ArrayList<Variable>();
 
-        Variable globalHidden  = variables.newMultionomialVariable("GlobalHidden", this.numberOfStatesHiddenVar);
+        Variable globalHidden  = variables.newMultinomialVariable("GlobalHidden", this.numberOfStatesHiddenVar);
         hiddenVars.add(globalHidden);
 
         Variable classVariable = variables.getVariableByName(className);

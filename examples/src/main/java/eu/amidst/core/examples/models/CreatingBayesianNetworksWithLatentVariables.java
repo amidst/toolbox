@@ -66,19 +66,19 @@ public class CreatingBayesianNetworksWithLatentVariables {
         Variable i = variables.getVariableByName("I");
 
         /**
-         * 1. We create the hidden variable. For doing that we make use of the method "newMultionomialVariable". When
+         * 1. We create the hidden variable. For doing that we make use of the method "newMultinomialVariable". When
          * a variable is created from an Attribute object, it contains all the information we need (e.g.
          * the name, the type, etc). But hidden variables does not have an associated attribute
          * and, for this reason, we use now this to provide this information.
          *
-         * 2. Using the "newMultionomialVariable" method, we define a variable called HiddenVar, which is
+         * 2. Using the "newMultinomialVariable" method, we define a variable called HiddenVar, which is
          * not associated to any attribute and, then, it is a latent variable, its state space is a finite set with two elements, and its
          * distribution type is multinomial.
          *
          * 3. We finally create the hidden variable using the method "newVariable".
          */
 
-        Variable hidden = variables.newMultionomialVariable("HiddenVar", Arrays.asList("TRUE", "FALSE"));
+        Variable hidden = variables.newMultinomialVariable("HiddenVar", Arrays.asList("TRUE", "FALSE"));
 
         /**
          * 1. Once we have defined your {@link Variables} object, including the latent variable,

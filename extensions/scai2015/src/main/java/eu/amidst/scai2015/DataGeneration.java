@@ -54,10 +54,10 @@ public class DataGeneration {
 
 
             for (int i = 0; i < 10; i++) {
-                vars.newMultionomialVariable("Binary" + i, 2);
+                vars.newMultinomialVariable("Binary" + i, 2);
             }
 
-            vars.newMultionomialVariable("Class", 2);
+            vars.newMultinomialVariable("Class", 2);
 
             DAG dag = new DAG(vars);
 

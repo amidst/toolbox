@@ -85,7 +85,7 @@ public class AmidstClustering extends RandomizableClusterer implements NumberOfC
 
         attributes_ = Converter.convertAttributes(data.enumerateAttributes());
         Variables modelHeader = new Variables(attributes_);
-        clusterVar_ = modelHeader.newMultionomialVariable("clusterVar", this.numberOfClusters());
+        clusterVar_ = modelHeader.newMultinomialVariable("clusterVar", this.numberOfClusters());
 
         inferenceAlgorithm_ = new ImportanceSampling();
         inferenceAlgorithm_.setSeed(this.getSeed());

@@ -38,7 +38,7 @@ public class SetBNwithHidden {
         Variables modelHeader = new Variables(dataStream.getAttributes());
 
         // Define the global latent binary variable.
-        Variable globalHiddenDiscrete = modelHeader.newMultionomialVariable("globalHiddenDiscrete", 2);
+        Variable globalHiddenDiscrete = modelHeader.newMultinomialVariable("globalHiddenDiscrete", 2);
 
         // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");

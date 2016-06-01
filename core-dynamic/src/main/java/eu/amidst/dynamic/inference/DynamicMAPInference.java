@@ -18,7 +18,6 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -782,7 +781,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 currentVar  = variables.getVariableByName(MAPvarName + "_t" + Integer.toString(t));
             }
             else {
-                currentVar  = variables.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+                currentVar  = variables.newMultinomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
             }
 
             MAPestimate.setValue(currentVar,MAPsequence[t]);
@@ -1257,14 +1256,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 //        else {
 //            IntStream.range(0, nTimeSteps).forEach(t -> {
 ////                Variables varsAux = Serialization.deepCopy(this.staticEvenModel.getVariables());
-////                Variable currentVar = varsAux.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+////                Variable currentVar = varsAux.newMultinomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
 //                Variable currentVar;
 //                try {
 //                    currentVar = this.staticEvenModel.getVariables().getVariableByName(MAPvarName + "_t" + Integer.toString(t));
 //                }
 //                catch (Exception e) {
 //                    Variables copy = Serialization.deepCopy(this.staticEvenModel.getVariables());
-//                    currentVar = copy.newMultionomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
+//                    currentVar = copy.newMultinomialVariable(MAPvarName + "_t" + Integer.toString(t), MAPvariable.getNumberOfStates());
 //                }
 //                MAPestimate.setValue(currentVar, MAPsequence[t]);
 //            });
@@ -1558,7 +1557,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 nStatesMAPVariable = (int) Math.pow(MAPvariable.getNumberOfStates(),(nTimeSteps-modelNumber)%nMergedClassVars);
             }
 
-            variables.newMultionomialVariable(groupedClassName + "_t" + Integer.toString(mergedClassVarIndex), nStatesMAPVariable);
+            variables.newMultinomialVariable(groupedClassName + "_t" + Integer.toString(mergedClassVarIndex), nStatesMAPVariable);
         });
 
         // REPLICATIONS OF THE REST OF VARIABLES (EACH ONE REPEATED 'nTimeSteps' TIMES)

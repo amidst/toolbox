@@ -69,7 +69,7 @@ public class MixtureOfFactorAnalysers extends Model {
 
         vars.forEach(observableVariables::add);
 
-        Variable discreteLatentVar = vars.newMultionomialVariable("DiscreteLatentVar",numberOfStatesLatentDiscreteVar);
+        Variable discreteLatentVar = vars.newMultinomialVariable("DiscreteLatentVar",numberOfStatesLatentDiscreteVar);
 
         IntStream.range(0,numberOfLatentVariables).forEach(i -> {
             Variable latentVar = vars.newGaussianVariable("LatentVar" + i);

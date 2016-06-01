@@ -176,7 +176,7 @@ public class AmidstClusteringAlgorithm extends AbstractClusterer {
 
             attributes_ = Converter.convertAttributes(getDataset(instance.numAttributes(), 0).enumerateAttributes());
             Variables modelHeader = new Variables(attributes_);
-            clusterVar_ = modelHeader.newMultionomialVariable("clusterVar", getNumClusters());
+            clusterVar_ = modelHeader.newMultinomialVariable("clusterVar", getNumClusters());
 
             batch_ = new DataOnMemoryListContainer(attributes_);
             predictions_ = new VMP();
