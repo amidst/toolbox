@@ -42,10 +42,10 @@ public class VariablesExample {
         Variable gaussianVar = variables.newGaussianVariable("Gaussian");
 
         //Now we create a Multinomial variable with two states
-        Variable multinomialVar = variables.newMultionomialVariable("Multinomial", 2);
+        Variable multinomialVar = variables.newMultinomialVariable("Multinomial", 2);
 
         //Now we create a Multinomial variable with two states: TRUE and FALSE
-        Variable multinomialVar2 = variables.newMultionomialVariable("Multinomial2", Arrays.asList("TRUE, FALSE"));
+        Variable multinomialVar2 = variables.newMultinomialVariable("Multinomial2", Arrays.asList("TRUE, FALSE"));
 
         //For Multinomial variables we can iterate over their different states
         FiniteStateSpace states = multinomialVar2.getStateSpaceType();

@@ -1005,7 +1005,7 @@ public class GlobalHiddenConceptDrift {
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
         Variable classVariable = variables.getVariableByName("class");
-        //Variable localVariable = variables.newMultionomialVariable("local",2);
+        //Variable localVariable = variables.newMultinomialVariable("local",2);
 
         DAG dag = new DAG(variables);
 
@@ -1075,7 +1075,7 @@ public class GlobalHiddenConceptDrift {
 
         Variables variables = new Variables(data.getAttributes());
         Variable globalHidden = variables.newGaussianVariable("Global");
-        Variable localHidden = variables.newMultionomialVariable("Local", 2);
+        Variable localHidden = variables.newMultinomialVariable("Local", 2);
 
         Variable classVariable = variables.getVariableByName("outputString");
 

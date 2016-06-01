@@ -127,7 +127,7 @@ public class AmidstClassifier extends AbstractClassifier implements OptionHandle
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1)
                     .forEach(i -> modelHeader.newGaussianVariable("HiddenG_" + i));
         if(getnOfStatesMultHiddenVar_() > 0)
-            modelHeader.newMultionomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
+            modelHeader.newMultinomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
 
         dag = new DAG(modelHeader);
 

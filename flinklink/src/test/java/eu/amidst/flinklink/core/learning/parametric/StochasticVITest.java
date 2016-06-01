@@ -82,7 +82,7 @@ public class StochasticVITest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
 

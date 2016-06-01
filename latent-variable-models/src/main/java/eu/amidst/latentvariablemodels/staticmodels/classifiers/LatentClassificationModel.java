@@ -89,7 +89,7 @@ public class LatentClassificationModel extends Classifier {
 
 
         //Create the hidden variabels
-        hiddenMultinomial = vars.newMultionomialVariable("M", numStatesHidden);
+        hiddenMultinomial = vars.newMultinomialVariable("M", numStatesHidden);
 
         contHiddenList = new ArrayList<Variable>();
         for(int i=0; i<numContinuousHidden; i++) {

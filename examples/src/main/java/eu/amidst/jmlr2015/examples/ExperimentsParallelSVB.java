@@ -53,7 +53,7 @@ public class ExperimentsParallelSVB {
         Variables modelHeader = new Variables(dataStream.getAttributes());
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
+        Variable globalHiddenVar = modelHeader.newMultinomialVariable("GlobalHidden", 2);
 
         // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");

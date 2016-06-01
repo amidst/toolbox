@@ -49,7 +49,7 @@ public class GenerateData {
     public static BayesianNetwork createBN(int nVars) throws Exception {
 
         Variables dynamicVariables = new Variables();
-        Variable classVar = dynamicVariables.newMultionomialVariable("C", 2);
+        Variable classVar = dynamicVariables.newMultinomialVariable("C", 2);
 
         for (int i = 0; i < nVars; i++) {
             dynamicVariables.newGaussianVariable("A" + i);

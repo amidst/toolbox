@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
 import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
 
 /**
@@ -19,11 +20,12 @@ public class DynamicModelLearning {
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(filename);
 
         //Learn the model
-        HiddenMarkovModel model = new HiddenMarkovModel(data.getAttributes());
-        model.setNumStatesHiddenVar(4);
+        DynamicModel model = new HiddenMarkovModel(data.getAttributes());
+        ((HiddenMarkovModel)model).setNumStatesHiddenVar(4);
         model.setWindowSize(200);
         model.updateModel(data);
         DynamicBayesianNetwork dbn = model.getModel();
+
 
         System.out.println(dbn);
 

@@ -71,7 +71,7 @@ public class HODE extends Classifier {
 
     @Override
     protected void buildDAG() {
-        Variable superParentVar = vars.newMultionomialVariable("superParentVar",getNumStates());
+        Variable superParentVar = vars.newMultinomialVariable("superParentVar",getNumStates());
         dag = new DAG(vars);
         dag.getParentSets()
                 .stream()

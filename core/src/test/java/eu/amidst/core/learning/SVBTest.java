@@ -44,7 +44,7 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
 
@@ -95,8 +95,8 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -148,9 +148,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials3() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -189,9 +189,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials4() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -233,9 +233,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials5() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 5);
-        Variable varB = variables.newMultionomialVariable("B", 5);
-        Variable varC = variables.newMultionomialVariable("C", 5);
+        Variable varA = variables.newMultinomialVariable("A", 5);
+        Variable varB = variables.newMultinomialVariable("B", 5);
+        Variable varC = variables.newMultinomialVariable("C", 5);
 
         DAG dag = new DAG(variables);
 
@@ -276,7 +276,7 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomial6() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",4);
+        Variable varB = variables.newMultinomialVariable("B",4);
 
         DAG dag = new DAG(variables);
 
@@ -897,7 +897,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian9() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varB = variables.newMultinomialVariable("B",2);
         Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
@@ -944,7 +944,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian10() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varB = variables.newMultinomialVariable("B",2);
         Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);

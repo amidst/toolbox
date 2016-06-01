@@ -53,7 +53,7 @@ public class ParallelVMPExtended {
         Variables modelHeader = new Variables(attributes);
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
+        Variable globalHiddenVar = modelHeader.newMultinomialVariable("GlobalHidden", 2);
 
         // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");

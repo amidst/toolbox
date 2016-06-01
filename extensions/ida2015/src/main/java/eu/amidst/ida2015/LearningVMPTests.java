@@ -53,7 +53,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -118,7 +118,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -203,7 +203,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -446,7 +446,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C",2);
+        Variable varC = variables.newMultinomialVariable("C",2);
 
         DAG dag = new DAG(variables);
 

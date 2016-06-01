@@ -62,7 +62,7 @@ public class GaussianMixture extends Model {
     @Override
     protected void buildDAG() {
 
-        hiddenVar = vars.newMultionomialVariable("HiddenVar",numStatesHiddenVar);
+        hiddenVar = vars.newMultinomialVariable("HiddenVar",numStatesHiddenVar);
 
         //We create a standard naive Bayes
         dag = new DAG(vars);

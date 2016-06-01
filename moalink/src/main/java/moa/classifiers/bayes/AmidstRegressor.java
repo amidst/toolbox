@@ -209,7 +209,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1).forEach(i -> modelHeader.newGaussianVariable("HiddenG_" + i));
         if(getnOfStatesMultHiddenVar_() > 0)
-            modelHeader.newMultionomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
+            modelHeader.newMultinomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
 
         dag = new DAG(modelHeader);
 

@@ -34,7 +34,7 @@ public class CustomGaussianMixture extends Model{
     protected void buildDAG() {
         //TODO: Write the code building a DAG for your custom model
 
-        hiddenVar = vars.newMultionomialVariable("HiddenVar",numStatesHiddenVar);
+        hiddenVar = vars.newMultinomialVariable("HiddenVar",numStatesHiddenVar);
 
         //We create a standard naive Bayes
         dag = new DAG(vars);
