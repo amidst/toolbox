@@ -23,7 +23,7 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 /**
  * This class is a writer of dynamic Bayesian networks in AMIDST format to Hugin files.
  */
-public class DBNWriterToHugin {
+public class DynamicBayesianNetworkWriterToHugin {
 
     /**
      * Creates a Hugin Bayesian network file from a AMIDST Dynamic Bayesian network model.
@@ -32,10 +32,10 @@ public class DBNWriterToHugin {
      * @param file the name of the Hugin file in which the model is saved.
      * @throws ExceptionHugin
      */
-    public static void saveToHuginFile(DynamicBayesianNetwork amidstDBN, String file) throws ExceptionHugin {
+    public static void save(DynamicBayesianNetwork amidstDBN, String file) throws ExceptionHugin {
 
 
-        BNWriterToHugin.saveToHuginFile(amidstDBN.toBayesianNetworkTimeT(),file);
+        BayesianNetworkWriterToHugin.save(amidstDBN.toBayesianNetworkTimeT(),file);
 
         /*
         Class huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);

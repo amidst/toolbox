@@ -323,7 +323,7 @@ public final class BayesianNetworkGenerator{
         seed = seed_;
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bayesianNetwork, filename);
+        BayesianNetworkWriter.save(bayesianNetwork, filename);
     }
 
 
@@ -336,7 +336,7 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bayesianNetwork, "networks/simulated/Bayesian10Vars15Links.bn");
+        BayesianNetworkWriter.save(bayesianNetwork, "networks/simulated/Bayesian10Vars15Links.bn");
 
         BayesianNetwork bayesianNetwork2 = BayesianNetworkLoader.loadFromFile("networks/simulated/Bayesian10Vars15Links.bn");
         System.out.println(bayesianNetwork2.getDAG().toString());

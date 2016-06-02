@@ -34,7 +34,7 @@ public final class BayesianNetworkWriter {
      * @param fileName a name of a file where the Bayesian network will be saved.
      * @throws IOException in case of an error while writing to file.
      */
-    public static void saveToFile (BayesianNetwork bn, String fileName) throws IOException {
+    public static void save(BayesianNetwork bn, String fileName) throws IOException {
 
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName));
         out.writeObject(bn);

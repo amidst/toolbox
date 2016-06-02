@@ -106,7 +106,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        BayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
+        BayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
 
 
@@ -168,7 +168,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
 
 

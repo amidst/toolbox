@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static eu.amidst.modelExperiments.DAGsGeneration.getIDAMultiLocalGaussianDAG;
-import static eu.amidst.modelExperiments.DAGsGeneration.getUAIMultiLocalGlobalDAG;
 
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
@@ -108,7 +107,7 @@ public class MixtureModelDistributedVMPv2 {
             builder.append(args[i]);
             builder.append("_");
         }
-        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
+        BayesianNetworkWriter.save(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
 
         /// TEST

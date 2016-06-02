@@ -34,7 +34,7 @@ public class DynamicBayesianNetworkWriter {
      * @param fileName a name of a file where the Dynamic Bayesian network will be saved.
      * @throws IOException in case of an error occurs while writing to the file.
      */
-    public static void saveToFile (DynamicBayesianNetwork dbn, String fileName) throws IOException {
+    public static void save(DynamicBayesianNetwork dbn, String fileName) throws IOException {
 
         ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName));
         out.writeObject(dbn);

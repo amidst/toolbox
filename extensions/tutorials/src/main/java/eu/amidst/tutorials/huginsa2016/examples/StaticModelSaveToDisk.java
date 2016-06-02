@@ -6,7 +6,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.huginlink.io.BNWriterToHugin;
+import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 
@@ -31,10 +31,10 @@ public class StaticModelSaveToDisk {
         System.out.println(bn);
 
         // Save with .bn format
-        BayesianNetworkWriter.saveToFile(bn, "networks/simulated/exampleBN.bn");
+        BayesianNetworkWriter.save(bn, "networks/simulated/exampleBN.bn");
 
         // Save with hugin format
-        BNWriterToHugin.saveToHuginFile(bn, "networks/simulated/exampleBN.net");
+        BayesianNetworkWriterToHugin.save(bn, "networks/simulated/exampleBN.net");
     }
 
 }

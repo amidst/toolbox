@@ -25,7 +25,7 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 /**
  * This class is a writer to create Hugin Bayesian network files from AMIDST Bayesian networks.
  */
-public class BNWriterToHugin {
+public class BayesianNetworkWriterToHugin {
 
     /**
      * Creates a Hugin Bayesian network file from a AMIDST Bayesian network model.
@@ -33,7 +33,7 @@ public class BNWriterToHugin {
      * @param file the name of the Hugin file in which the model will be saved.
      * @throws ExceptionHugin
      */
-    public static void saveToHuginFile(BayesianNetwork amidstBN, String file) throws ExceptionHugin {
+    public static void save(BayesianNetwork amidstBN, String file) throws ExceptionHugin {
         Domain huginBN = BNConverterToHugin.convertToHugin(amidstBN);
         huginBN.saveAsNet(file);
     }

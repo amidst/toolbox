@@ -75,7 +75,7 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
 
     public static void createDBN2() throws Exception {
@@ -99,7 +99,7 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn2.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn2.dbn");
     }
 
     public static void createDBN3() throws Exception {
@@ -123,7 +123,7 @@ public class DynamicParallelVBTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn3.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn3.dbn");
     }
 
 

@@ -8,7 +8,7 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.huginlink.io.DBNWriterToHugin;
+import eu.amidst.huginlink.io.DynamicBayesianNetworkWriterToHugin;
 import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
 import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
 
@@ -38,10 +38,10 @@ public class DynamicModelSaveToDisk {
 
 
         // Save with .bn format
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/simulated/exampleDBN.bn");
+        DynamicBayesianNetworkWriter.save(dbn, "networks/simulated/exampleDBN.bn");
 
         // Save with hugin format
-        DBNWriterToHugin.saveToHuginFile(dbn, "networks/simulated/exampleDBN.net");
+        DynamicBayesianNetworkWriterToHugin.save(dbn, "networks/simulated/exampleDBN.net");
 
 
 
