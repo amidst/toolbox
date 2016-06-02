@@ -74,12 +74,6 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
-            <version>0.4.3-alpha</version>
-        </dependency>
-
 
     </dependencies>
 
