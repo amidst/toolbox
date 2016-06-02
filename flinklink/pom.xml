@@ -25,6 +25,11 @@
     <version>${AMIDSTver}</version>
 
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
+
     <dependencies>
 
         <dependency>

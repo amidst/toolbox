@@ -22,7 +22,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cajamar</artifactId>
-
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
 

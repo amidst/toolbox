@@ -120,9 +120,12 @@
         <module>moalink</module>
         <module>latent-variable-models</module>
         <module>wekalink</module>
+        <module>flinklink</module>
+        <module>extensions/tutorials</module>
+
 
         <!-- Remove the following references to modules before publishing a new release -->
-        <module>flinklink</module>
+
         <module>sparklink</module>
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
@@ -131,7 +134,6 @@
         <module>extensions/ecai2016</module>
         <module>extensions/uai2016</module>
         <module>extensions/reviewMeeting2016</module>
-        <module>extensions/tutorials</module>
     </modules>
 
 

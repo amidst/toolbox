@@ -31,6 +31,10 @@
     </scm>
 
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
     <developers>
         <developer>
             <name>Andres R. Masegosa</name>

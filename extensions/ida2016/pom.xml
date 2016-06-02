@@ -27,6 +27,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
+
     <artifactId>ida2016</artifactId>
     <dependencies>
         <dependency>

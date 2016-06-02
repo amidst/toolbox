@@ -46,6 +46,8 @@
     </scm>
 
 
+
+
     <developers>
         <developer>
             <name>Andres R. Masegosa</name>
@@ -101,6 +103,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.6</slf4j.version>
         <junit.version>4.11</junit.version>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
     </properties>
 
 

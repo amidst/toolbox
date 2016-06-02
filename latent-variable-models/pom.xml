@@ -24,7 +24,10 @@
     <groupId>eu.amidst</groupId>
     <artifactId>latent-variable-models</artifactId>
     <version>${AMIDSTver}</version>
-    
+
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
     
     
         <developers>

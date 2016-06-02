@@ -29,9 +29,12 @@
     <scm>
         <url>http://github.com/amidst/core</url>
     </scm>
-    <modules>
-        <module>..</module>
-    </modules>
+
+
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
 
     <dependencies>
         <dependency>
