@@ -4,13 +4,11 @@ package eu.amidst.tutorials.huginsa2016.examples;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
 import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
-import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
@@ -60,7 +58,7 @@ public class DynamicModelInference {
             posterior = infer.getFilteredPosterior(varTarget);
             System.out.println("t="+t+", P(discreteHiddenVar | Evidence)  = " + posterior);
 
-            posterior = infer.getPredictivePosterior(varTarget, 2);
+            posterior = infer.getPredictivePosterior(varTarget, 5);
             //Display the output
             System.out.println("t="+t+"+5, P(discreteHiddenVar | Evidence)  = " + posterior);
 
