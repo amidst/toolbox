@@ -186,7 +186,7 @@ public class CreateBankSimulatedModel {
         p11.getNormal_NormalParentsDistribution(3).setVariance(0.5);
 
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/BankSimulatedNetwork.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "./networks/BankSimulatedNetwork.dbn");
 
         System.out.println(dbn);
     }

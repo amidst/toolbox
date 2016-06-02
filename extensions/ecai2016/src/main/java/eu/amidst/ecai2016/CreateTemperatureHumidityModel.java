@@ -174,7 +174,7 @@ public class CreateTemperatureHumidityModel {
         p11.setCoeffForParent(temperature,0.05);
         p11.setVariance(2);
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "./networks/TemparatureHumidtyNetworks.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "./networks/TemparatureHumidtyNetworks.dbn");
 
         System.out.println(dbn);
     }

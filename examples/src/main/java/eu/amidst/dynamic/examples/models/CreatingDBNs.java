@@ -97,7 +97,7 @@ public class CreatingDBNs {
         /**
          * Finally teh Bayesian network is saved to a file.
          */
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "networks/simulated/DBNExample.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "networks/simulated/DBNExample.dbn");
     }
 
 }

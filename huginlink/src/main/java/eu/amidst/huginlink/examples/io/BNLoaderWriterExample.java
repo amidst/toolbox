@@ -21,10 +21,10 @@ import COM.hugin.HAPI.Domain;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.huginlink.converters.BNConverterToAMIDST;
 import eu.amidst.huginlink.io.BNLoaderFromHugin;
-import eu.amidst.huginlink.io.BNWriterToHugin;
+import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
 
 /**
- * This example shows how to use the BNLoaderFromHugin and BNWriterToHugin classes to load and
+ * This example shows how to use the BNLoaderFromHugin and BayesianNetworkWriterToHugin classes to load and
  * write Bayesian networks in Hugin format, respectively.
  */
 public class BNLoaderWriterExample {
@@ -35,6 +35,6 @@ public class BNLoaderWriterExample {
 
         //Save a AMIDST BayesianNetwork to Hugin format
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-        BNWriterToHugin.saveToHuginFile(amidstBN,"networks/simulated/tmp.net");
+        BayesianNetworkWriterToHugin.save(amidstBN,"networks/simulated/tmp.net");
     }
 }

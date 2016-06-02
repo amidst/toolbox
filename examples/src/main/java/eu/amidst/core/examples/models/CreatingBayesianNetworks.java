@@ -128,6 +128,6 @@ public class CreatingBayesianNetworks {
         }
         System.out.println(logProb);
 
-        BayesianNetworkWriter.saveToFile(bn, "networks/simulated/BNExample.bn");
+        BayesianNetworkWriter.save(bn, "networks/simulated/BNExample.bn");
     }
 }

@@ -55,7 +55,7 @@ public class NaiveBayesEval {
 
         naiveBayesClassifier.learn(train, 10000);
 
-        BayesianNetworkWriter.saveToFile(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
+        BayesianNetworkWriter.save(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
 
         Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getBNModel());
         huginNetwork.saveAsNet(fileOutput + "_NB_model.net");

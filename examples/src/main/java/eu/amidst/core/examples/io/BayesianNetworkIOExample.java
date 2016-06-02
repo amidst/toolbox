@@ -44,7 +44,7 @@ public class BayesianNetworkIOExample {
         bn.randomInitialization(new Random(0));
 
         //We can save this Bayesian network to using the static class BayesianNetworkWriter
-        BayesianNetworkWriter.saveToFile(bn, "networks/simulated/tmp.bn");
+        BayesianNetworkWriter.save(bn, "networks/simulated/tmp.bn");
 
     }
 }

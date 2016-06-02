@@ -26,7 +26,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
-import eu.amidst.huginlink.io.DBNWriterToHugin;
+import eu.amidst.huginlink.io.DynamicBayesianNetworkWriterToHugin;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
@@ -139,7 +139,7 @@ public class CajaMarDemoNB {
         System.out.println(parallelVB.getLearntDynamicBayesianNetwork());
 
 
-        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"./DNB.net");
+        DynamicBayesianNetworkWriterToHugin.save(parallelVB.getLearntDynamicBayesianNetwork(),"./DNB.net");
 
     }
 }

@@ -122,7 +122,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
         /**
          * Finally the Bayesian network is saved to a file.
          */
-        BayesianNetworkWriter.saveToFile(bn, "networks/simulated/BNHiddenExample.bn");
+        BayesianNetworkWriter.save(bn, "networks/simulated/BNHiddenExample.bn");
 
     }
 }

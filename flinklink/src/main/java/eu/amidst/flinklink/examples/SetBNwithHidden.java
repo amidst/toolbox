@@ -90,7 +90,7 @@ public class SetBNwithHidden {
 
         System.out.println(dag.toString());
 
-        BayesianNetworkWriter.saveToFile(bnet, "./BNHiddenExample.bn");
+        BayesianNetworkWriter.save(bnet, "./BNHiddenExample.bn");
 
     }
 

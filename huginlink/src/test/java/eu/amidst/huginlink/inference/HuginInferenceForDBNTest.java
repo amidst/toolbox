@@ -66,7 +66,7 @@ public class HuginInferenceForDBNTest {
         model.setParallelMode(true);
         model.learn(data);
         amidstDBN = model.getDynamicBNModel();
-        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "../networks/bnaic2015/BCC/CajamarDBN.dbn");
+        DynamicBayesianNetworkWriter.save(amidstDBN, "../networks/bnaic2015/BCC/CajamarDBN.dbn");
 
         amidstDBN = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/CajamarDBN.dbn");
         //defaultVar = amidstDBN.getDynamicVariables().getVariableByName("DEFAULT");

@@ -176,7 +176,7 @@ public final class DaimlerModels {
         DynamicBayesianNetwork dynamicBayesianNetwork = new DynamicBayesianNetwork(dynamicDAG);
         System.out.println(dynamicBayesianNetwork.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dynamicBayesianNetwork, "networks/simulated/HuginDaimlerLEAcceleration.dbn");
+        DynamicBayesianNetworkWriter.save(dynamicBayesianNetwork, "networks/simulated/HuginDaimlerLEAcceleration.dbn");
     }
 
 
