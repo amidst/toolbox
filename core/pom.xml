@@ -13,17 +13,17 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.4.3-alpha</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
-    <version>${AMIDSTver}</version>
+    <version>0.4.3-alpha</version>
 
 
     <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+        <!--AMIDSTver>0.4.3-alpha</AMIDSTver-->
     </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
