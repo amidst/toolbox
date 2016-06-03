@@ -37,13 +37,13 @@ public class MAPFlink_PrecisionScalability {
 
         if (args.length!=5) {
 
-            sizeBayesianNetwork = 100;
+            sizeBayesianNetwork = 200;
 
-            startingPointsPerCore = 1;
+            startingPointsPerCore = 4;
             numberOfIterations = 100;
             sampleSizeForEstimatingProbabilities = 1000;
 
-            samplesPerCore = 2000;
+            samplesPerCore = 8000;
 
         }
         else {
