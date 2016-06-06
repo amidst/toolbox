@@ -26,7 +26,7 @@ import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
-import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
@@ -306,15 +306,19 @@ public class DynamicVMP implements InferenceAlgorithmForDBN {
 
     public static void main(String[] arguments) throws IOException, ClassNotFoundException {
 
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(20,10000,10,0);
+//        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(20,10000,10,0);
+//
+//        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
+//        model.setClassVarID(0);
+//        model.setParallelMode(true);
+//        model.learn(data);
+//        DynamicBayesianNetwork bn = model.getDynamicBNModel();
 
-        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-        model.setClassVarID(0);
-        model.setParallelMode(true);
-        model.learn(data);
-        DynamicBayesianNetwork bn = model.getDynamicBNModel();
+//        DynamicBayesianNetworkWriter.save(bn,"networks/simulated/dynamicNaiveBayes.dbn");
 
-        data = DataSetGenerator.generate(50,10000,10,0);
+        DynamicBayesianNetwork bn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/dynamicNaiveBayes.dbn");
+
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(50,10000,10,0);
 
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new DynamicVMP());
         InferenceEngineForDBN.setModel(bn);

@@ -23,15 +23,15 @@ import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
@@ -382,13 +382,16 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
 
         /************** SIMULATED DATA **************/
 
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(15,10000,10,0);
+//        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(15,10000,10,0);
+//
+//        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
+//        model.setClassVarID(0);
+//        model.setParallelMode(true);
+//        model.learn(data);
+//        DynamicBayesianNetwork bn = model.getDynamicBNModel();
 
-        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-        model.setClassVarID(0);
-        model.setParallelMode(true);
-        model.learn(data);
-        DynamicBayesianNetwork bn = model.getDynamicBNModel();
+        DynamicBayesianNetwork bn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/dynamicNaiveBayes.dbn");
+
 
         bn.randomInitialization(new Random(0));
         System.out.println(bn.toString());
