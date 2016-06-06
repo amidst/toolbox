@@ -86,6 +86,5 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
         System.out.println(nbClassifier.toString());
 
-
     }
 }

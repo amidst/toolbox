@@ -19,13 +19,13 @@ public class DynamicNaiveBayesEval {
 
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
-        dynamicDataInstanceDataFlink.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
+        dynamicDataInstanceDataFlink0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
         DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
         dynamicDataInstanceDataFlink1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
-
+//        DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dynamicDataInstanceDataFlink);
 
     }
 }
