@@ -140,11 +140,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
     public SufficientStatistics createInitSufficientStatistics() {
         ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
 
-        double mean = 0;
-        double precision = 0.000001;
-
-        vector.set(0, mean*precision);
-        vector.set(1, -0.5*precision);
+        vector.set(0, 0);
+        vector.set(1, 0.000001);
 
         return vector;
 
