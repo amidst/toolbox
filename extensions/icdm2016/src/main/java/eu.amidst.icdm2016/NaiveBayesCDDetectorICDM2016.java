@@ -12,7 +12,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
-    private static boolean includeUR = true;
+    private static boolean includeUR = false;
     private static boolean includeIndicators = false;
 
     static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
@@ -53,7 +53,7 @@ public class NaiveBayesCDDetectorICDM2016 {
         virtualDriftDetector.setAttributes(dataMonth0.getAttributes());
 
         //We fix the size of the window
-        int windowSize = 50000;
+        int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the number of global latent variables
@@ -108,7 +108,7 @@ public class NaiveBayesCDDetectorICDM2016 {
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();
 
-            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+            System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             //We print the output
             printOutput(meanHiddenVars, currentMonth);
