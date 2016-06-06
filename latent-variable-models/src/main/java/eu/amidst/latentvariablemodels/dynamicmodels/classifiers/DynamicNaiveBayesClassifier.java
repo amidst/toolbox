@@ -25,11 +25,6 @@ import java.io.IOException;
  */
 public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
-    /** Represents the Dynamic Naive Bayes Classifier model, which is considered as a {@link DynamicBayesianNetwork} object. */
-    DynamicBayesianNetwork bnModel;
-
-
-
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */
     boolean connectChildrenTemporally = false;
 
@@ -37,7 +32,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
      * Returns  whether the children are connected temporally or not.
      * @return a {@code boolean} that is equal to true if the children are connected temporally.
      */
-    public boolean areChildrenTemporallyConnected() {
+    public boolean connectChildrenTemporally() {
         return connectChildrenTemporally;
     }
 
@@ -51,14 +46,8 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
     public DynamicNaiveBayesClassifier(Attributes attributes) {
         super(attributes);
-
-
-//        int classVarIndexInAttributes = (attributes.getNumberOfAttributes() - 1);
-//        String classVarName = attributes.getFullListOfAttributes().get(classVarIndexInAttributes).getName();
-//        this.setClassName(classVarName);
     }
 
-    //TODO: Consider the case where the dynamic data base have TIME_ID and SEQ_ID
     protected void buildDAG() {
 
         dynamicDAG = new DynamicDAG(variables);
@@ -69,45 +58,21 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
                     // Add the class variable as a parent
                     w.addParent(classVar);
                     // If true, add a connection to its interface replication
-                    if(areChildrenTemporallyConnected())
+                    if(connectChildrenTemporally())
                         w.addParent(variables.getInterfaceVariable(w.getMainVar()));
                 });
 
         // Connect the class variale to its interface replication
         dynamicDAG.getParentSetTimeT(classVar).addParent(variables.getInterfaceVariable(classVar));
-
-
     }
-
-
-//    /**
-//     * Learns this DynamicNaiveBayesClassifier from a given data stream.
-//     * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
-//     */
-//    public void learn(DataStream<DynamicDataInstance> dataStream){
-//        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-//        parallelMaximumLikelihood.setDynamicDAG(dynamicDAG);
-//        parallelMaximumLikelihood.initLearning();
-//        parallelMaximumLikelihood.updateModel(dataStream);
-//        bnModel = parallelMaximumLikelihood.getLearntDBN();
-//    }
 
     public static void main(String[] args) throws IOException {
 
-//        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-//        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
-//        BayesianNetworkGenerator.setSeed(0);
-//        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
-//
-//        int sampleSize = 1000;
-//        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-//        String file = "./datasets/simulated/exampleDS_d0_c5.arff";
-//        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
-//        DataStreamWriter.writeDataToFile(dataStream, file);
-
         String file = "./datasets/simulated/exampleDS_d2_c3.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        System.out.println("ATTRIBUTES:");
         data.getAttributes().getFullListOfAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+        System.out.println();
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier(data.getAttributes());
 
