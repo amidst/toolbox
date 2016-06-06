@@ -8,7 +8,7 @@ import eu.amidst.core.variables.Variable;
 /**
  * Created by ana@cs.aau.dk on 27/04/16.
  */
-public class NaiveBayesCDDetectorIcdm2016 {
+public class NaiveBayesCDDetectorICDM2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
