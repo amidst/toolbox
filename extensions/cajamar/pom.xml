@@ -49,28 +49,28 @@
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>huginlink</artifactId>
-            <version>${AMIDSTver}</version>
-        </dependency>
-        <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>weka-dev</artifactId>
-            <version>3.7.12</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>core-dynamic</artifactId>
             <version>${AMIDSTver}</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
             <version>${AMIDSTver}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>huginlink</artifactId>
+            <version>${AMIDSTver}</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>latent-variable-models</artifactId>
+            <version>${AMIDSTver}</version>
+        </dependency>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>3.7.12</version>
         </dependency>
     </dependencies>
 
