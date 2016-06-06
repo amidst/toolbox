@@ -56,6 +56,8 @@ public class NaiveBayesCDDetectorICDM2016 {
         int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
+        virtualDriftDetector.setOutput(false);
+
         //We fix the number of global latent variables
         virtualDriftDetector.setNumberOfGlobalVars(1);
 

@@ -3,6 +3,7 @@ package eu.amidst.icdm2016;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
+import eu.amidst.core.distribution.Normal_MultinomialParents;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
@@ -51,13 +52,13 @@ public class TestGradientBoostingHypothesis {
     }
 
     public static void main(String[] args) throws IOException{
-        int NSETS = 10;
+        int NSETS = 20;
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
-        int windowSize = 100;
+        int windowSize = 1000;
         double[] meanHiddenVars;
 
 
-        for (int numIter = 0; numIter < 4; numIter++) {
+        for (int numIter = 0; numIter < 1; numIter++) {
 
             DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path+"0.arff");
 
@@ -93,6 +94,8 @@ public class TestGradientBoostingHypothesis {
             //New dataset in which we remove the residuals
             DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<>(attsSubset);
 
+            String output = "\nrealMean_c0\tlearntMean_c0\trealMean_c1\tlearntMean_c1\tmeanH\n";
+
             for (int i = 0; i < NSETS; i++) {
 
                 System.out.println();
@@ -117,6 +120,7 @@ public class TestGradientBoostingHypothesis {
                 virtualDriftDetector.setTransitionVariance(0.1);
                 virtualDriftDetector.getSvb().applyTransition();
 
+
                 //We print the output
                 BayesianNetwork learntBN_ML = parallelMaximumLikelihood.getLearntBayesianNetwork();
                 System.out.println("-------- MAXIMUM LIKELIHOOD --------");
@@ -129,8 +133,9 @@ public class TestGradientBoostingHypothesis {
 
                 Variables vars = virtualDriftDetector.getLearntBayesianNetwork().getDAG().getVariables();
                 Variable globalHidden = vars.getVariableByName("GlobalHidden_0");
-                Normal_MultinomialNormalParents distVAR01 = learntBN.getConditionalDistribution(virtualDriftDetector.
-                        getLearntBayesianNetwork().getDAG().getVariables().getVariableByName("VAR01"));
+                Variable var01 = virtualDriftDetector.
+                        getLearntBayesianNetwork().getDAG().getVariables().getVariableByName("VAR01");
+                Normal_MultinomialNormalParents distVAR01 = learntBN.getConditionalDistribution(var01);
 
                 double globalHiddenMean = ((Normal) learntBN.getConditionalDistribution(globalHidden)).getMean();
 
@@ -147,7 +152,14 @@ public class TestGradientBoostingHypothesis {
                 System.out.println("Learnt Mean for VAR01[1] = " + meanVAR01_class1);
 
 
-                //Remove residuals
+                Normal_MultinomialParents distVAR01ML = learntBN_ML.getConditionalDistribution(var01);
+                output += distVAR01ML.getNormal(0).getMean()+"\t";
+                output += meanVAR01_class0+"\t";
+                output += distVAR01ML.getNormal(1).getMean()+"\t";
+                output += meanVAR01_class1+"\t";
+                output += globalHiddenMean+"\n";
+
+                        //Remove residuals
 
                 Variable classVar = vars.getVariableByName("DEFAULTING");
                 dataMonth.restart();
@@ -180,6 +192,7 @@ public class TestGradientBoostingHypothesis {
                 newData = new DataOnMemoryListContainer<>(attsSubset);
             }
             path = outputPath;
+            System.out.println(output);
         }
     }
 }

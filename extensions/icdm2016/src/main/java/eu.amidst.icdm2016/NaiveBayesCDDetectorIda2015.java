@@ -34,6 +34,8 @@ public class NaiveBayesCDDetectorIda2015 {
         //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
         virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
 
+        virtualDriftDetector.setOutput(true);
+
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
@@ -43,7 +45,7 @@ public class NaiveBayesCDDetectorIda2015 {
         virtualDriftDetector.setData(dataMonth0);
 
         //We fix the size of the window
-        int windowSize = 5000;
+        int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         //We fix the number of global latent variables

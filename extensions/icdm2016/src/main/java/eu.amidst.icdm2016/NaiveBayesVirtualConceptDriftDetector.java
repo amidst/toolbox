@@ -81,6 +81,8 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
     boolean includeIndicators = false;
 
+    boolean output = false;
+
     /**
      * Returns the class variable of the classifier
      * @return A <code>Variable</code> object
@@ -131,6 +133,10 @@ public class NaiveBayesVirtualConceptDriftDetector {
      */
     public void setWindowsSize(int windowsSize) {
         this.windowsSize = windowsSize;
+    }
+
+    public void setOutput(boolean output) {
+        this.output = output;
     }
 
     /**
@@ -273,7 +279,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
 
-        svb.setOutput(false);
+        svb.setOutput(this.output);
         svb.getPlateuStructure().getVMP().setMaxIter(100);
         svb.getPlateuStructure().getVMP().setThreshold(0.001);
 
