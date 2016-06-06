@@ -590,18 +590,13 @@ public class MAPInferenceRobustNew implements PointEstimator {
                 }
                 else if (optAlg < 0) {
 //                    double diff = Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
-                    double diff = Math.exp(currentLogProbability - nextLogProbability);
+                    double diff = Math.exp(currentLogProbability - nextLogProbability); // Not the difference in probabilities, but the ratio
 
                     double aux = random.nextDouble();
 
                     if (aux < Math.exp(- diff / R)) {
-//                        System.out.println("Empeora de logProb=" + currentLogProbability + " a logProb=" + nextLogProbability + " con diff=" + diff + ", aux=" + aux + " y exp=" + Math.exp(-diff / R));
-
                         currentAssignment = nextAssignment;
                         currentLogProbability = nextLogProbability;
-
-                    } else {
-//                        System.out.println("No empeora, logProb=" + currentLogProbability + " a logProb=" + nextLogProbability + " con diff=" + diff + ", aux=" + aux + " y exp=" + Math.exp(-diff / R));
 
                     }
                 }
