@@ -25,6 +25,11 @@ public class DynamicNaiveBayesEval {
         DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
         dynamicDataInstanceDataFlink1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
+
+//        DataStream<DynamicDataInstance> dataInstanceDataStream0 = DynamicDataStreamFromFile.loadFromFile(fileDay0);
+
+//        DataStream<DynamicDataInstance> dataInstanceDataStream1 = DynamicDataStreamLoader.loadFromFile(fileDay1);
+
 //        DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dynamicDataInstanceDataFlink);
 
     }
