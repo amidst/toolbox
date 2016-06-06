@@ -11,60 +11,33 @@
 
 package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 
-import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 
 /**
  * This class defines a Dynamic Naive Bayes Classifier model.
  */
-public class DynamicNaiveBayesClassifier {
+public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
-    /** Represents the ID of class variable */
-    int classVarID;
-
-    /** Represents the Dynmaic Naive Bayes Classifier model, which is considered as a {@link DynamicBayesianNetwork} object. */
+    /** Represents the Dynamic Naive Bayes Classifier model, which is considered as a {@link DynamicBayesianNetwork} object. */
     DynamicBayesianNetwork bnModel;
 
-    /** Represents the parallel mode, which is initialized as true. */
-    boolean parallelMode = true;
+
 
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */
     boolean connectChildrenTemporally = false;
 
     /**
-     * Returns whether the parallel mode is supported or not.
-     * @return true if the parallel mode is supported.
-     */
-    public boolean isParallelMode() {
-        return parallelMode;
-    }
-
-    /**
-     * Sets the parallel mode for this DynamicNaiveBayesClassifier.
-     * @param parallelMode a {@code boolean} that is equal to true if the parallel mode is supported, and false otherwise.
-     */
-    public void setParallelMode(boolean parallelMode) {
-        this.parallelMode = parallelMode;
-    }
-
-    /**
      * Returns  whether the children are connected temporally or not.
      * @return a {@code boolean} that is equal to true if the children are connected temporally.
      */
-    public boolean isConnectChildrenTemporally() {
+    public boolean areChildrenTemporallyConnected() {
         return connectChildrenTemporally;
     }
 
@@ -76,90 +49,78 @@ public class DynamicNaiveBayesClassifier {
         this.connectChildrenTemporally = connectChildrenTemporally;
     }
 
-    /**
-     * Returns the ID of the class variable.
-     * @return an {@code int} that represents the ID of the class variable.
-     */
-    public int getClassVarID() {
-        return classVarID;
+    public DynamicNaiveBayesClassifier(Attributes attributes) {
+        super(attributes);
+
+
+//        int classVarIndexInAttributes = (attributes.getNumberOfAttributes() - 1);
+//        String classVarName = attributes.getFullListOfAttributes().get(classVarIndexInAttributes).getName();
+//        this.setClassName(classVarName);
     }
 
     //TODO: Consider the case where the dynamic data base have TIME_ID and SEQ_ID
+    protected void buildDAG() {
 
-    /**
-     * Sets the ID of the class variable.
-     * @param classVarID an {@code int} that represents the ID of the class variable.
-     */
-    public void setClassVarID(int classVarID) {
-        this.classVarID = classVarID;
-    }
-
-    /**
-     * Returns this DynamicNaiveBayesClassifier considered as a dynamic Bayesian network model.
-     * @return a {@link DynamicBayesianNetwork} object.
-     */
-    public DynamicBayesianNetwork getDynamicBNModel() {
-        return bnModel;
-    }
-
-    /**
-     * Learns the dynamic graphical structure for this DynamicNaiveBayesClassifier given an input data stream.
-     * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
-     * @return a {@link DynamicDAG} object.
-     */
-    private DynamicDAG dynamicNaiveBayesStructure(DataStream<DynamicDataInstance> dataStream){
-
-        DynamicVariables dynamicVariables = new DynamicVariables(dataStream.getAttributes());
-        Variable classVar = dynamicVariables.getVariableById(this.getClassVarID());
-        DynamicDAG dag = new DynamicDAG(dynamicVariables);
-
-        dag.getParentSetsTimeT().stream()
-                .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
+        dynamicDAG = new DynamicDAG(variables);
+        dynamicDAG.getParentSetsTimeT().stream()
+                // For all variables that are not the class variable
+                .filter(w -> !w.getMainVar().equals(classVar))
                 .forEach(w -> {
+                    // Add the class variable as a parent
                     w.addParent(classVar);
-                    if(isConnectChildrenTemporally())
-                        w.addParent(dynamicVariables.getInterfaceVariable(w.getMainVar()));
+                    // If true, add a connection to its interface replication
+                    if(areChildrenTemporallyConnected())
+                        w.addParent(variables.getInterfaceVariable(w.getMainVar()));
                 });
-        dag.getParentSetTimeT(classVar).addParent(dynamicVariables.getInterfaceVariable(classVar));
 
-        return dag;
+        // Connect the class variale to its interface replication
+        dynamicDAG.getParentSetTimeT(classVar).addParent(variables.getInterfaceVariable(classVar));
+
+
     }
 
-    /**
-     * Learns this DynamicNaiveBayesClassifier from a given data stream.
-     * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
-     */
-    public void learn(DataStream<DynamicDataInstance> dataStream){
-        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setDynamicDAG(this.dynamicNaiveBayesStructure(dataStream));
-        parallelMaximumLikelihood.initLearning();
-        parallelMaximumLikelihood.updateModel(dataStream);
-        bnModel = parallelMaximumLikelihood.getLearntDBN();
-    }
+
+//    /**
+//     * Learns this DynamicNaiveBayesClassifier from a given data stream.
+//     * @param dataStream a {@link DataStream} of {@link DynamicDataInstance}s.
+//     */
+//    public void learn(DataStream<DynamicDataInstance> dataStream){
+//        ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+//        parallelMaximumLikelihood.setDynamicDAG(dynamicDAG);
+//        parallelMaximumLikelihood.initLearning();
+//        parallelMaximumLikelihood.updateModel(dataStream);
+//        bnModel = parallelMaximumLikelihood.getLearntDBN();
+//    }
 
     public static void main(String[] args) throws IOException {
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
-        BayesianNetworkGenerator.setSeed(0);
-        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
+//        BayesianNetworkGenerator.setNumberOfGaussianVars(0);
+//        BayesianNetworkGenerator.setNumberOfMultinomialVars(5, 2);
+//        BayesianNetworkGenerator.setSeed(0);
+//        BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
+//
+//        int sampleSize = 1000;
+//        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
+//        String file = "./datasets/simulated/exampleDS_d0_c5.arff";
+//        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
+//        DataStreamWriter.writeDataToFile(dataStream, file);
 
-        int sampleSize = 1000;
-        BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
-        String file = "./datasets/simulated/randomdata.arff";
-        DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
-        DataStreamWriter.writeDataToFile(dataStream, file);
-
+        String file = "./datasets/simulated/exampleDS_d2_c3.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
+        data.getAttributes().getFullListOfAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
-        for (int i = 1; i <= 1; i++) {
-            DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-            model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 1);
-            model.setParallelMode(true);
-            model.learn(data);
-            DynamicBayesianNetwork nbClassifier = model.getDynamicBNModel();
-            System.out.println(nbClassifier.toString());
-        }
+        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier(data.getAttributes());
+
+        int classVarIndexInAttributes = 2;
+        String classVarName = data.getAttributes().getFullListOfAttributes().get(classVarIndexInAttributes).getName();
+        model.setClassName(classVarName);
+
+        model.setConnectChildrenTemporally(true);
+        model.updateModel(data);
+        DynamicBayesianNetwork nbClassifier = model.getModel();
+
+        System.out.println(nbClassifier.toString());
+
 
     }
 }
