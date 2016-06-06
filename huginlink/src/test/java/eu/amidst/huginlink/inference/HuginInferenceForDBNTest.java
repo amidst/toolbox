@@ -27,9 +27,9 @@ import eu.amidst.dynamic.inference.DynamicVMP;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DataSetGenerator;
+import eu.amidst.huginlink.examples.learning.OldDynamicNaiveBayesClassifier;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.Assert.assertArrayEquals;
+
+//import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 
 /**
  * Created by afa on 1/3/15.
@@ -60,7 +62,7 @@ public class HuginInferenceForDBNTest {
         //String file = "./datasets/bank_data_train.arff";
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
         DataStream<DynamicDataInstance> data = DataSetGenerator.generate(234,100000,10,0);
-        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
+        OldDynamicNaiveBayesClassifier model = new OldDynamicNaiveBayesClassifier();
         //model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setClassVarID(0);
         model.setParallelMode(true);

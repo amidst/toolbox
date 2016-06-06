@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.dynamic.learning.parametric;
+package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -17,6 +17,7 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;

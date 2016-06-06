@@ -16,24 +16,27 @@
  */
 package eu.amidst.huginlink.examples.demos;
 
-import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.core.variables.Variable;
+import COM.hugin.HAPI.Domain;
+import COM.hugin.HAPI.ExceptionHugin;
+import COM.hugin.HAPI.LabelledDCNode;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
+import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.huginlink.converters.DBNConverterToHugin;
+import eu.amidst.huginlink.examples.learning.OldDynamicNaiveBayesClassifier;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * This class is a demo for making inference in a Dynamic Bayesian network model learnt from the Cajamar data set
  * using the Hugin inference engine.
  */
 public class InferenceDemo {
+
 
     /**
      * Prints the belief of all the nodes in the Hugin model.
@@ -77,7 +80,7 @@ public class InferenceDemo {
         System.out.println("Learning a Dynamic Naive Bayes Classifier.");
         System.out.println("Traning Data: 4000 clients, 1000 days of records for each client, 10 profile variables.");
 
-        DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
+        OldDynamicNaiveBayesClassifier model = new OldDynamicNaiveBayesClassifier();
         model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setParallelMode(true);
         model.learn(data);
