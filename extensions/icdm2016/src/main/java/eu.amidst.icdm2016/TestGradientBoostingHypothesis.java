@@ -27,6 +27,8 @@ public class TestGradientBoostingHypothesis {
     static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
     static String outputPath="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaWithoutResiduals/dataWekaWithoutResiduals";
 
+    static String varName = "VAR01";
+
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
             System.out.print(currentMonth + "\t" + meanHiddenVars[j] + "\t");
@@ -64,7 +66,7 @@ public class TestGradientBoostingHypothesis {
 
             List<Attribute> attsSubSetList = new ArrayList<>();
             attsSubSetList.add(dataMonth.getAttributes().getAttributeByName("DEFAULTING"));
-            attsSubSetList.add(dataMonth.getAttributes().getAttributeByName("VAR01"));
+            attsSubSetList.add(dataMonth.getAttributes().getAttributeByName(varName));
             Attributes attsSubset = new Attributes(attsSubSetList);
 
             parallelMaximumLikelihood = new ParallelMaximumLikelihood();
@@ -133,30 +135,30 @@ public class TestGradientBoostingHypothesis {
 
                 Variables vars = virtualDriftDetector.getLearntBayesianNetwork().getDAG().getVariables();
                 Variable globalHidden = vars.getVariableByName("GlobalHidden_0");
-                Variable var01 = virtualDriftDetector.
-                        getLearntBayesianNetwork().getDAG().getVariables().getVariableByName("VAR01");
-                Normal_MultinomialNormalParents distVAR01 = learntBN.getConditionalDistribution(var01);
+                Variable variable = virtualDriftDetector.
+                        getLearntBayesianNetwork().getDAG().getVariables().getVariableByName(varName);
+                Normal_MultinomialNormalParents distVAR = learntBN.getConditionalDistribution(variable);
 
                 double globalHiddenMean = ((Normal) learntBN.getConditionalDistribution(globalHidden)).getMean();
 
-                double b0_VAR01_class0 = distVAR01.getNormal_NormalParentsDistribution(0).getIntercept();
-                double b1_VAR01_class0 = distVAR01.getNormal_NormalParentsDistribution(0).getCoeffForParent(globalHidden);
-                double meanVAR01_class0 = b0_VAR01_class0 + b1_VAR01_class0*globalHiddenMean;
+                double b0_VAR_class0 = distVAR.getNormal_NormalParentsDistribution(0).getIntercept();
+                double b1_VAR_class0 = distVAR.getNormal_NormalParentsDistribution(0).getCoeffForParent(globalHidden);
+                double meanVAR_class0 = b0_VAR_class0 + b1_VAR_class0*globalHiddenMean;
 
-                double b0_VAR01_class1 = distVAR01.getNormal_NormalParentsDistribution(1).getIntercept();
-                double b1_VAR01_class1 = distVAR01.getNormal_NormalParentsDistribution(1).getCoeffForParent(globalHidden);
-                double meanVAR01_class1 = b0_VAR01_class1 + b1_VAR01_class1*globalHiddenMean;
-
-
-                System.out.println("Learnt Mean for VAR01[0] = " + meanVAR01_class0);
-                System.out.println("Learnt Mean for VAR01[1] = " + meanVAR01_class1);
+                double b0_VAR_class1 = distVAR.getNormal_NormalParentsDistribution(1).getIntercept();
+                double b1_VAR_class1 = distVAR.getNormal_NormalParentsDistribution(1).getCoeffForParent(globalHidden);
+                double meanVAR_class1 = b0_VAR_class1 + b1_VAR_class1*globalHiddenMean;
 
 
-                Normal_MultinomialParents distVAR01ML = learntBN_ML.getConditionalDistribution(var01);
-                output += distVAR01ML.getNormal(0).getMean()+"\t";
-                output += meanVAR01_class0+"\t";
-                output += distVAR01ML.getNormal(1).getMean()+"\t";
-                output += meanVAR01_class1+"\t";
+                System.out.println("Learnt Mean for "+varName+"[0] = " + meanVAR_class0);
+                System.out.println("Learnt Mean for "+varName+"[1] = " + meanVAR_class1);
+
+
+                Normal_MultinomialParents distVARML = learntBN_ML.getConditionalDistribution(variable);
+                output += distVARML.getNormal(0).getMean()+"\t";
+                output += meanVAR_class0+"\t";
+                output += distVARML.getNormal(1).getMean()+"\t";
+                output += meanVAR_class1+"\t";
                 output += globalHiddenMean+"\n";
 
                         //Remove residuals
@@ -174,7 +176,7 @@ public class TestGradientBoostingHypothesis {
                                 double b0 = dist.getNormal_NormalParentsDistribution(classVal).getIntercept();
                                 double b1 = dist.getNormal_NormalParentsDistribution(classVal).getCoeffForParent(globalHidden);
 
-                                //if (instance.getValue(var) != 0)
+                                //if (instance.getValue(variable) != 0)
                                 instance.setValue(var, instance.getValue(var) - b0 - b1 * globalHiddenMean);
                             });
                     return instance;
