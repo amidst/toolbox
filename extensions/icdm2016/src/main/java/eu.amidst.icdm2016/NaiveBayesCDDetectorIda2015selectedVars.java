@@ -14,6 +14,7 @@ import eu.amidst.core.variables.Variables;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 06/06/16.
@@ -45,7 +46,7 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
     public static void main(String[] args) throws IOException {
         int NSETS = 84;
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
-        int windowSize = 10000;
+        int windowSize = 50000;
         double[] meanHiddenVars;
 
         int numVars = varNames.length;
@@ -83,9 +84,6 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
         virtualDriftDetector.initLearning();
 
 
-        //New dataset in which we remove the residuals
-        DataOnMemoryListContainer<DataInstance> newData = new DataOnMemoryListContainer<>(attsSubset);
-
         String output = "\n";
         for (String varName : varNames) {
             output += varName+"realMean_c0\t"+varName+"learntMean_c0\t"+varName+"realMean_c1\t" +
@@ -102,8 +100,8 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
 
             int currentMonth = i;
 
-            //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-            //    continue;
+            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
+                continue;
 
             dataMonth = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
 
