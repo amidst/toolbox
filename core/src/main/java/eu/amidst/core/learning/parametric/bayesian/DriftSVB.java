@@ -114,15 +114,14 @@ public class DriftSVB extends SVB{
         boolean convergence = false;
         double elbo = Double.NaN;
         double niter=0;
-        double lambda = 0.5;
         while(!convergence && niter<10) {
 
             //Messages for TExp to Theta
-            //double lambda = this.ef_TExpQ.getMomentParameters().get(0);
-            if (this.ef_TExpQ.getMomentParameters().get(0)>0)
-                lambda+=0.1;
-            else
-                lambda-=0.1;
+            double lambda = this.ef_TExpQ.getMomentParameters().get(0);
+            //if (this.ef_TExpQ.getMomentParameters().get(0)>0)
+            //    lambda+=0.1;
+            //else
+            //    lambda-=0.1;
 
             CompoundVector newPrior = Serialization.deepCopy(prior);
             newPrior.multiplyBy(1 - lambda);
@@ -134,6 +133,8 @@ public class DriftSVB extends SVB{
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
             this.plateuStructure.runInference();
+
+            CompoundVector updatedPosterior = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
             //Compute elbo
             double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
@@ -153,8 +154,8 @@ public class DriftSVB extends SVB{
                         node.getPDist().getExpectedLogNormalizer(momentParents));
             }).sum();
 
-            System.out.println("DIFF: " + (- kl_q_pt_1 + kl_q_p0));
-            System.out.println("DIFF2: " +  ef_TExpQ.getNaturalParameters().get(0));
+            //System.out.println("DIFF: " + (- kl_q_pt_1 + kl_q_p0));
+            //System.out.println("DIFF2: " +  ef_TExpQ.getNaturalParameters().get(0));
 
             ef_TExpQ.getNaturalParameters().set(0,
                     - kl_q_pt_1 + kl_q_p0 +
@@ -170,7 +171,7 @@ public class DriftSVB extends SVB{
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
+            //System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
 
             if (!Double.isNaN(elbo) && percentageIncrease<0.0001){//this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
@@ -179,6 +180,7 @@ public class DriftSVB extends SVB{
             elbo=newELBO;
             niter++;
         }
+
 
 
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
@@ -191,7 +193,7 @@ public class DriftSVB extends SVB{
 
 
     public double getLambdaValue(){
-        return this.ef_TExpQ.getNaturalParameters().get(0);
+        return this.ef_TExpQ.getMomentParameters().get(0);
     }
 
 

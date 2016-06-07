@@ -11,6 +11,7 @@
 
 package eu.amidst.nips2016.nipspapers;
 
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -47,7 +48,7 @@ public class RunDrift {
 
             int[] index = weka.core.Utils.sort(arrayVector.toArray());
 
-            for (int i = index.length-1; i > index.length-100; i--) {
+            for (int i = index.length-1; i > index.length-100 && i>=0; i--) {
                 System.out.print("("+index[i]+", "+arrayVector.get(index[i])+"), ");
             }
 
@@ -80,15 +81,37 @@ public class RunDrift {
             */
         }
     }
+
+    public static void processBatch(DataOnMemory<DataInstance> batch) {
+        Attribute attribute = batch.getAttributes().getAttributeByName("word");
+        for (DataInstance dataInstance : batch) {
+            //dataInstance.setValue(attribute,dataInstance.getValue(attribute)%attribute.getNumberOfStates());
+
+            if (dataInstance.getValue(attribute)==158) //Adaptive
+                dataInstance.setValue(attribute,0);
+            else if (dataInstance.getValue(attribute)==958) //Bayesian
+                dataInstance.setValue(attribute,1);
+            else
+                dataInstance.setValue(attribute,2);
+
+//            if (dataInstance.getValue(attribute)==11025) //Table
+//                dataInstance.setValue(attribute,0);
+//            else if (dataInstance.getValue(attribute)==11026) //Tables
+//                dataInstance.setValue(attribute,1);
+//            else
+//                dataInstance.setValue(attribute,2);
+
+        }
+    }
     public static void main(String[] args) throws Exception{
 
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
-        String arrffName = "docword.nips.arff";
+        String arrffName = "docword.nips.reduced.arff";
         int ntopics = 2;
         int niter = 1000;
         double threshold = 0.01;
-        int docsPerBatch = 100;
+        int docsPerBatch = 150;
 
         if (args.length>1){
             dataPath=args[0];
@@ -111,11 +134,11 @@ public class RunDrift {
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);
-        plateauLDA.getVMP().setOutput(true);
+        plateauLDA.getVMP().setOutput(false);
         plateauLDA.getVMP().setThreshold(threshold);
 
         svb.setPlateuStructure(plateauLDA);
-        svb.setOutput(true);
+        svb.setOutput(false);
 
         svb.initLearning();
 
@@ -145,10 +168,11 @@ public class RunDrift {
             double log = 0;
             int nwords = 0;
 
-            for (int j = i+1; j < (i+1+1) && j< batches.size(); j++) {
+            processBatch(batches.get(i));
+            /*for (int j = i+1; j < (i+1+1) && j< batches.size(); j++) {
                 log += svb.predictedLogLikelihood(batches.get(j));
                 nwords +=nwords(batches.get(j));
-            }
+            }*/
 
             svb.updateModelWithConceptDrift(batches.get(i));
 
@@ -160,9 +184,13 @@ public class RunDrift {
             System.out.println();
             printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
             System.out.println();
+            printTopics(svb.getPlateuStructure().getPlateauMomentParameterPosterior());
+            System.out.println();
             System.out.println();
 
-            System.out.println(svb.getPlateuStructure().getPosteriorSampleSize());
+            System.out.println("ALPHA:" + svb.getLambdaValue());
+
+            System.out.println("Sample Size:" + svb.getPlateuStructure().getPosteriorSampleSize());
 
 
             /*if (i>1 && i%20==10){

@@ -12,10 +12,7 @@
 package eu.amidst.core.learning.parametric.bayesian.utils;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
-import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.NaturalParameters;
+import eu.amidst.core.exponentialfamily.*;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
@@ -360,6 +357,21 @@ public abstract class PlateuStructure implements Serializable {
         return new CompoundVector(naturalPlateauParametersPriors);
     }
 
+    public CompoundVector getPlateauMomentParameterPosterior() {
+
+        List<Vector> momentPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .map(var -> {
+                    EF_UnivariateDistribution qDist = this.getNodeOfNonReplicatedVar(var).getQDist();
+                    MomentParameters parameter = qDist.getMomentParameters();
+                    MomentParameters copy = qDist.createZeroMomentParameters();
+                    copy.copy(parameter);
+                    return copy;
+                }).collect(Collectors.toList());
+
+        return new CompoundVector(momentPlateauParametersPriors);
+    }
 
     public void updateNaturalParameterPosteriors(CompoundVector parameterVector) {
 
