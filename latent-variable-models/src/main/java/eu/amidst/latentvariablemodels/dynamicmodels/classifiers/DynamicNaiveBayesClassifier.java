@@ -78,13 +78,15 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
     }
 
     private void initLearningFlink() {
-        if(learningAlgorithmFlink==null)
+        if(learningAlgorithmFlink==null) {
             learningAlgorithmFlink = new DynamicParallelVB();
-
-        learningAlgorithmFlink.setBatchSize(windowSize);
-        learningAlgorithmFlink.setDAG(this.getDynamicDAG());
-        learningAlgorithmFlink.initLearning();
-
+            learningAlgorithmFlink.setBatchSize(windowSize);
+            learningAlgorithmFlink.setDAG(this.getDynamicDAG());
+            learningAlgorithmFlink.setOutput(true);
+            learningAlgorithmFlink.setMaximumGlobalIterations(2);
+            learningAlgorithmFlink.setMaximumLocalIterations(2);
+            learningAlgorithmFlink.initLearning();
+        }
         initialized=true;
     }
 

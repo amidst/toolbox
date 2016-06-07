@@ -302,7 +302,7 @@ public class DynamicParallelVBTest extends TestCase {
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "../networks/bnaic2015/BCC/cajaMarSynthetic/data0.arff", false);
+                "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();

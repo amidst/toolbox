@@ -15,19 +15,17 @@ public class DynamicNaiveBayesEval {
 
     public static void main(String[] args) throws IOException {
 
+
         String fileDay0 = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_train/train0.arff";
         String fileDay1 = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_train/train1.arff";
 
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 = DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
+        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 = DataFlinkLoader.loadDynamicDataFromFolder(env, fileDay0, false);
         dynamicDataInstanceDataFlink0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
-        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 = DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
-        dynamicDataInstanceDataFlink1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 = DataFlinkLoader.loadDynamicDataFromFolder(env, fileDay1, false);
 
-        dynamicDataInstanceDataFlink0 = DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
-        dynamicDataInstanceDataFlink1 = DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
 
         DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dynamicDataInstanceDataFlink0.getAttributes());
 
@@ -37,8 +35,47 @@ public class DynamicNaiveBayesEval {
         System.out.println(dynamicNaiveBayesClassifier.getDynamicDAG());
 
         dynamicNaiveBayesClassifier.updateModel(0,dynamicDataInstanceDataFlink0);
+
+        System.out.println("\n\nUPDATED WITH TIME 0\n\n");
         dynamicNaiveBayesClassifier.updateModel(1,dynamicDataInstanceDataFlink1);
+
+        System.out.println("\n\nUPDATED WITH TIME 1\n\n");
         System.out.println(dynamicNaiveBayesClassifier.getModel());
+
+
+
+
+
+
+
+//        String fileDay0 = "datasets/simulated/cajaMarSynthetic/data0.arff";
+//        String fileDay1 = "datasets/simulated/cajaMarSynthetic/data1.arff";
+//        String fileDay2 = "datasets/simulated/cajaMarSynthetic/data2.arff";
+//
+//        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+//
+//        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 = DataFlinkLoader.loadDynamicDataFromFolder(env, fileDay0, false);
+//        dynamicDataInstanceDataFlink0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+//
+//        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 = DataFlinkLoader.loadDynamicDataFromFolder(env, fileDay1, false);
+//        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink2 = DataFlinkLoader.loadDynamicDataFromFolder(env, fileDay2, false);
+//
+//
+//        DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dynamicDataInstanceDataFlink0.getAttributes());
+//
+//        dynamicNaiveBayesClassifier.setClassName("DEFAULTER");
+//        dynamicNaiveBayesClassifier.setConnectChildrenTemporally(true);
+//
+//        System.out.println(dynamicNaiveBayesClassifier.getDynamicDAG());
+//
+//        dynamicNaiveBayesClassifier.updateModel(0,dynamicDataInstanceDataFlink0);
+//        dynamicNaiveBayesClassifier.updateModel(1,dynamicDataInstanceDataFlink1);
+//        dynamicNaiveBayesClassifier.updateModel(2,dynamicDataInstanceDataFlink2);
+//
+//        System.out.println(dynamicNaiveBayesClassifier.getModel());
+
+
+
 
 
 
