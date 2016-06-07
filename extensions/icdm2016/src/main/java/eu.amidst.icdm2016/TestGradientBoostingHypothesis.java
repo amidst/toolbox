@@ -27,15 +27,8 @@ public class TestGradientBoostingHypothesis {
     static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
     static String outputPath="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaWithoutResiduals/dataWekaWithoutResiduals";
 
-    static String varName = "VAR01";
+    static String varName ="VAR01";
 
-    private static void printOutput(double [] meanHiddenVars, int currentMonth){
-        for (int j = 0; j < meanHiddenVars.length; j++) {
-            System.out.print(currentMonth + "\t" + meanHiddenVars[j] + "\t");
-            meanHiddenVars[j] = 0;
-        }
-        System.out.println();
-    }
 
     public static void initML(Attributes atts){
         parallelMaximumLikelihood.setParallelMode(true);
@@ -56,7 +49,7 @@ public class TestGradientBoostingHypothesis {
     public static void main(String[] args) throws IOException{
         int NSETS = 20;
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
-        int windowSize = 1000;
+        int windowSize = 10000;
         double[] meanHiddenVars;
 
 
@@ -130,8 +123,6 @@ public class TestGradientBoostingHypothesis {
                 BayesianNetwork learntBN = virtualDriftDetector.getLearntBayesianNetwork();
                 System.out.println("-------- VIRTUAL CONCEPT DRIFT DETECTOR --------");
                 System.out.println(learntBN);
-
-                //printOutput(meanHiddenVars, currentMonth);
 
                 Variables vars = virtualDriftDetector.getLearntBayesianNetwork().getDAG().getVariables();
                 Variable globalHidden = vars.getVariableByName("GlobalHidden_0");
