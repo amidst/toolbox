@@ -35,7 +35,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 public final class DataStreamLoader {
 
     /** Represents the class name of the different loaders available in the toolbox*/
-    private static String[] loaders = {"eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader",
+    private static String[] loaders = { "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader",
                                         "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataFolderReader"};
 
     /** Represents the data file reader. */

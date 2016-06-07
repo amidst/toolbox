@@ -31,8 +31,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class DynamicDataStreamLoader {
 
     /** Represents the class name of the different loaders available in the toolbox*/
-    private static String[] loaders = {"eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader",
-            "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataFolderReader"};
+    private static String[] loaders = { "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader",
+                                        "eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataFolderReader"};
 
     /** Represents the data file reader. */
     private static DataFileReader dataFileReader = new ARFFDataReader();  //ARFFDataFolderReader;
