@@ -17,6 +17,8 @@ import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 
 import java.io.IOException;
 
@@ -24,6 +26,8 @@ import java.io.IOException;
  * This class defines a Dynamic Naive Bayes Classifier model.
  */
 public class DynamicNaiveBayesClassifier extends DynamicClassifier {
+
+    protected DynamicParallelVB learningAlgorithmFlink = null;
 
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */
     boolean connectChildrenTemporally = false;
@@ -64,6 +68,33 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
         // Connect the class variale to its interface replication
         dynamicDAG.getParentSetTimeT(classVar).addParent(variables.getInterfaceVariable(classVar));
+    }
+
+    public void updateModel(int timeSlice, DataFlink<DynamicDataInstance> dataStream) {
+        if (!initialized)
+            initLearningFlink();
+
+        learningAlgorithmFlink.updateModelWithNewTimeSlice(timeSlice, dataStream);
+    }
+
+    private void initLearningFlink() {
+        if(learningAlgorithmFlink==null)
+            learningAlgorithmFlink = new DynamicParallelVB();
+
+        learningAlgorithmFlink.setBatchSize(windowSize);
+        learningAlgorithmFlink.setDAG(this.getDynamicDAG());
+        learningAlgorithmFlink.initLearning();
+
+        initialized=true;
+    }
+
+    public DynamicBayesianNetwork getModel() {
+        if (learningAlgorithmFlink !=null){
+            return learningAlgorithmFlink.getLearntDynamicBayesianNetwork();
+        }
+        else {
+            return super.getModel();
+        }
     }
 
     public static void main(String[] args) throws IOException {

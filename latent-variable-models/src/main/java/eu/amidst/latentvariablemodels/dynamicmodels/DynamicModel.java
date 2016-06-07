@@ -92,7 +92,9 @@ public abstract class DynamicModel {
         if (learningAlgorithm !=null){
             return this.learningAlgorithm.getLearntDBN();
         }
-
+        else if (learningAlgorithm !=null){
+            return this.learningAlgorithm.getLearntDBN();
+        }
         return null;
     }
 
