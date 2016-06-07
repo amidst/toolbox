@@ -1,8 +1,8 @@
 package eu.amidst.cajamareval;
 
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.io.IOException;
@@ -19,16 +19,20 @@ public class DynamicNaiveBayesEval {
 
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
-        dynamicDataInstanceDataFlink0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+//        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink0 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay0, true);
+//        dynamicDataInstanceDataFlink0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
+//
+//        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
+//        dynamicDataInstanceDataFlink1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
-        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlink1 =  DataFlinkLoader.loadDynamicDataFromFile(env, fileDay1, true);
-        dynamicDataInstanceDataFlink1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
+        DataStream<DynamicDataInstance> dataInstanceDataStream0 = DynamicDataStreamLoader.loadFromFile(fileDay0);
+        dataInstanceDataStream0.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
-//        DataStream<DynamicDataInstance> dataInstanceDataStream0 = DynamicDataStreamFromFile.loadFromFile(fileDay0);
+        System.out.println();
 
-//        DataStream<DynamicDataInstance> dataInstanceDataStream1 = DynamicDataStreamLoader.loadFromFile(fileDay1);
+        DataStream<DynamicDataInstance> dataInstanceDataStream1 = DynamicDataStreamLoader.loadFromFile(fileDay1);
+        dataInstanceDataStream1.getAttributes().forEach(attribute -> System.out.println(attribute.getName()));
 
 //        DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dynamicDataInstanceDataFlink);
 
