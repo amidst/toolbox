@@ -105,8 +105,6 @@ public abstract class DynamicClassifier extends DynamicModel{
         }
         InferenceEngineForDBN.addDynamicEvidence(instance);
 
-        System.out.println(instance);
-
         InferenceEngineForDBN.runInference();
 
         return InferenceEngineForDBN.getFilteredPosterior(classVar);

@@ -1,23 +1,28 @@
 package eu.amidst.cajamareval;
 
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.latentvariablemodels.dynamicmodels.classifiers.DynamicNaiveBayesClassifier;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by dario on 6/6/16.
  */
 public class DynamicNaiveBayesEval {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
 
         String fileDay0 = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_train/train0.arff";
         String fileDay1 = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_train/train1.arff";
+
+        String fileTest0 = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/test.arff";
+
 
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -42,9 +47,17 @@ public class DynamicNaiveBayesEval {
         System.out.println("\n\nUPDATED WITH TIME 1\n\n");
         System.out.println(dynamicNaiveBayesClassifier.getModel());
 
+        DataFlink<DynamicDataInstance> dynamicDataInstanceDataFlinkTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest0, false);
 
 
+        List<DynamicDataInstance> dataTest = dynamicDataInstanceDataFlinkTest.getDataSet().collect();
 
+        for(DynamicDataInstance dynamicDataInstance : dataTest) {
+            double classValue = dynamicDataInstance.getValue(dynamicNaiveBayesClassifier.getClassVar());
+            dynamicDataInstance.setValue(dynamicNaiveBayesClassifier.getClassVar(), Utils.missingValue());
+            Multinomial classVarPosteriorDistribution = dynamicNaiveBayesClassifier.predict(dynamicDataInstance);
+            System.out.println("Class value: " + classValue + ", predicted prob. of defaulting: " + classVarPosteriorDistribution.getParameters()[1] );
+        }
 
 
 
