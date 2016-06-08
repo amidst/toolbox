@@ -24,6 +24,7 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
+import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
 
 import java.io.FileWriter;
 
@@ -32,9 +33,7 @@ import java.io.FileWriter;
  */
 public class NaiveBayesEval {
 
-    public static void main(String[] args) throws Exception{
-
-        /*
+    public static void main(String[] args) throws Exception {
 
         String fileTrain = args[0];
         String fileTest = args[1];
@@ -47,32 +46,27 @@ public class NaiveBayesEval {
         FileWriter fw = new FileWriter(fileOutput);
 
 
-        NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier();
-
-        naiveBayesClassifier.setParallelMode(true);
+        NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier(train.getAttributes());
 
         naiveBayesClassifier.setClassName(className);
+        naiveBayesClassifier.setWindowSize(10000);
+        naiveBayesClassifier.updateModel(train);
 
-        naiveBayesClassifier.learn(train, 10000);
+        BayesianNetworkWriter.save(naiveBayesClassifier.getModel(), fileOutput + "_NB_model.bn");
 
-        BayesianNetworkWriter.save(naiveBayesClassifier.getBNModel(), fileOutput + "_NB_model.bn");
-
-        Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getBNModel());
+        Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getModel());
         huginNetwork.saveAsNet(fileOutput + "_NB_model.net");
 
-        System.out.println(naiveBayesClassifier.getBNModel());
+        System.out.println(naiveBayesClassifier.getModel());
 
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(className);
         for (DataInstance dataInstance : test) {
             dataInstance.setValue(classAtt, Utils.missingValue());
-            fw.write(dataInstance.getValue(seq_id) + "\t" + naiveBayesClassifier.predict(dataInstance)[1] + "\n");
+            fw.write(dataInstance.getValue(seq_id) + "\t" + naiveBayesClassifier.predict(dataInstance).getParameters()[1] + "\n");
         }
 
         fw.close();
 
-
-
-    */
     }
 }
