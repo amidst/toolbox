@@ -199,9 +199,6 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
         System.out.println("Predicts some instances, i.e. computes the posterior probability of the class");
         List<DynamicDataInstance> dataTest = data.stream().collect(Collectors.toList()).subList(0,100);
 
-        dataTest.forEach(dynamicDataInstance -> System.out.println(dynamicDataInstance.outputString()));
-        dataTest.forEach(dynamicDataInstance -> System.out.println(dynamicDataInstance.outputString(dLCM.getModel().getDynamicVariables().getListOfDynamicVariables())));
-
 
         int i = 1;
         for(DynamicDataInstance d : dataTest) {
