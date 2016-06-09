@@ -15,15 +15,15 @@ import java.io.IOException;
 public class DistributeDataInMonths {
     public static void main(String[] args) throws IOException {
         DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/" +
-                "dataWekaUnemploymentRate.arff");
+                "dataWekaUnemploymentRateShifted.arff");
 
         Attributes attributes = data.getAttributes();
         Attribute timeID = attributes.getTime_id();
 
         for (int i = 0; i < 84; i++) {
             int index = i;
-            DataStreamWriter.writeDataToFile(data.filter(dataInstance -> dataInstance.getValue(timeID)==index),"/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/" +
-                    "dataWekaUnemploymentRate"+index+".arff");
+            DataStreamWriter.writeDataToFile(data.filter(dataInstance -> dataInstance.getValue(timeID)==index),"/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/" +
+                    "dataWekaUnemploymentRateShifted"+index+".arff");
             data.restart();
         }
     }

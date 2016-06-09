@@ -1,9 +1,15 @@
 package eu.amidst.icdm2016;
 
+import eu.amidst.core.datastream.Attribute;
+import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 27/04/16.
@@ -14,9 +20,11 @@ public class NaiveBayesCDDetectorICDM2016 {
     private static Variable unemploymentRateVar;
     private static boolean includeUR = false;
     private static boolean includeIndicators = false;
+    static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+    static int windowSize = 50000;
 
     static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/dataWekaUnemploymentRateShifted";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
@@ -36,9 +44,22 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         int NSETS = 84;
 
+        int numVars = varNames.length;
+
         //We can open the data stream using the static class DataStreamLoader
 
         DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"0.arff");
+
+        List<Attribute> attsSubSetList = new ArrayList<>();
+        attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName("DEFAULTING"));
+        for (String varName : varNames) {
+            attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(varName));
+        }
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        if(includeUR){
+            attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(unemploymentRateAttName));
+        }
+        Attributes attsSubset = new Attributes(attsSubSetList);
 
         //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
         virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -50,10 +71,9 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         //We set the data which is going to be used
         //virtualDriftDetector.setData(dataMonth0);
-        virtualDriftDetector.setAttributes(dataMonth0.getAttributes());
+        virtualDriftDetector.setAttributes(attsSubset);
 
         //We fix the size of the window
-        int windowSize = 100;
         virtualDriftDetector.setWindowsSize(windowSize);
 
         virtualDriftDetector.setOutput(false);
@@ -79,8 +99,6 @@ public class NaiveBayesCDDetectorICDM2016 {
             System.out.print("\t" + hiddenVar.getName());
         }
 
-
-        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
         try {
             unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
             System.out.print("\t UnempRate");
@@ -98,8 +116,8 @@ public class NaiveBayesCDDetectorICDM2016 {
 
             int currentMonth = i;
 
-            //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-            //    continue;
+            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
+                continue;
 
             DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
@@ -110,7 +128,7 @@ public class NaiveBayesCDDetectorICDM2016 {
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();
 
-            System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
+            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             //We print the output
             printOutput(meanHiddenVars, currentMonth);

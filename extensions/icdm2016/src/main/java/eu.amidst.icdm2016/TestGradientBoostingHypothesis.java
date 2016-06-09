@@ -152,7 +152,7 @@ public class TestGradientBoostingHypothesis {
                 output += meanVAR_class1+"\t";
                 output += globalHiddenMean+"\n";
 
-                        //Remove residuals
+                //Remove residuals
 
                 Variable classVar = vars.getVariableByName("DEFAULTING");
                 dataMonth.restart();

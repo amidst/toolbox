@@ -27,6 +27,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -40,8 +41,9 @@ public class RemoveURresiduals {
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
 
-    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRate/dataWekaUnemploymentRate";
+    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/dataWekaUnemploymentRateShifted";
     static String outputPath = "/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
+    static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
 
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
@@ -63,6 +65,16 @@ public class RemoveURresiduals {
 
         DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path+"0.arff");
 
+        List<Attribute> attsSubSetList = new ArrayList<>();
+        attsSubSetList.add(dataMonth.getAttributes().getAttributeByName("DEFAULTING"));
+        for (String varName : varNames) {
+            attsSubSetList.add(dataMonth.getAttributes().getAttributeByName(varName));
+        }
+        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
+        attsSubSetList.add(dataMonth.getAttributes().getAttributeByName(unemploymentRateAttName));
+
+        Attributes attsSubset = new Attributes(attsSubSetList);
+
 
         //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
         virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
@@ -73,7 +85,7 @@ public class RemoveURresiduals {
         virtualDriftDetector.setSeed(1);
 
         //We set the data which is going to be used
-        virtualDriftDetector.setData(dataMonth);
+        virtualDriftDetector.setAttributes(attsSubset);
 
         //We fix the size of the window
         int windowSize = 100;
@@ -97,7 +109,6 @@ public class RemoveURresiduals {
             System.out.print("\t" + hiddenVar.getName());
         }
 
-        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
         try {
             unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
             System.out.print("\t UnempRate");
@@ -161,8 +172,7 @@ public class RemoveURresiduals {
                             double b1=dist.getNormal_NormalParentsDistribution(classVal).getCoeffForParent(unemploymentRateVar);
                             double UR = instance.getValue(unemploymentRateVar);
 
-                            if(instance.getValue(var) !=0 )
-                                instance.setValue(var, instance.getValue(var) - b0 - b1*UR);
+                            instance.setValue(var, instance.getValue(var) - b0 - b1*UR);
                         });
                 //instance.setValue(unemploymentRateVar, 0);
                 //System.out.println(instance);
