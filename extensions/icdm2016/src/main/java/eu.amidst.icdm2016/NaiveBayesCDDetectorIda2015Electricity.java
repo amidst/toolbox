@@ -1,3 +1,14 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
+
 package eu.amidst.icdm2016;
 
 import eu.amidst.core.datastream.*;
@@ -14,28 +25,32 @@ import eu.amidst.core.variables.Variables;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 06/06/16.
  */
-public class NaiveBayesCDDetectorIda2015selectedVars {
+public class NaiveBayesCDDetectorIda2015Electricity {
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static ParallelMaximumLikelihood parallelMaximumLikelihood;
 
-    static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaWithoutResiduals/dataWekaWithoutResiduals_2_";
+    static String path="/Users/andresmasegosa/Documents/tmpOriginalNoMissing/R1_";
+
+    //static String path="./datasets/DriftSets/ElectricityOriginal.arff";
+
 
     //static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
 
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-    static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+
+//    static String[] varNames = {"nswprice","nswdemand", "vicprice", "vicdemand", "transfer"};
+    static String[] varNames = {"nswprice","nswdemand"};
 
 
     public static void initML(Attributes atts){
         parallelMaximumLikelihood.setParallelMode(true);
         Variables vars = new Variables(atts);
         DAG dag = new DAG(vars);
-        Variable classVar = vars.getVariableByName("DEFAULTING");
+        Variable classVar = vars.getVariableByName("class");
         for (Variable var : vars) {
             if(var != classVar){
                 dag.getParentSet(var).addParent(classVar);
@@ -48,19 +63,23 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
     }
 
     public static void main(String[] args) throws IOException {
-        int NSETS = 84;
-        int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
-        int windowSize = 50000;
-        double[] meanHiddenVars;
+        int NSETS = 32;
+        int windowSize = 1460;
 
         int numVars = varNames.length;
 
-        DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path+"0.arff");
+        DataStream<DataInstance> data = DataStreamLoader.openFromFile(path+"0.arff");
+
+//        int count = 0;
+//        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)) {
+//            DataStreamWriter.writeDataToFile(batch,"/Users/andresmasegosa/Documents/tmpOriginal/"+count+".arff");
+//            count++;
+//        }
 
         List<Attribute> attsSubSetList = new ArrayList<>();
-        attsSubSetList.add(dataMonth.getAttributes().getAttributeByName("DEFAULTING"));
+        attsSubSetList.add(data.getAttributes().getAttributeByName("class"));
         for (String varName : varNames) {
-            attsSubSetList.add(dataMonth.getAttributes().getAttributeByName(varName));
+            attsSubSetList.add(data.getAttributes().getAttributeByName(varName));
         }
         Attributes attsSubset = new Attributes(attsSubSetList);
 
@@ -104,21 +123,17 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
 
             int currentMonth = i;
 
-            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                continue;
-
-            dataMonth = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
+            DataStream<DataInstance> dataMonth = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
-            meanHiddenVars = virtualDriftDetector.updateModel(dataMonth);
+            double[] meanHiddenVars = virtualDriftDetector.updateModel(dataMonth);
 
             parallelMaximumLikelihood.initLearning();
 
             for (DataOnMemory<DataInstance> batch : dataMonth.iterableOverBatches(100)){
                 parallelMaximumLikelihood.updateModel(batch);
             }
-
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();
 
