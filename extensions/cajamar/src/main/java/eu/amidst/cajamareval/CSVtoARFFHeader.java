@@ -181,7 +181,7 @@ public class CSVtoARFFHeader {
             varStates.get(i).remove("?");
             String varValues;
 
-            if ( !isVariableCategorical[i] && varStates.get(i).size() > 10 ) {
+            if ( (!isVariableCategorical[i] && varStates.get(i).size() > 10) || variableNames.get(i).equals("TIME_ID") || variableNames.get(i).equals("SEQUENCE_ID")) {
                 varValues = "real";
             }
 //            if ( (!isVariableCategorical[i] && isVariableContinuous[i]) || (!isVariableCategorical[i] && varStates.get(i).size() > 10)) {
@@ -211,7 +211,7 @@ public class CSVtoARFFHeader {
 
             }
             //System.out.println("@attribute " + variableNames.get(i) + " " + varValues);
-            writer.println("@attribute " + variableNames.get(i) + " " + varValues);
+            writer.println("@attribute " + variableNames.get(i) + " " + Integer.toString(i) + " " + varValues);
         });
         writer.close();
 
@@ -363,7 +363,7 @@ public class CSVtoARFFHeader {
         if(args.length!=2) {
             System.out.println("Incorrect number of arguments. Please use \"CSVtoARFFHeader 'csv_folder_path' 'output_file_path'\"");
             //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder2");
-            //getNumberOfStatesFromCSVFolder("./datasets/CSVfolder");
+            //getNumberOfStatesFromCSVFolder("/Users/dario/Desktop/CSVfolder/", "/Users/dario/Desktop/CSVfolder/" );
         }
         else {
             String csvFolderName = args[0];
