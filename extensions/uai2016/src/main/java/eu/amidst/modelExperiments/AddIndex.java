@@ -49,7 +49,7 @@ public class AddIndex {
         fw.close();
 */
 
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReduced.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.open("/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReduced.arff");
 
         //DataStreamWriter.writeDataToFile(data,"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/testWeka.arff");
 

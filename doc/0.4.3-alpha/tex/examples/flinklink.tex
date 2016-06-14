@@ -1,0 +1,117 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+\usepackage{color}
+\lstset{%
+	escapeinside={(*}{*)},%
+}
+
+\newcommand{\amidstversion}{\input{../../version.txt}}
+
+\newcommand{\includejavasource}[1]{\lstinputlisting[language=java, mathescape, columns=fullflexible, basicstyle=\fontfamily{lmvtt}\selectfont,]{#1}}
+
+\newcommand{\lang}[1]{}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+
+
+\section{Flinklink: Code Examples}\label{sec:flinklink}
+
+\begin{itemize}
+	\item \hyperref[sec:flinklink:io]{Input/output}
+	\begin{itemize}
+		\item \hyperref[sec:flinklink:io:read]{Reading data}
+		\item \hyperref[sec:flinklink:io:write]{Write data}
+	\end{itemize}
+		\item \hyperref[sec:flinklink:learning]{Parametric Learning}
+	\begin{itemize}
+		\item \hyperref[sec:flinklink:learning:pml]{Parallel Maximum Likelihood}
+		\item \hyperref[sec:flinklink:learning:dvmp]{Distributed Variational Message Pasing}
+		\item \hyperref[sec:flinklink:learning:dvi]{Distributed VI}
+		\item \hyperref[sec:flinklink:learning:svi]{Stochastic VI}
+	\end{itemize}
+\end{itemize}
+\subsection{Input/output}\label{sec:flinklink:io}
+
+
+
+
+\subsubsection{Reading data}\label{sec:flinklink:io:read}
+
+In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/io/DataStreamLoaderExample.java}
+
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Writing data}\label{sec:flinklink:io:write}
+
+
+Below we generate a random Flink dataset with 1000 instances, 2 discrete variables and 3 continuous ones. The seed used is 1234. Eventually, we save it as a distributed dataset (format ARFF folder).
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/io/DataStreamWriterExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+
+
+\subsection{Parametric learning}\label{sec:flinklink:learning}
+
+Here give examples of the provided algorithms by AMiDST for learning the probability distributions from a Flink data set. For shake of simplicity, we will consider the Naive Bayes DAG structure. Note that the code is almost the same of each of the algoritms, they only differ on the constructor used (e.g. \textit{new ParallelMaximumLikelihood()}, \textit{new dVMP()}, etc.)
+
+
+\subsubsection{Parallel Maximum Likelihood}\label{sec:flinklink:learning:pml}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/ParallelMLExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Distributed Variational Message Passing}\label{sec:flinklink:learning:dvmp}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/dVMPExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Distributed VI}\label{sec:flinklink:learning:dvi}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/DistributedVIExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+\subsubsection{Stochastic VI}\label{sec:flinklink:learning:svi}
+
+An example of the learning algorithm Stochastic VI is given below. Note that two specific parameters must be set, namely the \textit{learning factor} and the \textit{data size}.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/StochasticVIExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsection{Inference}
+\subsection{Extensions and applications}
+\subsubsection{Latent variable models}
+\subsubsection{Concept drift detection}
+
+\lang{java}
+\begin{lstlisting}
+some code  
+\end{lstlisting}
+
+
+
+
+
+\end{document}

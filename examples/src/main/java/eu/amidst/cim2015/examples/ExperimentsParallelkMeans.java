@@ -111,7 +111,7 @@ public class ExperimentsParallelkMeans {
             DataStreamWriter.writeDataToFile(data, pathToFile);
         }
 
-        data = DataStreamLoader.openFromFile(pathToFile);
+        data = DataStreamLoader.open(pathToFile);
 
         ParallelKMeans.setBatchSize(batchSize);
         double[][] centroids = ParallelKMeans.learnKMeans(getK(),data);

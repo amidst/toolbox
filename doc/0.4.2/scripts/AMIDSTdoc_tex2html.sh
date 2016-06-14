@@ -51,6 +51,8 @@ do
 	origin=$f;
 	dest=${origin/'.tex'/'.html'};
 
+	./importCode.py ${origin} | cat > ${origin}.aux;
+
 	echo ${origin}' to '${dest};
 	cat templates/header.html > ${dest};
 	pandoc --to html --from latex ${origin} >> ${dest};

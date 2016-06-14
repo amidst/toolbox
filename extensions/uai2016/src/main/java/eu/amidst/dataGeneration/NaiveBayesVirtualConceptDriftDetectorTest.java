@@ -42,10 +42,10 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         generateData.setSeed(0);
         generateData.setIncludeSocioEconomicVars(false);
         generateData.setBatchSize(1000);
-        generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
+        generateData.setRscriptsPath("./extensions/uai2016/io-experiments/dataGenerationForFlink");
         generateData.setNumFiles(3);
         generateData.setNumSamplesPerFile(100);
-        generateData.setOutputFullPath("~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData/" +
+        generateData.setOutputFullPath("~/core/extensions/uai2016/io-experiments/dataGenerationForFlink/IDAlikeData/" +
                 "withoutIndex");
         generateData.setPrintINDEX(false);
         generateData.setAddConceptDrift(true);
@@ -59,7 +59,7 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         String dataPath = args[0];
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(
+        DataStream<DataInstance> data = DataStreamLoader.open(
                 dataPath+"/MONTH1.arff");
 
         //We create a NaiveBayesVirtualConceptDriftDetector object

@@ -34,6 +34,7 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.configuration.Configuration;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -71,6 +72,14 @@ public class DataFlinkLoader implements Serializable{
     public void setNormalize(boolean normalize) {
         this.normalize = normalize;
     }
+
+
+    public static DataFlink<DataInstance> open(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException {
+        if(isArffFolder(pathFileData))
+            return loadDataFromFolder(env,pathFileData,normalize);
+        return loadDataFromFile(env,pathFileData,normalize);
+    }
+
 
     public static DataFlink<DataInstance> loadDataFromFile(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException{
         DataFlinkLoader loader = new DataFlinkLoader();
@@ -273,6 +282,20 @@ public class DataFlinkLoader implements Serializable{
             }
         }
 
+    }
+
+
+    /**
+     * Determines if the path given as argument correspond to an ARFF distributed dataset
+     * @param fileName local path to the dataset
+     * @return boolean
+     */
+
+    public static boolean isArffFolder(String fileName) {
+        if (!new File(fileName).isDirectory())
+            return false;
+        String[] parts = fileName.split("\\.");
+        return parts[parts.length - 1].equals("arff");
     }
 
     private static class DataFlinkFile implements DataFlink<DataInstance>,Serializable{
