@@ -99,7 +99,9 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
      */
     @Override
     public double getLogMarginalProbability() {
-        throw new UnsupportedOperationException("Method not implemented yet");
+        //TODO: temporal solution, the logMarginalProbability should be actually calculated.
+        return Double.NaN;
+        //throw new UnsupportedOperationException("Method not implemented yet");
     }
 
     /**
