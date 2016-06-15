@@ -18,9 +18,13 @@
 package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.ImportanceSamplingRobust;
+import eu.amidst.core.inference.MAPInferenceRobustNew;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -31,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -59,8 +64,8 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nIncorrect number of parameters (4 are needed: nTimeSteps, nEvidences, nSamplesIS, seed)");
             System.out.println("Using default values for parameters\n\n");
 
-            nTimeSteps=10;
-            numberOfEvidencesPerModel = 50;
+            nTimeSteps=20;
+            numberOfEvidencesPerModel = 3; // PREVIOUSLY: 50;
             nSamplesForIS=10000;
             seedEvidence=816935;
         }
@@ -80,6 +85,11 @@ public class TemperatureHumidityExperiments {
         int [] sequenceAllZeros = new int[nTimeSteps];
         int [] sequenceAllOnes = Arrays.stream(sequenceAllZeros).map(k-> k+1).toArray();
 
+        int[] sequence_HuginIterativeAssignment = new int[nTimeSteps];
+        int[] sequence_VMP_IterativeAssignment = new int[nTimeSteps];
+        int[] sequence_IS_IterativeAssignment = new int[nTimeSteps];
+
+
         double[] precision_UngroupedIS = new double[numberOfEvidencesPerModel];
         double[] precision_2GroupedIS = new double[numberOfEvidencesPerModel];
         double[] precision_3GroupedIS = new double[numberOfEvidencesPerModel];
@@ -95,6 +105,12 @@ public class TemperatureHumidityExperiments {
 
         double[] precision_Hugin = new double[numberOfEvidencesPerModel];
 
+        double[] precision_HuginIterativeAssignment = new double[numberOfEvidencesPerModel];
+
+        double[] precision_VMP_IterativeAssignment = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment = new double[numberOfEvidencesPerModel];
+
+
 
         double[] times_UngroupedIS = new double[numberOfEvidencesPerModel];
         double[] times_2GroupedIS = new double[numberOfEvidencesPerModel];
@@ -107,6 +123,9 @@ public class TemperatureHumidityExperiments {
         double[] times_4GroupedVMP = new double[numberOfEvidencesPerModel];
 
         double[] times_Hugin = new double[numberOfEvidencesPerModel];
+
+        double[] times_IterativeIS = new double[numberOfEvidencesPerModel];
+        double[] times_IterativeVMP = new double[numberOfEvidencesPerModel];
 
 
         TemperatureHumidityDynamicModel model = new TemperatureHumidityDynamicModel();
@@ -144,7 +163,7 @@ public class TemperatureHumidityExperiments {
 //                    }
 //                });
             List<DynamicAssignment> fullEvidence = model.getFullEvidence();
-            fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
+            //fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
             System.out.println("\n");
 
 
@@ -168,6 +187,112 @@ public class TemperatureHumidityExperiments {
                     timeStart = System.nanoTime();
 
                     Domain huginBN = BNConverterToHugin.convertToHugin(staticModel);
+                    Domain huginBN2 = BNConverterToHugin.convertToHugin(staticModel);
+
+                    huginBN2.compile();
+                    System.out.println("HUGIN Iterative search: Domain compiled");
+
+                    staticEvidence.getVariables().forEach(variable -> {
+                        if (variable.isMultinomial()) {
+                            try {
+                                ((DiscreteNode) huginBN2.getNodeByName(variable.getName())).selectState((int) staticEvidence.getValue(variable));
+                            } catch (ExceptionHugin e) {
+                                System.out.println(e.getMessage());
+                            }
+                        } else if (variable.isNormal()) {
+                            try {
+                                ((ContinuousChanceNode) huginBN2.getNodeByName(variable.getName())).enterValue(staticEvidence.getValue(variable));
+                            } catch (ExceptionHugin e) {
+                                System.out.println(e.getMessage());
+                            }
+                        } else {
+                            throw new IllegalArgumentException("Variable type not allowed.");
+                        }
+                    });
+
+                    System.out.println("HUGIN Iterative search: Evidence set");
+
+                    huginBN2.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+
+                    System.out.println("HUGIN Iterative search: Propagation done");
+                    NodeList variablesToAssign = new NodeList();
+
+                    //System.out.println(huginBN.getNodes().toString());
+                    huginBN2.getNodes().stream().filter(node -> {
+                        try {
+                            return node.getName().contains(MAPVariable.getName());
+                        } catch (ExceptionHugin e) {
+                            System.out.println(e.getMessage());
+                            return false;
+                        }
+                    }).forEach(node -> {
+                        variablesToAssign.add(node);
+                    });
+
+
+
+
+                    System.out.println("HUGIN Iterative search: Iterative assignments");
+
+                    while(! variablesToAssign.isEmpty()) {
+
+                        Node nodeMinEntropy = null;
+                        Table nodeMinEntropyDistribution = null;
+                        double minEntropy = Double.POSITIVE_INFINITY;
+
+//                        System.out.println("HUGIN Iterative MAP assignment");
+                        for (Node thisNode : variablesToAssign) {
+
+                            NodeList thisNodeList = new NodeList();
+                            thisNodeList.add(thisNode);
+                            Table posteriorThisNode = huginBN2.getMarginal(thisNodeList);
+
+
+                            double p0 = posteriorThisNode.getData()[0];
+                            double p1 = posteriorThisNode.getData()[1];
+                            double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                            if (nodeMinEntropy == null || thisEntropy < minEntropy) {
+                                nodeMinEntropy = thisNode;
+                                nodeMinEntropyDistribution = posteriorThisNode;
+                                minEntropy = thisEntropy;
+                            }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                        }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                        double nodeMinEntropy_p0 = nodeMinEntropyDistribution.getData()[0];
+                        double nodeMinEntropy_p1 = nodeMinEntropyDistribution.getData()[1];
+
+                        int thisNodeValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                        ((DiscreteNode)huginBN2.getNodeByName(nodeMinEntropy.getName())).selectState(thisNodeValue);
+
+                        String nodeNumberString = nodeMinEntropy.getName().substring(nodeMinEntropy.getName().lastIndexOf("_t")+2);
+                        int nodeNumber = Integer.parseInt(nodeNumberString);
+                        sequence_HuginIterativeAssignment[nodeNumber] = thisNodeValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                        variablesToAssign.remove(nodeMinEntropy);
+                        huginBN2.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+
+                    }
+
+//                    System.out.println(Arrays.toString(sequence_HuginIterativeAssignment));
+
+
+                    System.out.println("HUGIN Iterative search: Complete");
+                    huginBN2.delete();
+
+
+
+//                System.out.println("HUGIN Prob. evidence: " + huginBN.getLogLikelihood());
+
+
+//                System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
+
                     huginBN.compile();
                     System.out.println("HUGIN Domain compiled");
 
@@ -192,11 +317,10 @@ public class TemperatureHumidityExperiments {
                     System.out.println("HUGIN Evidence set");
 
                     huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
-
                     System.out.println("HUGIN Propagation done");
+
                     NodeList classVarReplications = new NodeList();
 
-                    //System.out.println(huginBN.getNodes().toString());
                     huginBN.getNodes().stream().filter(node -> {
                         try {
                             return node.getName().contains(MAPVariable.getName());
@@ -204,12 +328,10 @@ public class TemperatureHumidityExperiments {
                             System.out.println(e.getMessage());
                             return false;
                         }
-                    }).forEach(classVarReplications::add);
-
-//                System.out.println("HUGIN Prob. evidence: " + huginBN.getLogLikelihood());
-
-
-//                System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
+                    }).forEach(node -> {
+                        classVarReplications.add(node);
+                        variablesToAssign.add(node);
+                    });
 
                     huginBN.findMAPConfigurations(classVarReplications, 0.05);
                     System.out.println("HUGIN MAP configuration found");
@@ -242,6 +364,136 @@ public class TemperatureHumidityExperiments {
 //                if (nTimeSteps<=maxTimeStepsHugin) {
 //                    System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
 //                }
+
+
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //   ITERATIVE ASSIGNMENT OF VARIABLE WITH LESS ENTROPY, WITH IS AND VMP
+            /////////////////////////////////////////////////////////////////////////////////////////
+
+            System.out.println("IS Iterative MAP assignment");
+
+            timeStart = System.nanoTime();
+            List<Variable> MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+            HashMapAssignment evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+
+            ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+            importanceSamplingRobust.setModel(staticModel);
+            importanceSamplingRobust.setVariablesAPosteriori(MAPvariableToAssign);
+            importanceSamplingRobust.setSampleSize(nSamplesForIS);
+
+            while(! MAPvariableToAssign.isEmpty()) {
+
+
+                importanceSamplingRobust.setEvidence(evidencePlusMAPVariables);
+                importanceSamplingRobust.runInference();
+
+                Variable varMinEntropy = null;
+                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                double minEntropy = Double.POSITIVE_INFINITY;
+
+                for (Variable thisVariable : MAPvariableToAssign) {
+
+                    Multinomial MAPVarPosteriorDistribution = importanceSamplingRobust.getPosterior(thisVariable);
+
+                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+
+
+                    double p0 = MAPVarPosteriorProbabilities[0];
+                    double p1 = MAPVarPosteriorProbabilities[1];
+                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                    if (varMinEntropy == null || thisEntropy < minEntropy) {
+                        varMinEntropy = thisVariable;
+                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                        minEntropy = thisEntropy;
+                    }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+
+                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
+
+                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
+                int nodeNumber = Integer.parseInt(nodeNumberString);
+                sequence_IS_IterativeAssignment[nodeNumber] = thisVarValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                MAPvariableToAssign.remove(varMinEntropy);
+
+            }
+            timeStop = System.nanoTime();
+            executionTime = (double) (timeStop - timeStart) / 1000000000.0;
+            times_IterativeIS[experimentNumber]=executionTime;
+
+
+
+            System.out.println("VMP Iterative MAP assignment");
+            timeStart = System.nanoTime();
+
+            MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+            evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+
+            VMP vmp = new VMP();
+            vmp.setModel(staticModel);
+
+
+            while(! MAPvariableToAssign.isEmpty()) {
+
+
+                vmp.setEvidence(evidencePlusMAPVariables);
+                vmp.runInference();
+
+                Variable varMinEntropy = null;
+                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                double minEntropy = Double.POSITIVE_INFINITY;
+
+                for (Variable thisVariable : MAPvariableToAssign) {
+
+                    Multinomial MAPVarPosteriorDistribution = vmp.getPosterior(thisVariable);
+
+                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+
+
+                    double p0 = MAPVarPosteriorProbabilities[0];
+                    double p1 = MAPVarPosteriorProbabilities[1];
+                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                    if (varMinEntropy == null || thisEntropy < minEntropy) {
+                        varMinEntropy = thisVariable;
+                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                        minEntropy = thisEntropy;
+                    }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+
+                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
+
+                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
+                int nodeNumber = Integer.parseInt(nodeNumberString);
+                sequence_VMP_IterativeAssignment[nodeNumber] = thisVarValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                MAPvariableToAssign.remove(varMinEntropy);
+
+            }
+            timeStop = System.nanoTime();
+            executionTime = (double) (timeStop - timeStart) / 1000000000.0;
+            times_IterativeVMP[experimentNumber]=executionTime;
 
 
 
@@ -279,6 +531,9 @@ public class TemperatureHumidityExperiments {
 
 //                System.out.println("Ungrouped IS finished");
 //                System.out.println("\n\n");
+
+
+
 
 
             /////////////////////////////////////////////////
@@ -555,7 +810,15 @@ public class TemperatureHumidityExperiments {
 
             if (nTimeSteps<=maxTimeStepsHugin) {
                 System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
+                System.out.println();
+                System.out.println("HUGIN Iterative Sequence:        " + Arrays.toString(sequence_HuginIterativeAssignment));
+
             }
+
+            System.out.println("IS Iterative Sequence:           " + Arrays.toString(sequence_IS_IterativeAssignment));
+            System.out.println("VMP Iterative Sequence:          " + Arrays.toString(sequence_VMP_IterativeAssignment));
+
+            System.out.println();
 
             System.out.println("DynMAP (Ungrouped-IS) Sequence:  " + Arrays.toString(sequence_UngroupedIS));
             System.out.println();
@@ -651,6 +914,17 @@ public class TemperatureHumidityExperiments {
             double current_precision_allZeros=compareIntArrays(sequence_original,sequenceAllZeros);
             double current_precision_allOnes=compareIntArrays(sequence_original,sequenceAllOnes);
 
+
+            double current_precision_HuginIterative=compareIntArrays(sequence_original,sequence_HuginIterativeAssignment);
+            double current_precision_IS_Iterative=compareIntArrays(sequence_original,sequence_IS_IterativeAssignment);
+            double current_precision_VMP_Iterative=compareIntArrays(sequence_original,sequence_VMP_IterativeAssignment);
+
+
+            precision_HuginIterativeAssignment[experimentNumber] = current_precision_HuginIterative;
+            precision_IS_IterativeAssignment[experimentNumber] = current_precision_IS_Iterative;
+            precision_VMP_IterativeAssignment[experimentNumber] = current_precision_VMP_Iterative;
+
+
             precision_UngroupedIS[experimentNumber]=current_precision_UngroupedIS;
             precision_2GroupedIS[experimentNumber]=current_precision_2GroupedIS;
             precision_3GroupedIS[experimentNumber]=current_precision_3GroupedIS;
@@ -665,6 +939,136 @@ public class TemperatureHumidityExperiments {
 
             precision_allZeros[experimentNumber]=current_precision_allZeros;
             precision_allOnes[experimentNumber]=current_precision_allOnes;
+
+
+//            System.out.println(staticModel);
+//            System.out.println(staticEvidence.outputString(staticModel.getVariables().getListOfVariables()));
+
+
+
+
+
+            // INDEPENDENT ESTIMATION OF THE LOG-PROBABILITIES OF THE MAP SEQUENCES:
+
+//            List<Variable> MAPvariables = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+//
+//            int sampleSizePreciseEstimation = 500000;
+//            double estimatedLogProbability;
+//
+//            HashMapAssignment sequence = new HashMapAssignment(nTimeSteps);
+//
+//            MAPInferenceRobustNew mapInferenceRobustNew = new MAPInferenceRobustNew();
+//            mapInferenceRobustNew.setModel(staticModel);
+//            mapInferenceRobustNew.setMAPVariables(MAPvariables);
+//            mapInferenceRobustNew.setEvidence(staticEvidence);
+//            mapInferenceRobustNew.setSeed(236834);
+//
+//
+//            System.out.println("ORIGINAL SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_original[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("IS ITERATIVE SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_IS_IterativeAssignment[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("IS UNGROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_UngroupedIS[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("IS 2-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_2GroupedIS[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("IS 3-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_3GroupedIS[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//
+//            System.out.println("IS 4-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_4GroupedIS[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//
+//            System.out.println("VMP ITERATIVE SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_VMP_IterativeAssignment[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("VMP UNGROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_UngroupedVMP[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("VMP 2-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_2GroupedVMP[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//            System.out.println("VMP 3-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_3GroupedVMP[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+//
+//
+//
+//            System.out.println("VMP 4-GROUPED SEQUENCE");
+//            sequence = new HashMapAssignment(nTimeSteps);
+//            for (int i = 0; i < nTimeSteps; i++) {
+//                sequence.setValue(MAPvariables.get(i), sequence_4GroupedVMP[i]);
+//            }
+//            estimatedLogProbability = preciseEstimationOfLogProbabilities(mapInferenceRobustNew, sequence, sampleSizePreciseEstimation);
+//            System.out.println("Estimated logProbability: " + estimatedLogProbability);
+
+
+
+
+
 
             experimentNumber++;
 
@@ -725,6 +1129,9 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nGLOBAL MEAN PRECISIONS:");
             System.out.println("         HUGIN:    Not computed");
         }
+        System.out.println("HUGIN iterative:" + Arrays.stream(precision_HuginIterativeAssignment).average().getAsDouble());
+        System.out.println("  IS iterative: " + Arrays.stream(precision_IS_IterativeAssignment).average().getAsDouble());
+        System.out.println(" VMP iterative: " + Arrays.stream(precision_VMP_IterativeAssignment).average().getAsDouble());
 
         System.out.println("  IS Ungrouped: " + Arrays.stream(precision_UngroupedIS).average().getAsDouble());
         System.out.println("  IS 2-Grouped: " + Arrays.stream(precision_2GroupedIS).average().getAsDouble());
@@ -745,6 +1152,9 @@ public class TemperatureHumidityExperiments {
         System.out.println("\n\n EXECUTION TIMES: ");
         System.out.println(Arrays.toString(times_Hugin).replace("[","times_hugin=c(").replace("]",")"));
 
+        System.out.println(Arrays.toString(times_IterativeIS).replace("[","times_iterativeIS=c(").replace("]",")"));
+        System.out.println(Arrays.toString(times_IterativeVMP).replace("[","times_iterativeVMP=c(").replace("]",")"));
+
         System.out.println(Arrays.toString(times_UngroupedIS).replace("[","times_ungroupedIS=c(").replace("]",")"));
         System.out.println(Arrays.toString(times_2GroupedIS).replace("[","times_2groupedIS=c(").replace("]",")"));
         System.out.println(Arrays.toString(times_3GroupedIS).replace("[","times_3groupedIS=c(").replace("]",")"));
@@ -758,6 +1168,9 @@ public class TemperatureHumidityExperiments {
 
         System.out.println("\n\n MEAN EXECUTION TIMES: ");
         System.out.println("         HUGIN: " + Arrays.stream(times_Hugin).average().getAsDouble());
+
+        System.out.println("  IS Iterative: " + Arrays.stream(times_IterativeIS).average().getAsDouble());
+        System.out.println(" VMP Iterative: " + Arrays.stream(times_IterativeVMP).average().getAsDouble());
 
         System.out.println("  IS Ungrouped: " + Arrays.stream(times_UngroupedIS).average().getAsDouble());
         System.out.println("  IS 2-Grouped: " + Arrays.stream(times_2GroupedIS).average().getAsDouble());
@@ -786,5 +1199,58 @@ public class TemperatureHumidityExperiments {
         });
 
         return ((double)atomicInteger.get())/((double)array1.length);
+    }
+
+
+    private static double preciseEstimationOfLogProbabilities(MAPInferenceRobustNew mapInferenceRobustNew, Assignment mapEstimate, int initialSampleSize) {
+
+        int sampleSizePreciseEstimation = initialSampleSize;
+        mapInferenceRobustNew.setSampleSizeEstimatingProbabilities(sampleSizePreciseEstimation);
+
+        double relativeError = 1;
+        double estimatedLogProbability1, estimatedLogProbability2, estimatedLogProbability3;
+
+        double meanEstimatedProbability = 0, varianceEstimatedProbability, standardErrorEstimatedProbability;
+
+        while(relativeError>0.03) {
+
+            mapInferenceRobustNew.setSampleSizeEstimatingProbabilities(sampleSizePreciseEstimation);
+
+            estimatedLogProbability1 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate);
+//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability1);
+
+            estimatedLogProbability2 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate);
+//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability2);
+
+            estimatedLogProbability3 = mapInferenceRobustNew.estimateLogProbabilityOfPartialAssignment(mapEstimate);
+//            System.out.println("SAGlobal PRECISE RE-estimated log-probability: " + estimatedLogProbability3);
+
+            System.out.println("Raw probs: " + estimatedLogProbability1 + ", " + estimatedLogProbability2 + ", " + estimatedLogProbability3);
+
+            meanEstimatedProbability = (estimatedLogProbability1 + estimatedLogProbability2 + estimatedLogProbability3) / 3;
+            varianceEstimatedProbability = (Math.pow(estimatedLogProbability1-meanEstimatedProbability,2) + Math.pow(estimatedLogProbability2-meanEstimatedProbability,2) + Math.pow(estimatedLogProbability3-meanEstimatedProbability,2)) / 2;
+
+
+            standardErrorEstimatedProbability = Math.sqrt(varianceEstimatedProbability)/Math.sqrt(3);
+
+            relativeError = standardErrorEstimatedProbability/Math.abs(meanEstimatedProbability);
+
+            //System.out.println(meanEstimatedProbability + ", " + varianceEstimatedProbability + ", " + standardErrorEstimatedProbability);
+            System.out.println("Relative error with " + sampleSizePreciseEstimation + " samples: " + relativeError);
+
+
+//            meanEstimatedProbability = ImportanceSamplingRobust.robustSumOfLogarithms(ImportanceSamplingRobust.robustSumOfLogarithms(estimatedLogProbability1,estimatedLogProbability2),estimatedLogProbability3) - Math.log(3);
+//            varianceEstimatedProbability = (Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability1,meanEstimatedProbability)),2) + Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability2,meanEstimatedProbability)),2)  + Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability3,meanEstimatedProbability)),2)) / 2;
+//            standardErrorEstimatedProbability = Math.sqrt(varianceEstimatedProbability)/Math.sqrt(3);
+//
+//            relativeError = standardErrorEstimatedProbability/Math.abs(meanEstimatedProbability);
+//
+//            System.out.println(meanEstimatedProbability + ", " + varianceEstimatedProbability + ", " + standardErrorEstimatedProbability);
+//            System.out.println("Relative error with " + sampleSizePreciseEstimation + " samples: " + relativeError);
+
+            sampleSizePreciseEstimation = 4 * sampleSizePreciseEstimation;
+
+        }
+        return meanEstimatedProbability;
     }
 }
