@@ -812,7 +812,6 @@ public class TemperatureHumidityExperiments {
                 System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
                 System.out.println();
                 System.out.println("HUGIN Iterative Sequence:        " + Arrays.toString(sequence_HuginIterativeAssignment));
-
             }
 
             System.out.println("IS Iterative Sequence:           " + Arrays.toString(sequence_IS_IterativeAssignment));
