@@ -18,7 +18,6 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -561,7 +560,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 case VMP:
                     currentModelInference = new VMP();
                     //((VMP)currentModelInference).setTestELBO(true);
-                    ((VMP)currentModelInference).setThreshold(0.0001);
+                    ((VMP)currentModelInference).setThreshold(0.00001);
                     ((VMP) currentModelInference).setMaxIter(3000);
                     break;
 
@@ -735,7 +734,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             case VMP:
                 staticModelInference = new VMP();
                 //((VMP)staticModelInference).setTestELBO(true);
-                ((VMP)staticModelInference).setThreshold(0.0001);
+                ((VMP)staticModelInference).setThreshold(0.00001);
                 ((VMP)staticModelInference).setMaxIter(3000);
                 break;
 

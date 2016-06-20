@@ -37,12 +37,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.util.Arrays.stream;
+
 /**
  * Created by dario on 08/03/16.
  */
 public class BankModelExperiments {
 
-    final static int maxTimeStepsHugin=8;
+    final static int maxTimeStepsHugin=7;
 
     public static void main(String[] args) {
 
@@ -56,23 +58,27 @@ public class BankModelExperiments {
         int numberOfEvidencesPerModel;
         int nSamplesForIS;
         int seedEvidence;
+        double probKeepingClassState;
 
 
-        if (args.length!=4) {
+        if (args.length!=5) {
 
             System.out.println("\nIncorrect number of parameters (4 are needed: nTimeSteps, nEvidences, nSamplesIS, seed)");
             System.out.println("Using default values for parameters\n\n");
 
-            nTimeSteps=50;
+            nTimeSteps=7;
             numberOfEvidencesPerModel = 50;
             nSamplesForIS=10000;
-            seedEvidence=5185686;
+            seedEvidence=5185680;
+//            seedEvidence=816935;
+            probKeepingClassState = 0.8;
         }
         else {
             nTimeSteps = Integer.parseInt(args[0]);
             numberOfEvidencesPerModel = Integer.parseInt(args[1]);
             nSamplesForIS = Integer.parseInt(args[2]);
             seedEvidence = Integer.parseInt(args[3]);
+            probKeepingClassState = Double.parseDouble(args[4]);
         }
 
         Random randomEvidence= new Random(seedEvidence);
@@ -81,12 +87,22 @@ public class BankModelExperiments {
         System.out.println("nSamplesIS: " + nSamplesForIS);
 
 
-        int [] sequenceAllZeros = new int[nTimeSteps];
-        int [] sequenceAllOnes = Arrays.stream(sequenceAllZeros).map(k-> k+1).toArray();
+//        int [] sequenceAllZeros = new int[nTimeSteps];
+//        int [] sequenceAllOnes = stream(sequenceAllZeros).map(k-> k+1).toArray();
 
+        
         int[] sequence_HuginIterativeAssignment = new int[nTimeSteps];
         int[] sequence_VMP_IterativeAssignment = new int[nTimeSteps];
         int[] sequence_IS_IterativeAssignment = new int[nTimeSteps];
+
+        
+        
+        
+
+        double[] precision_Hugin = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment = new double[numberOfEvidencesPerModel];
 
 
         double[] precision_UngroupedIS = new double[numberOfEvidencesPerModel];
@@ -99,17 +115,208 @@ public class BankModelExperiments {
         double[] precision_3GroupedVMP = new double[numberOfEvidencesPerModel];
         double[] precision_4GroupedVMP = new double[numberOfEvidencesPerModel];
 
-        double[] precision_allZeros = new double[numberOfEvidencesPerModel];
-        double[] precision_allOnes = new double[numberOfEvidencesPerModel];
-
-        double[] precision_Hugin = new double[numberOfEvidencesPerModel];
-
-        double[] precision_HuginIterativeAssignment = new double[numberOfEvidencesPerModel];
-
-        double[] precision_VMP_IterativeAssignment = new double[numberOfEvidencesPerModel];
-        double[] precision_IS_IterativeAssignment = new double[numberOfEvidencesPerModel];
 
 
+
+
+
+        double[] precision_Hugin_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_Probability = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_Probability = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_Probability = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_Probability = new double[numberOfEvidencesPerModel];
+
+
+
+
+        
+        double[] precision_Hugin_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_01 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_01 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_01 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_01 = new double[numberOfEvidencesPerModel];
+
+
+        
+        
+
+
+        double[] precision_Hugin_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_sub2 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_sub2 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_sub2 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_sub2 = new double[numberOfEvidencesPerModel];
+
+        
+
+
+
+        double[] precision_Hugin_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_sub3 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_sub3 = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_sub3 = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_sub3 = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        double[] precision_Hugin_original = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_original = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_original = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_original = new double[numberOfEvidencesPerModel];
+
+
+        double[] precision_UngroupedIS_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_original = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+
+        double[] precision_Hugin_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_Probability_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_Probability_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_Probability_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_Probability_original = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+        double[] precision_Hugin_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_01_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_01_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_01_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_01_original = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+
+        double[] precision_Hugin_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_sub2_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_sub2_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_sub2_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_sub2_original = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+        double[] precision_Hugin_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_HuginIterativeAssignment_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_VMP_IterativeAssignment_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment_sub3_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedIS_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedIS_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedIS_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedIS_sub3_original = new double[numberOfEvidencesPerModel];
+
+        double[] precision_UngroupedVMP_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_2GroupedVMP_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_3GroupedVMP_sub3_original = new double[numberOfEvidencesPerModel];
+        double[] precision_4GroupedVMP_sub3_original = new double[numberOfEvidencesPerModel];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        double[] times_Hugin = new double[numberOfEvidencesPerModel];
+        double[] times_IterativeIS = new double[numberOfEvidencesPerModel];
+        double[] times_IterativeVMP = new double[numberOfEvidencesPerModel];   
 
         double[] times_UngroupedIS = new double[numberOfEvidencesPerModel];
         double[] times_2GroupedIS = new double[numberOfEvidencesPerModel];
@@ -121,10 +328,7 @@ public class BankModelExperiments {
         double[] times_3GroupedVMP = new double[numberOfEvidencesPerModel];
         double[] times_4GroupedVMP = new double[numberOfEvidencesPerModel];
 
-        double[] times_Hugin = new double[numberOfEvidencesPerModel];
 
-        double[] times_IterativeIS = new double[numberOfEvidencesPerModel];
-        double[] times_IterativeVMP = new double[numberOfEvidencesPerModel];
 
 
         BankSimulatedDynamicModel3 model = new BankSimulatedDynamicModel3();
@@ -140,7 +344,6 @@ public class BankModelExperiments {
         System.out.println("\nDYNAMIC MODEL \n");
 
 
-        double probKeepingClassState = 0.80;
         model.setProbabilityOfKeepingClass(probKeepingClassState);
 
 
@@ -162,7 +365,7 @@ public class BankModelExperiments {
 //                    }
 //                });
             List<DynamicAssignment> fullEvidence = model.getFullEvidence();
-//            fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
+            fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
             System.out.println("\n");
 
 
@@ -372,132 +575,133 @@ public class BankModelExperiments {
             //   ITERATIVE ASSIGNMENT OF VARIABLE WITH LESS ENTROPY, WITH IS AND VMP
             /////////////////////////////////////////////////////////////////////////////////////////
 
-            System.out.println("IS Iterative MAP assignment");
 
-            timeStart = System.nanoTime();
-            List<Variable> MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
-            HashMapAssignment evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+            if(nTimeSteps<150) {
+                System.out.println("IS Iterative MAP assignment");
 
-            ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
-            importanceSamplingRobust.setModel(staticModel);
-            importanceSamplingRobust.setVariablesAPosteriori(MAPvariableToAssign);
-            importanceSamplingRobust.setSampleSize(nSamplesForIS);
+                timeStart = System.nanoTime();
+                List<Variable> MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+                HashMapAssignment evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
 
-            while(! MAPvariableToAssign.isEmpty()) {
+                ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+                importanceSamplingRobust.setModel(staticModel);
+                importanceSamplingRobust.setVariablesAPosteriori(MAPvariableToAssign);
+                importanceSamplingRobust.setSampleSize(nSamplesForIS / 10);
 
-
-                importanceSamplingRobust.setEvidence(evidencePlusMAPVariables);
-                importanceSamplingRobust.runInference();
-
-                Variable varMinEntropy = null;
-                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
-                double minEntropy = Double.POSITIVE_INFINITY;
-
-                for (Variable thisVariable : MAPvariableToAssign) {
-
-                    Multinomial MAPVarPosteriorDistribution = importanceSamplingRobust.getPosterior(thisVariable);
-
-                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+                while (!MAPvariableToAssign.isEmpty()) {
 
 
-                    double p0 = MAPVarPosteriorProbabilities[0];
-                    double p1 = MAPVarPosteriorProbabilities[1];
-                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+                    importanceSamplingRobust.setEvidence(evidencePlusMAPVariables);
+                    importanceSamplingRobust.runInference();
 
-                    if (varMinEntropy == null || thisEntropy < minEntropy) {
-                        varMinEntropy = thisVariable;
-                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
-                        minEntropy = thisEntropy;
-                    }
+                    Variable varMinEntropy = null;
+                    double[] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                    double minEntropy = Double.POSITIVE_INFINITY;
 
-//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+                    for (Variable thisVariable : MAPvariableToAssign) {
 
-                }
+                        Multinomial MAPVarPosteriorDistribution = importanceSamplingRobust.getPosterior(thisVariable);
 
-//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
-//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
-                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
-                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
-
-                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
-                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
-
-                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
-                int nodeNumber = Integer.parseInt(nodeNumberString);
-                sequence_IS_IterativeAssignment[nodeNumber] = thisVarValue;
-//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
-
-                MAPvariableToAssign.remove(varMinEntropy);
-
-            }
-            timeStop = System.nanoTime();
-            executionTime = (double) (timeStop - timeStart) / 1000000000.0;
-            times_IterativeIS[experimentNumber]=executionTime;
+                        double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
 
 
+                        double p0 = MAPVarPosteriorProbabilities[0];
+                        double p1 = MAPVarPosteriorProbabilities[1];
+                        double thisEntropy = -(p0 * Math.log(p0) + p1 * Math.log(p1));
 
-            System.out.println("VMP Iterative MAP assignment");
-            timeStart = System.nanoTime();
-
-            MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
-            evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
-
-            VMP vmp = new VMP();
-            vmp.setModel(staticModel);
-
-
-            while(! MAPvariableToAssign.isEmpty()) {
-
-
-                vmp.setEvidence(evidencePlusMAPVariables);
-                vmp.runInference();
-
-                Variable varMinEntropy = null;
-                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
-                double minEntropy = Double.POSITIVE_INFINITY;
-
-                for (Variable thisVariable : MAPvariableToAssign) {
-
-                    Multinomial MAPVarPosteriorDistribution = vmp.getPosterior(thisVariable);
-
-                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
-
-
-                    double p0 = MAPVarPosteriorProbabilities[0];
-                    double p1 = MAPVarPosteriorProbabilities[1];
-                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
-
-                    if (varMinEntropy == null || thisEntropy < minEntropy) {
-                        varMinEntropy = thisVariable;
-                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
-                        minEntropy = thisEntropy;
-                    }
+                        if (varMinEntropy == null || thisEntropy < minEntropy) {
+                            varMinEntropy = thisVariable;
+                            varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                            minEntropy = thisEntropy;
+                        }
 
 //                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
 
-                }
+                    }
 
 //                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
 //                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
-                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
-                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+                    double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                    double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
 
-                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
-                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
+                    int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                    evidencePlusMAPVariables.setValue(varMinEntropy, thisVarValue);
 
-                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
-                int nodeNumber = Integer.parseInt(nodeNumberString);
-                sequence_VMP_IterativeAssignment[nodeNumber] = thisVarValue;
+                    String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t") + 2);
+                    int nodeNumber = Integer.parseInt(nodeNumberString);
+                    sequence_IS_IterativeAssignment[nodeNumber] = thisVarValue;
 //                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
 
-                MAPvariableToAssign.remove(varMinEntropy);
+                    MAPvariableToAssign.remove(varMinEntropy);
+
+                }
+                timeStop = System.nanoTime();
+                executionTime = (double) (timeStop - timeStart) / 1000000000.0;
+                times_IterativeIS[experimentNumber] = executionTime;
+
+
+                System.out.println("VMP Iterative MAP assignment");
+                timeStart = System.nanoTime();
+
+                MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+                evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+
+                VMP vmp = new VMP();
+                vmp.setModel(staticModel);
+
+
+                while (!MAPvariableToAssign.isEmpty()) {
+
+
+                    vmp.setEvidence(evidencePlusMAPVariables);
+                    vmp.runInference();
+
+                    Variable varMinEntropy = null;
+                    double[] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                    double minEntropy = Double.POSITIVE_INFINITY;
+
+                    for (Variable thisVariable : MAPvariableToAssign) {
+
+                        Multinomial MAPVarPosteriorDistribution = vmp.getPosterior(thisVariable);
+
+                        double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+
+
+                        double p0 = MAPVarPosteriorProbabilities[0];
+                        double p1 = MAPVarPosteriorProbabilities[1];
+                        double thisEntropy = -(p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                        if (varMinEntropy == null || thisEntropy < minEntropy) {
+                            varMinEntropy = thisVariable;
+                            varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                            minEntropy = thisEntropy;
+                        }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                    }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                    double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                    double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+
+                    int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                    evidencePlusMAPVariables.setValue(varMinEntropy, thisVarValue);
+
+                    String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t") + 2);
+                    int nodeNumber = Integer.parseInt(nodeNumberString);
+                    sequence_VMP_IterativeAssignment[nodeNumber] = thisVarValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                    MAPvariableToAssign.remove(varMinEntropy);
+
+                }
+                timeStop = System.nanoTime();
+                executionTime = (double) (timeStop - timeStart) / 1000000000.0;
+                times_IterativeVMP[experimentNumber] = executionTime;
 
             }
-            timeStop = System.nanoTime();
-            executionTime = (double) (timeStop - timeStart) / 1000000000.0;
-            times_IterativeVMP[experimentNumber]=executionTime;
-
-
 
 
 
@@ -810,40 +1014,40 @@ public class BankModelExperiments {
             System.out.println("ORIGINAL SEQUENCE:               " + Arrays.toString(sequence_original));
 
             if (nTimeSteps<=maxTimeStepsHugin) {
-                System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
                 System.out.println();
+                System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
                 System.out.println("HUGIN Iterative Sequence:        " + Arrays.toString(sequence_HuginIterativeAssignment));
             }
 
             System.out.println("IS Iterative Sequence:           " + Arrays.toString(sequence_IS_IterativeAssignment));
             System.out.println("VMP Iterative Sequence:          " + Arrays.toString(sequence_VMP_IterativeAssignment));
 
-            System.out.println();
+//            System.out.println();
 
             System.out.println("DynMAP (Ungrouped-IS) Sequence:  " + Arrays.toString(sequence_UngroupedIS));
-            System.out.println();
+//            System.out.println();
 
             System.out.println("DynMAP (2Grouped-IS) Sequence:   " + Arrays.toString(sequence_2GroupedIS));
-            System.out.println("       (2Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_2GroupedIS.get(0)));
-            System.out.println("       (2Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_2GroupedIS.get(1)));
-            System.out.println();
+//            System.out.println("       (2Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_2GroupedIS.get(0)));
+//            System.out.println("       (2Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_2GroupedIS.get(1)));
+//            System.out.println();
 
             System.out.println("DynMAP (3Grouped-IS) Sequence:   " + Arrays.toString(sequence_3GroupedIS));
-            System.out.println("       (3Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_3GroupedIS.get(0)));
-            System.out.println("       (3Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_3GroupedIS.get(1)));
-            System.out.println("       (3Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_3GroupedIS.get(2)));
-            System.out.println();
+//            System.out.println("       (3Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_3GroupedIS.get(0)));
+//            System.out.println("       (3Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_3GroupedIS.get(1)));
+//            System.out.println("       (3Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_3GroupedIS.get(2)));
+//            System.out.println();
 
             System.out.println("DynMAP (4Grouped-IS) Sequence:   " + Arrays.toString(sequence_4GroupedIS));
-            System.out.println("       (4Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_4GroupedIS.get(0)));
-            System.out.println("       (4Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_4GroupedIS.get(1)));
-            System.out.println("       (4Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_4GroupedIS.get(2)));
-            System.out.println("       (4Gr-IS) Seq. Submodel 3: " + Arrays.toString(submodel_sequences_4GroupedIS.get(3)));
-            System.out.println();
+//            System.out.println("       (4Gr-IS) Seq. Submodel 0: " + Arrays.toString(submodel_sequences_4GroupedIS.get(0)));
+//            System.out.println("       (4Gr-IS) Seq. Submodel 1: " + Arrays.toString(submodel_sequences_4GroupedIS.get(1)));
+//            System.out.println("       (4Gr-IS) Seq. Submodel 2: " + Arrays.toString(submodel_sequences_4GroupedIS.get(2)));
+//            System.out.println("       (4Gr-IS) Seq. Submodel 3: " + Arrays.toString(submodel_sequences_4GroupedIS.get(3)));
+//            System.out.println();
 
             if (sequence_UngroupedVMP_computed) {
                 System.out.println("DynMAP (Ungrouped-VMP) Sequence: " + Arrays.toString(sequence_UngroupedVMP));
-                System.out.println();
+//                System.out.println();
             }
             else {
                 System.out.println("DynMAP (Ungrouped-VMP) Sequence:  Not obtained\n");
@@ -851,9 +1055,9 @@ public class BankModelExperiments {
 
             if (sequence_2GroupedVMP_computed) {
                 System.out.println("DynMAP (2Grouped-VMP) Sequence:  " + Arrays.toString(sequence_2GroupedVMP));
-                System.out.println("       (2Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(0)));
-                System.out.println("       (2Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(1)));
-                System.out.println();
+//                System.out.println("       (2Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(0)));
+//                System.out.println("       (2Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_2GroupedVMP.get(1)));
+//                System.out.println();
             }
             else {
                 System.out.println("DynMAP (2Grouped-VMP) Sequence:   Not obtained\n");
@@ -861,84 +1065,479 @@ public class BankModelExperiments {
 
             if (sequence_3GroupedVMP_computed) {
                 System.out.println("DynMAP (3Grouped-VMP) Sequence:  " + Arrays.toString(sequence_3GroupedVMP));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(0)));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(1)));
-                System.out.println("       (3Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(2)));
-                System.out.println();
+//                System.out.println("       (3Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(0)));
+//                System.out.println("       (3Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(1)));
+//                System.out.println("       (3Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_3GroupedVMP.get(2)));
+//                System.out.println();
             }
             else {
                 System.out.println("DynMAP (3Grouped-VMP) Sequence:   Not obtained\n");
             }
             if (sequence_4GroupedVMP_computed) {
                 System.out.println("DynMAP (4Grouped-VMP) Sequence:  " + Arrays.toString(sequence_4GroupedVMP));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(0)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(1)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(2)));
-                System.out.println("       (4Gr-VMP) Seq. Submodel 3:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(3)));
+//                System.out.println("       (4Gr-VMP) Seq. Submodel 0:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(0)));
+//                System.out.println("       (4Gr-VMP) Seq. Submodel 1:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(1)));
+//                System.out.println("       (4Gr-VMP) Seq. Submodel 2:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(2)));
+//                System.out.println("       (4Gr-VMP) Seq. Submodel 3:" + Arrays.toString(submodel_sequences_4GroupedVMP.get(3)));
             }
             else {
                 System.out.println("DynMAP (4Grouped-VMP) Sequence:   Not obtained\n");
             }
+            System.out.println();
+            
+
+//            double current_precision_Hugin=0;
+//            if (nTimeSteps<=maxTimeStepsHugin) {
+//                current_precision_Hugin =
+////                    System.out.println("Precision HUGIN: " + current_precision_Hugin);
+////                sequence_original = sequence_Hugin;
+//            }
 
 
-            double current_precision_Hugin=0;
-            if (nTimeSteps<=maxTimeStepsHugin) {
-                current_precision_Hugin = compareIntArrays(sequence_original, sequence_Hugin);
-//                    System.out.println("Precision HUGIN: " + current_precision_Hugin);
-                sequence_original = sequence_Hugin;
+
+
+
+            precision_Hugin_original[experimentNumber]=compareIntArrays(sequence_original, sequence_Hugin);;
+            precision_HuginIterativeAssignment_original[experimentNumber] = compareIntArrays(sequence_original,sequence_HuginIterativeAssignment);
+            precision_IS_IterativeAssignment_original[experimentNumber] = compareIntArrays(sequence_original,sequence_IS_IterativeAssignment);
+            precision_VMP_IterativeAssignment_original[experimentNumber] = compareIntArrays(sequence_original,sequence_VMP_IterativeAssignment);
+
+            precision_UngroupedIS_original[experimentNumber]=compareIntArrays(sequence_original,sequence_UngroupedIS);
+            precision_2GroupedIS_original[experimentNumber]=compareIntArrays(sequence_original,sequence_2GroupedIS);
+            precision_3GroupedIS_original[experimentNumber]=compareIntArrays(sequence_original,sequence_3GroupedIS);
+            precision_4GroupedIS_original[experimentNumber]=compareIntArrays(sequence_original,sequence_4GroupedIS);
+
+            precision_UngroupedVMP_original[experimentNumber]=compareIntArrays(sequence_original,sequence_UngroupedVMP);
+            precision_2GroupedVMP_original[experimentNumber]=compareIntArrays(sequence_original,sequence_2GroupedVMP);
+            precision_3GroupedVMP_original[experimentNumber]=compareIntArrays(sequence_original,sequence_3GroupedVMP);
+            precision_4GroupedVMP_original[experimentNumber]=compareIntArrays(sequence_original,sequence_4GroupedVMP);
+
+
+
+            System.out.println("PRECISION USING NORMALIZED HAMMING DISTANCE vs ORIGINAL SEQUENCE:");
+            if(nTimeSteps<= maxTimeStepsHugin) {
+                System.out.println("          HUGIN: " + precision_Hugin_original[experimentNumber]);
+                System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_original[experimentNumber]);
             }
 
-            double current_precision_UngroupedIS=compareIntArrays(sequence_original,sequence_UngroupedIS);
-            double current_precision_2GroupedIS=compareIntArrays(sequence_original,sequence_2GroupedIS);
-            double current_precision_3GroupedIS=compareIntArrays(sequence_original,sequence_3GroupedIS);
-            double current_precision_4GroupedIS=compareIntArrays(sequence_original,sequence_4GroupedIS);
+            System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_original[experimentNumber]);
+            System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("   IS Ungrouped: " + precision_UngroupedIS_original[experimentNumber]);
+            System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_original[experimentNumber]);
+            System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_original[experimentNumber]);
+            System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_original[experimentNumber]);
+            System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_original[experimentNumber]);
+            System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_original[experimentNumber]);
+            System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_original[experimentNumber]);
+            System.out.println();
+
+
+            
+
+            precision_Hugin_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_Hugin);
+            precision_HuginIterativeAssignment_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_HuginIterativeAssignment);
+            precision_IS_IterativeAssignment_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_IS_IterativeAssignment);
+            precision_VMP_IterativeAssignment_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_VMP_IterativeAssignment);
+
+            precision_UngroupedIS_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_UngroupedIS);
+            precision_2GroupedIS_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_2GroupedIS);
+            precision_3GroupedIS_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_3GroupedIS);
+            precision_4GroupedIS_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_4GroupedIS);
+
+            precision_UngroupedVMP_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_UngroupedVMP);
+            precision_2GroupedVMP_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_2GroupedVMP);
+            precision_3GroupedVMP_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_3GroupedVMP);
+            precision_4GroupedVMP_01_original[experimentNumber] = compareFullIntArrays(sequence_original,sequence_4GroupedVMP);
+
+
+            
+            
+            System.out.println("PRECISION USING 0/1 SCORE vs ORIGINAL SEQUENCE:");
+            if(nTimeSteps<= maxTimeStepsHugin) {
+                System.out.println("          HUGIN: " + precision_Hugin_01_original[experimentNumber]);
+                System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_01_original[experimentNumber]);
+            }
+
+            System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_01_original[experimentNumber]);
+            System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_01_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("   IS Ungrouped: " + precision_UngroupedIS_01_original[experimentNumber]);
+            System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_01_original[experimentNumber]);
+            System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_01_original[experimentNumber]);
+            System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_01_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_01_original[experimentNumber]);
+            System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_01_original[experimentNumber]);
+            System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_01_original[experimentNumber]);
+            System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_01_original[experimentNumber]);
+            System.out.println();
 
 
 
 
-//                System.out.println("Precision Ungrouped-IS: " + current_precision_UngroupedIS);
-//                System.out.println("Precision 2Grouped-IS: " + current_precision_2GroupedIS);
-//                System.out.println("Precision 3Grouped-IS: " + current_precision_3GroupedIS);
-//                System.out.println("Precision 4Grouped-IS: " + current_precision_4GroupedIS);
+            precision_Hugin_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_Hugin,2);
+            precision_HuginIterativeAssignment_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_HuginIterativeAssignment,2);
+            precision_IS_IterativeAssignment_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_IS_IterativeAssignment,2);
+            precision_VMP_IterativeAssignment_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_VMP_IterativeAssignment,2);
 
-            double current_precision_UngroupedVMP=compareIntArrays(sequence_original,sequence_UngroupedVMP);
-            double current_precision_2GroupedVMP=compareIntArrays(sequence_original,sequence_2GroupedVMP);
-            double current_precision_3GroupedVMP=compareIntArrays(sequence_original,sequence_3GroupedVMP);
-            double current_precision_4GroupedVMP=compareIntArrays(sequence_original,sequence_4GroupedVMP);
-//                System.out.println("Precision Ungrouped-VMP: " + current_precision_UngroupedVMP);
-//                System.out.println("Precision 2Grouped-VMP: " + current_precision_2GroupedVMP);
-//                System.out.println("Precision 3Grouped-VMP: " + current_precision_3GroupedVMP);
-//                System.out.println("Precision 4Grouped-VMP: " + current_precision_4GroupedVMP);
+            precision_UngroupedIS_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_UngroupedIS,2);
+            precision_2GroupedIS_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_2GroupedIS,2);
+            precision_3GroupedIS_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_3GroupedIS,2);
+            precision_4GroupedIS_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_4GroupedIS,2);
 
-
-            double current_precision_allZeros=compareIntArrays(sequence_original,sequenceAllZeros);
-            double current_precision_allOnes=compareIntArrays(sequence_original,sequenceAllOnes);
+            precision_UngroupedVMP_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_UngroupedVMP,2);
+            precision_2GroupedVMP_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_2GroupedVMP,2);
+            precision_3GroupedVMP_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_3GroupedVMP,2);
+            precision_4GroupedVMP_sub2_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_4GroupedVMP,2);
 
 
-            double current_precision_HuginIterative=compareIntArrays(sequence_original,sequence_HuginIterativeAssignment);
-            double current_precision_IS_Iterative=compareIntArrays(sequence_original,sequence_IS_IterativeAssignment);
-            double current_precision_VMP_Iterative=compareIntArrays(sequence_original,sequence_VMP_IterativeAssignment);
+
+            System.out.println("PRECISION COMPARING SUBSEQUENCES OF LENGTH 2 vs ORIGINAL SEQUENCE:");
+            if(nTimeSteps<= maxTimeStepsHugin) {
+                System.out.println("          HUGIN: " + precision_Hugin_sub2_original[experimentNumber]);
+                System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_sub2_original[experimentNumber]);
+            }
+
+            System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_sub2_original[experimentNumber]);
+            System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_sub2_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("   IS Ungrouped: " + precision_UngroupedIS_sub2_original[experimentNumber]);
+            System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_sub2_original[experimentNumber]);
+            System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_sub2_original[experimentNumber]);
+            System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_sub2_original[experimentNumber]);
+            System.out.println();
+
+            System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_sub2_original[experimentNumber]);
+            System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_sub2_original[experimentNumber]);
+            System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_sub2_original[experimentNumber]);
+            System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_sub2_original[experimentNumber]);
+            System.out.println();
 
 
-            precision_HuginIterativeAssignment[experimentNumber] = current_precision_HuginIterative;
-            precision_IS_IterativeAssignment[experimentNumber] = current_precision_IS_Iterative;
-            precision_VMP_IterativeAssignment[experimentNumber] = current_precision_VMP_Iterative;
+
+            precision_Hugin_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_Hugin,3);
+            precision_HuginIterativeAssignment_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_HuginIterativeAssignment,3);
+            precision_IS_IterativeAssignment_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_IS_IterativeAssignment,3);
+            precision_VMP_IterativeAssignment_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_VMP_IterativeAssignment,3);
+
+            precision_UngroupedIS_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_UngroupedIS,3);
+            precision_2GroupedIS_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_2GroupedIS,3);
+            precision_3GroupedIS_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_3GroupedIS,3);
+            precision_4GroupedIS_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_4GroupedIS,3);
+
+            precision_UngroupedVMP_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_UngroupedVMP,3);
+            precision_2GroupedVMP_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_2GroupedVMP,3);
+            precision_3GroupedVMP_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_3GroupedVMP,3);
+            precision_4GroupedVMP_sub3_original[experimentNumber] = compareSubsequencesIntArrays(sequence_original,sequence_4GroupedVMP,3);
 
 
-            precision_UngroupedIS[experimentNumber]=current_precision_UngroupedIS;
-            precision_2GroupedIS[experimentNumber]=current_precision_2GroupedIS;
-            precision_3GroupedIS[experimentNumber]=current_precision_3GroupedIS;
-            precision_4GroupedIS[experimentNumber]=current_precision_4GroupedIS;
+            System.out.println("PRECISION COMPARING SUBSEQUENCES OF LENGTH 3 vs ORIGINAL SEQUENCE:");
+            if(nTimeSteps<= maxTimeStepsHugin) {
+                System.out.println("          HUGIN: " + precision_Hugin_sub3_original[experimentNumber]);
+                System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_sub3_original[experimentNumber]);
+            }
 
-            precision_UngroupedVMP[experimentNumber]=current_precision_UngroupedVMP;
-            precision_2GroupedVMP[experimentNumber]=current_precision_2GroupedVMP;
-            precision_3GroupedVMP[experimentNumber]=current_precision_3GroupedVMP;
-            precision_4GroupedVMP[experimentNumber]=current_precision_4GroupedVMP;
+            System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_sub3_original[experimentNumber]);
+            System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_sub3_original[experimentNumber]);
+            System.out.println();
 
-            precision_Hugin[experimentNumber]=current_precision_Hugin;
+            System.out.println("   IS Ungrouped: " + precision_UngroupedIS_sub3_original[experimentNumber]);
+            System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_sub3_original[experimentNumber]);
+            System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_sub3_original[experimentNumber]);
+            System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_sub3_original[experimentNumber]);
+            System.out.println();
 
-            precision_allZeros[experimentNumber]=current_precision_allZeros;
-            precision_allOnes[experimentNumber]=current_precision_allOnes;
+            System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_sub3_original[experimentNumber]);
+            System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_sub3_original[experimentNumber]);
+            System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_sub3_original[experimentNumber]);
+            System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_sub3_original[experimentNumber]);
+            System.out.println();
+            
+            
+//            precision_allZeros[experimentNumber]=current_precision_allZeros;
+//            precision_allOnes[experimentNumber]=current_precision_allOnes;
+
+
+
+
+            List<Variable> MAPvariables = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+
+
+
+            double estimatedProb_sequence_original = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_original);
+
+            double estimatedProb_sequence_HUGIN = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_Hugin);
+
+            double estimatedProb_sequence_HUGIN_IterativeAssignment = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_HuginIterativeAssignment);
+            double estimatedProb_sequence_IS_IterativeAssignment = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_IS_IterativeAssignment);
+            double estimatedProb_sequence_VMP_IterativeAssignment = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_VMP_IterativeAssignment);
+
+
+            double estimatedProb_sequence_UngroupedIS = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_UngroupedIS);
+            double estimatedProb_sequence_2GroupedIS = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_2GroupedIS);
+            double estimatedProb_sequence_3GroupedIS = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_3GroupedIS);
+            double estimatedProb_sequence_4GroupedIS = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_4GroupedIS);
+
+            double estimatedProb_sequence_UngroupedVMP = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_UngroupedVMP);
+            double estimatedProb_sequence_2GroupedVMP = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_2GroupedVMP);
+            double estimatedProb_sequence_3GroupedVMP = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_3GroupedVMP);
+            double estimatedProb_sequence_4GroupedVMP = estimateProbabilityOfSequence(staticModel,staticEvidence,MAPvariables,sequence_4GroupedVMP);
+
+            
+            System.out.println("ESTIMATED PROBABILITIES OF THE SEQUENCES (WITH IS)");
+            System.out.println("      Original: " + estimatedProb_sequence_original);
+
+            if(nTimeSteps<= maxTimeStepsHugin) {
+                System.out.println("         HUGIN: " + estimatedProb_sequence_HUGIN);
+                System.out.println("HUGIN iterative: " + estimatedProb_sequence_HUGIN_IterativeAssignment);
+            }
+
+            System.out.println("  IS Iterative: " + estimatedProb_sequence_IS_IterativeAssignment);
+            System.out.println(" VMP Iterative: " + estimatedProb_sequence_VMP_IterativeAssignment);
+            System.out.println();
+
+            System.out.println("  IS Ungrouped: " + estimatedProb_sequence_UngroupedIS);
+            System.out.println("  IS 2-Grouped: " + estimatedProb_sequence_2GroupedIS);
+            System.out.println("  IS 3-Grouped: " + estimatedProb_sequence_3GroupedIS);
+            System.out.println("  IS 4-Grouped: " + estimatedProb_sequence_4GroupedIS);
+            System.out.println();
+
+            System.out.println(" VMP Ungrouped: " + estimatedProb_sequence_UngroupedVMP);
+            System.out.println(" VMP 2-Grouped: " + estimatedProb_sequence_2GroupedVMP);
+            System.out.println(" VMP 3-Grouped: " + estimatedProb_sequence_3GroupedVMP);
+            System.out.println(" VMP 4-Grouped: " + estimatedProb_sequence_4GroupedVMP);
+            System.out.println();
+
+
+            precision_Hugin_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_HUGIN-estimatedProb_sequence_original);
+            precision_HuginIterativeAssignment_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_HUGIN_IterativeAssignment-estimatedProb_sequence_original);
+
+
+            precision_IS_IterativeAssignment_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_IS_IterativeAssignment-estimatedProb_sequence_original);
+            precision_UngroupedIS_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_UngroupedIS-estimatedProb_sequence_original);
+            precision_2GroupedIS_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_2GroupedIS-estimatedProb_sequence_original);
+            precision_3GroupedIS_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_3GroupedIS-estimatedProb_sequence_original);
+            precision_4GroupedIS_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_4GroupedIS-estimatedProb_sequence_original);
+
+
+            precision_VMP_IterativeAssignment_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_VMP_IterativeAssignment-estimatedProb_sequence_original);
+            precision_UngroupedVMP_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_UngroupedVMP-estimatedProb_sequence_original);
+            precision_2GroupedVMP_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_2GroupedVMP-estimatedProb_sequence_original);
+            precision_3GroupedVMP_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_3GroupedVMP-estimatedProb_sequence_original);
+            precision_4GroupedVMP_Probability_original[experimentNumber] = Math.exp(estimatedProb_sequence_4GroupedVMP-estimatedProb_sequence_original);
+
+
+
+
+            if(nTimeSteps<=maxTimeStepsHugin) {
+
+
+
+                precision_Hugin_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_HUGIN-estimatedProb_sequence_HUGIN);
+                precision_HuginIterativeAssignment_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_HUGIN_IterativeAssignment-estimatedProb_sequence_HUGIN);
+
+
+                precision_IS_IterativeAssignment_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_IS_IterativeAssignment-estimatedProb_sequence_HUGIN);
+                precision_UngroupedIS_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_UngroupedIS-estimatedProb_sequence_HUGIN);
+                precision_2GroupedIS_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_2GroupedIS-estimatedProb_sequence_HUGIN);
+                precision_3GroupedIS_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_3GroupedIS-estimatedProb_sequence_HUGIN);
+                precision_4GroupedIS_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_4GroupedIS-estimatedProb_sequence_HUGIN);
+
+
+                precision_VMP_IterativeAssignment_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_VMP_IterativeAssignment-estimatedProb_sequence_HUGIN);
+                precision_UngroupedVMP_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_UngroupedVMP-estimatedProb_sequence_HUGIN);
+                precision_2GroupedVMP_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_2GroupedVMP-estimatedProb_sequence_HUGIN);
+                precision_3GroupedVMP_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_3GroupedVMP-estimatedProb_sequence_HUGIN);
+                precision_4GroupedVMP_Probability[experimentNumber] = Math.exp(estimatedProb_sequence_4GroupedVMP-estimatedProb_sequence_HUGIN);
+
+
+                
+                
+                
+                
+
+
+                precision_Hugin[experimentNumber]=compareIntArrays(sequence_Hugin, sequence_Hugin);;
+                precision_HuginIterativeAssignment[experimentNumber] = compareIntArrays(sequence_Hugin,sequence_HuginIterativeAssignment);
+                precision_IS_IterativeAssignment[experimentNumber] = compareIntArrays(sequence_Hugin,sequence_IS_IterativeAssignment);
+                precision_VMP_IterativeAssignment[experimentNumber] = compareIntArrays(sequence_Hugin,sequence_VMP_IterativeAssignment);
+
+                precision_UngroupedIS[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_UngroupedIS);
+                precision_2GroupedIS[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_2GroupedIS);
+                precision_3GroupedIS[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_3GroupedIS);
+                precision_4GroupedIS[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_4GroupedIS);
+
+                precision_UngroupedVMP[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_UngroupedVMP);
+                precision_2GroupedVMP[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_2GroupedVMP);
+                precision_3GroupedVMP[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_3GroupedVMP);
+                precision_4GroupedVMP[experimentNumber]=compareIntArrays(sequence_Hugin,sequence_4GroupedVMP);
+
+
+
+                System.out.println("PRECISION USING NORMALIZED HAMMING DISTANCE vs HUGIN MAP SEQUENCE:");
+                if(nTimeSteps<= maxTimeStepsHugin) {
+                    System.out.println("          HUGIN: " + precision_Hugin[experimentNumber]);
+                    System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment[experimentNumber]);
+                }
+
+                System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment[experimentNumber]);
+                System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment[experimentNumber]);
+                System.out.println();
+
+                System.out.println("   IS Ungrouped: " + precision_UngroupedIS[experimentNumber]);
+                System.out.println("   IS 2-Grouped: " + precision_2GroupedIS[experimentNumber]);
+                System.out.println("   IS 3-Grouped: " + precision_3GroupedIS[experimentNumber]);
+                System.out.println("   IS 4-Grouped: " + precision_4GroupedIS[experimentNumber]);
+                System.out.println();
+
+                System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP[experimentNumber]);
+                System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP[experimentNumber]);
+                System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP[experimentNumber]);
+                System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP[experimentNumber]);
+                System.out.println();
+
+
+
+
+                precision_Hugin_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_Hugin);
+                precision_HuginIterativeAssignment_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_HuginIterativeAssignment);
+                precision_IS_IterativeAssignment_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_IS_IterativeAssignment);
+                precision_VMP_IterativeAssignment_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_VMP_IterativeAssignment);
+
+                precision_UngroupedIS_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_UngroupedIS);
+                precision_2GroupedIS_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_2GroupedIS);
+                precision_3GroupedIS_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_3GroupedIS);
+                precision_4GroupedIS_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_4GroupedIS);
+
+                precision_UngroupedVMP_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_UngroupedVMP);
+                precision_2GroupedVMP_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_2GroupedVMP);
+                precision_3GroupedVMP_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_3GroupedVMP);
+                precision_4GroupedVMP_01[experimentNumber] = compareFullIntArrays(sequence_Hugin,sequence_4GroupedVMP);
+
+
+
+
+                System.out.println("PRECISION USING 0/1 SCORE vs HUGIN MAP SEQUENCE:");
+                if(nTimeSteps<= maxTimeStepsHugin) {
+                    System.out.println("          HUGIN: " + precision_Hugin_01[experimentNumber]);
+                    System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_01[experimentNumber]);
+                }
+
+                System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_01[experimentNumber]);
+                System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_01[experimentNumber]);
+                System.out.println();
+
+                System.out.println("   IS Ungrouped: " + precision_UngroupedIS_01[experimentNumber]);
+                System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_01[experimentNumber]);
+                System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_01[experimentNumber]);
+                System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_01[experimentNumber]);
+                System.out.println();
+
+                System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_01[experimentNumber]);
+                System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_01[experimentNumber]);
+                System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_01[experimentNumber]);
+                System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_01[experimentNumber]);
+                System.out.println();
+
+
+
+
+                precision_Hugin_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_Hugin,2);
+                precision_HuginIterativeAssignment_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_HuginIterativeAssignment,2);
+                precision_IS_IterativeAssignment_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_IS_IterativeAssignment,2);
+                precision_VMP_IterativeAssignment_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_VMP_IterativeAssignment,2);
+
+                precision_UngroupedIS_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_UngroupedIS,2);
+                precision_2GroupedIS_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_2GroupedIS,2);
+                precision_3GroupedIS_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_3GroupedIS,2);
+                precision_4GroupedIS_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_4GroupedIS,2);
+
+                precision_UngroupedVMP_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_UngroupedVMP,2);
+                precision_2GroupedVMP_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_2GroupedVMP,2);
+                precision_3GroupedVMP_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_3GroupedVMP,2);
+                precision_4GroupedVMP_sub2[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_4GroupedVMP,2);
+
+
+
+                System.out.println("PRECISION COMPARING SUBSEQUENCES OF LENGTH 2 vs HUGIN MAP SEQUENCE:");
+                if(nTimeSteps<= maxTimeStepsHugin) {
+                    System.out.println("          HUGIN: " + precision_Hugin_sub2[experimentNumber]);
+                    System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_sub2[experimentNumber]);
+                }
+
+                System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_sub2[experimentNumber]);
+                System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_sub2[experimentNumber]);
+                System.out.println();
+
+                System.out.println("   IS Ungrouped: " + precision_UngroupedIS_sub2[experimentNumber]);
+                System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_sub2[experimentNumber]);
+                System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_sub2[experimentNumber]);
+                System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_sub2[experimentNumber]);
+                System.out.println();
+
+                System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_sub2[experimentNumber]);
+                System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_sub2[experimentNumber]);
+                System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_sub2[experimentNumber]);
+                System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_sub2[experimentNumber]);
+                System.out.println();
+
+
+
+                precision_Hugin_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_Hugin,3);
+                precision_HuginIterativeAssignment_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_HuginIterativeAssignment,3);
+                precision_IS_IterativeAssignment_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_IS_IterativeAssignment,3);
+                precision_VMP_IterativeAssignment_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_VMP_IterativeAssignment,3);
+
+                precision_UngroupedIS_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_UngroupedIS,3);
+                precision_2GroupedIS_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_2GroupedIS,3);
+                precision_3GroupedIS_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_3GroupedIS,3);
+                precision_4GroupedIS_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_4GroupedIS,3);
+
+                precision_UngroupedVMP_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_UngroupedVMP,3);
+                precision_2GroupedVMP_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_2GroupedVMP,3);
+                precision_3GroupedVMP_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_3GroupedVMP,3);
+                precision_4GroupedVMP_sub3[experimentNumber] = compareSubsequencesIntArrays(sequence_Hugin,sequence_4GroupedVMP,3);
+
+
+                System.out.println("PRECISION COMPARING SUBSEQUENCES OF LENGTH 3 vs HUGIN MAP SEQUENCE:");
+                if(nTimeSteps<= maxTimeStepsHugin) {
+                    System.out.println("          HUGIN: " + precision_Hugin_sub3[experimentNumber]);
+                    System.out.println("HUGIN iterative: " + precision_HuginIterativeAssignment_sub3[experimentNumber]);
+                }
+
+                System.out.println("   IS Iterative: " + precision_IS_IterativeAssignment_sub3[experimentNumber]);
+                System.out.println("  VMP Iterative: " + precision_VMP_IterativeAssignment_sub3[experimentNumber]);
+                System.out.println();
+
+                System.out.println("   IS Ungrouped: " + precision_UngroupedIS_sub3[experimentNumber]);
+                System.out.println("   IS 2-Grouped: " + precision_2GroupedIS_sub3[experimentNumber]);
+                System.out.println("   IS 3-Grouped: " + precision_3GroupedIS_sub3[experimentNumber]);
+                System.out.println("   IS 4-Grouped: " + precision_4GroupedIS_sub3[experimentNumber]);
+                System.out.println();
+
+                System.out.println("  VMP Ungrouped: " + precision_UngroupedVMP_sub3[experimentNumber]);
+                System.out.println("  VMP 2-Grouped: " + precision_2GroupedVMP_sub3[experimentNumber]);
+                System.out.println("  VMP 3-Grouped: " + precision_3GroupedVMP_sub3[experimentNumber]);
+                System.out.println("  VMP 4-Grouped: " + precision_4GroupedVMP_sub3[experimentNumber]);
+                System.out.println();
+
+
+
+            }
+
+
+
+
+
+
 
             experimentNumber++;
 
@@ -990,32 +1589,492 @@ public class BankModelExperiments {
 
 
 
+
+        System.out.println("\nPRECISIONS - HAMMING DISTANCE vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_original));
+        }
+        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_original));
+        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_original));
+
+
+        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_original));
+        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_original));
+        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_original));
+        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_original));
+
+        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_original));
+        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_original));
+        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_original));
+        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_original));
+
+
+        System.out.println("\nGLOBAL MEAN PRECISIONS - HAMMING DISTANCE vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + stream(precision_Hugin_original).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_original).average().getAsDouble());
+        }
+        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_original).average().getAsDouble());
+        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_original).average().getAsDouble());
+
+
+        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_original).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_original).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_original).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_original).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_original).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_original).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_original).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_original).average().getAsDouble());
+
+
+
+
+        System.out.println("\nPRECISIONS -  0/1 DISTANCE DISTANCE vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_01_original));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_01_original));
+        }
+        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_01_original));
+        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_01_original));
+
+
+        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_01_original));
+        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_01_original));
+        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_01_original));
+        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_01_original));
+
+        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_01_original));
+        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_01_original));
+        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_01_original));
+        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_01_original));
+
+
+        System.out.println("\nGLOBAL MEAN PRECISIONS - 0/1 DISTANCE vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + stream(precision_Hugin_01_original).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_01_original).average().getAsDouble());
+        }
+        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_01_original).average().getAsDouble());
+        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_01_original).average().getAsDouble());
+
+
+        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_01_original).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_01_original).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_01_original).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_01_original).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_01_original).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_01_original).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_01_original).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_01_original).average().getAsDouble());
+
+
+
+        System.out.println("\nPRECISIONS -  2-LENGTH SUBSEQ vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_sub2_original));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_sub2_original));
+        }
+        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_sub2_original));
+        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_sub2_original));
+
+
+        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_sub2_original));
+        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_sub2_original));
+        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_sub2_original));
+        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_sub2_original));
+
+        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_sub2_original));
+        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_sub2_original));
+        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_sub2_original));
+        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_sub2_original));
+
+
+        System.out.println("\nGLOBAL MEAN PRECISIONS - 2-LENGTH SUBSEQ vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + stream(precision_Hugin_sub2_original).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_sub2_original).average().getAsDouble());
+        }
+        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_sub2_original).average().getAsDouble());
+        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_sub2_original).average().getAsDouble());
+
+
+        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_sub2_original).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_sub2_original).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_sub2_original).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_sub2_original).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_sub2_original).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_sub2_original).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_sub2_original).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_sub2_original).average().getAsDouble());
+
+
+
+
+        System.out.println("\nPRECISIONS -  3-LENGTH SUBSEQ vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_sub3_original));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_sub3_original));
+        }
+        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_sub3_original));
+        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_sub3_original));
+
+
+        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_sub3_original));
+        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_sub3_original));
+        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_sub3_original));
+        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_sub3_original));
+
+        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_sub3_original));
+        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_sub3_original));
+        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_sub3_original));
+        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_sub3_original));
+
+
+        System.out.println("\nGLOBAL MEAN PRECISIONS - 3-LENGTH SUBSEQ vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + stream(precision_Hugin_sub3_original).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_sub3_original).average().getAsDouble());
+        }
+        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_sub3_original).average().getAsDouble());
+        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_sub3_original).average().getAsDouble());
+
+
+        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_sub3_original).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_sub3_original).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_sub3_original).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_sub3_original).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_sub3_original).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_sub3_original).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_sub3_original).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_sub3_original).average().getAsDouble());
+
+
+
+
+
+        System.out.println("\nPRECISIONS -  LIKELIHOOD RATIO vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_Probability_original));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_Probability_original));
+        }
+        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_Probability_original));
+        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_Probability_original));
+
+
+        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_Probability_original));
+        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_Probability_original));
+        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_Probability_original));
+        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_Probability_original));
+
+        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_Probability_original));
+        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_Probability_original));
+        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_Probability_original));
+        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_Probability_original));
+
+
+        System.out.println("\nGLOBAL MEAN PRECISIONS - LIKELIHOOD RATIO vs ORIGINAL SEQUENCE:");
+        if(nTimeSteps<=maxTimeStepsHugin) {
+            System.out.println("         HUGIN: " + stream(precision_Hugin_Probability_original).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_Probability_original).average().getAsDouble());
+        }
+        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_Probability_original).average().getAsDouble());
+        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_Probability_original).average().getAsDouble());
+
+
+        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_Probability_original).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_Probability_original).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_Probability_original).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_Probability_original).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_Probability_original).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_Probability_original).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_Probability_original).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_Probability_original).average().getAsDouble());
+        
+        
+        
+
         if (nTimeSteps<=maxTimeStepsHugin) {
-            System.out.println("\nGLOBAL MEAN PRECISIONS: (compared to HUGIN MAP sequence)");
-            System.out.println("         HUGIN: " + Arrays.stream(precision_Hugin).average().getAsDouble() + " (this one compared to the original sequence)");
+
+            System.out.println("\nPRECISIONS - HAMMING DISTANCE vs HUGIN MAP SEQUENCE:");
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment));
+            System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment));
+            System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment));
+
+
+            System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS));
+            System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS));
+            System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS));
+            System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS));
+
+            System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP));
+            System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP));
+            System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP));
+            System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP));
+
+
+            System.out.println("\nGLOBAL MEAN PRECISIONS - HAMMING DISTANCE vs HUGIN MAP SEQUENCE:");
+
+            System.out.println("         HUGIN: " + stream(precision_Hugin).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment).average().getAsDouble());
+            System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment).average().getAsDouble());
+            System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment).average().getAsDouble());
+
+
+            System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS).average().getAsDouble());
+            System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS).average().getAsDouble());
+            System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS).average().getAsDouble());
+            System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS).average().getAsDouble());
+
+            System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP).average().getAsDouble());
+            System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP).average().getAsDouble());
+            System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP).average().getAsDouble());
+            System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP).average().getAsDouble());
+
+
+
+
+            System.out.println("\nPRECISIONS -  0/1 DISTANCE DISTANCE vs HUGIN MAP SEQUENCE:");
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_01));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_01));
+            System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_01));
+            System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_01));
+
+
+            System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_01));
+            System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_01));
+            System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_01));
+            System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_01));
+
+            System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_01));
+            System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_01));
+            System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_01));
+            System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_01));
+
+
+            System.out.println("\nGLOBAL MEAN PRECISIONS - 0/1 DISTANCE vs HUGIN MAP SEQUENCE:");
+
+            System.out.println("         HUGIN: " + stream(precision_Hugin_01).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_01).average().getAsDouble());
+            System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_01).average().getAsDouble());
+            System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_01).average().getAsDouble());
+
+
+            System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_01).average().getAsDouble());
+            System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_01).average().getAsDouble());
+            System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_01).average().getAsDouble());
+            System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_01).average().getAsDouble());
+
+            System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_01).average().getAsDouble());
+            System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_01).average().getAsDouble());
+            System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_01).average().getAsDouble());
+            System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_01).average().getAsDouble());
+
+
+
+            System.out.println("\nPRECISIONS -  2-LENGTH SUBSEQ vs HUGIN MAP SEQUENCE:");
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_sub2));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_sub2));
+            System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_sub2));
+            System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_sub2));
+
+
+            System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_sub2));
+            System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_sub2));
+            System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_sub2));
+            System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_sub2));
+
+            System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_sub2));
+            System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_sub2));
+            System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_sub2));
+            System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_sub2));
+
+
+            System.out.println("\nGLOBAL MEAN PRECISIONS - 2-LENGTH SUBSEQ vs HUGIN MAP SEQUENCE:");
+
+            System.out.println("         HUGIN: " + stream(precision_Hugin_sub2).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_sub2).average().getAsDouble());
+            System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_sub2).average().getAsDouble());
+            System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_sub2).average().getAsDouble());
+
+
+            System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_sub2).average().getAsDouble());
+            System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_sub2).average().getAsDouble());
+            System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_sub2).average().getAsDouble());
+            System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_sub2).average().getAsDouble());
+
+            System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_sub2).average().getAsDouble());
+            System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_sub2).average().getAsDouble());
+            System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_sub2).average().getAsDouble());
+            System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_sub2).average().getAsDouble());
+
+
+
+
+            System.out.println("\nPRECISIONS -  3-LENGTH SUBSEQ vs HUGIN MAP SEQUENCE:");
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_sub3));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_sub3));
+            System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_sub3));
+            System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_sub3));
+
+
+            System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_sub3));
+            System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_sub3));
+            System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_sub3));
+            System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_sub3));
+
+            System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_sub3));
+            System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_sub3));
+            System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_sub3));
+            System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_sub3));
+
+
+            System.out.println("\nGLOBAL MEAN PRECISIONS - 3-LENGTH SUBSEQ vs HUGIN MAP SEQUENCE:");
+
+            System.out.println("         HUGIN: " + stream(precision_Hugin_sub3).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_sub3).average().getAsDouble());
+            System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_sub3).average().getAsDouble());
+            System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_sub3).average().getAsDouble());
+
+
+            System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_sub3).average().getAsDouble());
+            System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_sub3).average().getAsDouble());
+            System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_sub3).average().getAsDouble());
+            System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_sub3).average().getAsDouble());
+
+            System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_sub3).average().getAsDouble());
+            System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_sub3).average().getAsDouble());
+            System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_sub3).average().getAsDouble());
+            System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_sub3).average().getAsDouble());
+
+
+
+
+
+            System.out.println("\nPRECISIONS -  LIKELIHOOD RATIO vs HUGIN MAP SEQUENCE:");
+            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_Probability));
+            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_Probability));
+            System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_Probability));
+            System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_Probability));
+
+
+            System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_Probability));
+            System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_Probability));
+            System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_Probability));
+            System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_Probability));
+
+            System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_Probability));
+            System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_Probability));
+            System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_Probability));
+            System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_Probability));
+
+
+            System.out.println("\nGLOBAL MEAN PRECISIONS - LIKELIHOOD RATIO vs HUGIN MAP SEQUENCE:");
+
+            System.out.println("         HUGIN: " + stream(precision_Hugin_Probability).average().getAsDouble());
+            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_Probability).average().getAsDouble());
+            System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_Probability).average().getAsDouble());
+            System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_Probability).average().getAsDouble());
+
+
+            System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_Probability).average().getAsDouble());
+            System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_Probability).average().getAsDouble());
+            System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_Probability).average().getAsDouble());
+            System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_Probability).average().getAsDouble());
+
+            System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_Probability).average().getAsDouble());
+            System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_Probability).average().getAsDouble());
+            System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_Probability).average().getAsDouble());
+            System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_Probability).average().getAsDouble());
+
 
         }
-        else {
-            System.out.println("\nGLOBAL MEAN PRECISIONS:");
-            System.out.println("         HUGIN:    Not computed");
-        }
-        System.out.println("HUGIN iterative:" + Arrays.stream(precision_HuginIterativeAssignment).average().getAsDouble());
-        System.out.println("  IS iterative: " + Arrays.stream(precision_IS_IterativeAssignment).average().getAsDouble());
-        System.out.println(" VMP iterative: " + Arrays.stream(precision_VMP_IterativeAssignment).average().getAsDouble());
 
 
-        System.out.println("  IS Ungrouped: " + Arrays.stream(precision_UngroupedIS).average().getAsDouble());
-        System.out.println("  IS 2-Grouped: " + Arrays.stream(precision_2GroupedIS).average().getAsDouble());
-        System.out.println("  IS 3-Grouped: " + Arrays.stream(precision_3GroupedIS).average().getAsDouble());
-        System.out.println("  IS 4-Grouped: " + Arrays.stream(precision_4GroupedIS).average().getAsDouble());
 
-        System.out.println(" VMP Ungrouped: " + Arrays.stream(precision_UngroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 2-Grouped: " + Arrays.stream(precision_2GroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 3-Grouped: " + Arrays.stream(precision_3GroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 4-Grouped: " + Arrays.stream(precision_4GroupedVMP).average().getAsDouble());
 
-        System.out.println(" All-Zeros seq: " + Arrays.stream(precision_allZeros).average().getAsDouble());
-        System.out.println(" All-Ones seq:  " + Arrays.stream(precision_allOnes).average().getAsDouble());
+
+
+//
+//        if (nTimeSteps<=maxTimeStepsHugin) {
+//            System.out.println("\nPRECISIONS COMPARING THE Probability: ");
+//            System.out.println("         HUGIN: " + Arrays.toString(precision_Hugin_Probability));
+//            System.out.println("HUGIN iterative:" + Arrays.toString(precision_HuginIterativeAssignment_Probability));
+//
+//        }
+//        else {
+//            System.out.println("\nGLOBAL MEAN PRECISIONS COMPARING THE Probability: ");
+//            System.out.println("         HUGIN:    Not computed");
+//            System.out.println("HUGIN iterative:   Not computed");
+//        }
+//
+//        System.out.println("  IS iterative: " + Arrays.toString(precision_IS_IterativeAssignment_Probability));
+//        System.out.println(" VMP iterative: " + Arrays.toString(precision_VMP_IterativeAssignment_Probability));
+//
+//
+//        System.out.println("  IS Ungrouped: " + Arrays.toString(precision_UngroupedIS_Probability));
+//        System.out.println("  IS 2-Grouped: " + Arrays.toString(precision_2GroupedIS_Probability));
+//        System.out.println("  IS 3-Grouped: " + Arrays.toString(precision_3GroupedIS_Probability));
+//        System.out.println("  IS 4-Grouped: " + Arrays.toString(precision_4GroupedIS_Probability));
+//
+//        System.out.println(" VMP Ungrouped: " + Arrays.toString(precision_UngroupedVMP_Probability));
+//        System.out.println(" VMP 2-Grouped: " + Arrays.toString(precision_2GroupedVMP_Probability));
+//        System.out.println(" VMP 3-Grouped: " + Arrays.toString(precision_3GroupedVMP_Probability));
+//        System.out.println(" VMP 4-Grouped: " + Arrays.toString(precision_4GroupedVMP_Probability));
+//
+//
+//
+//
+//
+//
+//
+//
+//        if (nTimeSteps<=maxTimeStepsHugin) {
+//            System.out.println("\nGLOBAL MEAN PRECISIONS COMPARING THE Probability: ");
+//            System.out.println("         HUGIN: " + stream(precision_Hugin_Probability).average().getAsDouble() + " (this one compared to the original sequence)");
+//            System.out.println("HUGIN iterative:" + stream(precision_HuginIterativeAssignment_Probability).average().getAsDouble());
+//
+//        }
+//        else {
+//            System.out.println("\nGLOBAL MEAN PRECISIONS COMPARING THE Probability: ");
+//            System.out.println("         HUGIN:    Not computed");
+//            System.out.println("HUGIN iterative:   Not computed");
+//        }
+//
+//        System.out.println("  IS iterative: " + stream(precision_IS_IterativeAssignment_Probability).average().getAsDouble());
+//        System.out.println(" VMP iterative: " + stream(precision_VMP_IterativeAssignment_Probability).average().getAsDouble());
+//
+//
+//        System.out.println("  IS Ungrouped: " + stream(precision_UngroupedIS_Probability).average().getAsDouble());
+//        System.out.println("  IS 2-Grouped: " + stream(precision_2GroupedIS_Probability).average().getAsDouble());
+//        System.out.println("  IS 3-Grouped: " + stream(precision_3GroupedIS_Probability).average().getAsDouble());
+//        System.out.println("  IS 4-Grouped: " + stream(precision_4GroupedIS_Probability).average().getAsDouble());
+//
+//        System.out.println(" VMP Ungrouped: " + stream(precision_UngroupedVMP_Probability).average().getAsDouble());
+//        System.out.println(" VMP 2-Grouped: " + stream(precision_2GroupedVMP_Probability).average().getAsDouble());
+//        System.out.println(" VMP 3-Grouped: " + stream(precision_3GroupedVMP_Probability).average().getAsDouble());
+//        System.out.println(" VMP 4-Grouped: " + stream(precision_4GroupedVMP_Probability).average().getAsDouble());
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1039,17 +2098,20 @@ public class BankModelExperiments {
 
 
         System.out.println("\n\n MEAN EXECUTION TIMES: ");
-        System.out.println("         HUGIN: " + Arrays.stream(times_Hugin).average().getAsDouble());
+        System.out.println("         HUGIN: " + stream(times_Hugin).average().getAsDouble());
 
-        System.out.println("  IS Ungrouped: " + Arrays.stream(times_UngroupedIS).average().getAsDouble());
-        System.out.println("  IS 2-Grouped: " + Arrays.stream(times_2GroupedIS).average().getAsDouble());
-        System.out.println("  IS 3-Grouped: " + Arrays.stream(times_3GroupedIS).average().getAsDouble());
-        System.out.println("  IS 4-Grouped: " + Arrays.stream(times_4GroupedIS).average().getAsDouble());
+        System.out.println("  IS Iterative: " + stream(times_IterativeIS).average().getAsDouble());
+        System.out.println(" VMP Iterative: " + stream(times_IterativeVMP).average().getAsDouble());
 
-        System.out.println(" VMP Ungrouped: " + Arrays.stream(times_UngroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 2-Grouped: " + Arrays.stream(times_2GroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 3-Grouped: " + Arrays.stream(times_3GroupedVMP).average().getAsDouble());
-        System.out.println(" VMP 4-Grouped: " + Arrays.stream(times_4GroupedVMP).average().getAsDouble());
+        System.out.println("  IS Ungrouped: " + stream(times_UngroupedIS).average().getAsDouble());
+        System.out.println("  IS 2-Grouped: " + stream(times_2GroupedIS).average().getAsDouble());
+        System.out.println("  IS 3-Grouped: " + stream(times_3GroupedIS).average().getAsDouble());
+        System.out.println("  IS 4-Grouped: " + stream(times_4GroupedIS).average().getAsDouble());
+
+        System.out.println(" VMP Ungrouped: " + stream(times_UngroupedVMP).average().getAsDouble());
+        System.out.println(" VMP 2-Grouped: " + stream(times_2GroupedVMP).average().getAsDouble());
+        System.out.println(" VMP 3-Grouped: " + stream(times_3GroupedVMP).average().getAsDouble());
+        System.out.println(" VMP 4-Grouped: " + stream(times_4GroupedVMP).average().getAsDouble());
 
 
     }
@@ -1068,5 +2130,78 @@ public class BankModelExperiments {
         });
 
         return ((double)atomicInteger.get())/((double)array1.length);
+    }
+
+    private static double compareFullIntArrays(int[] array1, int[] array2) {
+        if (array1.length!=array2.length) {
+            System.out.println("Both arrays must be the same length");
+            System.exit(-50);
+        }
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+        IntStream.range(0,array1.length).forEachOrdered(i -> {
+            if (array1[i]==array2[i]) {
+                atomicInteger.incrementAndGet();
+            }
+        });
+
+        return ((double)atomicInteger.get())==((double)array1.length) ? 1 : 0;
+    }
+
+
+    private static double compareSubsequencesIntArrays(int[] array1, int[] array2, int subsequenceLength) {
+        if (array1.length!=array2.length) {
+            System.out.println("Both arrays must be the same length");
+            System.exit(-50);
+        }
+
+        if (subsequenceLength<1 || subsequenceLength>array1.length) {
+            System.out.println("Incorrect subsequence length");
+            System.exit(-40);
+        }
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+        IntStream.range(0,array1.length+1-subsequenceLength).forEachOrdered(i -> {
+
+            int [] subsequence1 = Arrays.copyOfRange(array1,i,i+subsequenceLength);
+            int [] subsequence2 = Arrays.copyOfRange(array2,i,i+subsequenceLength);
+
+            if ( compareFullIntArrays(subsequence1,subsequence2)==1 ) {
+                atomicInteger.incrementAndGet();
+            }
+        });
+
+        return ((double)atomicInteger.get())/((double)array1.length+1-subsequenceLength);
+    }
+
+    private static double estimateProbabilityOfSequence(BayesianNetwork model, Assignment evidence, List<Variable> MAPvariables, int[] sequence) {
+
+        return 0;
+//        HashMapAssignment evidencePlusSequence = new HashMapAssignment(evidence);
+//        for (int i = 0; i < MAPvariables.size(); i++) {
+//            evidencePlusSequence.setValue(MAPvariables.get(i),sequence[i]);
+//        }
+//
+////        VMP vmp1 = new VMP();
+////        vmp1.setModel(model);
+////        vmp1.setEvidence(evidencePlusSequence);
+////        vmp1.runInference();
+////        vmp1.setThreshold(0.00001);
+////        vmp1.setMaxIter(5000);
+////        return vmp1.getLogProbabilityOfEvidence();
+//
+//
+//        ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+//        importanceSamplingRobust.setModel(model);
+//        importanceSamplingRobust.setVariablesAPosteriori(MAPvariables);
+//        importanceSamplingRobust.setSampleSize(1000000);
+//        importanceSamplingRobust.setEvidence(evidencePlusSequence);
+//
+//        importanceSamplingRobust.runInference();
+//
+//        return importanceSamplingRobust.getLogProbabilityOfEvidence();
+
+
+//        System.out.println(estimatedProbability);
     }
 }
