@@ -14,6 +14,7 @@ package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
@@ -25,11 +26,14 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * This class defines a Dynamic Naive Bayes Classifier model.
  */
-public class DynamicNaiveBayesClassifier extends DynamicClassifier {
+public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Serializable {
+
+    private static final long serialVersionUID = 329639736967237932L;
 
     protected DynamicParallelVB learningAlgorithmFlink = null;
     private DataSet<DataPosteriorAssignment> previousPredictions = null;
@@ -89,11 +93,11 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
             learningAlgorithmFlink.setBatchSize(windowSize);
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
             learningAlgorithmFlink.setOutput(false);
-            learningAlgorithmFlink.setTestELBO(true);
+            learningAlgorithmFlink.setTestELBO(false);
             learningAlgorithmFlink.setMaximumGlobalIterations(10);
             learningAlgorithmFlink.setMaximumLocalIterations(100);
             learningAlgorithmFlink.setGlobalThreshold(0.1);
-            learningAlgorithmFlink.setGlobalThreshold(0.1);
+            learningAlgorithmFlink.setLocalThreshold(0.1);
             learningAlgorithmFlink.initLearning();
         }
         initialized=true;
@@ -108,15 +112,50 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
         }
     }
 
-    public void predict(int timeSlice, DataFlink<DynamicDataInstance> data) {
+    public DataSet<DynamicDataInstance> predict(int timeSlice, DataFlink<DynamicDataInstance> data) {
+
         DataFlink<DynamicDataInstance> dataWithoutClass = data.map(new MapFunction<DynamicDataInstance, DynamicDataInstance>() {
             @Override
             public DynamicDataInstance map(DynamicDataInstance dynamicDataInstance) throws Exception {
-                dynamicDataInstance.setValue(classVar, Utils.missingValue());
-                return dynamicDataInstance;
+                DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
+                result.setValue(classVar, Utils.missingValue());
+                return result;
             }
         });
+
         this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, dataWithoutClass);
+
+        DataSet<DynamicDataInstance> dataPredictions = this.previousPredictions.map(dataPosteriorAssignment -> {
+            long sequence_id = dataPosteriorAssignment.getPosterior().getId();
+            DynamicDataInstance dataPosterior = ((DynamicDataInstance)dataPosteriorAssignment.getAssignment());
+            dataPosterior.setValue(dataPosterior.getAttributes().getSeq_id(),sequence_id);
+            return dataPosterior;
+        });
+
+        DataSet<DynamicDataInstance> predictedClasses = dataPredictions.map(dynamicDataInstance -> {
+            DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
+            result.getVariables().forEach(variable -> {
+                if (!variable.equals(classVar)) {
+                    result.setValue(variable,Utils.missingValue());
+                }
+            });
+            return result;
+        });
+
+        return predictedClasses;
+
+//        DataSet<DynamicDataInstance> dataPlusPredictions = data.getDataSet()
+//                .join(dataPredictions)
+//                .where("SEQUENCE_ID")       // key of the first input (users)
+//                .equalTo("SEQUENCE_ID")    // key of the second input (stores)
+//                .map(new MapFunction<Tuple2<DynamicDataInstance, DynamicDataInstance>, DynamicDataInstance>() {
+//                    @Override
+//                    public DynamicDataInstance map(Tuple2<DynamicDataInstance, DynamicDataInstance> dynamicDataInstanceDynamicDataInstanceTuple2) throws Exception {
+//                        DynamicDataInstance dataNoClass = dynamicDataInstanceDynamicDataInstanceTuple2.getField(0);
+//                        DynamicDataInstance dataPredicted = dynamicDataInstanceDynamicDataInstanceTuple2.getField(1);
+//                        return null;
+//                    }
+//                });
     }
 
     public static void main(String[] args) throws IOException {

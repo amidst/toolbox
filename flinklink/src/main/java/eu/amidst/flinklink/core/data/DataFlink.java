@@ -78,7 +78,7 @@ public interface DataFlink<T extends DataInstance> {
 
             @Override
             public DataSet<R> getDataSet() {
-                return DataFlink.this.getDataSet().<R>map(mapper);
+                return DataFlink.this.getDataSet().map(mapper);
             }
         };
     }
