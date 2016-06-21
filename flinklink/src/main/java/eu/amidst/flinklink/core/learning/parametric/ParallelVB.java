@@ -176,6 +176,29 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         return this.globalELBO;
     }
 
+
+    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(DataFlink<DataInstance> data, List<Variable> latentVariables){
+
+        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        if (seq_id==null)
+            throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
+
+        try{
+            Configuration config = new Configuration();
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setBytes(SVB, Serialization.serializeObject(svb));
+            config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
+
+            return data
+                    .getBatchedDataSet(this.batchSize)
+                    .flatMap(new ParallelVBMapInferenceAssignment())
+                    .withParameters(config);
+
+        }catch(Exception ex){
+            throw new UndeclaredThrowableException(ex);
+        }
+
+    }
     public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
 
         Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();

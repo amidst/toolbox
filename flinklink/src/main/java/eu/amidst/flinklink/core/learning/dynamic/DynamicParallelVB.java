@@ -96,6 +96,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
+    private int currentTimeSlice=-1;
 
 
     public void setIdenitifableModelling(IdenitifableModelling idenitifableModelling) {
@@ -136,10 +137,53 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
     @Override
     public void updateModelWithNewTimeSlice(int timeSlice, DataFlink<DynamicDataInstance> data) {
+        if (currentTimeSlice==-1 && timeSlice!=0)
+            throw new UnsupportedOperationException("Training must start at time 0");
+
+        if (currentTimeSlice!=-1 && timeSlice!=(currentTimeSlice+1))
+            throw new UnsupportedOperationException("Training must be done on consecutive time steps");
+
+        this.currentTimeSlice = timeSlice;
+
         if (timeSlice==0)
             this.updateTime0(data);
         else
             this.updateTimeT(data);
+
+    }
+
+    public DataSet<DataPosteriorAssignment> predict(int timeSlice, DataSet<DataPosteriorAssignment> previousPredictions, DataFlink<DynamicDataInstance> data){
+        if (currentTimeSlice!=timeSlice)
+            throw new UnsupportedOperationException("Test must be made on the same time step");
+
+        if (currentTimeSlice!=0 && previousPredictions!=null)
+            throw new UnsupportedOperationException("Test at time > 0 need previous DataPosteriorAssignment data set.");
+
+        if (currentTimeSlice==0){
+
+            List<Variable> vars = this.latentVariablesNames
+                    .stream()
+                    .map(name -> this.dagTime0.getVariables().getVariableByName(name))
+                    .collect(Collectors.toList());
+
+            return this.parallelVBTime0.computePosteriorAssignment(DataFlinkConverter.convertToStatic(data), vars);
+        }else{
+
+            DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData2(data.getDataSet());
+
+            /******************************* UPDATE DATA POSTERIORS********************/
+            Configuration config = new Configuration();
+            config.setString(eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm.BN_NAME, this.dagTimeT.getName());
+            config.setBytes(eu.amidst.flinklink.core.learning.parametric.ParallelVB.SVB, Serialization.serializeObject(svbTimeT));
+            config.setBytes(LATENT_VARIABLE_NAMES, Serialization.serializeObject(this.latentVariablesNames));
+            config.setBytes(LATENT_INTERFACE_VARIABLE_NAMES, Serialization.serializeObject(this.latentInterfaceVariablesNames));
+
+
+            return ConversionToBatches.toBatches(dataPosteriorInstanceDataSet, this.batchSize)
+                    .flatMap(new CajaMarLearnMapInferenceAssignment(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables()))
+                    .withParameters(config);
+            /**************************************************************************/
+        }
     }
 
     private void updateTime0(DataFlink<DynamicDataInstance> data){
