@@ -34,7 +34,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
 import eu.amidst.flinklink.core.learning.parametric.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.utils.Batch;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
@@ -94,14 +94,14 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     protected List<String> latentInterfaceVariablesNames;
     protected List<String> noLatentVariablesNames;
 
-    IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
+    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int currentTimeSlice=-1;
 
 
-    public void setIdenitifableModelling(IdenitifableModelling idenitifableModelling) {
-        this.idenitifableModelling = idenitifableModelling;
+    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+        this.identifiableModelling = identifiableModelling;
     }
 
     public int getMaximumLocalIterations() {
@@ -236,7 +236,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
 
             DataSet<CompoundVector> newparamSet = unionData
-                    .map(new DynamicParallelVB.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables(),randomStart, idenitifableModelling))
+                    .map(new DynamicParallelVB.ParallelVBMap(data.getAttributes(), this.dagTimeT.getVariables().getListOfVariables(),randomStart, identifiableModelling))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dagTimeT.getName())
                     .reduce(new eu.amidst.flinklink.core.learning.parametric.ParallelVB.ParallelVBReduce());
@@ -394,7 +394,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.setTestELBO(this.testELBO);
         this.parallelVBTime0.setSeed(this.seed);
         this.parallelVBTime0.setDAG(this.dagTime0);
-        this.parallelVBTime0.setIdenitifableModelling(this.idenitifableModelling);
+        this.parallelVBTime0.setIdentifiableModelling(this.identifiableModelling);
         this.parallelVBTime0.initLearning();
 
         this.svbTimeT = new SVB();
@@ -693,16 +693,16 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
         Map<Double,CompoundVector> partialVectors;
 
-        IdenitifableModelling idenitifableModelling;
+        IdentifiableModelling identifiableModelling;
 
         boolean randomStart;
 
 
-        public ParallelVBMap(Attributes attributes, List<Variable> variables, boolean randomStart, IdenitifableModelling idenitifableModelling) {
+        public ParallelVBMap(Attributes attributes, List<Variable> variables, boolean randomStart, IdentifiableModelling identifiableModelling) {
             this.attributes = attributes;
             this.variables = variables;
             this.randomStart = randomStart;
-            this.idenitifableModelling = idenitifableModelling;
+            this.identifiableModelling = identifiableModelling;
         }
 
         @Override
@@ -761,7 +761,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                 //Set Active Parameters
                 svb.getPlateuStructure()
                         .getNonReplictedNodes()
-                        .filter(node -> this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
+                        .filter(node -> this.identifiableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
                         .forEach(node -> node.setActive(true));
 
 

@@ -89,7 +89,7 @@ public class IDAmodelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAUAIModelLocalHidden(nHidden));
+        parallelVB.setIdentifiableModelling(new IdentifiableIDAUAIModelLocalHidden(nHidden));
 
         //List<Variable> hiddenVars = new ArrayList<>();
         //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));

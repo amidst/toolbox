@@ -93,7 +93,7 @@ public class MixtureModelDistributedVMP {
         //Set the window size
         parallelVB.setBatchSize(windowSize);
 
-        //parallelVB.setIdenitifableModelling(new IdentifiableMixtureModel(nHidden, nStates));
+        //parallelVB.setIdentifiableModelling(new IdentifiableMixtureModel(nHidden, nStates));
 
         //List<Variable> hiddenVars = new ArrayList<>();
         //hiddenVars.add(hiddenNB.getVariables().getVariableByName("GlobalHidden"));

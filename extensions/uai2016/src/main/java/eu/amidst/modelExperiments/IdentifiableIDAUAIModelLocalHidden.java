@@ -18,14 +18,14 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.variables.Variable;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
 
 import java.io.Serializable;
 
 /**
  * Created by ana@cs.aau.dk <mailto:ana@cs.aau.dk> on 15/02/16.
  */
-public class IdentifiableIDAUAIModelLocalHidden implements IdenitifableModelling, Serializable {
+public class IdentifiableIDAUAIModelLocalHidden implements IdentifiableModelling, Serializable {
 
     private int numLocalHiddenVariables;
 

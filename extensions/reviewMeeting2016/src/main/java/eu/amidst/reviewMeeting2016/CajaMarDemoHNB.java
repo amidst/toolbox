@@ -146,7 +146,7 @@ public class CajaMarDemoHNB {
         parallelVB.setDAG(dynamicDAG);
 
         //Set the procedure to make the model identifiable
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
+        parallelVB.setIdentifiableModelling(new IdentifiableIDAModel());
 
         //Init learning
         parallelVB.initLearning();

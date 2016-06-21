@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * Created by andresmasegosa on 18/1/16.
  */
-public class ParameterIdentifiableModel implements IdenitifableModelling, Serializable {
+public class ParameterIdentifiableModel implements IdentifiableModelling, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;

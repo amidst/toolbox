@@ -89,7 +89,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
 
     protected double globalELBO = Double.NaN;
 
-    IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
+    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int nBatches;
@@ -108,8 +108,8 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.nBatches = nBatches;
     }
 
-    public void setIdenitifableModelling(IdenitifableModelling idenitifableModelling) {
-        this.idenitifableModelling = idenitifableModelling;
+    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+        this.identifiableModelling = identifiableModelling;
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
@@ -290,7 +290,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
 
             DataSet<CompoundVector> newparamSet =
                     unionData
-                    .map(new ParallelVBMap(randomStart, idenitifableModelling))
+                    .map(new ParallelVBMap(randomStart, identifiableModelling))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dag.getName())
                     .reduce(new ParallelVBReduce());
@@ -389,7 +389,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         String bnName;
 
 
-        IdenitifableModelling idenitifableModelling;
+        IdentifiableModelling identifiableModelling;
 
         boolean randomStart;
 
@@ -397,9 +397,9 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         double learningRate = 0.7;
         double KL=0;
 
-        public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling) {
+        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
             this.randomStart = randomStart;
-            this.idenitifableModelling = idenitifableModelling;
+            this.identifiableModelling = identifiableModelling;
         }
 
 
@@ -431,7 +431,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
                 svb.getPlateuStructure()
                         .getNonReplictedNodes()
                         .forEach(node ->
-                                node.setActive(this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
+                                node.setActive(this.identifiableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
                         );
 
                 if (superstep == 0){

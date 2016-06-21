@@ -90,7 +90,7 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
 
     protected double globalELBO = Double.NaN;
 
-    IdenitifableModelling idenitifableModelling = new ParameterIdentifiableModel();
+    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int nBatches;
@@ -109,8 +109,8 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
         this.nBatches = nBatches;
     }
 
-    public void setIdenitifableModelling(IdenitifableModelling idenitifableModelling) {
-        this.idenitifableModelling = idenitifableModelling;
+    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+        this.identifiableModelling = identifiableModelling;
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
@@ -267,7 +267,7 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
                 convergenceELBO = new ConvergenceELBO(this.globalThreshold, System.nanoTime());
             }
             else {
-                convergenceELBO = new ConvergenceELBObyTime(this.timeLimit, System.nanoTime(), this.idenitifableModelling.getNumberOfEpochs());
+                convergenceELBO = new ConvergenceELBObyTime(this.timeLimit, System.nanoTime(), this.identifiableModelling.getNumberOfEpochs());
                 this.setMaximumGlobalIterations(5000);
             }
             // set number of bulk iterations for KMeans algorithm
@@ -289,7 +289,7 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
 
             DataSet<CompoundVector> newparamSet =
                     unionData
-                    .map(new ParallelVBMap(randomStart, idenitifableModelling))
+                    .map(new ParallelVBMap(randomStart, identifiableModelling))
                     .withParameters(config)
                     .withBroadcastSet(loop, "VB_PARAMS_" + this.dag.getName())
                     .reduce(new ParallelVBReduce());
@@ -390,13 +390,13 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
         String bnName;
 
 
-        IdenitifableModelling idenitifableModelling;
+        IdentifiableModelling identifiableModelling;
 
         boolean randomStart;
 
-        public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling) {
+        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
             this.randomStart = randomStart;
-            this.idenitifableModelling = idenitifableModelling;
+            this.identifiableModelling = identifiableModelling;
         }
 
 
@@ -428,7 +428,7 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
                 svb.getPlateuStructure()
                         .getNonReplictedNodes()
                         .forEach(node ->
-                                node.setActive(this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
+                                node.setActive(this.identifiableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
                         );
 
                 if (superstep == 0){

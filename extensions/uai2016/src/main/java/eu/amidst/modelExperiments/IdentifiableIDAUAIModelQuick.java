@@ -18,14 +18,14 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.variables.Variable;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
 
 import java.io.Serializable;
 
 /**
  * Created by andresmasegosa on 21/1/16.
  */
-public class IdentifiableIDAUAIModelQuick implements IdenitifableModelling, Serializable {
+public class IdentifiableIDAUAIModelQuick implements IdentifiableModelling, Serializable {
 
     /**
      * Represents the serial version ID for serializing the object.

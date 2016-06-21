@@ -211,7 +211,7 @@ public class IDAConceptDriftDetectorDBN {
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setBatchSize(this.batchSize);
         svb.setDAG(globalDynamicDAG);
-        svb.setIdenitifableModelling(new IdentifiableIDAModel());
+        svb.setIdentifiableModelling(new IdentifiableIDAModel());
 
         svb.setOutput(false);
         svb.setGlobalThreshold(0.001);
