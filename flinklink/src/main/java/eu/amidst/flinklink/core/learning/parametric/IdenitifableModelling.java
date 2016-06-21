@@ -22,7 +22,7 @@ import eu.amidst.core.variables.Variable;
 /**
  * Created by andresmasegosa on 18/1/16.
  */
-public interface IdenitifableModelling{
+public interface IdenitifableModelling {
 
     int getNumberOfEpochs();
 
