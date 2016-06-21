@@ -14,12 +14,14 @@ package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 
 import java.io.IOException;
@@ -71,6 +73,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
         // Connect the class variale to its interface replication
         dynamicDAG.getParentSetTimeT(classVar).addParent(variables.getInterfaceVariable(classVar));
+        previousPredictions = null;
     }
 
     public void updateModel(int timeSlice, DataFlink<DynamicDataInstance> dataStream) {
@@ -85,7 +88,8 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
             learningAlgorithmFlink = new DynamicParallelVB();
             learningAlgorithmFlink.setBatchSize(windowSize);
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
-            learningAlgorithmFlink.setOutput(true);
+            learningAlgorithmFlink.setOutput(false);
+            learningAlgorithmFlink.setTestELBO(true);
             learningAlgorithmFlink.setMaximumGlobalIterations(10);
             learningAlgorithmFlink.setMaximumLocalIterations(100);
             learningAlgorithmFlink.setGlobalThreshold(0.1);
@@ -105,8 +109,14 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
     }
 
     public void predict(int timeSlice, DataFlink<DynamicDataInstance> data) {
-
-        this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, data);
+        DataFlink<DynamicDataInstance> dataWithoutClass = data.map(new MapFunction<DynamicDataInstance, DynamicDataInstance>() {
+            @Override
+            public DynamicDataInstance map(DynamicDataInstance dynamicDataInstance) throws Exception {
+                dynamicDataInstance.setValue(classVar, Utils.missingValue());
+                return dynamicDataInstance;
+            }
+        });
+        this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, dataWithoutClass);
     }
 
     public static void main(String[] args) throws IOException {

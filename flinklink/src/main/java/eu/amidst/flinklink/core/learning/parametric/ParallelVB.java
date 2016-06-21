@@ -97,6 +97,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
 
     boolean randomStart = true;
 
+    protected static boolean activateOutput = false;
+    protected boolean testElbo = true;
 
     public ParallelVB(){
         this.svb = new SVB();
@@ -151,6 +153,8 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void initLearning() {
+        this.svb.getPlateuStructure().getVMP().setOutput(this.activateOutput);
+        this.svb.getPlateuStructure().getVMP().setOutput(this.testElbo);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);
@@ -372,7 +376,15 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setOutput(boolean activateOutput) {
+        this.activateOutput = activateOutput;
         this.svb.setOutput(activateOutput);
+        this.svb.getPlateuStructure().getVMP().setOutput(activateOutput);
+    }
+
+    public void setTestELBO(boolean testELBO) {
+        this.testElbo = testELBO;
+        this.svb.setTestELBO(testELBO);
+        this.svb.getPlateuStructure().getVMP().setTestELBO(testELBO);
     }
 
 
@@ -427,7 +439,7 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
                 svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
                 svb.setOutput(false);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
-                svb.setOutput(true);
+                svb.setOutput(ParallelVB.activateOutput);
 
                 if (Double.isNaN(outElbo.getElbo()))
                     throw new IllegalStateException("NaN elbo");

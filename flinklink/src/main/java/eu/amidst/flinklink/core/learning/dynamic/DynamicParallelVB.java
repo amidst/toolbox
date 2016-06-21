@@ -74,7 +74,8 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     DAG dagTime0;
     int seed = 5;
     int batchSize;
-    boolean output;
+    boolean output = false;
+    boolean testELBO = true;
     protected int maximumGlobalIterations = 10;
     protected int maximumLocalIterations = 100;
 
@@ -390,6 +391,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.parallelVBTime0.setGlobalThreshold(this.globalThreshold);
         this.parallelVBTime0.setMaximumGlobalIterations(this.maximumGlobalIterations);
         this.parallelVBTime0.setOutput(this.output);
+        this.parallelVBTime0.setTestELBO(this.testELBO);
         this.parallelVBTime0.setSeed(this.seed);
         this.parallelVBTime0.setDAG(this.dagTime0);
         this.parallelVBTime0.setIdenitifableModelling(this.idenitifableModelling);
@@ -403,6 +405,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.svbTimeT.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svbTimeT.setWindowsSize(this.batchSize);
         this.svbTimeT.setOutput(this.output);
+        this.svbTimeT.setTestELBO(this.testELBO);
         this.svbTimeT.setSeed(this.seed);
         this.svbTimeT.setDAG(this.dagTimeT);
         this.svbTimeT.initLearning();
@@ -465,6 +468,9 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         this.output=activateOutput;
     }
 
+    public void setTestELBO(boolean testELBO) {
+        this.testELBO=testELBO;
+    }
 
     public static class DataPosteriorInstance {
         final DataPosteriorAssignment dataPosterior;
