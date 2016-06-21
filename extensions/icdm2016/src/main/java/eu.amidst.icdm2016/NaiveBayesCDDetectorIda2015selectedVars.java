@@ -23,12 +23,16 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static ParallelMaximumLikelihood parallelMaximumLikelihood;
 
-    static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaWithoutResiduals/dataWekaWithoutResiduals_2_";
+    //static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaWithoutResiduals/dataWekaWithoutResiduals_2_";
 
-    //static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+    static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+
+    //static String path="/Users/andresmasegosa/Documents/tmp/R3_";
 
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
     static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+
+    //static String[] varNames = {"VAR04"};
 
 
     public static void initML(Attributes atts){
@@ -90,8 +94,8 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
 
         String output = "\n";
         for (String varName : varNames) {
-            output += varName+"realMean_c0\t"+varName+"learntMean_c0\t"+varName+"realMean_c1\t" +
-                    varName+"learntMean_c1\t";
+            output += varName+"realMean_c0\t"+varName+"learntMean_c0\t"+"b0\tb1\t"+
+                      varName+"realMean_c1\t"+varName+"learntMean_c1\t"+"b0\tb1\t";
         }
         output+="meanH\n";
 
@@ -166,14 +170,15 @@ public class NaiveBayesCDDetectorIda2015selectedVars {
                     System.out.println("Learnt Mean for " + varNames[v] + "["+c+"] = " + meanVAR[v][c]);
                     output += distVARML.getNormal(c).getMean() + "\t";
                     output += meanVAR[v][c] + "\t";
+                    output += b0_VAR[v][c] + "\t";
+                    output += b1_VAR[v][c] + "\t";
                 }
             }
-            output += globalHiddenMean + "\n";
+            output += globalHiddenMean + "\t"+ virtualDriftDetector.getElbo() + "\n";
 
+            //RemoveGlobalHiddenResiduals.remove(i,virtualDriftDetector,dataMonth);
 
-
-            RemoveGlobalHiddenResiduals.remove(i,virtualDriftDetector,dataMonth);
-
+            virtualDriftDetector.getSvb().getLogMarginalProbability();
         }
         System.out.println(output);
 

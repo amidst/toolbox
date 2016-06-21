@@ -83,6 +83,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
 
     boolean output = false;
 
+    double elbo=0;
     /**
      * Returns the class variable of the classifier
      * @return A <code>Variable</code> object
@@ -294,6 +295,9 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * Initialises the class for concept drift detection.
      */
     public void initLearning() {
+
+        elbo=0;
+
         if (classIndex == -1)
             classIndex = this.attributes.getNumberOfAttributes()-1;
 
@@ -334,7 +338,7 @@ public class NaiveBayesVirtualConceptDriftDetector {
      * @return An array of double values containing the expected value of the global hidden variables.
      */
     public double[] updateModel(DataOnMemory<DataInstance> batch){
-        svb.updateModel(batch);
+        elbo+=svb.updateModel(batch);
         double[] out = new double[hiddenVars.size()];
         for (int i = 0; i < out.length; i++) {
             Variable hiddenVar = this.hiddenVars.get(i);
@@ -342,6 +346,10 @@ public class NaiveBayesVirtualConceptDriftDetector {
             out[i] = normal.getMean();
         }
         return out;
+    }
+
+    public double getElbo() {
+        return elbo;
     }
 
     /**

@@ -27,7 +27,7 @@ import java.io.IOException;
  */
 public class RemoveGlobalHiddenResiduals {
 
-    static String outputPath="/Users/andresmasegosa/Documents/tmpOriginalNoMissing/R2_";
+    static String outputPath="/Users/andresmasegosa/Documents/tmp/R3_";
 
     public static void remove(int currentMonth, NaiveBayesVirtualConceptDriftDetector virtualDriftDetector, DataStream<DataInstance> dataMonthi) throws IOException {
         //WRITE RESIDUALS
