@@ -1,7 +1,5 @@
 package eu.amidst.cajamareval;
 
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.utils.Utils;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.flinklink.core.data.DataFlink;
@@ -68,53 +66,55 @@ public class DynamicNaiveBayesEval {
             }
 
             System.out.println("DAY " + timeID + " TRAINING...");
-
-
             dynamicNaiveBayesClassifier.updateModel(timeID,dataTrain);
-
             System.out.println("DAY " + timeID + " TRAINING FINISHED");
 
-
             DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, false);
-            List<DynamicDataInstance> dataTestInstances = dataTest.getDataSet().collect();
-
-
-            File outputFile = new File(output);
-            PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-            writer.println("SEQUENCE_ID,DEFAULT_PROB");
 
             System.out.println("DAY " + timeID + " TESTING...");
-
-            String resultLine = "";
-            for (DynamicDataInstance dynamicDataInstance : dataTestInstances) {
-
-                double classValue = dynamicDataInstance.getValue(dynamicNaiveBayesClassifier.getClassVar());
-                dynamicDataInstance.setValue(dynamicNaiveBayesClassifier.getClassVar(), Utils.missingValue());
-
-                Multinomial classVarPosteriorDistribution = null;
-                try {
-                    classVarPosteriorDistribution = dynamicNaiveBayesClassifier.predict(dynamicDataInstance);
-                    resultLine = Long.toString(dynamicDataInstance.getSequenceID()) + "," + Double.toString(classVarPosteriorDistribution.getParameters()[1]);
-                    writer.println(resultLine);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                    System.out.println(dynamicDataInstance.getSequenceID());
-                    System.out.println(dynamicDataInstance.getTimeID());
-
-                    writer.close();
-                    System.exit(-5);
-                }
-
-                //System.out.println("Class value: " + classValue + ", predicted prob. of defaulting: " + classVarPosteriorDistribution.getParameters()[1] );
-            }
-
-
-
-            writer.close();
-
+            dynamicNaiveBayesClassifier.predict(timeID,dataTest);
             System.out.println("DAY " + timeID + " TESTING FINISHED");
+
+
+//            List<DynamicDataInstance> dataTestInstances = dataTest.getDataSet().collect();
+//
+//
+//            File outputFile = new File(output);
+//            PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+//            writer.println("SEQUENCE_ID,DEFAULT_PROB");
+//
+//            System.out.println("DAY " + timeID + " TESTING...");
+//
+//            String resultLine = "";
+//            for (DynamicDataInstance dynamicDataInstance : dataTestInstances) {
+//
+//                double classValue = dynamicDataInstance.getValue(dynamicNaiveBayesClassifier.getClassVar());
+//                dynamicDataInstance.setValue(dynamicNaiveBayesClassifier.getClassVar(), Utils.missingValue());
+//
+//                Multinomial classVarPosteriorDistribution = null;
+//                try {
+//                    classVarPosteriorDistribution = dynamicNaiveBayesClassifier.predict(dynamicDataInstance);
+//                    resultLine = Long.toString(dynamicDataInstance.getSequenceID()) + "," + Double.toString(classVarPosteriorDistribution.getParameters()[1]);
+//                    writer.println(resultLine);
+//                }
+//                catch (Exception e) {
+//                    e.printStackTrace();
+//                    System.out.println(e.getMessage());
+//                    System.out.println(dynamicDataInstance.getSequenceID());
+//                    System.out.println(dynamicDataInstance.getTimeID());
+//
+//                    writer.close();
+//                    System.exit(-5);
+//                }
+//
+//                //System.out.println("Class value: " + classValue + ", predicted prob. of defaulting: " + classVarPosteriorDistribution.getParameters()[1] );
+//            }
+//
+//
+//
+//            writer.close();
+
+
 
             File modelOutputFile = new File(modelOutput);
             PrintWriter modelWriter = new PrintWriter(modelOutputFile, "UTF-8");

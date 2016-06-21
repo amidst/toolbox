@@ -156,7 +156,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
         if (currentTimeSlice!=timeSlice)
             throw new UnsupportedOperationException("Test must be made on the same time step");
 
-        if (currentTimeSlice!=0 && previousPredictions!=null)
+        if (currentTimeSlice!=0 && previousPredictions==null)
             throw new UnsupportedOperationException("Test at time > 0 need previous DataPosteriorAssignment data set.");
 
         if (currentTimeSlice==0){

@@ -13,12 +13,14 @@ package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
+import org.apache.flink.api.java.DataSet;
 
 import java.io.IOException;
 
@@ -28,6 +30,7 @@ import java.io.IOException;
 public class DynamicNaiveBayesClassifier extends DynamicClassifier {
 
     protected DynamicParallelVB learningAlgorithmFlink = null;
+    private DataSet<DataPosteriorAssignment> previousPredictions = null;
 
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */
     boolean connectChildrenTemporally = false;
@@ -83,8 +86,10 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
             learningAlgorithmFlink.setBatchSize(windowSize);
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
             learningAlgorithmFlink.setOutput(true);
-            learningAlgorithmFlink.setMaximumGlobalIterations(2);
-            learningAlgorithmFlink.setMaximumLocalIterations(2);
+            learningAlgorithmFlink.setMaximumGlobalIterations(10);
+            learningAlgorithmFlink.setMaximumLocalIterations(100);
+            learningAlgorithmFlink.setGlobalThreshold(0.1);
+            learningAlgorithmFlink.setGlobalThreshold(0.1);
             learningAlgorithmFlink.initLearning();
         }
         initialized=true;
@@ -97,6 +102,11 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier {
         else {
             return super.getModel();
         }
+    }
+
+    public void predict(int timeSlice, DataFlink<DynamicDataInstance> data) {
+
+        this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, data);
     }
 
     public static void main(String[] args) throws IOException {
