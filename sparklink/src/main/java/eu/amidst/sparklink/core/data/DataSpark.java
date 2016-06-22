@@ -1,47 +1,22 @@
 package eu.amidst.sparklink.core.data;
 
 import eu.amidst.core.datastream.Attributes;
-
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.sparklink.core.io.SchemaConverter;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.DataFrame;
 
-import java.util.Arrays;
-import java.util.List;
-
-
 /**
- * Created by jarias on 20/06/16.
+ * Created by jarias on 22/06/16.
  */
+public interface DataSpark {
 
 
-public class DataSpark {
+    DataFrame getDataFrame();
 
-    private final DataFrame data;
+    Attributes getAttributes();
 
-    private Attributes attributes;
+    JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize);
 
-    public DataSpark(DataFrame d) throws Exception {
 
-        data = d.cache();
-        attributes = SchemaConverter.getAttributes(data);
-    }
-
-    public JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize){
-
-        // Each batch correspond to a particular partition
-        // Lazily convert the DataFrame into an RDD:
-        JavaRDD<DataInstance> instanceRDD = DataFrameOps.toDataInstanceRDD(data, attributes);
-
-        JavaRDD<DataOnMemory<DataInstance>> batchedRDD = DataFrameOps.toBatchedRDD(instanceRDD, attributes, batchSize);
-
-        return batchedRDD;
-    }
-
-    public Attributes getAttributes() {
-
-        return attributes;
-    }
 }
