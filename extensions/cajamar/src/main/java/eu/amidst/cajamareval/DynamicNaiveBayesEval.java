@@ -5,8 +5,11 @@ import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.latentvariablemodels.dynamicmodels.classifiers.DynamicNaiveBayesClassifier;
+import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.core.fs.FileSystem;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -21,12 +24,21 @@ public class DynamicNaiveBayesEval {
 
     public static void main(String[] args) throws Exception {
 
-        String dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic/";
-//        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-        String folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic/output/";
+        String dataFolderPath;
+        String folderOutput;
 
-        if (args.length == 1) {
+        if (args.length == 2) {
             dataFolderPath = args[0];
+            folderOutput = args[1];
+        }
+
+        else {
+            System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
+//            System.exit(-10);
+
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic/";
+//        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic/output/";
         }
 
         File dataFolder = new File(dataFolderPath);
@@ -50,7 +62,8 @@ public class DynamicNaiveBayesEval {
             String fileTrain = currentDayFolder.getAbsolutePath() + "/train.arff";
             String fileTest = currentDayFolder.getAbsolutePath() + "/test.arff";
 
-            String output = folderOutput + currentDayFolder.getName() + "_output.txt";
+            String output = folderOutput + currentDayFolder.getName() + "_predictions.csv";
+            String output_Flink = folderOutput + currentDayFolder.getName() + "_predictionsFlink.csv";
             String modelOutput = folderOutput + currentDayFolder.getName() + "_model.txt";
             String networkOutput = folderOutput + currentDayFolder.getName() + "_dynNaiveBayes.dbn";
 
@@ -73,7 +86,8 @@ public class DynamicNaiveBayesEval {
             DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, false);
 
             System.out.println("DAY " + timeID + " TESTING...");
-            DataSet<DynamicDataInstance> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
+            DataSet<Tuple2<Long,Double>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
+            //predictions.print();
 
 //            List<DynamicDataInstance> result = predictions.collect();
 //            result.sort((prediction1,prediction2) -> (prediction1.getSequenceID()>prediction2.getSequenceID() ? 1 : -1));
@@ -81,6 +95,18 @@ public class DynamicNaiveBayesEval {
 //            result.stream().forEach(prediction -> System.out.println("SEQ_ID:" + prediction.getSequenceID() + "p(Def)=" + prediction.outputString()));
 
             System.out.println("DAY " + timeID + " TESTING FINISHED");
+
+            predictions.writeAsCsv(output_Flink,FileSystem.WriteMode.OVERWRITE);
+            env.execute();
+
+
+            int parallelism = env.getParallelism();
+            env.setParallelism(1);
+            DataSet<Tuple2<Long, Double>> csvInput = env.readCsvFile(output_Flink).types(Long.class,Double.class);
+            csvInput.sortPartition(0, Order.ASCENDING).writeAsCsv(output,FileSystem.WriteMode.OVERWRITE);
+            env.execute();
+            env.setParallelism(parallelism);
+            DynamicNaiveBayesEval.deleteFolder(new File(output_Flink));
 
 
 //            List<DynamicDataInstance> dataTestInstances = dataTest.getDataSet().collect();
@@ -271,5 +297,20 @@ public class DynamicNaiveBayesEval {
 //            System.out.println(classVarPosteriorDistribution.toString());
 //            dynamicNaiveBayesClassifier.resetModel();
 //        }
+    }
+
+
+    public static void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if(files!=null) { //some JVMs return null for empty dirs
+            for(File f: files) {
+                if(f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
     }
 }

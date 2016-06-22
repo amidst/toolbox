@@ -170,7 +170,25 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             return this.parallelVBTime0.computePosteriorAssignment(DataFlinkConverter.convertToStatic(data), vars);
         } else {
 
-            DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData2(data.getDataSet());
+            DataSet<DataPosteriorInstance>  dataJoined = previousPredictions.join(data.getDataSet(), JoinOperatorBase.JoinHint.REPARTITION_SORT_MERGE)
+                    .where(new KeySelector<DataPosteriorAssignment, Long>() {
+                        @Override
+                        public Long getKey(DataPosteriorAssignment value) throws Exception {
+                            return value.getPosterior().getId();
+                        }
+                    }).equalTo(new KeySelector<DynamicDataInstance, Long>() {
+                        @Override
+                        public Long getKey(DynamicDataInstance value) throws Exception {
+                            return value.getSequenceID();
+                        }
+                    }).with(new JoinFunction<DataPosteriorAssignment,DynamicDataInstance, DataPosteriorInstance>() {
+                        @Override
+                        public DataPosteriorInstance join(DataPosteriorAssignment dataPosterior, DynamicDataInstance dynamicDataInstance) throws Exception {
+                            return new DataPosteriorInstance(dataPosterior, dynamicDataInstance);
+                        }
+                    });
+
+            DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.translate(dataJoined);
 
             /******************************* UPDATE DATA POSTERIORS********************/
             Configuration config = new Configuration();

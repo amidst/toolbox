@@ -14,7 +14,6 @@ package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
-import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
@@ -25,6 +24,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.tuple.Tuple2;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -113,35 +113,34 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
         }
     }
 
-    public DataSet<DynamicDataInstance> predict(int timeSlice, DataFlink<DynamicDataInstance> data) throws Exception {
+    public DataSet<Tuple2<Long, Double>> predict(int timeSlice, DataFlink<DynamicDataInstance> data) throws Exception {
+
+//        System.out.println(data.getDataSet().count());
 
         DataFlink<DynamicDataInstance> dataWithoutClass = data.map(new DeleteClassValue(classVar));
+
 
         this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, dataWithoutClass);
 
 
-        this.previousPredictions.print();
+//        this.previousPredictions.print();
+
+        DataSet<Tuple2<Long, Double>> dataPredictions = this.previousPredictions
+                                                .map(new BuildResults(classVar));
 
 
-        DataSet<DynamicDataInstance> dataPredictions = this.previousPredictions.map(dataPosteriorAssignment -> {
-            long sequence_id = dataPosteriorAssignment.getPosterior().getId();
-            DynamicDataInstance dataPosterior = ((DynamicDataInstance)dataPosteriorAssignment.getAssignment());
-            dataPosterior.setValue(dataPosterior.getAttributes().getSeq_id(),sequence_id);
-            return dataPosterior;
-        });
-
-        DataSet<DynamicDataInstance> predictedClasses=null;
-        predictedClasses = dataPredictions.map(dynamicDataInstance -> {
-            DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
-            result.getVariables().forEach(variable -> {
-                if (!variable.equals(classVar)) {
-                    result.setValue(variable,Utils.missingValue());
-                }
-            });
-            return result;
-        });
-
-        return predictedClasses;
+//        dataPredictions
+//
+//        DataSet<DynamicDataInstance> predictedClasses = dataPredictions.map(dynamicDataInstance -> {
+//            DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
+//            result.getVariables().forEach(variable -> {
+//                if (!variable.equals(classVar)) {
+//                    result.setValue(variable,Utils.missingValue());
+//                }
+//            });
+//            return result;
+//        });
+        return dataPredictions;
 
 //        DataSet<DynamicDataInstance> dataPlusPredictions = data.getDataSet()
 //                .join(dataPredictions)
@@ -168,9 +167,29 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
 
         @Override
         public DynamicDataInstance map(DynamicDataInstance dynamicDataInstance) throws Exception {
-            //DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
             dynamicDataInstance.setValue(classVar, Utils.missingValue());
             return dynamicDataInstance;
+        }
+    }
+
+    static class BuildResults implements MapFunction<DataPosteriorAssignment, Tuple2<Long,Double>> {
+
+        final Variable classVar;
+
+        public BuildResults(Variable classVar) {
+            this.classVar = classVar;
+        }
+
+        @Override
+        public Tuple2<Long,Double> map(DataPosteriorAssignment dataPosteriorAssignment) throws Exception {
+
+            long sequence_id = dataPosteriorAssignment.getPosterior().getId();
+            double predictedProbability = dataPosteriorAssignment.getPosterior().getPosterior(classVar).getParameters()[1];
+
+            Tuple2<Long,Double> result = new Tuple2<>();
+            result.setFields(sequence_id, predictedProbability);
+
+            return result;
         }
     }
 
