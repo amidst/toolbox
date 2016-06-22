@@ -32,10 +32,10 @@ public class dVMP_LDA {
 
         String dataPath = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_train.arff";
         String dataTest = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_test.arff";
-        int ntopics = 5;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 10;
+        int docsPerBatch = 100;
         int timeLimit = -1;
         int ncores = 4;
         boolean amazon_cluster = true;
@@ -49,15 +49,19 @@ public class dVMP_LDA {
             threshold = Double.parseDouble(args[4]);
             docsPerBatch = Integer.parseInt(args[5]);
             timeLimit = Integer.parseInt(args[6]);
-            ncores = Integer.parseInt(args[7]);
-            amazon_cluster = Boolean.parseBoolean(args[8]);
+            amazon_cluster = Boolean.parseBoolean(args[7]);
         }
 
         final ExecutionEnvironment env;
 
+        System.out.println("RUNNING dVMP_LDA");
+
         if(amazon_cluster){
             env = ExecutionEnvironment.getExecutionEnvironment();
+            System.out.println("RUN ON AMAZON WEB SERVER");
         }else{
+            System.out.println("RUN ON ALMERIA SERVER");
+            ncores = Integer.parseInt(args[8]);
             Configuration conf = new Configuration();
             conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
             conf.setInteger("taskmanager.numberOfTaskSlots",ncores);

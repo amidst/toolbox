@@ -1,0 +1,101 @@
+aws emr create-cluster --termination-protected --applications Name=Hadoop --bootstrap-actions '[{"Path":"s3://amidst2/emr_bootstrap_java_8_emr400.sh","Name":"Bootstrap action"}]' --ec2-attributes '{"KeyName":"AmidstToolbox","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-0e205679","EmrManagedSlaveSecurityGroup":"sg-e07dea84","EmrManagedMasterSecurityGroup":"sg-e77dea83"}' --service-role EMR_DefaultRole --enable-debugging --release-label emr-4.3.0 --log-uri 's3n://amidst2/logsForClusters/' --name 'Cluster4LDA' --instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m3.medium","Name":"MASTER"},{"InstanceCount":17,"InstanceGroupType":"CORE","InstanceType":"m3.2xlarge","Name":"CORE"}]' --region us-west-2
+
+
+aws emr describe-cluster --cluster-id j-2KSUJOEP61CRD
+
+ssh hadoop@ec2-54-200-220-110.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+
+
+wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
+tar xzf flink-*.tgz
+export HADOOP\_CONF\_DIR=/etc/hadoop/conf
+
+scp -i ~/key/AmidstToolbox.pem /Users/ana/core/toolbox/classes/artifacts/lda_jar/lda.jar  hadoop@ec2-54-186-123-186.us-west-2.compute.amazonaws.com:
+
+
+#ABSTRACTS
+aws s3 cp s3://amidstdata/abstracts.all.shuffled_train.arff /mnt/
+aws s3 cp s3://amidstdata/abstracts.all.shuffled_test.arff /mnt/
+cd /mnt
+hadoop fs -D dfs.block.size=2048576 -copyFromLocal /mnt/abstracts.all.shuffled_train.arff /
+hadoop fs -D dfs.block.size=2048576 -copyFromLocal /mnt/abstracts.all.shuffled_test.arff /
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 16 -ys 4 -yjm 14000 -ytm 14000 -c eu.amidst.lda.flink.dVMP_LDA lda.jar hdfs:///abstracts.all.shuffled_train.arff hdfs:///abstracts.all.shuffled_test.arff 10 100 0.1 100 2000 true > outputVMP_abstracts_10_100_0p1_100_2000_2g_14g.txt 2>&1 &
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 16 -ys 4 -yjm 14000 -ytm 14000 -c eu.amidst.lda.flink.SVI_LDA lda.jar hdfs:///abstracts.all.shuffled_train.arff hdfs:///abstracts.all.shuffled_test.arff 98851 10 100 0.1 100 0.75 2000 true > outputSVI_abstracts_98851_10_100_0p1_100_0p75_2000.txt 2>&1 &
+
+
+#NIPS
+aws s3 cp s3://amidstdata/docword.nips.arff /mnt/
+cd /mnt
+hadoop fs -D dfs.block.size=1048576 -copyFromLocal /mnt/docword.nips.arff /
+hadoop fsck /docword.nips.arff -files -blocks -locations
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 8 -ys 8 -yjm 10000 -ytm 13000 -c eu.amidst.lda.flink.dVMP_LDA lda.jar hdfs:///docword.nips.arff 5 100 0.1 10 2000 > outputVMP_nips_5_100_0p1_10_2000_10g_13g.txt 2>&1 &
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 8 -yjm 20000 -ytm 3000 -c eu.amidst.lda.flink.SVI_LDA lda.jar hdfs:///docword.nips.arff 1500 5 100 0.1 10 0.75 2000 > outputSVI_nips_5_50_0p1_100_2000_20g_3g_G1_0p4.txt 2>&1 &
+
+#NYTIMES
+aws s3 cp s3://amidstdata/docword.nytimes.arff /mnt/
+cd /mnt
+hadoop fs -D dfs.block.size=33554432 -copyFromLocal /mnt/docword.nytimes.arff /
+hadoop fsck /docword.nytimes.arff -files -blocks -locations
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 16 -ys 8 -yjm 10000 -ytm 13000 -c eu.amidst.lda.flink.dVMP_LDA lda.jar hdfs:///docword.nytimes.arff 5 100 0.1 10 12000 > outputVMP_nyt_5_100_0p1_10_12000_10g_13g.txt 2>&1 &
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 16 -ys 8 -yjm 15000 -ytm 8000 -c eu.amidst.lda.flink.SVI_LDA lda.jar hdfs:///docword.nytimes.arff 300000 5 100 0.1 10 0.75 12000 > outputSVI_nyt_300K_5_50_0p1_100_12000_15g_8g.txt 2>&1 &
+
+yarn application -list
+yarn logs -applicationId 
+
+yarn application -kill application_1463227495916_0002
+
+hadoop fs -rm hdfs:///docword.nytimes.arff
+
+java -cp uai2016.jar eu.amidst.modelExperiments.ParseOutput output100K_1000_100_tiny_100_1_300_0.logs.txt parsedoutput100K_1000_100_tiny_100_1_300_0.txt
+
+scp -i ~/key/AmidstToolbox.pem hadoop@ec2-54-191-141-175.us-west-2.compute.amazonaws.com:/home/hadoop/outputSVI_nips_5_50_0p1_100_2000_43g_10g.txt /Users/ana/core/toolbox/extensions/uai2016/doc-experiments/ldaExperiments/
+
+--------
+# Download logs from s3 or cluster
+
+aws s3 cp --recursive s3://amidst2/logsForClusters/j-1DKJ8ZH4VWFEB/containers/application_1455180483578_0005 ./
+
+scp -r -i ~/key/AmidstToolbox.pem hadoop@ec2-54-191-66-20.us-west-2.compute.amazonaws.com:/mnt/uai100K.arff /Users/ana/core/extensions/uai2016/doc-experiments/
+————————
+
+-------
+#GUI
+
+http://ip-172-31-41-214.us-west-2.compute.internal:8088/
+ec2-54-191-98-115.us-west-2.compute.amazonaws.com:8088
+
+#Missing values
+hadoop distcp hdfs:///file s3n://amidstdata
+#or
+hadoop fs -get hdfs:///file /mnt
+aws s3 cp --recursive /mnt/file s3://amidstdata
+for i in {1..16}
+do
+	a=(`wc -l $i`) ; lines=`echo $a/4+1 | bc -l` ; split -l${lines%.*} $i $i
+done
+
+# DATA AUX
+vi /etc/hadoop/conf.empty/hdfs-site.xml
+<property> 
+<name>dfs.block.size<name> 
+<value>134217728<value> 
+<description>Block size<description> 
+<property>
+hadoop balancer [-threshold <threshold>]
+
+# Restart namenode
+
+sudo stop hadoop-hdfs-namenode
+sudo start hadoop-hdfs-namenode
+
+#Run command as step
+emr add-steps --cluster-id j-2AXXXXXXGAPLF --steps Type=PIG,Name="Pig Program",Args=[-f,s3://mybucket/scripts/pigscript.pig,-p,INPUT=s3://mybucket/inputdata/,-p,OUTPUT=s3://mybucket/outputdata/,$INPUT=s3://mybucket/inputdata/,$OUTPUT=s3://mybucket/outputdata/] 
+
+#Change garbage collector to G1 flink-conf
+env.java.opts:-XX:+UseG1GC

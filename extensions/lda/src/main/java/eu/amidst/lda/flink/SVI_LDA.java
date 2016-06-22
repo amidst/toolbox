@@ -32,10 +32,10 @@ public class SVI_LDA {
         String dataPath = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_train.arff";
         String dataTest = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_test.arff";
 
-        int ntopics = 5;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 10;
+        int docsPerBatch = 100;
         double learningRate = 0.75;
         int timeLimit = -1;
         int dataSize = 98851; //Number of documents at training
@@ -52,8 +52,7 @@ public class SVI_LDA {
             docsPerBatch = Integer.parseInt(args[6]);
             learningRate = Double.parseDouble(args[7]);
             timeLimit = Integer.parseInt(args[8]);
-            ncores = Integer.parseInt(args[9]);
-            amazon_cluster = Boolean.parseBoolean(args[10]);
+            amazon_cluster = Boolean.parseBoolean(args[9]);
         }
 
         final ExecutionEnvironment env;
@@ -61,6 +60,7 @@ public class SVI_LDA {
         if(amazon_cluster){
             env = ExecutionEnvironment.getExecutionEnvironment();
         }else{
+            ncores = Integer.parseInt(args[10]);
             Configuration conf = new Configuration();
             conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
             conf.setInteger("taskmanager.numberOfTaskSlots",ncores);
