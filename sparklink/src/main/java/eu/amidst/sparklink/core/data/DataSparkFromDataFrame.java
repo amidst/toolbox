@@ -29,6 +29,7 @@ public class DataSparkFromDataFrame implements DataSpark {
         attributes = SchemaConverter.getAttributes(data);
     }
 
+    @Override
     public JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize){
 
         // Each batch correspond to a particular partition
@@ -40,11 +41,12 @@ public class DataSparkFromDataFrame implements DataSpark {
         return batchedRDD;
     }
 
-
+    @Override
     public DataFrame getDataFrame() {
         return data;
     }
 
+    @Override
     public Attributes getAttributes() {
 
         return attributes;

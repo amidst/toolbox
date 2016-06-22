@@ -11,7 +11,6 @@ import org.apache.spark.sql.DataFrame;
  */
 public interface DataSpark {
 
-
     DataFrame getDataFrame();
 
     Attributes getAttributes();
