@@ -75,10 +75,10 @@ public class DynamicNaiveBayesEval {
             System.out.println("DAY " + timeID + " TESTING...");
             DataSet<DynamicDataInstance> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
 
-            List<DynamicDataInstance> result = predictions.collect();
-            result.sort((prediction1,prediction2) -> (prediction1.getSequenceID()>prediction2.getSequenceID() ? 1 : -1));
-//            List<DynamicDataInstance> result =
-            result.stream().forEach(prediction -> System.out.println("SEQ_ID:" + prediction.getSequenceID() + "p(Def)=" + prediction.outputString()));
+//            List<DynamicDataInstance> result = predictions.collect();
+//            result.sort((prediction1,prediction2) -> (prediction1.getSequenceID()>prediction2.getSequenceID() ? 1 : -1));
+////            List<DynamicDataInstance> result =
+//            result.stream().forEach(prediction -> System.out.println("SEQ_ID:" + prediction.getSequenceID() + "p(Def)=" + prediction.outputString()));
 
             System.out.println("DAY " + timeID + " TESTING FINISHED");
 

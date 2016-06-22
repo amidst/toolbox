@@ -168,7 +168,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                     .collect(Collectors.toList());
 
             return this.parallelVBTime0.computePosteriorAssignment(DataFlinkConverter.convertToStatic(data), vars);
-        }else{
+        } else {
 
             DataSet<DataPosteriorAssignment> dataPosteriorInstanceDataSet = this.joinData2(data.getDataSet());
 

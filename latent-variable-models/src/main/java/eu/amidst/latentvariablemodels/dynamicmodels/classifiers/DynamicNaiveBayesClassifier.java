@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Utils;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -112,18 +113,15 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
         }
     }
 
-    public DataSet<DynamicDataInstance> predict(int timeSlice, DataFlink<DynamicDataInstance> data) {
+    public DataSet<DynamicDataInstance> predict(int timeSlice, DataFlink<DynamicDataInstance> data) throws Exception {
 
-        DataFlink<DynamicDataInstance> dataWithoutClass = data.map(new MapFunction<DynamicDataInstance, DynamicDataInstance>() {
-            @Override
-            public DynamicDataInstance map(DynamicDataInstance dynamicDataInstance) throws Exception {
-                DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
-                result.setValue(classVar, Utils.missingValue());
-                return result;
-            }
-        });
+        DataFlink<DynamicDataInstance> dataWithoutClass = data.map(new DeleteClassValue(classVar));
 
         this.previousPredictions = learningAlgorithmFlink.predict(timeSlice, this.previousPredictions, dataWithoutClass);
+
+
+        this.previousPredictions.print();
+
 
         DataSet<DynamicDataInstance> dataPredictions = this.previousPredictions.map(dataPosteriorAssignment -> {
             long sequence_id = dataPosteriorAssignment.getPosterior().getId();
@@ -132,7 +130,8 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
             return dataPosterior;
         });
 
-        DataSet<DynamicDataInstance> predictedClasses = dataPredictions.map(dynamicDataInstance -> {
+        DataSet<DynamicDataInstance> predictedClasses=null;
+        predictedClasses = dataPredictions.map(dynamicDataInstance -> {
             DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
             result.getVariables().forEach(variable -> {
                 if (!variable.equals(classVar)) {
@@ -156,6 +155,23 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
 //                        return null;
 //                    }
 //                });
+    }
+
+
+    static class DeleteClassValue implements MapFunction<DynamicDataInstance, DynamicDataInstance> {
+
+        final Variable classVar;
+
+        public DeleteClassValue(Variable classVar) {
+            this.classVar = classVar;
+        }
+
+        @Override
+        public DynamicDataInstance map(DynamicDataInstance dynamicDataInstance) throws Exception {
+            //DynamicDataInstance result = Serialization.deepCopy(dynamicDataInstance);
+            dynamicDataInstance.setValue(classVar, Utils.missingValue());
+            return dynamicDataInstance;
+        }
     }
 
     public static void main(String[] args) throws IOException {
