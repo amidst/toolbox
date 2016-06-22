@@ -46,7 +46,7 @@ public class FactorAnalysis extends Model {
      */
     public FactorAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        numberOfLatentVariables = 5;
+        numberOfLatentVariables = 2;
     }
 
 
