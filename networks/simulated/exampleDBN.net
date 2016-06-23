@@ -23,10 +23,12 @@ continuous node GaussianVar4
 {
 }
 
-node discreteHiddenVar
+continuous node gaussianHiddenVar0
 {
-    label = "discreteHiddenVar";
-    states = ("0.0" "1.0");
+}
+
+continuous node gaussianHiddenVar1
+{
 }
 
 continuous node GaussianVar0_Interface
@@ -49,52 +51,47 @@ continuous node GaussianVar4_Interface
 {
 }
 
-node discreteHiddenVar_Interface
+continuous node gaussianHiddenVar0_Interface
 {
-    label = "discreteHiddenVar_Interface";
-    states = ("0.0" "1.0");
 }
 
-potential (GaussianVar0 | discreteHiddenVar)
+continuous node gaussianHiddenVar1_Interface
 {
-    data
-     = ( normal ( 1.41721, 3.94409 )	%  discreteHiddenVar=0.0
-	 normal ( 0.254583, 1.03249 ) );	%  discreteHiddenVar=1.0
 }
 
-potential (GaussianVar1 | discreteHiddenVar)
+potential (GaussianVar0 | gaussianHiddenVar0 gaussianHiddenVar1)
 {
-    data
-     = ( normal ( 0.624273, 2.42609 )	%  discreteHiddenVar=0.0
-	 normal ( 0.291696, 1.57413 ) );	%  discreteHiddenVar=1.0
+    data = normal ( 2.77387 + 0.107973 * gaussianHiddenVar0 + 0.544378 * gaussianHiddenVar1, 0.292278 );
 }
 
-potential (GaussianVar2 | discreteHiddenVar)
+potential (GaussianVar1 | gaussianHiddenVar0 gaussianHiddenVar1)
 {
-    data
-     = ( normal ( -3.40483, 28.5967 )	%  discreteHiddenVar=0.0
-	 normal ( 1.24689, 10.0944 ) );	%  discreteHiddenVar=1.0
+    data = normal ( 0.274915 - 0.00298452 * gaussianHiddenVar0 - 0.0681129 * gaussianHiddenVar1, 2.01982 );
 }
 
-potential (GaussianVar3 | discreteHiddenVar)
+potential (GaussianVar2 | gaussianHiddenVar0 gaussianHiddenVar1)
 {
-    data
-     = ( normal ( 9.60753, 90.0169 )	%  discreteHiddenVar=0.0
-	 normal ( -8.99918, 85.0097 ) );	%  discreteHiddenVar=1.0
+    data = normal ( -6.08073 - 0.336983 * gaussianHiddenVar0 - 1.31461 * gaussianHiddenVar1, 0.37314 );
 }
 
-potential (GaussianVar4 | discreteHiddenVar)
+potential (GaussianVar3 | gaussianHiddenVar0 gaussianHiddenVar1)
 {
-    data
-     = ( normal ( -3.11152, 14.6642 )	%  discreteHiddenVar=0.0
-	 normal ( 3.08665, 11.472 ) );	%  discreteHiddenVar=1.0
+    data = normal ( 1.79624 + 0.700508 * gaussianHiddenVar0 - 0.765376 * gaussianHiddenVar1, 0.375239 );
 }
 
-potential (discreteHiddenVar | discreteHiddenVar_Interface)
+potential (GaussianVar4 | gaussianHiddenVar0 gaussianHiddenVar1)
 {
-    data
-     = (( 0.127257 0.872743 )	%  discreteHiddenVar_Interface=0.0
-	( 0.957791 0.0422091 ));	%  discreteHiddenVar_Interface=1.0
+    data = normal ( -2.75671 - 0.299376 * gaussianHiddenVar0 - 0.478209 * gaussianHiddenVar1, 2.54542 );
+}
+
+potential (gaussianHiddenVar0 | gaussianHiddenVar0_Interface)
+{
+    data = normal ( -8.25622 - 0.957658 * gaussianHiddenVar0_Interface, 25.8989 );
+}
+
+potential (gaussianHiddenVar1 | gaussianHiddenVar1_Interface)
+{
+    data = normal ( -4.66215 - 0.796407 * gaussianHiddenVar1_Interface, 2.59826 );
 }
 
 potential (GaussianVar0_Interface)
@@ -122,7 +119,12 @@ potential (GaussianVar4_Interface)
     data = normal ( 0, 1 );
 }
 
-potential (discreteHiddenVar_Interface)
+potential (gaussianHiddenVar0_Interface)
 {
-    data = ( 0.5 0.5 );
+    data = normal ( 0, 1 );
+}
+
+potential (gaussianHiddenVar1_Interface)
+{
+    data = normal ( 0, 1 );
 }

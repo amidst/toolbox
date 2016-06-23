@@ -1,12 +1,9 @@
 package eu.amidst.tutorials.usingAmidst.practice;
 
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
+import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
@@ -19,80 +16,50 @@ import java.util.List;
 
 public class CustomKalmanFilter extends DynamicModel {
 
-    /*number of continuous hidden variable*/
-    private int numHiddenVars;
-
-
-    /* List of continuous hidden vars*/
-    List<Variable> gaussianHiddenVars = null;
-
-
+    Attributes attributes;
 
     public CustomKalmanFilter(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-
-        //TODO: Write the contructor code here
-        numHiddenVars = 2;
-
+        this.attributes=attributes;
     }
 
 
     @Override
     protected void buildDAG() {
 
-        gaussianHiddenVars = new ArrayList<>();
+        /*number of continuous hidden variable*/
+        int numHiddenVars=3;
+
+        /** Create a set of dynamic variables from the given attributes**/
+        DynamicVariables variables = new DynamicVariables(attributes);
+
+        /* List of continuous hidden vars*/
+        List<Variable> gaussianHiddenVars = new ArrayList<>();
 
         for(int i=0; i<numHiddenVars; i++) {
-            Variable Hi = this.variables.newGaussianDynamicVariable("gaussianHiddenVar" + i);
+            Variable Hi = variables.newGaussianDynamicVariable("gaussianHiddenVar" + i);
             gaussianHiddenVars.add(Hi);
         }
 
-        dynamicDAG = new DynamicDAG(this.variables);
+        DynamicDAG dynamicDAG = new DynamicDAG(this.variables);
 
 
-        //Parents of each hidden variables (to previous instant)
         for (Variable h : gaussianHiddenVars) {
             dynamicDAG.getParentSetTimeT(h).addParent(h.getInterfaceVariable());
         }
 
+        for (Variable variable: variables) {
+            if (gaussianHiddenVars.contains(variable))
+                continue;
 
-        // Parents of observ. variables
-        dynamicDAG.getDynamicVariables().getListOfDynamicVariables()
-                .stream()
-                .filter(v -> !gaussianHiddenVars.contains(v))
-                .forEach(x -> gaussianHiddenVars
-                        .stream()
-                        .forEach(h -> {
-                            dynamicDAG.getParentSetTimeT(x).addParent(h);
-                        }
-                        ));
+            for (Variable h : gaussianHiddenVars) {
+                dynamicDAG.getParentSetTimeT(variable).addParent(h);
+            }
+        }
 
-
-    }
-
-
-    public int getNumHiddenVars() {
-        return numHiddenVars;
-    }
-
-    public void setNumHiddenVars(int numHiddenVars) {
-        this.numHiddenVars = numHiddenVars;
-    }
-
-    public static void main(String[] args) {
-
-        //Load the datastream
-        String filename = "datasets/simulated/exampleDS_d0_c5.arff";
-        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(filename);
-
-        //Learn the model
-        CustomKalmanFilter model = new CustomKalmanFilter(data.getAttributes());
-        model.setNumHiddenVars(3);
-        model.setWindowSize(200);
-        model.updateModel(data);
-        DynamicBayesianNetwork bn = model.getModel();
-
-        System.out.println(bn);
+        //This is needed to maintain coherence in the DynamicModel class.
+        this.variables = variables;
+        this.dynamicDAG = dynamicDAG;
     }
 
 

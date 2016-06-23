@@ -111,7 +111,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param attributes an object of class {@link Attributes}
      */
     public void setAttributes(Attributes attributes){
-        for (Attribute att : attributes) {
+        for (Attribute att : attributes.getListOfNonSpecialAttributes()) {
             Variable variable = this.getVariableByName(att.getName());
             VariableImplementation variableImplementation = (VariableImplementation)variable;
             variableImplementation.setAttribute(att);

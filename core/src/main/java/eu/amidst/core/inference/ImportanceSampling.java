@@ -64,7 +64,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     private List<Variable> causalOrder;
 
     private int seed = 0;
-    private int sampleSize = 1000;
+    private int sampleSize = 10000;
 
     private boolean keepDataOnMemory = true;
     private List<ImportanceSampling.WeightedAssignment> weightedSampleList;

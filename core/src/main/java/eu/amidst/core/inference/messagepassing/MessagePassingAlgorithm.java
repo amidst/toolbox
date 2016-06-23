@@ -74,7 +74,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected int maxIter = 1000;
 
     /** Represents a threshold. */
-    protected double threshold = 0.001;
+    protected double threshold = 0.0001;
 
     /** Represents the output. */
     protected boolean output = false;

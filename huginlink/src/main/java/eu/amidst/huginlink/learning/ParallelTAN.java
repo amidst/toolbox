@@ -281,11 +281,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         }
 
 
-        Stopwatch watch = Stopwatch.createStarted();
         try {
-            System.out.println("Root: " + root.getName());
-            System.out.println("Target: " + target.getName());
-
             //root.getHome().getNodes().stream().forEach(node -> System.out.println(node.getName())
             huginNetwork.learnChowLiuTree(root, target);
         } catch (ExceptionHugin exceptionHugin) {
@@ -293,7 +289,6 @@ public class ParallelTAN implements AmidstOptionsHandler {
             exceptionHugin.printStackTrace();
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
-        System.out.println("Structural Learning in Hugin: " + watch.stop());
 
 
         DAG dagLearned;

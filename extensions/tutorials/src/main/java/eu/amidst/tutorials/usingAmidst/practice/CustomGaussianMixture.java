@@ -30,10 +30,10 @@ public class CustomGaussianMixture extends Model{
         Variable hiddenVar = variables.newMultinomialVariable("HiddenVar",2);
 
         //We create a standard naive Bayes
-        DAG dag = new DAG(vars);
+        DAG dag = new DAG(variables);
 
-        for (Variable variable: vars){
-            if (vars==hiddenVar)
+        for (Variable variable: variables){
+            if (variable==hiddenVar)
                 continue;
 
             dag.getParentSet(variable).addParent(hiddenVar);

@@ -23,45 +23,48 @@ continuous node GaussianVar4
 {
 }
 
-continuous node LatentVar0
+node HiddenVar
 {
+    label = "HiddenVar";
+    states = ("0.0" "1.0");
 }
 
-continuous node LatentVar1
+potential (GaussianVar0 | HiddenVar)
 {
+    data
+     = ( normal ( 1.76273, 27.814 )	%  HiddenVar=0.0
+	 normal ( 0.971021, 0.915967 ) );	%  HiddenVar=1.0
 }
 
-potential (GaussianVar0 | LatentVar0 LatentVar1)
+potential (GaussianVar1 | HiddenVar)
 {
-    data = normal ( 1.11899 - 0.0481069 * LatentVar0 - 0.0191216 * LatentVar1, 0.583972 );
+    data
+     = ( normal ( 2.3879, 7.64379 )	%  HiddenVar=0.0
+	 normal ( 0.239324, 1.4403 ) );	%  HiddenVar=1.0
 }
 
-potential (GaussianVar1 | LatentVar0 LatentVar1)
+potential (GaussianVar2 | HiddenVar)
 {
-    data = normal ( 0.623319 + 0.00709757 * LatentVar0 - 0.00683268 * LatentVar1, 2.72429 );
+    data
+     = ( normal ( -1.07551, 110.923 )	%  HiddenVar=0.0
+	 normal ( -1.42728, 7.42679 ) );	%  HiddenVar=1.0
 }
 
-potential (GaussianVar2 | LatentVar0 LatentVar1)
+potential (GaussianVar3 | HiddenVar)
 {
-    data = normal ( -1.38936 + 0.218056 * LatentVar0 + 0.0230325 * LatentVar1, 1.99387 );
+    data
+     = ( normal ( -1.04169, 514.845 )	%  HiddenVar=0.0
+	 normal ( 0.93387, 98.2382 ) );	%  HiddenVar=1.0
 }
 
-potential (GaussianVar3 | LatentVar0 LatentVar1)
+potential (GaussianVar4 | HiddenVar)
 {
-    data = normal ( 0.650143 - 0.65477 * LatentVar0 + 0.0249217 * LatentVar1, 33.8968 );
+    data
+     = ( normal ( 0.640823, 82.8372 )	%  HiddenVar=0.0
+	 normal ( -0.252634, 9.51256 ) );	%  HiddenVar=1.0
 }
 
-potential (GaussianVar4 | LatentVar0 LatentVar1)
+potential (HiddenVar)
 {
-    data = normal ( -0.121025 + 0.262579 * LatentVar0 - 0.00459875 * LatentVar1, 0.462044 );
-}
-
-potential (LatentVar0)
-{
-    data = normal ( 0.108515, 328.555 );
-}
-
-potential (LatentVar1 | LatentVar0)
-{
-    data = normal ( -0.0227767 + 0.761172 * LatentVar0, 10801.2 );
+    data = ( 0.179025 0.820975 );
 }
