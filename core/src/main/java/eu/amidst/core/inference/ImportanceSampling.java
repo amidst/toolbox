@@ -351,6 +351,8 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         sumSS.multiplyBy(Math.exp(maxLogWeight));
         sumSS.divideBy(dataInstanceCount.get());
 
+        sumSS.divideBy(Math.exp(this.getLogProbabilityOfEvidence()));
+
         ef_univariateDistribution.setMomentParameters(sumSS);
 
         Distribution posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
