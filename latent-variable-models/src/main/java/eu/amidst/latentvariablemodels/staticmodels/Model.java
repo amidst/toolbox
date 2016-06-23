@@ -42,7 +42,7 @@ public abstract class Model {
 
     protected String errorMessage = "";
 
-    protected int windowSize = 100;
+    protected int windowSize = 1000;
 
     protected boolean initialized = false;
 
