@@ -45,7 +45,7 @@ public class SVBFadingExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/WasteIncineratorSample.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("datasets/simulated/WasteIncineratorSample.arff");
 
         //We create a SVB object
         SVBFading parameterLearningAlgorithm = new SVBFading();

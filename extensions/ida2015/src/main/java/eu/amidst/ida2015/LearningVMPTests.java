@@ -818,7 +818,7 @@ public class LearningVMPTests {
 
             DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
-            data = DataStreamLoader.openFromFile("./datasets/simulated/tmp.arff");
+            data = DataStreamLoader.open("./datasets/simulated/tmp.arff");
 
             SVB svb = new SVB();
             svb.setParallelMode(false);
@@ -924,7 +924,7 @@ public class LearningVMPTests {
 
             DataStreamWriter.writeDataToFile(data, "./datasets/simulated/tmp.arff");
 
-            data = DataStreamLoader.openFromFile("./datasets/simulated/tmp.arff");
+            data = DataStreamLoader.open("./datasets/simulated/tmp.arff");
 
 
             int[] windowsSizes = {1, 2, 10, 100, 1000};

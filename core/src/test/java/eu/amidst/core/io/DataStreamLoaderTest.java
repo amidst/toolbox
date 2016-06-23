@@ -34,7 +34,7 @@ public class DataStreamLoaderTest extends TestCase {
 
         DataStreamWriter.writeDataToFile(DataSetGenerator.generate(1234,50, 5, 5), "../datasets/simulated/dataTest.arff");
 
-        DataStream<DataInstance> dataTest = DataStreamLoader.openFromFile("../datasets/simulated/dataTest.arff");
+        DataStream<DataInstance> dataTest = DataStreamLoader.open("../datasets/simulated/dataTest.arff");
         for (Attribute attribute : dataTest.getAttributes().getFullListOfAttributes()) {
             System.out.println(attribute.getName() +", "+attribute.getIndex());
         }

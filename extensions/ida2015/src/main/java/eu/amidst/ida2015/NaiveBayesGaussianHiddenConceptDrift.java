@@ -372,7 +372,7 @@ public class NaiveBayesGaussianHiddenConceptDrift {
 
     public static void main(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/hyperplane9.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("./datasets/DriftSets/hyperplane9.arff");
         NaiveBayesGaussianHiddenConceptDrift nb = new NaiveBayesGaussianHiddenConceptDrift();
         nb.setClassIndex(-1);
         nb.setData(data);

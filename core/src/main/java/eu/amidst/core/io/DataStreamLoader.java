@@ -48,7 +48,7 @@ public final class DataStreamLoader {
      * @param path the path of the file from which the data stream will be loaded.
      * @return a {@link DataStream}.
      */
-    public static DataStream<DataInstance> openFromFile(String path){
+    public static DataStream<DataInstance> open(String path){
         dataFileReader = selectRightLoader(path);
         dataFileReader.loadFromFile(path);
         return new DataStreamFromFile(dataFileReader);

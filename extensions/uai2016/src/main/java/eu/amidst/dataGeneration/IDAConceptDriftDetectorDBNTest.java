@@ -35,7 +35,7 @@ public class IDAConceptDriftDetectorDBNTest{
         generateData.setSeed(0);
         generateData.setIncludeSocioEconomicVars(false);
         generateData.setBatchSize(1000);
-        generateData.setRscriptsPath("./extensions/uai2016/doc-experiments/dataGenerationForFlink");
+        generateData.setRscriptsPath("./extensions/uai2016/io-experiments/dataGenerationForFlink");
         generateData.setNumFiles(3);
         generateData.setNumSamplesPerFile(1000);
         generateData.setOutputFullPath("~/core/datasets/dataStream/IDAlikeDataCD");

@@ -53,9 +53,16 @@ do
 	dest=${origin/'.tex'/'.html'};
 
 	echo ${origin}' to '${dest};
+
+
+    ./preprocessTex.py ${origin} | cat > ${origin}.aux;
+
+	
 	cat templates/header.html > ${dest};
-	pandoc --to html --from latex ${origin} >> ${dest};
-	#iconv -t utf-8 ${origin}  | pandoc --to html --from latex  >> ${dest};
+    iconv -t utf-8 ${origin}.aux  | pandoc --to html --from latex  >> ${dest};
+
+
+
 	cat templates/footer.html >> ${dest};
 
 	sed -i '' 's/<p class="caption">/<p class="caption" style="text-align:center">/g' ${dest};
@@ -64,11 +71,14 @@ do
 
 	sed -i '' "s/(\*\\\\amidstversion\*)/${version}/g" ${dest};	
 	
-	########################sed -i '' "s/\\amidstversion/0.4.3-alpha/g" ${dest};
+
 	
 	
-	rm ${f/'.tex'/'.pdf'};
-	rm $f;
+	rm ${origin/'.tex'/'.pdf'};
+	rm ${origin}.aux;
+	rm $origin;
+	
+#	read -p "Press [Enter] key to start backup...";
 done
 
 

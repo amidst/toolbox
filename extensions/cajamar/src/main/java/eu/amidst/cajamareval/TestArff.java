@@ -30,7 +30,7 @@ public class TestArff {
 
         System.out.println("Processing ARFF File: ");
 
-        DataStream<DataInstance> train = DataStreamLoader.openFromFile(fileTrain);
+        DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
 
         System.out.println("Number of attributes:" + train.getAttributes().getNumberOfAttributes());
 
