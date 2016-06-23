@@ -103,8 +103,6 @@ public class AODETest extends TestCase {
 
         }
         assertTrue(hits==9);
-
-
     }
 
 }
