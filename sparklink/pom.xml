@@ -20,6 +20,11 @@
     <groupId>eu.amidst</groupId>
     <artifactId>sparklink</artifactId>
 
+
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
     <url>http://amidst.github.io/toolbox/</url>
 
     <licenses>

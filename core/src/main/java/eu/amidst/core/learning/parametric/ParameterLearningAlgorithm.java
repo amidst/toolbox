@@ -45,6 +45,29 @@ public interface ParameterLearningAlgorithm {
      */
     double updateModel(DataOnMemory<DataInstance> batch);
 
+
+    /**
+     * Updates the model using a given {@link DataStream} object.
+     * @param dataStream a {@link DataStream} object.
+     * @return the log-probability of the data instances of the
+     * stream. Or Double.NaN if this log-probability can not be estimated.
+     */
+    default double updateModel(DataStream<DataInstance> dataStream){
+        return dataStream.streamOfBatches(this.getWindowsSize()).sequential().mapToDouble(this::updateModel).sum();
+    }
+
+    /**
+     * Returns the window size.
+     * @return the window size.
+     */
+    int getWindowsSize();
+
+    /**
+     * Sets the window size.
+     * @param windowsSize the window size.
+     */
+    void setWindowsSize(int windowsSize);
+
     /**
      * Sets the {@link DataStream} to be used by this ParameterLearningAlgorithm.
      * @param data a {@link DataStream} object.

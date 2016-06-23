@@ -107,7 +107,7 @@ public class MixtureModelDistributedVMPv1 {
             builder.append(args[i]);
             builder.append("_");
         }
-        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
+        BayesianNetworkWriter.save(LearnedBnet, "./MixtureVMP_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
 
         /// TEST

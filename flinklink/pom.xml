@@ -25,6 +25,11 @@
     <version>${AMIDSTver}</version>
 
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
+
     <dependencies>
 
         <dependency>
@@ -68,7 +73,6 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
-
 
     </dependencies>
 

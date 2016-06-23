@@ -25,14 +25,13 @@ import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
 
@@ -62,11 +61,15 @@ public class SVBTest extends TestCase {
 
 
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(bn.getDAG(), data);
+
+        parallelMaximumLikelihood.setDAG(bn.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
         System.out.println(learntNormalVarBN.toString());
 
@@ -92,8 +95,8 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -114,11 +117,15 @@ public class SVBTest extends TestCase {
 
 
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        System.out.println(LearningEngine.learnParameters(bn.getDAG(), data).toString());
+
+        parallelMaximumLikelihood.setDAG(bn.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
         SVB svb = new SVB();
         svb.setWindowsSize(1000);
@@ -141,9 +148,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials3() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -182,9 +189,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials4() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -226,9 +233,9 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomials5() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 5);
-        Variable varB = variables.newMultionomialVariable("B", 5);
-        Variable varC = variables.newMultionomialVariable("C", 5);
+        Variable varA = variables.newMultinomialVariable("A", 5);
+        Variable varB = variables.newMultinomialVariable("B", 5);
+        Variable varC = variables.newMultinomialVariable("C", 5);
 
         DAG dag = new DAG(variables);
 
@@ -269,7 +276,7 @@ public class SVBTest extends TestCase {
 
     public static void testMultinomial6() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",4);
+        Variable varB = variables.newMultinomialVariable("B",4);
 
         DAG dag = new DAG(variables);
 
@@ -402,11 +409,16 @@ public class SVBTest extends TestCase {
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            System.out.println(LearningEngine.learnParameters(oneNormalVarBN.getDAG(), data).toString());
+
+            parallelMaximumLikelihood.setDAG(oneNormalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
+            System.out.println(learntNormalVarBN.toString());
 
             SVB svb = new SVB();
             svb.setWindowsSize(1);
@@ -454,11 +466,15 @@ public class SVBTest extends TestCase {
 
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            parallelMaximumLikelihood.setDAG(normalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -501,11 +517,15 @@ public class SVBTest extends TestCase {
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            parallelMaximumLikelihood.setDAG(normalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -552,11 +572,15 @@ public class SVBTest extends TestCase {
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            parallelMaximumLikelihood.setDAG(normalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -598,11 +622,14 @@ public class SVBTest extends TestCase {
             DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            parallelMaximumLikelihood.setDAG(normalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -645,11 +672,15 @@ public class SVBTest extends TestCase {
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-            BayesianNetwork learntNormalVarBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+
+            parallelMaximumLikelihood.setDAG(normalVarBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
             System.out.println(normalVarBN.toString());
             System.out.println(learntNormalVarBN.toString());
@@ -866,7 +897,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian9() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varB = variables.newMultinomialVariable("B",2);
         Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);
@@ -913,7 +944,7 @@ public class SVBTest extends TestCase {
 
     public static void testGaussian10() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varB = variables.newMultinomialVariable("B",2);
         Variable varC = variables.newGaussianVariable("C");
 
         DAG dag = new DAG(variables);

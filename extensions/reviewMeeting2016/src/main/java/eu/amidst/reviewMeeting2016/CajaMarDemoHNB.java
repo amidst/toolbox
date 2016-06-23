@@ -29,7 +29,7 @@ import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
-import eu.amidst.huginlink.io.DBNWriterToHugin;
+import eu.amidst.huginlink.io.DynamicBayesianNetworkWriterToHugin;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.Arrays;
@@ -175,6 +175,6 @@ public class CajaMarDemoHNB {
             System.out.println("E(H_"+i+") =\t" + output[i]);
         }
 
-        DBNWriterToHugin.saveToHuginFile(parallelVB.getLearntDynamicBayesianNetwork(),"./DNB_withH.net");
+        DynamicBayesianNetworkWriterToHugin.save(parallelVB.getLearntDynamicBayesianNetwork(),"./DNB_withH.net");
     }
 }

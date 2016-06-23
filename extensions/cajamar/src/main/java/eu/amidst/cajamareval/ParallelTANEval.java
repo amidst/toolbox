@@ -49,7 +49,7 @@ public class ParallelTANEval {
         tan.setParallelMode(true);
         BayesianNetwork bn = tan.learn(train,10000);
 
-        BayesianNetworkWriter.saveToFile(bn, fileOutput + "_TAN_model.bn");
+        BayesianNetworkWriter.save(bn, fileOutput + "_TAN_model.bn");
 
         Domain huginNetwork = BNConverterToHugin.convertToHugin(bn);
         huginNetwork.saveAsNet(fileOutput + "_TAN_model.net");

@@ -123,7 +123,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param att a given Attribute.
      * @return a new multionomial Variable.
      */
-    public Variable newMultionomialVariable(Attribute att) {
+    public Variable newMultinomialVariable(Attribute att) {
         return this.newVariable(att, DistributionTypeEnum.MULTINOMIAL);
     }
 
@@ -133,7 +133,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param nOfStates number of states.
      * @return a new multionomial Variable.
      */
-    public Variable newMultionomialVariable(String name, int nOfStates) {
+    public Variable newMultinomialVariable(String name, int nOfStates) {
         return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(nOfStates));
     }
 
@@ -166,7 +166,7 @@ public class Variables implements Iterable<Variable>, Serializable {
      * @param states a list of states.
      * @return a new multionomial Variable.
      */
-    public Variable newMultionomialVariable(String name, List<String> states) {
+    public Variable newMultinomialVariable(String name, List<String> states) {
         return this.newVariable(name, DistributionTypeEnum.MULTINOMIAL, new FiniteStateSpace(states));
     }
 

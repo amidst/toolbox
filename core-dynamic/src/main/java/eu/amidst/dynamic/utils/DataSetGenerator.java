@@ -45,7 +45,7 @@ public final class DataSetGenerator {
         int nTotal = nDiscreteAtts+nContinuousAttributes;
         int nLinksMin = nTotal-1;
         int nLinksMax = nTotal*(nTotal-1)/2;
-        DynamicBayesianNetworkGenerator.setNumberOfLinks((int)(0.8*nLinksMin + 0.2*nLinksMax));
+        DynamicBayesianNetworkGenerator.setNumberOfLinks((int)(0.2*nLinksMin + 0.8*nLinksMax));
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();
         DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbn);

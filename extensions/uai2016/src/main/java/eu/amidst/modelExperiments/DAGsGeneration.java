@@ -50,11 +50,11 @@ public class DAGsGeneration {
         for (Attribute attribute : attributesList) {
             if (attribute.getName().compareTo("Default")==0)
                 continue;
-            localHiddenVars.add(variables.newMultionomialVariable("LocalHidden_"+attribute.getName(),nstates));
+            localHiddenVars.add(variables.newMultinomialVariable("LocalHidden_"+attribute.getName(),nstates));
         }
 
         // Define the global hidden variable.
-        Variable globalHiddenVar = variables.newMultionomialVariable("GlobalHidden",nstates);
+        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
@@ -196,7 +196,7 @@ public class DAGsGeneration {
         }
 
         // Define the global hidden variable.
-        Variable globalHiddenVar = variables.newMultionomialVariable("MultinomialHidden",nstates);
+        Variable globalHiddenVar = variables.newMultinomialVariable("MultinomialHidden",nstates);
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
@@ -287,7 +287,7 @@ public class DAGsGeneration {
         Variable classVar = variables.getVariableByName("Default");
 
         // Define the global hidden variable.
-        Variable globalHiddenVar = variables.newMultionomialVariable("GlobalHidden",states);
+        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",states);
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
@@ -350,7 +350,7 @@ public class DAGsGeneration {
 
         Variables variables = new Variables();
 
-        variables.newMultionomialVariable("Default", 2);
+        variables.newMultinomialVariable("Default", 2);
 
         for (int i = 0; i < n; i++) {
             variables.newGaussianVariable("G_" + i);

@@ -90,7 +90,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
     public static void createBN1(int nVars) throws Exception {
 
         Variables dynamicVariables = new Variables();
-        Variable classVar = dynamicVariables.newMultionomialVariable("C", 2);
+        Variable classVar = dynamicVariables.newMultinomialVariable("C", 2);
 
         for (int i = 0; i < nVars; i++) {
             dynamicVariables.newGaussianVariable("A" + i);
@@ -106,7 +106,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        BayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
+        BayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
 
 
@@ -168,7 +168,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
 
-        DynamicBayesianNetworkWriter.saveToFile(dbn, "../networks/simulated/dbn1.dbn");
+        DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
 
 

@@ -30,7 +30,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
@@ -196,7 +196,6 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
             this.infAlgTimeT.runInference();
             this.getTargetVarsTimeT().stream()
                     .forEach(var -> moveNodeQDist(this.infAlgTimeT, this.bnTimeT, var));
-            newassignment=null;
         }
     }
 
@@ -373,21 +372,6 @@ public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
                     assignment.setValue(var_interface,value_interface);
 
                 });
-
-/*
-        this.model.getDynamicVariables()
-                .getListOfDynamicVariables()
-                .stream()
-                .forEach(var -> {
-                    double value = dynamicAssignment.getValue(var);
-                    assignment.setValue(var,value);
-
-                    Variable var_interface = var.getInterfaceVariable();
-                    double value_interface = dynamicAssignment.getValue(var_interface);
-                    assignment.setValue(var_interface,value_interface);
-
-                });
-                */
 
         return assignment;
     }

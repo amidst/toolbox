@@ -19,7 +19,7 @@ package eu.amidst.huginlink.examples.demos;
 import COM.hugin.HAPI.*;
 import COM.hugin.HAPI.Class;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.datastream.DataStream;

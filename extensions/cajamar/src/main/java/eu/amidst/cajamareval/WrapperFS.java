@@ -88,7 +88,7 @@ public class WrapperFS {
         ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
 
         //We set the options
-        parameterLearningAlgorithm.setBatchSize(10000);
+        parameterLearningAlgorithm.setWindowsSize(10000);
         parameterLearningAlgorithm.setParallelMode(parallel);
         parameterLearningAlgorithm.setDebug(false);
 

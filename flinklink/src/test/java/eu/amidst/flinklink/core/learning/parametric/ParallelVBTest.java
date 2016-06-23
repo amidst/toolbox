@@ -45,7 +45,6 @@ import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.examples.ParallelVMPExtended;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -106,7 +105,7 @@ public class ParallelVBTest extends TestCase {
 
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
 
@@ -130,8 +129,8 @@ public class ParallelVBTest extends TestCase {
 
     public static void testMultinomials2() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -374,7 +373,7 @@ public class ParallelVBTest extends TestCase {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/tmp.arff", false);
 
 
-        DAG hiddenNB = ParallelVMPExtended.getHiddenNaiveBayesStructure(dataFlink.getAttributes());
+        DAG hiddenNB = getHiddenNaiveBayesStructure(dataFlink.getAttributes());
 
 
 
@@ -406,6 +405,9 @@ public class ParallelVBTest extends TestCase {
         System.out.println("Running time: \n" + seconds + " secs");
 
     }
+
+
+
 
 
     public void testingMLParallelWasteHidden() throws IOException, ClassNotFoundException {
@@ -681,7 +683,7 @@ public class ParallelVBTest extends TestCase {
         Variables modelHeader = new Variables(attributes);
 
         // Define the global latent binary variable.
-        Variable globalHiddenVar = modelHeader.newMultionomialVariable("GlobalHidden", 2);
+        Variable globalHiddenVar = modelHeader.newMultinomialVariable("GlobalHidden", 2);
 
         // Define the global Gaussian latent binary variable.
         Variable globalHiddenGaussian = modelHeader.newGaussianVariable("globalHiddenGaussian");

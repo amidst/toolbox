@@ -327,7 +327,7 @@ public class ParallelTANDemo {
         options.addOption("m", "samplesOnMemory", true, "Here you can set # of (in memory) samples for structural learning (hugin).");
         options.addOption("v", "variables", true, "Here you can set # of variables .");
         options.addOption("d", "dataPath", true, "Here you can specify the data path .");
-        options.addOption("b", "batchSize", true, "Here you can specify the batch size for learning.");
+        options.addOption("b", "windowsSize", true, "Here you can specify the batch size for learning.");
         options.addOption("onServer", "onServer", false, "write onServer to run onServer method (with more options).");
         options.addOption("r", "numStates", true, "Here you can set # of states.");
 

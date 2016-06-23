@@ -145,8 +145,14 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.timeLimit = timeLimit;
     }
 
+    @Override
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+    }
+
+    @Override
+    public int getBatchSize() {
+        return batchSize;
     }
 
     public SVB getSVB() {
@@ -249,7 +255,9 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         }
 
     }
-    public void updateModel(DataFlink<DataInstance> dataUpdate){
+
+    @Override
+    public double updateModel(DataFlink<DataInstance> dataUpdate){
 
         try{
             final ExecutionEnvironment env = dataUpdate.getDataSet().getExecutionEnvironment();
@@ -312,6 +320,8 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         }
 
         this.randomStart=false;
+
+        return this.getLogMarginalProbability();
     }
 
 

@@ -229,7 +229,7 @@ public class ParallelPC implements AmidstOptionsHandler {
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream, int batchSize) throws ExceptionHugin {
         ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
-        parameterLearningAlgorithm.setBatchSize(batchSize);
+        parameterLearningAlgorithm.setWindowsSize(batchSize);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
         parameterLearningAlgorithm.setDataStream(dataStream);
@@ -251,7 +251,7 @@ public class ParallelPC implements AmidstOptionsHandler {
         return  this.classNameID() +",\\"+
                 "-numSamplesOnMemory, 1000, Number of samples on memory\\" +
                 "-numCores,"+Runtime.getRuntime().availableProcessors()+", Number of cores\\" +
-                "-batchSize, 1000, Batch size\\"+
+                "-windowsSize, 1000, Batch size\\"+
                 "-parallelMode, true, Run in parallel\\";
     }
 
@@ -261,7 +261,7 @@ public class ParallelPC implements AmidstOptionsHandler {
     public void loadOptions(){
         this.setNumSamplesOnMemory(this.getIntOption("-numSamplesOnMemory"));
         this.setNumCores(this.getIntOption("-numCores"));
-        this.setBatchSize(this.getIntOption("-batchSize"));
+        this.setBatchSize(this.getIntOption("-windowsSize"));
         this.setParallelMode(this.getBooleanOption("-parallelMode"));
     }
 

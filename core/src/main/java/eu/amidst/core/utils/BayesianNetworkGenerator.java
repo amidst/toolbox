@@ -101,14 +101,14 @@ public final class BayesianNetworkGenerator{
         Variables variables = new Variables();
 
         IntStream.range(0, numberOfMultinomialVars -1)
-                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultinomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
         Variable globalHiddenVar =  variables.newGaussianVariable(nameGlobalHiddenVar);
 
-        Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
+        Variable classVar = variables.newMultinomialVariable("ClassVar", nClassLabels);
 
         DAG dag = new DAG(variables);
 
@@ -134,12 +134,12 @@ public final class BayesianNetworkGenerator{
 
 
         IntStream.range(0, numberOfMultinomialVars -1)
-                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultinomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
 
-        Variable classVar = variables.newMultionomialVariable("ClassVar", nClassLabels);
+        Variable classVar = variables.newMultinomialVariable("ClassVar", nClassLabels);
 
         DAG dag = new DAG(variables);
 
@@ -198,7 +198,7 @@ public final class BayesianNetworkGenerator{
         Variables variables = new Variables();
 
         IntStream.range(0, numberOfMultinomialVars)
-                .forEach(i -> variables.newMultionomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
+                .forEach(i -> variables.newMultinomialVariable("DiscreteVar" + i, BayesianNetworkGenerator.numberOfStates));
 
         IntStream.range(0, numberOfGaussianVars)
                 .forEach(i -> variables.newGaussianVariable("GaussianVar" + i));
@@ -323,7 +323,7 @@ public final class BayesianNetworkGenerator{
         seed = seed_;
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bayesianNetwork, filename);
+        BayesianNetworkWriter.save(bayesianNetwork, filename);
     }
 
 
@@ -336,7 +336,7 @@ public final class BayesianNetworkGenerator{
         BayesianNetworkGenerator.setSeed(0);
 
         BayesianNetwork bayesianNetwork = BayesianNetworkGenerator.generateBayesianNetwork();
-        BayesianNetworkWriter.saveToFile(bayesianNetwork, "networks/simulated/Bayesian10Vars15Links.bn");
+        BayesianNetworkWriter.save(bayesianNetwork, "networks/simulated/Bayesian10Vars15Links.bn");
 
         BayesianNetwork bayesianNetwork2 = BayesianNetworkLoader.loadFromFile("networks/simulated/Bayesian10Vars15Links.bn");
         System.out.println(bayesianNetwork2.getDAG().toString());

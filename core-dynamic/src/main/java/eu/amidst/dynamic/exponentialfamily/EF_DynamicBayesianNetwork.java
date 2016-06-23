@@ -17,11 +17,11 @@
 
 package eu.amidst.dynamic.exponentialfamily;
 
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.utils.Vector;
+import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.core.utils.Vector;
 
 import java.util.stream.Collectors;
 
@@ -66,8 +66,8 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
     @Override
     public void updateNaturalFromMomentParameters() {
 
-        CompoundVector globalMomentsParam = (CompoundVector)this.momentParameters;
-        CompoundVector vectorNatural = this.createEmtpyCompoundVector();
+        DynamiceBNCompoundVector globalMomentsParam = (DynamiceBNCompoundVector)this.momentParameters;
+        DynamiceBNCompoundVector vectorNatural = this.createEmtpyCompoundVector();
 
         globalMomentsParam.getVectorTime0().divideBy(globalMomentsParam.getIndicatorTime0());
         globalMomentsParam.getVectorTimeT().divideBy(globalMomentsParam.getIndicatorTimeT());
@@ -86,8 +86,8 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
      */
     @Override
     public void updateMomentFromNaturalParameters() {
-        CompoundVector globalNaturalParam = (CompoundVector)this.naturalParameters;
-        CompoundVector vectorMoments = this.createEmtpyCompoundVector();
+        DynamiceBNCompoundVector globalNaturalParam = (DynamiceBNCompoundVector)this.naturalParameters;
+        DynamiceBNCompoundVector vectorMoments = this.createEmtpyCompoundVector();
 
 
         this.bayesianNetworkTime0.setNaturalParameters((NaturalParameters) globalNaturalParam.getVectorTime0());
@@ -104,7 +104,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
      */
     @Override
     public SufficientStatistics getSufficientStatistics(DynamicDataInstance data) {
-        CompoundVector vectorSS = this.createEmtpyCompoundVector();
+        DynamiceBNCompoundVector vectorSS = this.createEmtpyCompoundVector();
 
         if (data.getTimeID()==0) {
             vectorSS.setIndicatorTime0(1.0);
@@ -154,8 +154,21 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
      * {@inheritDoc}
      */
     @Override
-    public Vector createZeroedVector() {
+    public Vector createZeroVector() {
         return this.createCompoundVector();
+    }
+
+    @Override
+    public SufficientStatistics createInitSufficientStatistics() {
+        DynamiceBNCompoundVector vectorSS = this.createEmtpyCompoundVector();
+
+        vectorSS.setIndicatorTime0(1.0);
+        vectorSS.setVectorTime0(this.bayesianNetworkTime0.createInitSufficientStatistics());
+
+        vectorSS.setIndicatorTimeT(1.0);
+        vectorSS.setVectorTimeT(this.bayesianNetworkTimeT.createInitSufficientStatistics());
+
+        return vectorSS;
     }
 
     /**
@@ -168,18 +181,18 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
 
     /**
      * Returns an empty compound parameter vector.
-     * @return a {@link CompoundVector} object.
+     * @return a {@link DynamiceBNCompoundVector} object.
      */
-    private CompoundVector createEmtpyCompoundVector() {
-        return new CompoundVector(this.bayesianNetworkTime0.sizeOfSufficientStatistics() + this.bayesianNetworkTimeT.sizeOfSufficientStatistics());
+    private DynamiceBNCompoundVector createEmtpyCompoundVector() {
+        return new DynamiceBNCompoundVector(this.bayesianNetworkTime0.sizeOfSufficientStatistics() + this.bayesianNetworkTimeT.sizeOfSufficientStatistics());
     }
 
     /**
      * Returns a compound parameter vector.
-     * @return a {@link CompoundVector} object.
+     * @return a {@link DynamiceBNCompoundVector} object.
      */
-    private CompoundVector createCompoundVector() {
-        return new CompoundVector(this.bayesianNetworkTime0.createZeroVector(), this.bayesianNetworkTimeT.createZeroVector());
+    private DynamiceBNCompoundVector createCompoundVector() {
+        return new DynamiceBNCompoundVector(this.bayesianNetworkTime0.createZeroVector(), this.bayesianNetworkTimeT.createZeroVector());
     }
 
     /**
@@ -213,21 +226,21 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
      * The class CompoundVector implements the interfaces {@link SufficientStatistics}, {@link MomentParameters}, and {@link NaturalParameters},
      * and it handles some utility methods of compound parameter vector for EF_DynamicBayesianNetwork.
      */
-    class CompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
+    public static class DynamiceBNCompoundVector implements SufficientStatistics, MomentParameters, NaturalParameters {
         double indicatorTime0;
         double indicatorTimeT;
         Vector vectorTime0;
         Vector vectorTimeT;
         int totalVectorSize;
 
-        public CompoundVector(int totalVectorSize1){
+        public DynamiceBNCompoundVector(int totalVectorSize1){
             this.indicatorTime0=0;
             this.indicatorTimeT=0;
             vectorTime0=null;
             vectorTimeT=null;
             totalVectorSize =totalVectorSize1;
         }
-        public CompoundVector( Vector vectorTime0_1,  Vector vectorTimeT_1) {
+        public DynamiceBNCompoundVector(Vector vectorTime0_1, Vector vectorTimeT_1) {
             this.indicatorTime0=0;
             this.indicatorTimeT=0;
             this.vectorTime0=vectorTime0_1;
@@ -283,12 +296,12 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
 
         @Override
         public void sum(Vector vector) {
-            this.sum((CompoundVector) vector);
+            this.sum((DynamiceBNCompoundVector) vector);
         }
 
         @Override
         public void copy(Vector vector) {
-            this.copy((CompoundVector) vector);
+            this.copy((DynamiceBNCompoundVector) vector);
         }
 
         @Override
@@ -302,10 +315,10 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
 
         @Override
         public double dotProduct(Vector vec) {
-            return this.dotProduct((CompoundVector) vec);
+            return this.dotProduct((DynamiceBNCompoundVector) vec);
         }
 
-        public double dotProduct(CompoundVector vec) {
+        public double dotProduct(DynamiceBNCompoundVector vec) {
             if (vec.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 
@@ -319,7 +332,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
             return sum;
         }
 
-        public void copy(CompoundVector vector) {
+        public void copy(DynamiceBNCompoundVector vector) {
 
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
@@ -342,7 +355,7 @@ public class EF_DynamicBayesianNetwork extends EF_DynamicDistribution {
                 this.vectorTimeT.copy(vector.getVectorTimeT());
         }
 
-        public void sum(CompoundVector vector) {
+        public void sum(DynamiceBNCompoundVector vector) {
             if (vector.size() != this.size())
                 throw new IllegalArgumentException("Error in variable Vector. Method copy. The parameter vec has a different size. ");
 

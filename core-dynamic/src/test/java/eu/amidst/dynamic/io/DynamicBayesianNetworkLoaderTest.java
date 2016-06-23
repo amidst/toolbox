@@ -55,7 +55,7 @@ public class DynamicBayesianNetworkLoaderTest {
 
                     try {
                         DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
-                        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullFileName);
+                        DynamicBayesianNetworkWriter.save(amidstDBN, fullFileName);
 
                         DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
 

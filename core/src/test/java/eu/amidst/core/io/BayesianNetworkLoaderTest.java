@@ -54,7 +54,7 @@ public class BayesianNetworkLoaderTest {
                     System.out.println("Reading file: "+fileName);
 
                     BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromFile(fullFileName);
-                    BayesianNetworkWriter.saveToFile(amidstBN, fullFileName);
+                    BayesianNetworkWriter.save(amidstBN, fullFileName);
 
                     BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullFileName);
 

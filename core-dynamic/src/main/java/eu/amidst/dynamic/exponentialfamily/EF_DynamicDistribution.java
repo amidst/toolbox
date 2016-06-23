@@ -161,30 +161,37 @@ public abstract class EF_DynamicDistribution {
      * Creates a zero vector (i.e., a vector filled with zeros).
      * @return a {@link Vector} object.
      */
-    public abstract Vector createZeroedVector();
+    public abstract Vector createZeroVector();
 
     /**
      * Creates a zero moment parameter vector (i.e., a vector filled with zeros).
      * @return a {@link MomentParameters} object.
      */
-    public MomentParameters createZeroedMomentParameters(){
-        return (MomentParameters)this.createZeroedVector();
+    public MomentParameters createZeroMomentParameters(){
+        return (MomentParameters)this.createZeroVector();
     }
 
     /**
      * Creates a zero sufficient statistics vector (i.e., a vector filled with zeros).
      * @return a {@link SufficientStatistics} object.
      */
-    public SufficientStatistics createZeroedSufficientStatistics(){
-        return (SufficientStatistics)this.createZeroedVector();
+    public SufficientStatistics createZeroSufficientStatistics(){
+        return (SufficientStatistics)this.createZeroVector();
     }
 
     /**
      * Creates a zero natural parameter vector (i.e., a vector filled with zeros).
      * @return a {@link NaturalParameters} object.
      */
-    public NaturalParameters createZeroedNaturalParameters(){
-        return (NaturalParameters)this.createZeroedVector();
+    public NaturalParameters createZeroNaturalParameters(){
+        return (NaturalParameters)this.createZeroVector();
     }
+
+    /**
+     * Creates the initial sufficient statistics vector (i.e., a vector with the initial counts).
+     * It is used to implement MAP learning.
+     * @return a {@link SufficientStatistics} object.
+     */
+    public abstract SufficientStatistics createInitSufficientStatistics();
 
 }

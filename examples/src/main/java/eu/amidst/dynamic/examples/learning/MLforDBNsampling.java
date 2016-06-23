@@ -19,7 +19,8 @@ package eu.amidst.dynamic.examples.learning;
 
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.learning.dynamic.DynamicMaximumLikelihood;
+import eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
@@ -52,13 +53,15 @@ public class MLforDBNsampling {
         DataStream<DynamicDataInstance> data = sampler.sampleToDataBase(3,10000);
 
         /*Parameter Learning with ML*/
-        //We set the batch size which will be employed to learn the model in parallel
-        DynamicMaximumLikelihood.setBatchSize(1000);
-        DynamicMaximumLikelihood.setParallelMode(true);
-
 
         //We fix the DAG structure, the data and learn the DBN
-        DynamicBayesianNetwork dbnLearnt = DynamicMaximumLikelihood.learnDynamic(dbnRandom.getDynamicDAG(), data);
+        ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setWindowsSize(1000);
+        parallelMaximumLikelihood.setDynamicDAG(dbnRandom.getDynamicDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+
+        DynamicBayesianNetwork dbnLearnt = parallelMaximumLikelihood.getLearntDBN();
 
         //We print the model
         System.out.println(dbnLearnt.toString());

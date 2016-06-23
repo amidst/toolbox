@@ -45,7 +45,7 @@ import java.util.stream.Stream;
 public class ParallelMLMissingData implements ParameterLearningAlgorithm{
 
     /** Represents the batch size used for learning the parameters. */
-    protected int batchSize = 1000;
+    protected int windowsSize = 1000;
 
     /** Indicates the parallel processing mode, initialized here as {@code true}. */
     protected boolean parallelMode = true;
@@ -89,11 +89,18 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
     }
 
     /**
-     * Sets the batch size.
-     * @param batchSize_ the batch size.
+     * Sets the windows size.
+     * @param windowsSize the batch size.
      */
-    public void setBatchSize(int batchSize_) {
-        batchSize = batchSize_;
+    public void setWindowsSize(int windowsSize) {
+        windowsSize = windowsSize;
+    }
+
+    /**
+     * Sets the windows size.
+     */
+    public int getWindowsSize() {
+        return windowsSize;
     }
 
     /**
@@ -130,6 +137,42 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
      * {@inheritDoc}
      */
     @Override
+    public double updateModel(DataStream<DataInstance> dataStream) {
+
+        Stream<DataOnMemory<DataInstance>> stream = null;
+        if (parallelMode){
+            stream = dataStream.parallelStreamOfBatches(windowsSize);
+        }else{
+            stream = dataStream.streamOfBatches(windowsSize);
+        }
+
+
+        dataInstanceCount = new AtomicDouble(0); //Initial count
+
+        this.sumSS = stream
+                .peek(batch -> {
+                    dataInstanceCount.getAndAdd(batch.getNumberOfDataInstances());
+                    if (debug) System.out.println("Parallel ML procesando "+(int)dataInstanceCount.get() +" instances");
+                })
+                .map(batch -> {
+                    return batch.stream()
+                            .map(dataInstance -> computeCountSufficientStatistics(this.efBayesianNetwork, dataInstance))
+                            .reduce(PartialSufficientSatistics::sumNonStateless).get();
+                })
+                .reduce(PartialSufficientSatistics::sumNonStateless).get();
+
+        if (laplace) {
+            PartialSufficientSatistics initSS = PartialSufficientSatistics.createInitPartialSufficientStatistics(efBayesianNetwork);
+            sumSS.sum(initSS);
+        }
+
+        return Double.NaN;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setDataStream(DataStream<DataInstance> data) {
         this.dataStream=data;
     }
@@ -152,9 +195,9 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
 
         Stream<DataOnMemory<DataInstance>> stream = null;
         if (parallelMode){
-            stream = dataStream.parallelStreamOfBatches(batchSize);
+            stream = dataStream.parallelStreamOfBatches(windowsSize);
         }else{
-            stream = dataStream.streamOfBatches(batchSize);
+            stream = dataStream.streamOfBatches(windowsSize);
         }
 
 
@@ -180,7 +223,7 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
 
     }
 
-    private static PartialSufficientSatistics computeCountSufficientStatistics(EF_BayesianNetwork bn, DataInstance dataInstance){
+    public static PartialSufficientSatistics computeCountSufficientStatistics(EF_BayesianNetwork bn, DataInstance dataInstance){
         List<CountVector> list = bn.getDistributionList().stream().map(dist -> {
             if (Utils.isMissingValue(dataInstance.getValue(dist.getVariable())))
                 return new CountVector();
@@ -244,7 +287,7 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
 
     }
 
-    static class PartialSufficientSatistics {
+    public static class PartialSufficientSatistics {
 
         List<CountVector> list;
 

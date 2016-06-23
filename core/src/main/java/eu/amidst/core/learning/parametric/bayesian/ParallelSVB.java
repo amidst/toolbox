@@ -145,6 +145,21 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
     }
 
     /**
+     * Sets the windows size.
+     * @param batchSize_ the batch size.
+     */
+    public void setWindowsSize(int batchSize_) {
+        this.SVBEngine.setWindowsSize(batchSize_);
+    }
+
+    /**
+     * Sets the windows size.
+     */
+    public int getWindowsSize() {
+        return this.SVBEngine.getWindowsSize();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -190,8 +205,8 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
      * Update the model in parallel using the provide data stream.
      * @param data, A {@link DataStream} object.
      */
-    public void updateModelInParallel(DataStream<DataInstance> data) {
-
+    @Override
+    public double updateModel(DataStream<DataInstance> data) {
 
         logLikelihood = Double.NEGATIVE_INFINITY;
         boolean convergence = false;
@@ -242,6 +257,8 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
         for (SVB svbEngine : svbEngines) {
             svbEngine.applyTransition();
         }
+
+        return logLikelihood;
     }
 
     @Override

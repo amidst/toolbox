@@ -23,8 +23,8 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
-import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 /**
  * Created by andresmasegosa on 15/01/15.
@@ -50,7 +50,7 @@ public class NaiveBayesClassifierDemo {
         long time = System.nanoTime();
         NaiveBayesClassifier model = new NaiveBayesClassifier(data.getAttributes());
         model.setClassName(data.getAttributes().getFullListOfAttributes().get(data.getAttributes().getFullListOfAttributes().size() - 1).getName());
-        model.learnModel(data);
+        model.updateModel(data);
         BayesianNetwork nbClassifier = model.getModel();
         System.out.println(nbClassifier.toString());
 

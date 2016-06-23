@@ -79,6 +79,14 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
 
     }
 
+    @Override
+    public void setBatchSize(int batchSize) {
+    }
+
+    @Override
+    public int getBatchSize() {
+        return 0;
+    }
 
     /**
      * {@inheritDoc}
@@ -101,6 +109,15 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
      */
     @Override
     public void runLearning() {
+        this.initLearning();
+        this.updateModel(this.dataFlink);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double updateModel(DataFlink<DataInstance> dataUpdate) {
 
         try {
 
@@ -129,8 +146,10 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
             throw new UndeclaredThrowableException(ex);
         }
 
-
+        return this.getLogMarginalProbability();
     }
+
+
 
     /**
      * {@inheritDoc}

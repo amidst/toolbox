@@ -49,7 +49,7 @@
         <junit.version>4.11</junit.version>
          <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
-        <AMIDSTver>0.4.1</AMIDSTver>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
@@ -118,11 +118,14 @@
         <module>core-dynamic</module>
         <module>examples</module>
         <module>moalink</module>
-        <module>standardmodels</module>
+        <module>latent-variable-models</module>
         <module>wekalink</module>
+        <module>flinklink</module>
+        <module>extensions/tutorials</module>
+
 
         <!-- Remove the following references to modules before publishing a new release -->
-        <module>flinklink</module>
+
         <module>sparklink</module>
         <module>extensions/cajamar</module>
         <module>extensions/caepia2015</module>
@@ -191,7 +194,7 @@
             </plugin>
 
             
-            <plugin>
+            <!--plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
                 <version>0.11</version>
@@ -232,7 +235,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
+      </plugin-->
             
         </plugins>
     </build>

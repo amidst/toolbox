@@ -53,7 +53,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -118,7 +118,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -203,7 +203,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -446,7 +446,7 @@ public class LearningVMPTests {
 
         Variable varA = variables.newGaussianVariable("A");
         Variable varB = variables.newGaussianVariable("B");
-        Variable varC = variables.newMultionomialVariable("C",2);
+        Variable varC = variables.newMultinomialVariable("C",2);
 
         DAG dag = new DAG(variables);
 
@@ -943,10 +943,14 @@ public class LearningVMPTests {
 
                 for (int f = 0; f < fadingFactor.length; f++) {
                     likelihoodFading.setFadingFactor(fadingFactor[f]);
-                    likelihoodFading.setBatchSize(windowsSizes[j]);
-                    LearningEngine.setParameterLearningAlgorithm(likelihoodFading);
+                    likelihoodFading.setWindowsSize(windowsSizes[j]);
 
-                    BayesianNetwork MLlearntBN = LearningEngine.learnParameters(normalVarBN.getDAG(), data);
+                    likelihoodFading.setDAG(normalVarBN.getDAG());
+                    likelihoodFading.initLearning();
+                    likelihoodFading.updateModel(data);
+                    BayesianNetwork MLlearntBN = likelihoodFading.getLearntBayesianNetwork();
+
+
                     outputPerWindowSize[0][j] += Double.toString(((Normal) ((BaseDistribution_MultinomialParents) MLlearntBN.
                             getConditionalDistribution(varB)).getBaseDistribution(0)).getMean()) + "\t";
                     outputPerWindowSize[1][j] += Double.toString(((ConditionalLinearGaussian) MLlearntBN.

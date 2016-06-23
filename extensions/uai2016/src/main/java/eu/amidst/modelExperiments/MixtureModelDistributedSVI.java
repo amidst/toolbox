@@ -111,7 +111,7 @@ public class MixtureModelDistributedSVI {
             builder.append("_");
         }
 
-        BayesianNetworkWriter.saveToFile(LearnedBnet, "./MixtureSVI_"+ builder.toString() +".bn");
+        BayesianNetworkWriter.save(LearnedBnet, "./MixtureSVI_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
 
 

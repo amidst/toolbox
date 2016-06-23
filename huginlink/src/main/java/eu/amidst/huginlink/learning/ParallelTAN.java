@@ -35,7 +35,6 @@ import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.inference.HuginInference;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 /**
  * This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.
@@ -344,7 +343,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
      */
     public BayesianNetwork learn(DataStream<DataInstance> dataStream, int batchSize) throws ExceptionHugin {
         ParallelMLMissingData parameterLearningAlgorithm = new ParallelMLMissingData();
-        parameterLearningAlgorithm.setBatchSize(batchSize);
+        parameterLearningAlgorithm.setWindowsSize(batchSize);
         parameterLearningAlgorithm.setParallelMode(this.parallelMode);
         parameterLearningAlgorithm.setDAG(this.learnDAG(dataStream));
         parameterLearningAlgorithm.setDataStream(dataStream);
@@ -366,7 +365,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         return  this.classNameID() +",\\"+
                 "-numSamplesOnMemory, 1000, Number of samples on memory\\" +
                 "-numCores,"+Runtime.getRuntime().availableProcessors()+", Number of cores\\" +
-                "-batchSize, 1000, Batch size\\"+
+                "-windowsSize, 1000, Batch size\\"+
                 "-nameRoot, root, Name of root variable.\\" +
                 "-nameTarget, target, Name of target variable\\" +
                 "-parallelMode, true, Run in parallel\\";
@@ -378,7 +377,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     public void loadOptions(){
         this.setNumSamplesOnMemory(this.getIntOption("-numSamplesOnMemory"));
         this.setNumCores(this.getIntOption("-numCores"));
-        this.setBatchSize(this.getIntOption("-batchSize"));
+        this.setBatchSize(this.getIntOption("-windowsSize"));
         this.setNameRoot(this.getOption("-nameRoot"));
         this.setNameTarget(this.getOption("-nameTarget"));
         this.setParallelMode(this.getBooleanOption("-parallelMode"));

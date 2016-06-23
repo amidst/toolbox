@@ -77,6 +77,14 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
 
     }
 
+    @Override
+    public void setBatchSize(int batchSize) {
+    }
+
+    @Override
+    public int getBatchSize() {
+        return 0;
+    }
 
     /**
      * {@inheritDoc}
@@ -91,7 +99,9 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
      */
     @Override
     public double getLogMarginalProbability() {
-        throw new UnsupportedOperationException("Method not implemented yet");
+        //TODO: temporal solution, the logMarginalProbability should be actually calculated.
+        return Double.NaN;
+        //throw new UnsupportedOperationException("Method not implemented yet");
     }
 
     /**
@@ -99,9 +109,16 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
      */
     @Override
     public void runLearning() {
-        try {
-            this.initLearning();
+        this.initLearning();
+        this.updateModel(this.dataFlink);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double updateModel(DataFlink<DataInstance> dataUpdate) {
+        try {
             Configuration config = new Configuration();
             config.setString(BN_NAME, this.dag.getName());
             config.setBytes(EFBN_NAME, Serialization.serializeObject(efBayesianNetwork));
@@ -124,7 +141,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
             throw new UndeclaredThrowableException(ex);
         }
 
-
+        return this.getLogMarginalProbability();
     }
 
     /**

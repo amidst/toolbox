@@ -33,6 +33,12 @@
         </license>
     </licenses>
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
+
+
+
     <scm>
         <url>http://github.com/amidst/core</url>
     </scm>

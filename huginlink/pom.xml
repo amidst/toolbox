@@ -31,6 +31,9 @@
         <url>git@github.com:amidst/toolbox.git</url>
     </scm>
 
+    <properties>
+        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+    </properties>
 
     <developers>
         <developer>

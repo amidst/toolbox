@@ -87,3 +87,10 @@ extensions/uai2016/doc-experiments/experimentsResults/outputs/
 
 #Output text files
 extensions/nips2016/doc-Experiments/*.txt
+
+#generic ignored folder
+ignoredfolder/*
+
+
+#ignore target folders
+*/target/*

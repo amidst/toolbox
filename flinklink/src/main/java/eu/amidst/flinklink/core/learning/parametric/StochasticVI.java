@@ -119,8 +119,15 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     public void setMaximumLocalIterations(int maximumLocalIterations) {
         this.maximumLocalIterations = maximumLocalIterations;
     }
+
+    @Override
     public void setBatchSize(int batchSize) {
         this.batchSize = batchSize;
+    }
+
+    @Override
+    public int getBatchSize() {
+        return batchSize;
     }
 
     public SVB getSVB() {
@@ -161,6 +168,14 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     @Override
     public void runLearning() {
         this.initLearning();
+        this.updateModel(this.dataFlink);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double updateModel(DataFlink<DataInstance> dataUpdate) {
 
         DecimalFormat df = new DecimalFormat("0.0000");
 
@@ -239,6 +254,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         this.svb.updateNaturalParameterPrior(currentParam);
 
+        return this.getLogMarginalProbability();
 
     }
     public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb) {

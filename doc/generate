@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+
+
+if [ "$#" -ne 1 ]; then
+    echo "usage: ./generate AMIDST_VERSION"
+    echo "for example: ./generate 0.4.2"
+    exit;
+fi
+
+
+ver=$1;
+
+./${ver}/scripts/generate
+
+

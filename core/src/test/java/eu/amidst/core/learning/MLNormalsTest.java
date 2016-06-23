@@ -21,7 +21,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -54,11 +53,14 @@ public class MLNormalsTest {
 
         //Parameter Learning
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork bnet = LearningEngine.learnParameters(testnet.getDAG(), data);
+        parallelMaximumLikelihood.setDAG(testnet.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
 
         EF_BayesianNetwork ef_testnet = new EF_BayesianNetwork(testnet);
@@ -82,11 +84,14 @@ public class MLNormalsTest {
 
         //Parameter Learning
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork bnet = LearningEngine.learnParameters(testnet.getDAG(), data);
+        parallelMaximumLikelihood.setDAG(testnet.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
         //Check the probability distributions of each node
         for (Variable var : testnet.getVariables()) {
