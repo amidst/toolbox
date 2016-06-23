@@ -10,9 +10,13 @@ import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
+import org.apache.spark.sql.types.DataTypes;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import static eu.amidst.core.variables.StateSpaceTypeEnum.REAL;
 
 /**
  * Created by jarias on 21/06/16.
@@ -95,4 +99,30 @@ class DataFrameOps {
         return batches;
     }
 
+
+    static JavaRDD<Row> toRowRDD(JavaRDD<DataInstance> rawRDD, Attributes atts) {
+
+        // FIXME: Categorical values should be inserted with their corresponding state name
+        return rawRDD.map( v -> transformArray2RowAttributes(v, atts));
+
+    }
+
+    private static Row transformArray2RowAttributes(DataInstance inst, Attributes atts) {
+
+        double[] values = inst.toArray();
+
+        Object[] rowValues = new Object[values.length];
+
+        for (int a = 0; a < atts.getNumberOfAttributes(); a++) {
+
+            Attribute attribute = atts.getFullListOfAttributes().get(a);
+            StateSpaceType domain = attribute.getStateSpaceType();
+            if (domain.getStateSpaceTypeEnum() == REAL)
+                rowValues[a] = new Double(values[a]);
+            else
+                rowValues[a] = domain.stringValue(values[a]);
+        }
+
+        return RowFactory.create(rowValues);
+    }
 }

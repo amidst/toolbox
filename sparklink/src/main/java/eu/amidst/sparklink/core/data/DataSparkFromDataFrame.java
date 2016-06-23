@@ -4,12 +4,8 @@ import eu.amidst.core.datastream.Attributes;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.sparklink.core.io.SchemaConverter;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.DataFrame;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
