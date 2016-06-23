@@ -23,6 +23,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
+import eu.amidst.core.utils.RobustOperations;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -312,7 +313,7 @@ public class MAPInferenceRobust implements PointEstimator {
 //                                System.out.println(logProb);
                                 return logProb;
                             })
-                            .reduce(ImportanceSamplingRobust::robustSumOfLogarithms)
+                            .reduce(RobustOperations::robustSumOfLogarithms)
                             .getAsDouble() - Math.log(groupSize) );
                 }
 
@@ -617,7 +618,7 @@ public class MAPInferenceRobust implements PointEstimator {
 //                .filter(Double::isFinite).average().getAsDouble();
                     .mapToDouble(as -> this.model.getLogProbabiltyOf(as))
                     //.filter(Double::isFinite)
-                    .reduce(ImportanceSamplingRobust::robustSumOfLogarithms)
+                    .reduce(RobustOperations::robustSumOfLogarithms)
                     .getAsDouble() - Math.log(numSamplesAverage);
         }
         catch(Exception e) {
@@ -694,7 +695,7 @@ public class MAPInferenceRobust implements PointEstimator {
             else if (optAlg<0) {
 //                System.out.println("Simulated Annealing");
 //                double diff = currentLogProbability - nextLogProbability;
-                double diff = Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
+                double diff = Math.exp(RobustOperations.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
 //                System.out.println("Current: " + currentLogProbability + ", next: " + nextLogProbability + ", sum: " + ImportanceSamplingRobust.robustDiffereceOfLogarithms(currentLogProbability, -nextLogProbability) + ", diff: " + diff);
                 if(diff<0) {
                     System.out.println("Error in Simulated Annealing from MAPInferenceRobust");

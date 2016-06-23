@@ -25,6 +25,7 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.utils.RobustOperations;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -299,7 +300,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
                                 return logProb-logProbDenominator;
                             })
-                            .reduce(ImportanceSamplingRobust::robustSumOfLogarithms)
+                            .reduce(RobustOperations::robustSumOfLogarithms)
                             .getAsDouble() - Math.log(groupSize) );
                 }
 

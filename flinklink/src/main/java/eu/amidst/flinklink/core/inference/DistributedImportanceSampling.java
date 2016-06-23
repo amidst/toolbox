@@ -6,10 +6,7 @@ import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.utils.Serialization;
-import eu.amidst.core.utils.Utils;
+import eu.amidst.core.utils.*;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
@@ -88,7 +85,7 @@ public class DistributedImportanceSampling {
                             SufficientStatistics sufficientStatistics = Serialization.deepCopy(ssList1.get(i));
                             sufficientStatistics.sum(ssList2.get(i));
 
-                            ArrayVector result2 = ImportanceSamplingRobust.robustSumOfMultinomialLogSufficientStatistics((ArrayVector)ssList1.get(i),(ArrayVector)ssList2.get(i));
+                            ArrayVector result2 = RobustOperations.robustSumOfMultinomialLogSufficientStatistics((ArrayVector)ssList1.get(i),(ArrayVector)ssList2.get(i));
                             result.add(result2);
 
 //                            if(i==0) {
@@ -151,7 +148,7 @@ public class DistributedImportanceSampling {
         sumSS.copy(SSvariablesAPosteriori.get(variablesAPosteriori.indexOf(variable)));
         //System.out.println(Arrays.toString(sumSS.toArray()));
 
-        sumSS = ImportanceSamplingRobust.robustNormalizationOfLogProbabilitiesVector(sumSS);
+        sumSS = RobustOperations.robustNormalizationOfLogProbabilitiesVector(sumSS);
 
         ef_univariateDistribution.setMomentParameters((SufficientStatistics)sumSS);
         Multinomial posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
