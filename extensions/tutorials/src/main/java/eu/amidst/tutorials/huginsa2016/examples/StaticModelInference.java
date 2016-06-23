@@ -5,14 +5,11 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.InferenceEngine;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.inference.HuginInference;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 
@@ -25,7 +22,7 @@ public class StaticModelInference {
 
         //Load the datastream
         String filename = "datasets/simulated/exampleDS_d0_c5.arff";
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(filename);
+        DataStream<DataInstance> data = DataStreamLoader.open(filename);
 
         //Learn the model
         Model model = new FactorAnalysis(data.getAttributes());

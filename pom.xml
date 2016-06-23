@@ -135,6 +135,8 @@
         <module>extensions/uai2016</module>
         <module>extensions/reviewMeeting2016</module>
         <module>extensions/nips2016</module>
+        <module>extensions/lda</module>
+        <module>extensions/ida2016</module>
     </modules>
 
 

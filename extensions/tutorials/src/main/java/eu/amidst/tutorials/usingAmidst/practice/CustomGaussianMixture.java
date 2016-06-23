@@ -39,8 +39,6 @@ public class CustomGaussianMixture extends Model{
             dag.getParentSet(variable).addParent(hiddenVar);
         }
 
-
-
         //This is needed to maintain coherence in the Model class.
         this.dag=dag;
         this.vars = variables;

@@ -153,7 +153,7 @@ public final class ExperimentsParallelML {
         if(isSampleData())
             sampleBayesianNetwork();
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(getPathToFile());
+        DataStream<DataInstance> data = DataStreamLoader.open(getPathToFile());
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setParallelMode(isParallel());
         parameterLearningAlgorithm.setDAG(dag);
@@ -188,7 +188,7 @@ public final class ExperimentsParallelML {
         if(isSampleData())
             sampleBayesianNetwork();
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(getPathToFile());
+        DataStream<DataInstance> data = DataStreamLoader.open(getPathToFile());
 
 
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();

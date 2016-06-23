@@ -210,7 +210,7 @@ public class NaiveBayesMultinomialHiddenConceptDrift {
 
     public static void main(String[] args) {
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("./datasets/DriftSets/sea.arff");
         NaiveBayesMultinomialHiddenConceptDrift nb = new NaiveBayesMultinomialHiddenConceptDrift();
         nb.setClassIndex(-1);
         nb.setData(data);

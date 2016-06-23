@@ -63,7 +63,7 @@ public class RunSVB {
 
         SVB svb = new SVB();
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+arrffName);
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);

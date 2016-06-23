@@ -22,6 +22,7 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.lda.core.BatchSpliteratorByID;
 import eu.amidst.lda.core.PlateauLDA;
 
+
 import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.List;
@@ -128,7 +129,7 @@ public class RunDrift {
 
         DriftSVB svb = new DriftSVB();
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+arrffName);
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);
@@ -196,14 +197,14 @@ public class RunDrift {
             /*if (i>1 && i%20==10){
                 System.out.println("CHANGE");
                 arrffName = "docword.kos.tmp.arff";
-                dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+                dataInstances = DataStreamLoader.open(dataPath+arrffName);
                 batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
                 fw.write("CHANGE\n");
             }
             if (i>1 && i%20==0){
                 System.out.println("CHANGE");
                 arrffName = "docword.nips.arff";
-                dataInstances = DataStreamLoader.openFromFile(dataPath+arrffName);
+                dataInstances = DataStreamLoader.open(dataPath+arrffName);
                 batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,docsPerBatch).collect(Collectors.toList());
                 fw.write("CHANGE\n");
             }*/

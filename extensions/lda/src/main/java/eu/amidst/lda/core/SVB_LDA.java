@@ -22,7 +22,7 @@ import eu.amidst.core.learning.parametric.bayesian.SVB;
 public class SVB_LDA {
     public static void main(String[] args) {
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/abstract_90.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/abstract_90.arff");
 
         //DataOnMemory<DataInstance> dataInstances = DataStreamLoader.loadDataOnMemoryFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/abstract_90.arff");
 

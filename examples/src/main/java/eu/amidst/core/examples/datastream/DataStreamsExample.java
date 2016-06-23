@@ -32,7 +32,7 @@ public class DataStreamsExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasetsTests/data.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.open("datasetsTests/data.arff");
 
         //Generate the data stream using the class DataSetGenerator
         DataStream<DataInstance> data = DataSetGenerator.generate(1,1000,5,5);

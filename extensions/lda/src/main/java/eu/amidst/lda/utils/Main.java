@@ -34,7 +34,7 @@ public class Main {
 
 
     public static void process2(String[] args) throws IOException {
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
 
         double minWord = Double.MAX_VALUE;
         double maxWord = -Double.MAX_VALUE;
@@ -53,7 +53,7 @@ public class Main {
     }
 
     public static void process(String[] args) throws IOException {
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/docswords-joint.arff");
 
 //        List<DataOnMemory<DataInstance>> listA =
 //                BatchSpliteratorByID.streamOverDocuments(dataInstances,2).collect(Collectors.toList());
@@ -97,7 +97,7 @@ public class Main {
 
         //Utils.shuffleData("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff", "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.shuffled.arff");
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.nips.arff");
 
         List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances, 1).collect(Collectors.toList());
 

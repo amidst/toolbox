@@ -43,8 +43,8 @@ import org.apache.flink.util.Collector;
  * (as it should not be made public)
  *
  * Example of call: (-Xmx8g)
- * -s 10 -numFiles 3 -RscriptsPath "./extensions/uai2016/doc-experiments/dataGenerationForFlink/"
- * -outputFullPath "~/core/extensions/uai2016/doc-experiments/dataGenerationForFlink/IDAlikeData"
+ * -s 10 -numFiles 3 -RscriptsPath "./extensions/uai2016/io-experiments/dataGenerationForFlink/"
+ * -outputFullPath "~/core/extensions/uai2016/io-experiments/dataGenerationForFlink/IDAlikeData"
  * -printINDEX -seed 0
  *
  * The option p.waitFor(); might not work on all systems, so data may have to be generated and tested on

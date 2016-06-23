@@ -13,7 +13,7 @@ In this example we show how to use the main features of a \textit{DataStream} ob
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/SmallDataSet.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/SmallDataSet.arff");
 
 //Access to the attributes defining the data set
 System.out.println("Attributes defining the data set");
@@ -114,7 +114,7 @@ of this data set. The numbers defining the probability distributions of the BN a
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/syntheticData.arff");
 
 
 /**
@@ -214,7 +214,7 @@ In this example, we simply show how to create a BN model with hidden variables. 
  
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/syntheticData.arff");
 
 /**
  * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
@@ -344,7 +344,7 @@ In this example we show how to load and save data sets from ".arff" files (http:
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/syntheticData.arff");
 
 //We can save this data set to a new file using the static class DataStreamWriter
 DataStreamWriter.writeDataToFile(data, "datasets/tmp.arff");
@@ -494,7 +494,7 @@ System.out.println("P(W=0) = "+Math.exp(inferenceAlgorithm.getLogProbabilityOfEv
 This other example shows how to learn incrementally the parameters of a Bayesian network using data batches,
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/WasteIncineratorSample.arff");
 
 //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
 ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
@@ -524,7 +524,7 @@ This example shows how to learn in parallel the parameters of a Bayesian network
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/syntheticData.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/syntheticData.arff");
 
 //We create a MaximumLikelihood object with the MaximumLikehood builder
 MaximumLikelihood parameterLearningAlgorithm = new MaximumLikelihood();
@@ -566,7 +566,7 @@ In this second example we show a alternative implementation which explicitly upd
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/WasteIncineratorSample.arff");
 
 //We create a StreamingVariationalBayesVMP object
 StreamingVariationalBayesVMP parameterLearningAlgorithm = new StreamingVariationalBayesVMP();
@@ -612,7 +612,7 @@ In Advances in Neural Information Processing Systems (pp. 1727-1735).
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/WasteIncineratorSample.arff");
 
 //We create a ParallelSVB object
 ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
@@ -656,7 +656,7 @@ This example shows how to adaptively learn the parameters of a Bayesian network 
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/WasteIncineratorSample.arff");
 
 //We create a ParameterLearningAlgorithm object with 
 //the MaximumLikelihoodFading builder
@@ -695,7 +695,7 @@ In Advances in Neural Information Processing Systems (pp. 1727-1735).}
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/WasteIncineratorSample.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("datasets/WasteIncineratorSample.arff");
 
 //We create a SVB object
 SVBFading parameterLearningAlgorithm = new SVBFading();
@@ -734,7 +734,7 @@ This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to
 
 \begin{lstlisting}
 //We can open the data stream using the static class DataStreamLoader
-DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DriftSets/sea.arff");
+DataStream<DataInstance> data = DataStreamLoader.open("./datasets/DriftSets/sea.arff");
 
 //We create a NaiveBayesVirtualConceptDriftDetector object
 NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();

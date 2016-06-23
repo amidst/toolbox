@@ -101,6 +101,6 @@ public class DataGeneration {
     public static void main(String[] args) throws IOException {
         //DataGeneration.dataGenerator(args);
 
-        System.out.println(DataStreamLoader.openFromFile("./scai2015/datasets/BankArtificialDataSCAI2015.arff").stream().count());
+        System.out.println(DataStreamLoader.open("./scai2015/datasets/BankArtificialDataSCAI2015.arff").stream().count());
     }
 }

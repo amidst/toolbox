@@ -61,7 +61,7 @@ public class RunSVB {
 
         SVB svb = new SVB();
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile(dataPath+"abstract_"+years[0]+".arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);
@@ -80,7 +80,7 @@ public class RunSVB {
 
         for (int i = 0; i < years.length; i++) {
 
-            dataInstances = DataStreamLoader.openFromFile(dataPath+"abstract_"+years[i]+".arff");
+            dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[i]+".arff");
 
             for (DataOnMemory<DataInstance> batch : BatchSpliteratorByID.iterableOverDocuments(dataInstances, docsPerBatch)) {
                 System.out.println("Batch: " + batch.getNumberOfDataInstances());

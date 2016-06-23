@@ -42,7 +42,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("datasets/simulated/syntheticData.arff");
 
         /**
          * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)

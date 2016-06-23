@@ -26,7 +26,7 @@ public class IndicatorTypeTest {
         System.out.println("ORIGINAL BN - Bayesian network WITHOUT indicator variables");
         System.out.println("----------------------------------------------------------");
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(("../datasets/dataWeka/labor.arff"));
+        DataStream<DataInstance> data = DataStreamLoader.open("../datasets/dataWeka/labor.arff");
         Variables variables = new Variables();
         Variable durationVar =  variables.newVariable(data.getAttributes().getAttributeByName("duration"));
         Variable wageIncreaseFirstYearVar = variables.newVariable(data.getAttributes().getAttributeByName("wage-increase-first-year"));

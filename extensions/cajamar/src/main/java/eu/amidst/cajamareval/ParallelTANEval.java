@@ -40,8 +40,8 @@ public class ParallelTANEval {
         String fileOutput = args[2];
 
 
-        DataStream<DataInstance> train = DataStreamLoader.openFromFile(fileTrain);
-        DataStream<DataInstance> test = DataStreamLoader.openFromFile(fileTest);
+        DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
+        DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
         FileWriter fw = new FileWriter(fileOutput);
 
         ParallelTAN tan = new ParallelTAN();
