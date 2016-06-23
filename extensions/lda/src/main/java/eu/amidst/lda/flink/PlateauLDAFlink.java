@@ -85,7 +85,7 @@ public class PlateauLDAFlink extends PlateuStructure implements GlobalvsLocalUpd
         word = variables.newSparseMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
         //word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
 
-        topicIndicator = variables.newMultionomialVariable("TopicIndicator", nTopics);
+        topicIndicator = variables.newMultinomialVariable("TopicIndicator", nTopics);
 
         dagLDA = new DAG(variables);
         dagLDA.setName("LDA");

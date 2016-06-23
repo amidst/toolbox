@@ -159,6 +159,16 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         return Double.NaN;
     }
 
+    @Override
+    public int getWindowsSize() {
+        throw new UnsupportedOperationException("Use method getBatchSise() instead.");
+    }
+
+    @Override
+    public void setWindowsSize(int windowsSize) {
+        throw new UnsupportedOperationException("Use method setBatchSise() instead.");
+    }
+
 
     /**
      * {@inheritDoc}

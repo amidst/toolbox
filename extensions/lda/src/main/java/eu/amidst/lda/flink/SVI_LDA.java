@@ -106,7 +106,7 @@ public class SVI_LDA {
         svb.getSVB().setDAG(((PlateauLDAFlink)svb.getSVB().getPlateuStructure()).getDagLDA());
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
-        BayesianNetworkWriter.saveToFile(svb.getLearntBayesianNetwork(),pathNetwork);
+        BayesianNetworkWriter.save(svb.getLearntBayesianNetwork(),pathNetwork);
 
 
     }

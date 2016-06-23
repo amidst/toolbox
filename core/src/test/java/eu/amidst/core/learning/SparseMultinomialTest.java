@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public class SparseMultinomialTest extends TestCase {
     public static void testMultinomials1() throws IOException, ClassNotFoundException {
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
 
         DAG dag = new DAG(variables);
 
@@ -73,7 +73,7 @@ public class SparseMultinomialTest extends TestCase {
         Variable word = variables.newSparseMultionomialVariable("Word", 100);
         //word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
 
-        Variable topicIndicator = variables.newMultionomialVariable("TopicIndicator",2);
+        Variable topicIndicator = variables.newMultinomialVariable("TopicIndicator",2);
 
         DAG dagLDA = new DAG(variables);
 

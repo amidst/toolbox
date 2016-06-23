@@ -28,7 +28,7 @@ public class EF_SparseMultinomial_SparseDirichletTest extends TestCase {
         Variables variables = new Variables();
         ParameterVariables parameterVariables = new ParameterVariables(1);
 
-        Variable multiA = variables.newMultionomialVariable("A", 10);
+        Variable multiA = variables.newMultinomialVariable("A", 10);
         Variable dirichlet = parameterVariables.newDirichletParameter("A", 10);
 
         EF_SparseMultinomial_SparseDirichlet dist = new EF_SparseMultinomial_SparseDirichlet(multiA,dirichlet);

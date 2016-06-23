@@ -34,7 +34,7 @@ public class Main {
         Variable word = variables.newSparseMultionomialVariable("A",2);
         //word = variables.newMultionomialVariable(attributes.getAttributeByName(wordDocumentName));
 
-        Variable topicIndicator = variables.newMultionomialVariable("TopicIndicator", 1);
+        Variable topicIndicator = variables.newMultinomialVariable("TopicIndicator", 1);
 
         DAG dagLDA = new DAG(variables);
         dagLDA.setName("LDA");

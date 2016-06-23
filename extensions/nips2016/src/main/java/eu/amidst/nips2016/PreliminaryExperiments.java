@@ -421,7 +421,7 @@ public class PreliminaryExperiments {
 
         Variables variables = new Variables();
         Variable varA = variables.newGaussianVariable("A");
-        Variable varB = variables.newMultionomialVariable("B",2);
+        Variable varB = variables.newMultinomialVariable("B",2);
         DAG dag = new DAG(variables);
 
         dag.getParentSet(varA).addParent(varB);
