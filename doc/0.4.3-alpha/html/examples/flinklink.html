@@ -34,17 +34,25 @@
 <li><p><a href="#sec:flinklink:io:read">Reading data</a></p></li>
 <li><p><a href="#sec:flinklink:io:write">Write data</a></p></li>
 </ul></li>
-<li><p><a href="#sec:flinklink:learning">Parametric Learning</a></p>
+<li><p><a href="#sec:flinklink:learning">Parametric Learning</a></p></li>
+<li><p><a href="#sec:flinklink:inference">Inference</a></p>
 <ul>
 <li><p><a href="#sec:flinklink:learning:pml">Parallel Maximum Likelihood</a></p></li>
 <li><p><a href="#sec:flinklink:learning:dvmp">Distributed Variational Message Pasing</a></p></li>
 <li><p><a href="#sec:flinklink:learning:dvi">Distributed VI</a></p></li>
 <li><p><a href="#sec:flinklink:learning:svi">Stochastic VI</a></p></li>
 </ul></li>
+<li><p><a href="#sec:flinklink:dbn">Dynamic Bayesian networks with Flink</a></p></li>
+<li><p><a href="#sec:flinklink:ext"> Extensions and applications</a></p>
+<ul>
+<li><p><a href="#sec:flinklink:ext:models"> Latent variable models with Flink</a></p></li>
+<li><p><a href="#sec:flinklink:ext:conceptdrift">Concept drift</a></p></li>
+</ul></li>
 </ul>
 <h2 id="sec:flinklink:io">Input/output</h2>
 <h3 id="sec:flinklink:io:read">Reading data</h3>
-<p>In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
+<p>In this |import|</p>
+<p>example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
 <pre><code>package eu.amidst.flinklink.examples.io;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -57,7 +65,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
  */
 public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
-
 
         //Set the environment variable
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -311,11 +318,133 @@ public class StochasticVIExample {
     }
 }</code></pre>
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
-<h2 id="inference">Inference</h2>
-<h2 id="extensions-and-applications">Extensions and applications</h2>
-<h3 id="latent-variable-models">Latent variable models</h3>
-<h3 id="concept-drift-detection">Concept drift detection</h3>
-<pre><code>some code  </code></pre>
+<h2 id="sec:flinklink:inference">Inference</h2>
+<h2 id="sec:flinklink:dbn">Dynamic Bayesian networks with Flink</h2>
+<h2 id="sec:flinklink:ext">Extensions and applications</h2>
+<h3 id="sec:flinklink:ext:models">Latent variable models with Flink</h3>
+<pre><code>package eu.amidst.flinklink.examples.extensions;
+
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
+import org.apache.flink.api.java.ExecutionEnvironment;
+
+import java.io.FileNotFoundException;
+
+/**
+ * Created by rcabanas on 14/06/16.
+ */
+public class LatentModelsFlink {
+    public static void main(String[] args) throws FileNotFoundException {
+
+        //Load the datastream
+        String filename = &quot;datasets/simulated/exampleDS_d0_c5.arff&quot;;
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        DataFlink&lt;DataInstance&gt; data = DataFlinkLoader.loadDataFromFile(env, filename, false);
+
+        //Learn the model
+        Model model = new FactorAnalysis(data.getAttributes());
+        ((FactorAnalysis)model).setNumberOfLatentVariables(3);
+        model.updateModel(data);
+        BayesianNetwork bn = model.getModel();
+
+        System.out.println(bn);
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:ext:conceptdrift">Concept drift detection</h3>
+<pre><code>/*
+ *
+ *
+ *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
+ *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
+ *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use
+ *    this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *            http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software distributed under the License is
+ *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and limitations under the License.
+ *
+ *
+ */
+
+package eu.amidst.flinklink.examples.reviewMeeting2015;
+
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import org.apache.flink.api.java.ExecutionEnvironment;
+
+/**
+ * Created by ana@cs.aau.dk on 18/01/16.
+ */
+public class ConceptDriftDetector {
+
+    //public int NSETS = 15;
+
+
+    public static void learnIDAConceptDriftDetector(int NSETS) throws Exception {
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink&lt;DataInstance&gt; data0 = DataFlinkLoader.loadDataFromFolder(env,
+                &quot;hdfs:///tmp_conceptdrift_data0.arff&quot;, false);
+
+
+        long start = System.nanoTime();
+        IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
+        learn.setBatchSize(1000);
+        learn.setClassIndex(0);
+        learn.setAttributes(data0.getAttributes());
+        learn.setNumberOfGlobalVars(1);
+        learn.setTransitionVariance(0.1);
+        learn.setSeed(0);
+
+        learn.initLearning();
+        double[] output = new double[NSETS];
+
+        System.out.println(&quot;--------------- LEARNING DATA &quot; + 0 + &quot; --------------------------&quot;);
+        double[] out = learn.updateModelWithNewTimeSlice(data0);
+        //System.out.println(learn.getLearntDynamicBayesianNetwork());
+        output[0] = out[0];
+
+        for (int i = 1; i &lt; NSETS; i++) {
+            System.out.println(&quot;--------------- LEARNING DATA &quot; + i + &quot; --------------------------&quot;);
+            DataFlink&lt;DataInstance&gt; dataNew = DataFlinkLoader.loadDataFromFolder(env,
+                    &quot;hdfs:///tmp_conceptdrift_data&quot; + i + &quot;.arff&quot;, false);
+            out = learn.updateModelWithNewTimeSlice(dataNew);
+            //System.out.println(learn.getLearntDynamicBayesianNetwork());
+            output[i] = out[0];
+
+        }
+        long duration = (System.nanoTime() - start) / 1;
+        double seconds = duration / 1000000000.0;
+
+        System.out.println(&quot;Running time&quot; + seconds + &quot; seconds&quot;);
+
+        //System.out.println(learn.getLearntDynamicBayesianNetwork());
+
+        for (int i = 0; i &lt; NSETS; i++) {
+            System.out.println(&quot;E(H_&quot;+i+&quot;) =\t&quot; + output[i]);
+        }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        int NSETS = Integer.parseInt(args[0]);
+
+        learnIDAConceptDriftDetector(NSETS);
+    }
+
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
   <footer  class="site-footer"> <span  class="site-footer-owner"><a  href="https://github.com/amidst/toolbox">AMIDST
             Toolbox 0.4.3-alpha</a> is maintained by <a  href="https://github.com/amidst">amidst</a>.</span>
         <span  class="site-footer-credits">This page was generated by <a  href="https://pages.github.com">GitHub

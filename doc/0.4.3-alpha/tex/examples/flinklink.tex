@@ -13,7 +13,27 @@
 
 \newcommand{\amidstversion}{\input{../../version.txt}}
 
-\newcommand{\includejavasource}[1]{\lstinputlisting[language=java, mathescape, columns=fullflexible, basicstyle=\fontfamily{lmvtt}\selectfont,]{#1}}
+\lstset{
+	frameround=fttt,
+%	language=java,
+	numbers=left,
+	breaklines=true,
+	mathescape, 
+	columns=fullflexible, 
+	basicstyle=\fontfamily{lmvtt}\selectfont,
+	keywordstyle=\color{blue}\fontfamily{lmvtt}\selectfont, 
+	numberstyle=\color{black}
+}
+\lstMakeShortInline[columns=fixed]|
+
+
+
+\newcommand{\includejavasource}[1]{\lstinputlisting[language=java]{#1}}
+\newcommand{\inlinejava}[1]{\lstinline[columns=fixed,language=java]{#1}}
+
+
+
+%\newcommand{\includejavasource}[1]{\lstinputlisting[language=java, mathescape, columns=fullflexible, basicstyle=\fontfamily{lmvtt}\selectfont,]{#1}}
 
 \newcommand{\lang}[1]{}
 
@@ -33,11 +53,23 @@
 		\item \hyperref[sec:flinklink:io:write]{Write data}
 	\end{itemize}
 		\item \hyperref[sec:flinklink:learning]{Parametric Learning}
+
+		
 	\begin{itemize}
 		\item \hyperref[sec:flinklink:learning:pml]{Parallel Maximum Likelihood}
 		\item \hyperref[sec:flinklink:learning:dvmp]{Distributed Variational Message Pasing}
 		\item \hyperref[sec:flinklink:learning:dvi]{Distributed VI}
 		\item \hyperref[sec:flinklink:learning:svi]{Stochastic VI}
+	\end{itemize}
+	
+	\item  \hyperref[sec:flinklink:inference]{Inference}
+	
+	
+	\item \hyperref[sec:flinklink:dbn]{Dynamic Bayesian networks with Flink}
+	\item \hyperref[sec:flinklink:ext]{ Extensions and applications}
+	\begin{itemize}
+			\item \hyperref[sec:flinklink:ext:models]{ Latent variable models with Flink}
+			\item \hyperref[sec:flinklink:ext:conceptdrift]{Concept drift}
 	\end{itemize}
 \end{itemize}
 \subsection{Input/output}\label{sec:flinklink:io}
@@ -100,15 +132,30 @@ An example of the learning algorithm Stochastic VI is given below. Note that two
 \hyperref[sec:flinklink]{[Back to Top]}\newline 
 
 
-\subsection{Inference}
-\subsection{Extensions and applications}
-\subsubsection{Latent variable models}
-\subsubsection{Concept drift detection}
+\subsection{Inference}\label{sec:flinklink:inference}
 
-\lang{java}
-\begin{lstlisting}
-some code  
-\end{lstlisting}
+\subsection{Dynamic Bayesian networks with Flink}\label{sec:flinklink:dbn}
+
+\subsection{Extensions and applications}\label{sec:flinklink:ext}
+\subsubsection{Latent variable models with Flink}\label{sec:flinklink:ext:models}
+
+The module \textit{latent-variable-models} contains a large set of classes that allow to easily learn some of the standard models with latent variables. These models can be learnt from not only from local datasets (e.g. a single ARFF file) but also from distributed ones (e.g. ARFF folder). These last ones are managed using Flink. In code example shown below the model \textit{Factor Analysis} is learnt from a distributed dataset.  
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/extensions/LatentModelsFlink.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+In previous example, 
+
+
+\subsubsection{Concept drift detection}\label{sec:flinklink:ext:conceptdrift}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/reviewMeeting2015/ConceptDriftDetector.java}
+
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
 
 
 

@@ -11,7 +11,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
 
-
         //Set the environment variable
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
