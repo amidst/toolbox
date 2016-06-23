@@ -1,4 +1,4 @@
-package eu.amidst.tutorials.huginsa2016.examples;
+package eu.amidst.tutorials.usingAmidst.examples;
 
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamWriter;

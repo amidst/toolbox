@@ -755,7 +755,7 @@ public class dVMPTest extends TestCase {
 
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("../datasets/simulated/tmp.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("../datasets/simulated/tmp.arff");
 
         SVB svb = new SVB();
         svb.setWindowsSize(10000);
@@ -841,7 +841,7 @@ public class dVMPTest extends TestCase {
 
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataset);
+        DataStream<DataInstance> data = DataStreamLoader.open(dataset);
 
         SVB svb = new SVB();
         svb.setWindowsSize(SAMPLES);

@@ -29,7 +29,7 @@ public class PlateauLDATest extends TestCase {
 
     public static void test1() {
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("../../datasets/simulated/simulatedText.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("../../datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
                 BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());
@@ -86,7 +86,7 @@ public class PlateauLDATest extends TestCase {
     }
 
     public static void test2() {
-        DataStream<DataInstance> dataInstances = DataStreamLoader.openFromFile("../../datasets/simulated/simulatedText.arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open("../../datasets/simulated/simulatedText.arff");
 
         List<DataOnMemory<DataInstance>> listA =
                 BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());

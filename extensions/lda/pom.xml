@@ -20,8 +20,11 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
+    <groupId>eu.amidst</groupId>
     <artifactId>lda</artifactId>
+    <version>${AMIDSTver}</version>
+
+
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>

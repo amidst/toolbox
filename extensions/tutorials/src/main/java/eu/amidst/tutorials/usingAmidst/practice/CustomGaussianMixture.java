@@ -59,7 +59,7 @@ public class CustomGaussianMixture extends Model{
 
         //Load the datastream
         String filename = "datasets/simulated/exampleDS_d0_c5.arff";
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(filename);
+        DataStream<DataInstance> data = DataStreamLoader.open(filename);
 
         //Learn the model
         CustomGaussianMixture model = new CustomGaussianMixture(data.getAttributes());

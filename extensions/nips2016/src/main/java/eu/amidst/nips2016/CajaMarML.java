@@ -119,7 +119,7 @@ public class CajaMarML {
         String outputPath = "extensions/nips2016/doc-Experiments/preliminaryExperiments/";
 
 
-        DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path + 0 + ".arff");
+        DataStream<DataInstance> dataMonthi = DataStreamLoader.open(path + 0 + ".arff");
 
         dag = createDAGforML(dataMonthi.getAttributes());
 
@@ -135,7 +135,7 @@ public class CajaMarML {
             //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
             //    continue;
 
-            dataMonthi = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
+            dataMonthi = DataStreamLoader.open(path + currentMonth + ".arff");
 
             /**
              * Update with all different learning techniques

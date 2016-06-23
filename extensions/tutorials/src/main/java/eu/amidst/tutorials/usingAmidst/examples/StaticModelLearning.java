@@ -16,7 +16,7 @@ public class StaticModelLearning {
 
         //Load the datastream
         String filename = "datasets/simulated/exampleDS_d0_c5.arff";
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile(filename);
+        DataStream<DataInstance> data = DataStreamLoader.open(filename);
 
         //Learn the model
         Model model = new FactorAnalysis(data.getAttributes());

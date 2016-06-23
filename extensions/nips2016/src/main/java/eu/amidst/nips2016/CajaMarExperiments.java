@@ -475,7 +475,7 @@ public class CajaMarExperiments {
                     for (int l = 0; l < learningRate.length; l++) {
 
 
-                        DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path + 0 + ".arff");
+                        DataStream<DataInstance> dataMonthi = DataStreamLoader.open(path + 0 + ".arff");
 
                         dag = createDAG(dataMonthi.getAttributes(), 0);
 
@@ -513,7 +513,7 @@ public class CajaMarExperiments {
                             //if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                             //    continue;
 
-                            dataMonthi = DataStreamLoader.openFromFile(path + currentMonth + ".arff");
+                            dataMonthi = DataStreamLoader.open(path + currentMonth + ".arff");
 
                             /**
                              * Update with all different learning techniques
@@ -537,7 +537,7 @@ public class CajaMarExperiments {
                                     double[] outputsAverage = new double[4];
                                     int nOfMonthsEvaluated = 0;
                                     for (int n = m+1; n < (m+1+monthsToEvaluate) && n< numIter; n++) {
-                                        DataStream<DataInstance> dataMonthiEval = DataStreamLoader.openFromFile(path + n + ".arff");
+                                        DataStream<DataInstance> dataMonthiEval = DataStreamLoader.open(path + n + ".arff");
                                         for (DataOnMemory<DataInstance> batchEval : dataMonthiEval.iterableOverBatches(batchSize[i])) {
                                             double[] tmp = calculatePredLL(batchEval);
                                             for (int o = 0; o < tmp.length; o++) {
