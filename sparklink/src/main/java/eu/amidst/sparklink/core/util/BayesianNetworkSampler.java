@@ -90,7 +90,7 @@ public class BayesianNetworkSampler implements Serializable {
             // Get the attributes from a local instance
             Attributes attributes = this.localSampler.sampleToDataStream(1).getAttributes();
 
-            return new DataSparkFromRDD(sampleRDD, attributes);
+            return new DataSparkFromRDD(sc, sampleRDD, attributes);
 
         }
 
