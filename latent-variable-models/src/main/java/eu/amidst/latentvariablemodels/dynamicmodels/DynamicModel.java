@@ -69,6 +69,7 @@ public abstract class DynamicModel {
         learningAlgorithm = new SVB();
         learningAlgorithm.setDynamicDAG(this.getDynamicDAG());
         learningAlgorithm.setWindowsSize(windowSize);
+        learningAlgorithm.setOutput(false);
         learningAlgorithm.initLearning();
         initialized = true;
     }

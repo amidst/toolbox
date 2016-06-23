@@ -90,6 +90,7 @@ public abstract class Model {
             learningAlgorithm = new SVB();
         learningAlgorithm.setWindowsSize(windowSize);
         learningAlgorithm.setDAG(this.getDAG());
+        learningAlgorithm.setOutput(true);
         learningAlgorithm.initLearning();
         initialized=true;
     }

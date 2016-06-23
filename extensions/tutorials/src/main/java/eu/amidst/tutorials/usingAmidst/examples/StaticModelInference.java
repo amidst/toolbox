@@ -2,13 +2,13 @@ package eu.amidst.tutorials.usingAmidst.examples;
 
 import eu.amidst.core.distribution.Distribution;
 import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-import eu.amidst.huginlink.inference.HuginInference;
 
 import java.io.IOException;
 
@@ -29,10 +29,10 @@ public class StaticModelInference {
         //we set the evidence
         Assignment assignment = new HashMapAssignment(2);
         varObserved = variables.getVariableByName("GaussianVar1");
-        assignment.setValue(varObserved,6.5);
+        assignment.setValue(varObserved,0.0);
 
         //we set the algorithm
-        InferenceAlgorithm infer = new HuginInference();
+        InferenceAlgorithm infer = new VMP();
         //((ImportanceSampling)infer).setSampleSize(10000);
         //((VMP)infer).setThreshold(0.00001);
         //((VMP)infer).setMaxIter(10000000);
@@ -43,10 +43,10 @@ public class StaticModelInference {
         //query
         infer.runInference();
         Distribution p = infer.getPosterior(varTarget);
-        System.out.println("P(LatentVar1|GaussianVar1=6.5) = "+p);
+        System.out.println("P(LatentVar1|GaussianVar1=0.0) = "+p);
 
         //Or some more refined queries
-        System.out.println("P(0.7<LatentVar1<6.59 |GaussianVar1=6.5) = " + infer.getExpectedValue(varTarget, v -> (0.7 < v && v < 6.59) ? 1.0 : 0.0 ));
+        System.out.println("P(0.7<LatentVar1<6.59 |GaussianVar1=0.0) = " + infer.getExpectedValue(varTarget, v -> (0.7 < v && v < 6.59) ? 1.0 : 0.0 ));
 
     }
 

@@ -1,0 +1,128 @@
+net
+{
+    node_size = (0 0);
+}
+
+continuous node GaussianVar0
+{
+}
+
+continuous node GaussianVar1
+{
+}
+
+continuous node GaussianVar2
+{
+}
+
+continuous node GaussianVar3
+{
+}
+
+continuous node GaussianVar4
+{
+}
+
+node discreteHiddenVar
+{
+    label = "discreteHiddenVar";
+    states = ("0.0" "1.0");
+}
+
+continuous node GaussianVar0_Interface
+{
+}
+
+continuous node GaussianVar1_Interface
+{
+}
+
+continuous node GaussianVar2_Interface
+{
+}
+
+continuous node GaussianVar3_Interface
+{
+}
+
+continuous node GaussianVar4_Interface
+{
+}
+
+node discreteHiddenVar_Interface
+{
+    label = "discreteHiddenVar_Interface";
+    states = ("0.0" "1.0");
+}
+
+potential (GaussianVar0 | discreteHiddenVar)
+{
+    data
+     = ( normal ( 1.41721, 3.94409 )	%  discreteHiddenVar=0.0
+	 normal ( 0.254583, 1.03249 ) );	%  discreteHiddenVar=1.0
+}
+
+potential (GaussianVar1 | discreteHiddenVar)
+{
+    data
+     = ( normal ( 0.624273, 2.42609 )	%  discreteHiddenVar=0.0
+	 normal ( 0.291696, 1.57413 ) );	%  discreteHiddenVar=1.0
+}
+
+potential (GaussianVar2 | discreteHiddenVar)
+{
+    data
+     = ( normal ( -3.40483, 28.5967 )	%  discreteHiddenVar=0.0
+	 normal ( 1.24689, 10.0944 ) );	%  discreteHiddenVar=1.0
+}
+
+potential (GaussianVar3 | discreteHiddenVar)
+{
+    data
+     = ( normal ( 9.60753, 90.0169 )	%  discreteHiddenVar=0.0
+	 normal ( -8.99918, 85.0097 ) );	%  discreteHiddenVar=1.0
+}
+
+potential (GaussianVar4 | discreteHiddenVar)
+{
+    data
+     = ( normal ( -3.11152, 14.6642 )	%  discreteHiddenVar=0.0
+	 normal ( 3.08665, 11.472 ) );	%  discreteHiddenVar=1.0
+}
+
+potential (discreteHiddenVar | discreteHiddenVar_Interface)
+{
+    data
+     = (( 0.127257 0.872743 )	%  discreteHiddenVar_Interface=0.0
+	( 0.957791 0.0422091 ));	%  discreteHiddenVar_Interface=1.0
+}
+
+potential (GaussianVar0_Interface)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (GaussianVar1_Interface)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (GaussianVar2_Interface)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (GaussianVar3_Interface)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (GaussianVar4_Interface)
+{
+    data = normal ( 0, 1 );
+}
+
+potential (discreteHiddenVar_Interface)
+{
+    data = ( 0.5 0.5 );
+}

@@ -33,35 +33,35 @@ continuous node LatentVar1
 
 potential (GaussianVar0 | LatentVar0 LatentVar1)
 {
-    data = normal ( 1.11445 - 0.0187413 * LatentVar0 + 2.06014E-05 * LatentVar1, 5.73051 );
+    data = normal ( 1.11899 - 0.0481069 * LatentVar0 - 0.0191216 * LatentVar1, 0.583972 );
 }
 
 potential (GaussianVar1 | LatentVar0 LatentVar1)
 {
-    data = normal ( 0.623838 - 0.00289225 * LatentVar0 - 9.28404E-06 * LatentVar1, 3.22869 );
+    data = normal ( 0.623319 + 0.00709757 * LatentVar0 - 0.00683268 * LatentVar1, 2.72429 );
 }
 
 potential (GaussianVar2 | LatentVar0 LatentVar1)
 {
-    data = normal ( -1.36952 + 0.0519106 * LatentVar0 - 8.07367E-05 * LatentVar1, 25.2359 );
+    data = normal ( -1.38936 + 0.218056 * LatentVar0 + 0.0230325 * LatentVar1, 1.99387 );
 }
 
 potential (GaussianVar3 | LatentVar0 LatentVar1)
 {
-    data = normal ( 0.591857 - 0.116167 * LatentVar0 + 0.000220572 * LatentVar1, 169.762 );
+    data = normal ( 0.650143 - 0.65477 * LatentVar0 + 0.0249217 * LatentVar1, 33.8968 );
 }
 
 potential (GaussianVar4 | LatentVar0 LatentVar1)
 {
-    data = normal ( -0.0973336 + 0.0462837 * LatentVar0 - 8.48678E-05 * LatentVar1, 22.1741 );
+    data = normal ( -0.121025 + 0.262579 * LatentVar0 - 0.00459875 * LatentVar1, 0.462044 );
 }
 
 potential (LatentVar0)
 {
-    data = normal ( 0.27681, 294.618 );
+    data = normal ( 0.108515, 328.555 );
 }
 
 potential (LatentVar1 | LatentVar0)
 {
-    data = normal ( 0.535903 - 0.000863346 * LatentVar0, 2710.35 );
+    data = normal ( -0.0227767 + 0.761172 * LatentVar0, 10801.2 );
 }

@@ -89,11 +89,11 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
 
     protected int maximumGlobalIterations = 10;
 
-    protected int maximumLocalIterations = 100;
+    protected int maximumLocalIterations = 1000;
 
     protected double globalThreshold = 0.01;
 
-    protected double localThreshold = 0.1;
+    protected double localThreshold = 0.001;
 
     protected long timeLimit = -1;
 
