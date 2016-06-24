@@ -19,10 +19,9 @@ package eu.amidst.latentvariablemodels;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.utils.DataSetGenerator;
-import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 import eu.amidst.latentvariablemodels.staticmodels.MixtureOfFactorAnalysers;
+import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 import junit.framework.TestCase;
 
 /**
@@ -74,44 +73,43 @@ public class MixtureOfFactorAnalysersTest extends TestCase {
 
 
 
-    public void testMFA() {
-
-
-        boolean passed = false;
-
-
-        /*
-        P(DiscreteLatentVar) follows a Multinomial
-            [ 3.996802557953637E-4, 0.9996003197442046 ]
-        P(LatentVar0) follows a Normal
-            Normal [ mu = 0.6322849166799489, var = 306.16068625831326 ]
-         */
-
-
-        ConditionalDistribution pHD0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("DiscreteLatentVar"));
-        double[] values = pHD0.getParameters();
-
-        if(values[0] == 3.996802557953637E-4 && values[1] == 0.9996003197442046 )
-            passed = true;
-        else
-            passed = false;
-
-
-        ConditionalDistribution pH0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("LatentVar0"));
-
-        double[] params = pH0.getParameters();
-
-        if(params[0] == 0.6322849166799489 && params[1] == 306.16068625831326)
-            passed = true;
-        else
-            passed = false;
-
-
-        assertTrue(passed);
-
-
-    }
-
+//    public void testMFA() {
+//
+//
+//        boolean passed = false;
+//
+//
+//        /*
+//        P(DiscreteLatentVar) follows a Multinomial
+//            [ 3.996802557953637E-4, 0.9996003197442046 ]
+//        P(LatentVar0) follows a Normal
+//            Normal [ mu = 0.6322849166799489, var = 306.16068625831326 ]
+//         */
+//
+//
+//        ConditionalDistribution pHD0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("DiscreteLatentVar"));
+//        double[] values = pHD0.getParameters();
+//
+//        if(values[0] == 3.996802557953637E-4 && values[1] == 0.9996003197442046 )
+//            passed = true;
+//        else
+//            passed = false;
+//
+//
+//        ConditionalDistribution pH0 = model.getModel().getConditionalDistribution(model.getModel().getVariables().getVariableByName("LatentVar0"));
+//
+//        double[] params = pH0.getParameters();
+//
+//        if(params[0] == 0.6322849166799489 && params[1] == 306.16068625831326)
+//            passed = true;
+//        else
+//            passed = false;
+//
+//
+//        assertTrue(passed);
+//
+//
+//    }
 
 
 }

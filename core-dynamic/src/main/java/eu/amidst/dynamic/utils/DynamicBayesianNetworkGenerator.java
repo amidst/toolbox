@@ -485,7 +485,8 @@ public class DynamicBayesianNetworkGenerator {
 
         //DAG TIME 0
         int dagLinks = variables.getNumberOfVars()-1;
-        while (dagLinks< numberOfLinks){
+        int iter = 0;
+        while (dagLinks< numberOfLinks && iter<1000){
             Variable var1 = variables.getVariableById(random.nextInt(variables.getNumberOfVars()));
             int max = variables.getNumberOfVars() - var1.getVarID() - 1;
             if (max == 0)
@@ -493,8 +494,10 @@ public class DynamicBayesianNetworkGenerator {
 
             Variable var2 = variables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
 
-            if (dag.getParentSetTime0(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTime0(var2).getNumberOfParents()>=3)
+            if (dag.getParentSetTime0(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTime0(var2).getNumberOfParents()>=3) {
+                iter++;
                 continue;
+            }
 
             dag.getParentSetTime0(var2).addParent(var1);
             dagLinks++;
@@ -502,7 +505,8 @@ public class DynamicBayesianNetworkGenerator {
 
         //DAG TIME T
         dagLinks = variables.getNumberOfVars()-1;
-        while (dagLinks< numberOfLinks){
+        iter = 0;
+        while (dagLinks< numberOfLinks && iter<1000){
             Variable var1 = variables.getVariableById(random.nextInt(variables.getNumberOfVars()));
             int max = variables.getNumberOfVars() - var1.getVarID() - 1;
             if (max == 0)
@@ -510,11 +514,13 @@ public class DynamicBayesianNetworkGenerator {
 
             Variable var2 = variables.getVariableById(var1.getVarID() + 1 + random.nextInt(max));
 
-            if (dag.getParentSetTimeT(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTimeT(var2).getNumberOfParents()>=3)
+            if (dag.getParentSetTimeT(var2).contains(var1) || !var2.getDistributionType().isParentCompatible(var1) || dag.getParentSetTimeT(var2).getNumberOfParents()>=3){
+                iter++;
                 continue;
-
+            }
             dag.getParentSetTimeT(var2).addParent(var1);
             dagLinks++;
+            iter++;
         }
 
         //Finally we connected over time.

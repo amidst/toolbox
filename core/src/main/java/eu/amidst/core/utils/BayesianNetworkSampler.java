@@ -224,7 +224,13 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
                     @Override
                     public double[] toArray() {
-                        throw new UnsupportedOperationException("Operation not supported for an Assignment object");
+                        int numAtts = attributes.getNumberOfAttributes();
+                        double[] values = new double[numAtts];
+                        for (int att = 0; att < numAtts; att++) {
+                            values[att] = getValue(attributes.getFullListOfAttributes().get(att));
+                        }
+
+                        return values;
                     }
 
                     @Override

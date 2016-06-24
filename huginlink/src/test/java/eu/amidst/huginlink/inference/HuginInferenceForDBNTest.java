@@ -59,7 +59,7 @@ public class HuginInferenceForDBNTest {
 
         //String file = "./datasets/bank_data_train.arff";
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(234,100000,10,0);
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(234,100,10,0);
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         //model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setClassVarID(0);
@@ -87,7 +87,6 @@ public class HuginInferenceForDBNTest {
         //**************************************************************************************************************
         // HUGIN - FILTERED POSTERIOR
         //**************************************************************************************************************
-
         posterior = null;
         huginProbabilities = new ArrayList();
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new HuginInferenceForDBN());
