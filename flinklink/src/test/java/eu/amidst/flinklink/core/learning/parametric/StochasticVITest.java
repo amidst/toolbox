@@ -64,8 +64,8 @@ public class StochasticVITest extends TestCase {
         stochasticVI.setTimiLimit(10);
 
         stochasticVI.setDAG(network.getDAG());
-        stochasticVI.setDataFlink(dataFlink);
-        stochasticVI.runLearning();
+        stochasticVI.initLearning();
+        stochasticVI.updateModel(dataFlink);
         BayesianNetwork bnet = stochasticVI.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node

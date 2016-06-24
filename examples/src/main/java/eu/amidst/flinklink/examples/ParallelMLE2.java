@@ -61,8 +61,8 @@ public class ParallelMLE2 {
         //Parameter Learning
         ParallelMaximumLikelihood2 parallelMaximumLikelihood = new ParallelMaximumLikelihood2();
         parallelMaximumLikelihood.setDAG(originalBnet.getDAG());
-        parallelMaximumLikelihood.setDataFlink(dataFlink);
-        parallelMaximumLikelihood.runLearning();
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node

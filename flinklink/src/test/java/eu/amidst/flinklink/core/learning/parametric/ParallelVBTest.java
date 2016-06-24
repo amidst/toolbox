@@ -86,8 +86,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(network.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
@@ -229,8 +229,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(asianet.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
@@ -335,8 +335,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(asianet.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(bnet.toString());
@@ -394,8 +394,8 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         parallelVB.setDAG(hiddenNB);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(bnet.toString());
@@ -447,10 +447,10 @@ public class ParallelVBTest extends TestCase {
         parallelVB.setDAG(wasteIncinerator.getDAG());
 
         //Setting the distributed data source
-        parallelVB.setDataFlink(dataFlink);
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
 
         //Run
-        parallelVB.runLearning();
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(bnet.toString());
@@ -500,8 +500,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(asianet.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
@@ -541,8 +541,8 @@ public class ParallelVBTest extends TestCase {
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
         System.out.println(dag.toString());
         parallelVB.setDAG(dag);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(bnet.toString());
@@ -584,8 +584,8 @@ public class ParallelVBTest extends TestCase {
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
         System.out.println(dag.toString());
         parallelVB.setDAG(dag);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(bnet.toString());
@@ -660,8 +660,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(hiddenNB);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
         System.out.println(LearnedBnet.toString());
 
@@ -757,8 +757,8 @@ public class ParallelVBTest extends TestCase {
 
 
         parallelVB.setDAG(network.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
 
@@ -843,8 +843,8 @@ public class ParallelVBTest extends TestCase {
 
         parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
         parallelVB.setDAG(dag);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
 

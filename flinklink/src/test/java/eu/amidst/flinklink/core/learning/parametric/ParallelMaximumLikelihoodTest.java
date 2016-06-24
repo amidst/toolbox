@@ -65,8 +65,8 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
         //Parameter Learning
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
         parallelMaximumLikelihood.setDAG(asianet.getDAG());
-        parallelMaximumLikelihood.setDataFlink(dataFlink);
-        parallelMaximumLikelihood.runLearning();
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(dataFlink);
         BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
@@ -108,8 +108,8 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
         //Parameter Learning
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
         parallelMaximumLikelihood.setDAG(asianet.getDAG());
-        parallelMaximumLikelihood.setDataFlink(dataFlink);
-        parallelMaximumLikelihood.runLearning();
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(dataFlink);
         BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node

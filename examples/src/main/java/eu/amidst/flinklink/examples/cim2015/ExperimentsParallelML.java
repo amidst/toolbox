@@ -141,7 +141,7 @@ public class ExperimentsParallelML {
 
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
         parameterLearningAlgorithm.setDAG(dag);
-        parameterLearningAlgorithm.setDataFlink(dataFlink);
+        parameterLearningAlgorithm.initLearning();
 
 
         System.out.println("Available number of processors: " + Runtime.getRuntime().availableProcessors());
@@ -150,7 +150,7 @@ public class ExperimentsParallelML {
         double average = 0.0;
         for (int j = 0; j <15; j++) {
             long start = System.nanoTime();
-            parameterLearningAlgorithm.runLearning();
+            parameterLearningAlgorithm.updateModel(dataFlink);
             long duration = (System.nanoTime() - start) / 1;
             double seconds = duration / 1000000000.0;
             System.out.println("Iteration ["+j+"] = "+seconds + " secs");

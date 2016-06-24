@@ -77,8 +77,8 @@ public class ParallelVMP {
         parallelVB.setBatchSize(Integer.parseInt(args[3]));
 
         parallelVB.setDAG(originalBnet.getDAG());
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node

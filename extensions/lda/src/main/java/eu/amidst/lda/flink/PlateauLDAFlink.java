@@ -22,7 +22,7 @@ import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-import eu.amidst.flinklink.core.learning.parametric.GlobalvsLocalUpdate;
+import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 
 import java.util.*;
 import java.util.stream.Collectors;

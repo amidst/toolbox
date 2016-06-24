@@ -23,7 +23,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.flinklink.core.data.DataFlink;
-import org.apache.flink.api.java.DataSet;
 
 /**
  * This interface defines the Algorithm for learning the {@link BayesianNetwork} parameters.
@@ -34,12 +33,6 @@ import org.apache.flink.api.java.DataSet;
 public interface ParameterLearningAlgorithm {
 
     String BN_NAME="BN_NAME";
-
-    /**
-     * Sets the {@link DataSet} to be used by this ParameterLearningAlgorithm.
-     * @param data a {@link DataSet} object.
-     */
-    void setDataFlink(DataFlink<DataInstance> data);
 
     /**
      * Returns the log marginal probability.
@@ -62,11 +55,6 @@ public interface ParameterLearningAlgorithm {
      */
     void initLearning();
 
-
-    /**
-     * Runs the parameter learning process.
-     */
-    void runLearning();
 
     /**
      * Sets the {@link DAG} structure.

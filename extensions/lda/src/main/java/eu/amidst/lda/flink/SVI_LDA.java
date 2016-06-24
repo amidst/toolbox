@@ -85,9 +85,9 @@ public class SVI_LDA {
         svb.setLearningFactor(learningRate);
         svb.setDataSetSize(dataSize);
         svb.setTimiLimit(timeLimit);
-        svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
-        svb.runLearning();
+        svb.initLearning();
+        svb.updateModel(dataInstances);
 
 
         DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);

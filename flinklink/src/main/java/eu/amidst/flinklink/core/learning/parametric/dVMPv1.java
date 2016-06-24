@@ -28,6 +28,9 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.learning.parametric.utils.VMPParameterv1;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -57,7 +60,7 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
+public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -171,15 +174,6 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
         this.svb.initLearning(); //Init learning is peformed in each mapper.
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
-    }
 
     /**
      * {@inheritDoc}
@@ -324,16 +318,6 @@ public class dVMPv1 implements ParameterLearningAlgorithm, Serializable {
 
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
-    }
 
     /**
      * {@inheritDoc}

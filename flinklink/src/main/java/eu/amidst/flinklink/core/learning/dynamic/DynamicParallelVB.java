@@ -35,8 +35,8 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
-import eu.amidst.flinklink.core.learning.parametric.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.utils.Batch;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
@@ -146,7 +146,6 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     private void updateTime0(DataFlink<DynamicDataInstance> data){
         DataFlink<DataInstance> newdata = DataFlinkConverter.convertToStatic(data);
         this.parallelVBTime0.updateModel(newdata);
-        this.parallelVBTime0.setDataFlink(newdata);
         List<Variable> vars = this.latentVariablesNames
                                         .stream()
                                         .map(name -> this.dagTime0.getVariables().getVariableByName(name))

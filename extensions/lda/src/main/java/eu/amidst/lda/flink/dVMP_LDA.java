@@ -82,10 +82,10 @@ public class dVMP_LDA {
         svb.setSeed(5);
 
         svb.setBatchSize(docsPerBatch);
-        svb.setDataFlink(dataInstances);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.setDAG(plateauLDA.getDagLDA());
-        svb.runLearning();
+        svb.initLearning();
+        svb.updateModel(dataInstances);
 
 
         DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);

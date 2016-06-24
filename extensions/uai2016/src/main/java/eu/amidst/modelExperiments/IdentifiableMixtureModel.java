@@ -18,7 +18,7 @@
 package eu.amidst.modelExperiments;
 
 import eu.amidst.core.variables.Variable;
-import eu.amidst.flinklink.core.learning.parametric.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 
 import java.io.Serializable;
 

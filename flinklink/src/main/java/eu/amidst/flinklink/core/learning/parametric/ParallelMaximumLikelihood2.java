@@ -92,25 +92,8 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
      * {@inheritDoc}
      */
     @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public double getLogMarginalProbability() {
         throw new UnsupportedOperationException("Method not implemented yet");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
     }
 
     /**

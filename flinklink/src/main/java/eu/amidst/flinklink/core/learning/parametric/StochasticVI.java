@@ -49,7 +49,7 @@ import java.text.DecimalFormat;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
+public class StochasticVI implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -144,31 +144,12 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         this.svb.initLearning(); //Init learning is peformed in each mapper.
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public double getLogMarginalProbability() {
         return Double.NaN;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
     }
 
     /**

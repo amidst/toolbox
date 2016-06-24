@@ -30,7 +30,6 @@ public class ParallelMLExample {
         //Learning parameters
         learningAlgorithmFlink.setBatchSize(10);
         learningAlgorithmFlink.setDAG(dag);
-        learningAlgorithmFlink.setDataFlink(dataFlink);
 
         //Initialize the learning process
         learningAlgorithmFlink.initLearning();

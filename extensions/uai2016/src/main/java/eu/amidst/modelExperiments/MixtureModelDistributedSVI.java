@@ -101,8 +101,8 @@ public class MixtureModelDistributedSVI {
 
         stochasticVI.setOutput(true);
         stochasticVI.setDAG(hiddenNB);
-        stochasticVI.setDataFlink(dataFlink);
-        stochasticVI.runLearning();
+        stochasticVI.initLearning();
+        stochasticVI.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();

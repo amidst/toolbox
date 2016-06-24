@@ -24,6 +24,7 @@ import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgo
 import eu.amidst.core.conceptdrift.utils.Fading;
 import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -129,5 +130,10 @@ public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLear
     @Override
     public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
         return this.svb.predictedLogLikelihood(batch);
+    }
+
+    @Override
+    public void setPlateuStructure(PlateuStructure plateuStructure) {
+        this.svb.setPlateuStructure(plateuStructure);
     }
 }

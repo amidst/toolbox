@@ -98,8 +98,8 @@ public class IDAmodelDistributedSVI {
 
         stochasticVI.setOutput(true);
         stochasticVI.setDAG(hiddenNB);
-        stochasticVI.setDataFlink(dataFlink);
-        stochasticVI.runLearning();
+        stochasticVI.initLearning();
+        stochasticVI.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
         System.out.println(LearnedBnet.toString());
 

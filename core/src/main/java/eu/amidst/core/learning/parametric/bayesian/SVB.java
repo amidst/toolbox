@@ -22,7 +22,6 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.learning.parametric.bayesian.utils.*;
@@ -123,9 +122,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     }
 
     /**
-     * Sets the plateu structure of this SVB.
-     * @param plateuStructure a valid {@link PlateuStructure} object.
+     * {@inheritDoc}
      */
+    @Override
     public void setPlateuStructure(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }
@@ -485,15 +484,6 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void setDataStream(DataStream<DataInstance> data) {
         this.dataStream=data;
-    }
-
-    /**
-     * Converts a {@link DAG} to an extended Exponential Family (EF) Bayesian network (BN).
-     * @param dag a directed acyclic graph {@link DAG}.
-     * @return an {@link EF_BayesianNetwork} object.
-     */
-    private static EF_BayesianNetwork convertDAGToExtendedEFBN(DAG dag){
-        return null;
     }
 
     /**

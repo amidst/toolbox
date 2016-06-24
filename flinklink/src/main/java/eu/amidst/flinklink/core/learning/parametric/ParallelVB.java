@@ -33,6 +33,8 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -60,7 +62,7 @@ import java.util.*;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
+public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -162,15 +164,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.svb.initLearning(); //Init learning is peformed in each mapper.
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
-    }
 
     /**
      * {@inheritDoc}
@@ -312,16 +305,6 @@ public class ParallelVB implements ParameterLearningAlgorithm, Serializable {
         this.randomStart=false;
 
         return this.getLogMarginalProbability();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
     }
 
     /**

@@ -31,6 +31,9 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
@@ -62,7 +65,7 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMP implements ParameterLearningAlgorithm, Serializable {
+public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -118,6 +121,10 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         this.idenitifableModelling = idenitifableModelling;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.svb.setPlateuStructure(plateuStructure);
     }
@@ -171,16 +178,6 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning(); //Init learning is peformed in each mapper.
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
     }
 
     /**
@@ -333,16 +330,6 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         return this.getLogMarginalProbability();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -375,7 +362,10 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         this.svb.setOutput(activateOutput);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
             return this.svb.getParameterPosterior(parameter);
     }

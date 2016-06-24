@@ -9,7 +9,7 @@
  *
  */
 
-package eu.amidst.flinklink.core.learning.parametric;
+package eu.amidst.flinklink.core.learning.parametric.utils;
 
 import eu.amidst.core.exponentialfamily.NaturalParameters;
 import eu.amidst.core.inference.InferenceAlgorithm;

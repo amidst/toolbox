@@ -9,14 +9,16 @@
  *
  */
 
-package eu.amidst.flinklink.core.learning.parametric;
+package eu.amidst.flinklink.core.learning.parametric.utils;
+
+import eu.amidst.core.variables.Variable;
 
 /**
- * Created by andresmasegosa on 12/5/16.
+ * Created by andresmasegosa on 18/1/16.
  */
-public interface GlobalvsLocalUpdate {
-    boolean isGlobalUpdate();
+public interface IdenitifableModelling{
 
-    void setGlobalUpdate(boolean globalUpdate);
+    int getNumberOfEpochs();
 
+    boolean isActiveAtEpoch(Variable variable, int epoch);
 }

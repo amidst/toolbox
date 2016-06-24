@@ -98,8 +98,8 @@ public class MixtureModelDistributedVMPv2 {
 
         parallelVB.setOutput(true);
         parallelVB.setDAG(hiddenNB);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
