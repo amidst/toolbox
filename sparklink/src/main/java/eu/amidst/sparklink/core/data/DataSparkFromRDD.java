@@ -48,7 +48,7 @@ public class DataSparkFromRDD implements DataSpark {
     }
 
     @Override
-    public JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize) {
-        return DataFrameOps.toBatchedRDD(amidstRDD, attributes, batchSize);
+    public JavaRDD<DataInstance> getDataSet() {
+        return amidstRDD;
     }
 }

@@ -26,15 +26,8 @@ public class DataSparkFromDataFrame implements DataSpark {
     }
 
     @Override
-    public JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize){
-
-        // Each batch correspond to a particular partition
-        // Lazily convert the DataFrame into an RDD:
-        JavaRDD<DataInstance> instanceRDD = DataFrameOps.toDataInstanceRDD(data, attributes);
-
-        JavaRDD<DataOnMemory<DataInstance>> batchedRDD = DataFrameOps.toBatchedRDD(instanceRDD, attributes, batchSize);
-
-        return batchedRDD;
+    public JavaRDD<DataInstance> getDataSet(){
+        return DataFrameOps.toDataInstanceRDD(data, attributes);
     }
 
     @Override

@@ -15,7 +15,10 @@ public interface DataSpark {
 
     Attributes getAttributes();
 
-    JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize);
+    JavaRDD<DataInstance> getDataSet();
 
+    default JavaRDD<DataOnMemory<DataInstance>> getBatchedDataSet(int batchSize){
+        return DataFrameOps.toBatchedRDD(this.getDataSet(), this.getAttributes(), batchSize);
+    }
 
 }
