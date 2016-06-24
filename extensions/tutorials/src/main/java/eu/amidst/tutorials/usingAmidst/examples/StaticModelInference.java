@@ -32,7 +32,7 @@ public class StaticModelInference {
         assignment.setValue(varObserved,0.0);
 
         //we set the algorithm
-        InferenceAlgorithm infer = new VMP(); //new HuginInference(); new ImportanceSamplin();
+        InferenceAlgorithm infer = new VMP(); //new HuginInference(); new ImportanceSampling();
         infer.setModel(bn);
         infer.setEvidence(assignment);
 

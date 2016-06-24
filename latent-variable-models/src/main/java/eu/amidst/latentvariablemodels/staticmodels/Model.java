@@ -75,8 +75,15 @@ public abstract class Model {
 
 
     private void initLearningFlink() {
-        if(learningAlgorithmFlink==null)
-            learningAlgorithmFlink = new dVMP();
+        if(learningAlgorithmFlink==null) {
+            dVMP dvmp = new dVMP();
+            dvmp.setBatchSize(100);
+            dvmp.setMaximumGlobalIterations(10);
+            dvmp.setMaximumLocalIterations(100);
+            dvmp.setLocalThreshold(0.0001);
+            dvmp.setGlobalThreshold(0.01);
+            learningAlgorithmFlink = dvmp;
+        }
 
         learningAlgorithmFlink.setBatchSize(windowSize);
         learningAlgorithmFlink.setDAG(this.getDAG());
@@ -86,8 +93,15 @@ public abstract class Model {
 
 
     private  void initLearning() {
-        if(learningAlgorithm==null)
-            learningAlgorithm = new SVB();
+        if(learningAlgorithm==null) {
+            SVB svb = new SVB();
+            svb.setWindowsSize(100);
+            svb.getPlateuStructure().getVMP().setTestELBO(false);
+            svb.getPlateuStructure().getVMP().setMaxIter(100);
+            svb.getPlateuStructure().getVMP().setThreshold(0.0001);
+
+            learningAlgorithm = svb;
+        }
         learningAlgorithm.setWindowsSize(windowSize);
         learningAlgorithm.setDAG(this.getDAG());
         learningAlgorithm.setOutput(true);
