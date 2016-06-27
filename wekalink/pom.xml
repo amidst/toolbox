@@ -14,7 +14,7 @@
     <version>${AMIDSTver}</version>
 
     <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
+        <AMIDSTver>0.4.3</AMIDSTver>
     </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
