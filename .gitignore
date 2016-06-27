@@ -94,3 +94,4 @@ ignoredfolder/*
 
 #ignore target folders
 */target/*
+*/*/target/*
