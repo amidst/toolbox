@@ -1,4 +1,0 @@
-for file in *.jpg
-do
- convert $file ${file%.jpg}.pdf
-done

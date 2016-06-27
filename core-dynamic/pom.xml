@@ -13,18 +13,18 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core-dynamic</artifactId>
-    <version>${AMIDSTver}</version>
+    <version>0.4.3</version>
 
 
 
     <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
+        <!--AMIDSTver>0.4.3</AMIDSTver-->
     </properties>
 
 
@@ -107,7 +107,7 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

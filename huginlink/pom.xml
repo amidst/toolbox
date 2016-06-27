@@ -5,13 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>huginlink</artifactId>
-    <version>${AMIDSTver}</version>
+    <version>0.4.3</version>
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -32,7 +32,7 @@
     </scm>
 
     <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
+        <!--AMIDSTver>0.4.3</AMIDSTver-->
     </properties>
 
     <developers>
@@ -98,12 +98,12 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version>
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version>
         </dependency>
         <dependency>
             <groupId>com.hugin</groupId>
