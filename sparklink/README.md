@@ -6,10 +6,11 @@ The following functionality is already implemented on the **sparklink** module:
 
 * Data Sources integration: Reading and writing data from SparkSQL on AMIDST
 * Distributed Sampling of Bayesian Networks
+* Parametric learning from distributed data (Maximum Likelihood)
 
 ###### ROADMAP
 
-* Parametric learning from distributed data (Maximum Likelihood + Variational Message Passing)
+* Support for VMP
 
 
 ## API
@@ -25,6 +26,10 @@ Notice that this API is interoperable between **Java** and **Scala**.
 ###### Setting up Spark
 
 ```scala
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SQLContext
+
 // Init Spark
 val conf = new SparkConf().setAppName("SparkLink!")
 val sc = new SparkContext(conf)
@@ -34,6 +39,9 @@ val sqlContext = new org.apache.spark.sql.SQLContext(sc)
 ###### Reading Data
 
 ```scala
+import eu.amidst.sparklink.core.data.DataSpark
+import eu.amidst.sparklink.core.io.DataSparkLoader
+
 // Path for your file:
 val path = "hdfs://..."
 // {format} can be any supported one: parquet, json, csv...
@@ -46,11 +54,33 @@ val dataSpark : DataSpark = DataSparkLoader.loadSparkDataFrame(df)
 
 ###### Learning a BN
 ```scala
-// TODO: ...
+import eu.amidst.core.io.BayesianNetworkLoader
+
+// Asume a structure bn, provided from file or previously built
+import eu.amidst.sparklink.core.util.BayesianNetworkSampler
+import eu.amidst.sparklink.core.learning.ParallelMaximumLikelihood
+
+// Load a Bayesian Network
+val bn = BayesianNetworkLoader.loadFromFile("<path>")
+
+val parameterLearningAlgorithm = new ParallelMaximumLikelihood()
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(bn.getDAG)
+//We set the batch size which will be employed to learn the model in parallel
+parameterLearningAlgorithm.setBatchSize(100)
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataSpark(dataSpark)
+//We perform the learning
+parameterLearningAlgorithm.runLearning()
+//And we get the model
+val result = parameterLearningAlgorithm.getLearntBayesianNetwork()
+
 ```
 
 ###### Sampling a BN
 ```scala
+import eu.amidst.sparklink.core.util.BayesianNetworkSampler
+
 // Load a Bayesian Network
 val bn = BayesianNetworkLoader.loadFromFile("<path>")
 
