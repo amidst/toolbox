@@ -34,15 +34,13 @@
 <li><p><a href="#sec:flinklink:io:read">Reading data</a></p></li>
 <li><p><a href="#sec:flinklink:io:write">Write data</a></p></li>
 </ul></li>
-<li><p><a href="#sec:flinklink:learning">Parametric Learning</a></p></li>
-<li><p><a href="#sec:flinklink:inference">Inference</a></p>
+<li><p><a href="#sec:flinklink:learning">Parametric Learning</a></p>
 <ul>
 <li><p><a href="#sec:flinklink:learning:pml">Parallel Maximum Likelihood</a></p></li>
 <li><p><a href="#sec:flinklink:learning:dvmp">Distributed Variational Message Pasing</a></p></li>
 <li><p><a href="#sec:flinklink:learning:dvi">Distributed VI</a></p></li>
 <li><p><a href="#sec:flinklink:learning:svi">Stochastic VI</a></p></li>
 </ul></li>
-<li><p><a href="#sec:flinklink:dbn">Dynamic Bayesian networks with Flink</a></p></li>
 <li><p><a href="#sec:flinklink:ext"> Extensions and applications</a></p>
 <ul>
 <li><p><a href="#sec:flinklink:ext:models"> Latent variable models with Flink</a></p></li>
@@ -51,8 +49,7 @@
 </ul>
 <h2 id="sec:flinklink:io">Input/output</h2>
 <h3 id="sec:flinklink:io:read">Reading data</h3>
-<p>In this |import|</p>
-<p>example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
+<p>In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
 <pre><code>package eu.amidst.flinklink.examples.io;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -318,10 +315,9 @@ public class StochasticVIExample {
     }
 }</code></pre>
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
-<h2 id="sec:flinklink:inference">Inference</h2>
-<h2 id="sec:flinklink:dbn">Dynamic Bayesian networks with Flink</h2>
 <h2 id="sec:flinklink:ext">Extensions and applications</h2>
 <h3 id="sec:flinklink:ext:models">Latent variable models with Flink</h3>
+<p>The module <em>latent-variable-models</em> contains a large set of classes that allow to easily learn some of the standard models with latent variables. These models can be learnt from not only from local datasets (e.g. a single ARFF file) but also from distributed ones (e.g. ARFF folder). These last ones are managed using Flink. In code example shown below the model <em>Factor Analysis</em> is learnt from a distributed dataset.</p>
 <pre><code>package eu.amidst.flinklink.examples.extensions;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -355,7 +351,7 @@ public class LatentModelsFlink {
 
     }
 }</code></pre>
-<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<p><a href="#sec:flinklink">[Back to Top]</a> In previous example,</p>
 <h3 id="sec:flinklink:ext:conceptdrift">Concept drift detection</h3>
 <pre><code>/*
  *

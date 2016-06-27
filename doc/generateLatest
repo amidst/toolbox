@@ -2,7 +2,7 @@
 #
 
 
-ver="0.4.3-alpha";
+ver="0.4.3";
 
 ./${ver}/scripts/generate
 
