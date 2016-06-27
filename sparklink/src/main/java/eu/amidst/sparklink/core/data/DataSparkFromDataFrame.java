@@ -6,6 +6,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.DataFrame;
+import org.apache.spark.sql.SQLContext;
 
 
 /**
@@ -31,7 +32,7 @@ public class DataSparkFromDataFrame implements DataSpark {
     }
 
     @Override
-    public DataFrame getDataFrame() {
+    public DataFrame getDataFrame(SQLContext sql) {
         return data;
     }
 

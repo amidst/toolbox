@@ -63,22 +63,22 @@ val parallelism = 4 // Number of parallel partitions (cores)
 val sampledDataSpark : DataSpark = sampler.sampleToDataSpark(sc, nSamples, parallelism)
 
 // Use the data or write it to a file (any format):
-sampledDataSpark.write.format("json").save("hdfs://...")
+sampledDataSpark.getDataFrame().write.format("json").save("hdfs://...")
 ```
 
 
-####Examples (Java)
+### Examples (Java)
 
 **TODO** very soon...
 
 
 
-### Building and compatibility
+## Building and compatibility
 
 **To be Tested!** The sparklink module should work with any version of Spark 1.x that includes the DataFrame API, namely 1.3.x or up.
 
 By default the pom file is configured to compile it against the latest stable version of Spark v1.x available.
 
-### Development and usage questions
+## Development and usage questions
 
 Ask @jacintoArias
