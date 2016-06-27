@@ -336,6 +336,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void setDAG(DAG dag_) {
         this.dag = dag_;
+        this.svb.setDAG(dag_);
     }
 
     /**

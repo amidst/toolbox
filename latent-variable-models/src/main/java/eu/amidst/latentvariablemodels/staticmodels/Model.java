@@ -34,6 +34,8 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  */
 public abstract class Model {
 
+    protected final Attributes atts;
+
     protected ParameterLearningAlgorithm learningAlgorithm = null;
 
     protected eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithmFlink = null;
@@ -51,6 +53,7 @@ public abstract class Model {
     protected PlateuStructure plateuStructure;
 
     public Model(Attributes attributes) {
+        this.atts = attributes;
         vars = new Variables(attributes);
 
         if(!this.isValidConfiguration()) {
@@ -93,7 +96,7 @@ public abstract class Model {
     }
 
 
-    private void initLearningFlink() {
+    protected void initLearningFlink() {
         if(learningAlgorithmFlink==null) {
             dVMP dvmp = new dVMP();
             dvmp.setBatchSize(100);
@@ -105,13 +108,21 @@ public abstract class Model {
         }
 
         learningAlgorithmFlink.setBatchSize(windowSize);
-        learningAlgorithmFlink.setDAG(this.getDAG());
+
+        if (this.getDAG()!=null)
+            learningAlgorithmFlink.setDAG(this.getDAG());
+        else if (this.getPlateuStructure()!=null)
+            ((BayesianParameterLearningAlgorithm)learningAlgorithmFlink).setPlateuStructure(this.getPlateuStructure());
+        else
+            throw new IllegalArgumentException("Non provided dag or PlateauStructure");
+
+
         learningAlgorithmFlink.initLearning();
         initialized=true;
     }
 
 
-    private  void initLearning() {
+    protected  void initLearning() {
         if(learningAlgorithm==null) {
             SVB svb = new SVB();
             svb.setWindowsSize(100);
