@@ -13,13 +13,18 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.2</version>
+        <version>0.4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.3</version>
+
+
+    <properties>
+        <AMIDSTver>0.4.3</AMIDSTver>
+    </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -135,6 +140,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>

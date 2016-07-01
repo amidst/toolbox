@@ -435,6 +435,9 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
                         localSum -= this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
                     }
 
+                    if (Double.isNaN(momentValue) || Double.isNaN(localSum) || Double.isNaN(partialSum))
+                        throw new IllegalStateException("NAN VALUE!");
+
                     localSum*=momentValue;
 
                     partialSum+=localSum;

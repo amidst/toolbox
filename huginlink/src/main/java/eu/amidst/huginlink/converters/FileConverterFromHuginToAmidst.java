@@ -70,7 +70,7 @@ public class FileConverterFromHuginToAmidst {
 
                     Domain huginBN = BNLoaderFromHugin.loadFromFile(fullFileName);
                     BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-                    BayesianNetworkWriter.saveToFile(amidstBN, fullAmidstFileName);
+                    BayesianNetworkWriter.save(amidstBN, fullAmidstFileName);
 
                     //***************************************** TEST PART **********************************************
                     BayesianNetwork amidstBN2 = BayesianNetworkLoader.loadFromFile(fullAmidstFileName);
@@ -89,7 +89,7 @@ public class FileConverterFromHuginToAmidst {
 
                     Class huginDBN = DBNLoaderFromHugin.loadFromFile(fullFileName);
                     DynamicBayesianNetwork amidstDBN = DBNConverterToAmidst.convertToAmidst(huginDBN);
-                    DynamicBayesianNetworkWriter.saveToFile(amidstDBN, fullAmidstFileName);
+                    DynamicBayesianNetworkWriter.save(amidstDBN, fullAmidstFileName);
 
                     //***************************************** TEST PART **********************************************
                     DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullAmidstFileName);

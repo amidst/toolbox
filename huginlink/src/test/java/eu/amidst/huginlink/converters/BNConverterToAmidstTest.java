@@ -46,14 +46,14 @@ public class BNConverterToAmidstTest {
         BayesianNetwork amidstBN2 = BNConverterToAMIDST.convertToAmidst(huginBN2);
         System.out.println("\nAMIDST network object created.");
 
-        BNWriterToHugin.saveToHuginFile(amidstBN2, "networks/asia.bn");
+        BayesianNetworkWriterToHugin.save(amidstBN2, "networks/asia.bn");
 
         parseListener = new DefaultClassParseListener();
         huginBN = new Domain ("networks/IS.net", parseListener);*/
 
         Domain huginBN = BNLoaderFromHugin.loadFromFile("../networks/dataWeka/asia.net");
         BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
-        BayesianNetworkWriter.saveToFile(amidstBN, "../networks/dataWeka/asia.bn");
+        BayesianNetworkWriter.save(amidstBN, "../networks/dataWeka/asia.bn");
 
     }
 

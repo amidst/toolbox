@@ -27,7 +27,7 @@ import eu.amidst.dynamic.inference.DynamicVMP;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.dynamic.learning.dynamic.DynamicNaiveBayesClassifier;
+import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DataSetGenerator;
 import org.junit.Before;
@@ -59,14 +59,14 @@ public class HuginInferenceForDBNTest {
 
         //String file = "./datasets/bank_data_train.arff";
         //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(file);
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(234,100000,10,0);
+        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(234,100,10,0);
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
         //model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
         model.setClassVarID(0);
         model.setParallelMode(true);
         model.learn(data);
         amidstDBN = model.getDynamicBNModel();
-        DynamicBayesianNetworkWriter.saveToFile(amidstDBN, "../networks/bnaic2015/BCC/CajamarDBN.dbn");
+        DynamicBayesianNetworkWriter.save(amidstDBN, "../networks/bnaic2015/BCC/CajamarDBN.dbn");
 
         amidstDBN = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/CajamarDBN.dbn");
         //defaultVar = amidstDBN.getDynamicVariables().getVariableByName("DEFAULT");
@@ -87,7 +87,6 @@ public class HuginInferenceForDBNTest {
         //**************************************************************************************************************
         // HUGIN - FILTERED POSTERIOR
         //**************************************************************************************************************
-
         posterior = null;
         huginProbabilities = new ArrayList();
         InferenceEngineForDBN.setInferenceAlgorithmForDBN(new HuginInferenceForDBN());

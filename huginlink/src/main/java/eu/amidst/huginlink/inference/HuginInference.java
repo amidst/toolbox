@@ -30,7 +30,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.huginlink.converters.BNConverterToHugin;
-import eu.amidst.huginlink.io.BNWriterToHugin;
+import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
 
 import java.io.Serializable;
 
@@ -238,7 +238,7 @@ public class HuginInference implements InferenceAlgorithm, Serializable {
 
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
 
-        BNWriterToHugin.saveToHuginFile(bn,"networks/simulated/inference.net");
+        BayesianNetworkWriterToHugin.save(bn,"networks/simulated/inference.net");
 
         Variable DiscreteVar0 = bn.getVariables().getVariableById(0);
         Variable GaussianVar0 = bn.getVariables().getVariableById(1);

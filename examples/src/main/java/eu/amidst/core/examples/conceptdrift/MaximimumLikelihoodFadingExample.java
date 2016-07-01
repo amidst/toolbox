@@ -53,7 +53,7 @@ public class MaximimumLikelihoodFadingExample {
         parameterLearningAlgorithm.setFadingFactor(0.9);
 
         //We set the batch size which will be employed to learn the model
-        parameterLearningAlgorithm.setBatchSize(100);
+        parameterLearningAlgorithm.setWindowsSize(100);
 
         //We set the data which is going to be used for leaning the parameters
         parameterLearningAlgorithm.setDataStream(data);

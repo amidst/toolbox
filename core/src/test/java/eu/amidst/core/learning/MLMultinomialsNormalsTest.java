@@ -20,7 +20,6 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -64,14 +63,15 @@ public class MLMultinomialsNormalsTest {
 
             //Parameter Learning
             ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
-            parallelMaximumLikelihood.setBatchSize(1000);
+            parallelMaximumLikelihood.setWindowsSize(1000);
             parallelMaximumLikelihood.setParallelMode(true);
             parallelMaximumLikelihood.setLaplace(false);
-            LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
+            parallelMaximumLikelihood.setDAG(trueBN.getDAG());
+            parallelMaximumLikelihood.initLearning();
+            parallelMaximumLikelihood.updateModel(data);
+            BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
-            BayesianNetwork bnet = LearningEngine.learnParameters(trueBN.getDAG(), data);
-
-            //Check if the probability distributions of each node
+                 //Check if the probability distributions of each node
             for (Variable var : trueBN.getVariables()) {
                 System.out.println("\n------ Variable " + var.getName() + " ------");
                 System.out.println("\nTrue distribution:\n"+ trueBN.getConditionalDistribution(var));

@@ -86,7 +86,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
      * Creates a new object of the class {@link moa.options.IntOption}.
      * Specifies the size of the batch used for learning this AmidstRegressor.
      */
-    public IntOption batchSizeOption = new IntOption("batchSize",
+    public IntOption batchSizeOption = new IntOption("windowsSize",
             'w', "Size of the batch in which to perform learning (significant if hidden variables are used)",
             100);
 
@@ -209,7 +209,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1).forEach(i -> modelHeader.newGaussianVariable("HiddenG_" + i));
         if(getnOfStatesMultHiddenVar_() > 0)
-            modelHeader.newMultionomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
+            modelHeader.newMultinomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
 
         dag = new DAG(modelHeader);
 

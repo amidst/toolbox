@@ -84,3 +84,11 @@ networks/*.hlg
 
 # Ignore big Amazon output files
 extensions/uai2016/doc-experiments/experimentsResults/outputs/
+
+
+#generic ignored folder
+ignoredfolder/*
+
+
+#ignore target folders
+*/target/*

@@ -20,7 +20,6 @@ package eu.amidst.core.learning;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.LearningEngine;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
@@ -58,11 +57,14 @@ public class ParallelMLMissingDataTest extends TestCase {
         //Parameter Learning
         ParallelMLMissingData parallelMaximumLikelihood = new ParallelMLMissingData();
         parallelMaximumLikelihood.setLaplace(true);
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
+        parallelMaximumLikelihood.setDAG(asianet.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
+
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
@@ -102,11 +104,13 @@ public class ParallelMLMissingDataTest extends TestCase {
         //Parameter Learning
         ParallelMLMissingData parallelMaximumLikelihood = new ParallelMLMissingData();
         parallelMaximumLikelihood.setLaplace(true);
-        parallelMaximumLikelihood.setBatchSize(1000);
+        parallelMaximumLikelihood.setWindowsSize(1000);
         parallelMaximumLikelihood.setParallelMode(true);
         parallelMaximumLikelihood.setLaplace(false);
-        LearningEngine.setParameterLearningAlgorithm(parallelMaximumLikelihood);
-        BayesianNetwork bnet = LearningEngine.learnParameters(asianet.getDAG(), data);
+        parallelMaximumLikelihood.setDAG(asianet.getDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+        BayesianNetwork bnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {

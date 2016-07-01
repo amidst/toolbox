@@ -42,8 +42,8 @@ public class VMPTest extends TestCase {
     public static void test1() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -132,8 +132,8 @@ public class VMPTest extends TestCase {
     public static void test2() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
 
         DAG dag = new DAG(variables);
 
@@ -177,9 +177,9 @@ public class VMPTest extends TestCase {
     public static void test3() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -282,9 +282,9 @@ public class VMPTest extends TestCase {
     public static void test4() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -378,9 +378,9 @@ public class VMPTest extends TestCase {
     public static void test5() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -454,9 +454,9 @@ public class VMPTest extends TestCase {
     public static void test6() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -528,9 +528,9 @@ public class VMPTest extends TestCase {
     public static void test7() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -603,9 +603,9 @@ public class VMPTest extends TestCase {
     public static void test8() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -671,9 +671,9 @@ public class VMPTest extends TestCase {
     public static void test9() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -737,9 +737,9 @@ public class VMPTest extends TestCase {
     public static void test10() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -787,9 +787,9 @@ public class VMPTest extends TestCase {
     public static void test11() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -862,9 +862,9 @@ public class VMPTest extends TestCase {
     public static void test12() {
 
         Variables variables = new Variables();
-        Variable varA = variables.newMultionomialVariable("A", 2);
-        Variable varB = variables.newMultionomialVariable("B", 2);
-        Variable varC = variables.newMultionomialVariable("C", 2);
+        Variable varA = variables.newMultinomialVariable("A", 2);
+        Variable varB = variables.newMultinomialVariable("B", 2);
+        Variable varC = variables.newMultinomialVariable("C", 2);
 
         DAG dag = new DAG(variables);
 
@@ -967,11 +967,11 @@ public class VMPTest extends TestCase {
 
         Variables variables = new Variables();
 
-        Variable varA = variables.newMultionomialVariable("A", 4);
+        Variable varA = variables.newMultinomialVariable("A", 4);
 
         int nVar = 3;
         for (int i = 0; i < nVar; i++) {
-            variables.newMultionomialVariable(i + "", 4);
+            variables.newMultinomialVariable(i + "", 4);
         }
 
         DAG dag = new DAG(variables);
