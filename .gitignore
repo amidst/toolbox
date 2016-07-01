@@ -1,0 +1,86 @@
+
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# other pdfs to ignore
+*.pdf
+doc/testEvaluation/testCajamar.*
+doc/testEvaluation/testDaimler.*
+doc/presentations/omv_meeting.pdf
+doc/requirementEngineering/REproccess.pdf
+doc/requirementEngineering/REproccessOLD.pdf
+doc/requirementEngineering/REproccessNIK.pdf
+doc/testEvaluation/testEvaluation*
+doc/D2.1_AMIDSTModelingFramework/D2.1_AMIDSTModellingFramework.*
+doc/CEF-BNs/CEF-BNs.pdf
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# IDE noise
+.idea/
+
+hgapi82_amidst-64.jar
+
+# pdf noise
+doc/REproccess.pdf
+
+*.iml
+**/*.iml
+*/*iml
+*/*/*.iml
+#papers/*/*.iml
+target/maven-archiver*
+target/surefire-reports*
+target/*
+extensions/cajamar/target/*
+huginlink/target/*
+moalink/target/*
+core-static/target/*
+sparklink/target/*
+core-dynamic/target/*
+examplesIDA2015/target/*
+papers/*/target/*
+examples/target/*
+moa-customized/target/*
+classes/*
+
+# latex noise
+*.synctex.gz
+*.log
+*.aux
+*.bbl
+*.blg
+*.nav
+*.out
+*.snm
+*.toc
+
+# Other noise
+*~
+*.bak
+*.el
+
+*.rel
+Archive 2.zip
+Archive.1.zip
+*.zip
+
+*.arff
+datasets/RandomData.arff
+doc/testEvaluation/*
+huginlib/*
+maven_startup.sh
+*.jnilib
+
+# hugin aux files
+networks/*.hlg
+
+# Ignore big Amazon output files
+extensions/uai2016/doc-experiments/experimentsResults/outputs/
