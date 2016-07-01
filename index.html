@@ -31,13 +31,13 @@
 </p>
 
 <p>The AMIDST Toolbox allows you to model your problem using a flexible probabilistic language based on graphical models. 
-Then you fit your model with data using a Bayesian approach to handle modelling uncertainty.</p>
+Then you fit your model with data using a Bayesian approach to handle modeling uncertainty.</p>
 
 <h2>
 <a id="multi-core-and-distributed-processing" class="anchor" href="#multi-core-and-distributed-processing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multi-core and distributed processing</h2>
 
 <p align="center">
-<img title="Taxonomy" src="https://amidst.github.io/toolbox/cluster-crop.pdf" width="250">
+<img title="Taxonomy" src="https://amidst.github.io/toolbox/docs/web/figs/cluster-crop.pdf" width="250">
 </p>
 
 <p>AMIDST provides tailored parallel (powered by Java 8 Streams) and distributed (powered by <a href="https://flink.apache.org">Flink</a> or <a href="http://spark.apache.org">Spark</a>) implementations of Bayesian parameter learning for batch and streaming data. This processing is based on flexible and <a href="http://amidst.github.io/toolbox/docs/dVMP.pdf">scalable message passing algorithms</a>.</p>
@@ -62,12 +62,32 @@ to other software tools such as Hugin, MOA, Weka, R, etc.</p></li>
 </ul>
 
 <h1>
-<a id="simple-example" class="anchor" href="#simple-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Simple Example<a name="example"></a>
+<a id="simple-code-example" class="anchor" href="#simple-code-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Simple Code Example<a name="example"></a>
 </h1>
 
-<div class="highlight highlight-source-java"><pre>        <span class="pl-c">//Load the datastream</span>
+<h2>
+<a id="fitting-a-model-with-local-data" class="anchor" href="#fitting-a-model-with-local-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fitting a model with local data</h2>
+
+<div class="highlight highlight-source-java"><pre>        <span class="pl-c">//Load the data</span>
         <span class="pl-smi">String</span> filename <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>./data.arff<span class="pl-pds">"</span></span>;
         <span class="pl-k">DataStream&lt;<span class="pl-smi">DataInstance</span>&gt;</span> data <span class="pl-k">=</span> <span class="pl-smi">DataStreamLoader</span><span class="pl-k">.</span>open(filename);
+
+        <span class="pl-c">//Learn the model</span>
+        <span class="pl-smi">Model</span> model <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">CustomGaussianMixture</span>(data<span class="pl-k">.</span>getAttributes());
+        model<span class="pl-k">.</span>updateModel(data);
+
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(model<span class="pl-k">.</span>getModel());
+
+        <span class="pl-c">// Save with .bn format</span>
+        <span class="pl-smi">BayesianNetworkWriter</span><span class="pl-k">.</span>save(model<span class="pl-k">.</span>getModel(), <span class="pl-s"><span class="pl-pds">"</span>./example.bn<span class="pl-pds">"</span></span>);</pre></div>
+
+<h2>
+<a id="fitting-a-model-with-distributed-data" class="anchor" href="#fitting-a-model-with-distributed-data" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fitting a model with distributed data</h2>
+
+<div class="highlight highlight-source-java"><pre>        <span class="pl-c">//Load the data</span>
+        <span class="pl-smi">String</span> filename <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>hdfs://dataDistributed.arff<span class="pl-pds">"</span></span>;
+        <span class="pl-k">final</span> <span class="pl-smi">ExecutionEnvironment</span> env <span class="pl-k">=</span> <span class="pl-smi">ExecutionEnvironment</span><span class="pl-k">.</span>getExecutionEnvironment();
+        <span class="pl-k">DataFlink&lt;<span class="pl-smi">DataInstance</span>&gt;</span> data <span class="pl-k">=</span> <span class="pl-smi">DataFlinkLoader</span><span class="pl-k">.</span>loadDataFromFolder(env, filename, <span class="pl-c1">false</span>);
 
         <span class="pl-c">//Learn the model</span>
         <span class="pl-smi">Model</span> model <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">CustomGaussianMixture</span>(data<span class="pl-k">.</span>getAttributes());
