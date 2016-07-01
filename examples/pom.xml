@@ -23,7 +23,7 @@
 
 
     <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
+        <!--AMIDSTver>0.4.3</AMIDSTver-->
     </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -105,20 +105,20 @@
     <dependencies>
 
         <dependency>
-            <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
+            <groupId>eu.amidst</groupId>
             <version>0.4.3</version>
         </dependency>
 
         <dependency>
-            <groupId>eu.amidst</groupId>
             <artifactId>core-dynamic</artifactId>
+            <groupId>eu.amidst</groupId>
             <version>0.4.3</version>
         </dependency>
 
         <dependency>
-            <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
+            <groupId>eu.amidst</groupId>
             <version>0.4.3</version>
         </dependency>
         <dependency>
@@ -131,6 +131,7 @@
             <artifactId>dom4j</artifactId>
             <version>1.1</version>
         </dependency>
+
     </dependencies>
 
 
