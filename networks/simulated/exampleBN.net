@@ -3,23 +3,19 @@ net
     node_size = (0 0);
 }
 
-continuous node GaussianVar0
+continuous node Income
 {
 }
 
-continuous node GaussianVar1
+continuous node Expenses
 {
 }
 
-continuous node GaussianVar2
+continuous node Balance
 {
 }
 
-continuous node GaussianVar3
-{
-}
-
-continuous node GaussianVar4
+continuous node TotalCredit
 {
 }
 
@@ -31,37 +27,41 @@ continuous node LatentVar1
 {
 }
 
-potential (GaussianVar0 | LatentVar0 LatentVar1)
+continuous node LatentVar2
 {
-    data = normal ( 1.11862 - 0.0496053 * LatentVar0 - 0.017682 * LatentVar1, 0.575063 );
 }
 
-potential (GaussianVar1 | LatentVar0 LatentVar1)
+potential (Income | LatentVar0 LatentVar1 LatentVar2)
 {
-    data = normal ( 0.623219 + 0.00666926 * LatentVar0 - 0.00631416 * LatentVar1, 2.72515 );
+    data = normal ( 1.01651 + 0.907116 * LatentVar0 - 0.277777 * LatentVar1 + 0.120152 * LatentVar2, 1.02927 );
 }
 
-potential (GaussianVar2 | LatentVar0 LatentVar1)
+potential (Expenses | LatentVar0 LatentVar1 LatentVar2)
 {
-    data = normal ( -1.38873 + 0.220853 * LatentVar0 + 0.0212538 * LatentVar1, 1.97776 );
+    data = normal ( 0.697131 - 0.978416 * LatentVar0 - 0.70049 * LatentVar1 + 0.191987 * LatentVar2, 1.19483 );
 }
 
-potential (GaussianVar3 | LatentVar0 LatentVar1)
+potential (Balance | LatentVar0 LatentVar1 LatentVar2)
 {
-    data = normal ( 0.649765 - 0.656773 * LatentVar0 + 0.023105 * LatentVar1, 34.1519 );
+    data = normal ( -1.56339 - 6.69304 * LatentVar0 - 0.20533 * LatentVar1 + 0.127293 * LatentVar2, 2.95411 );
 }
 
-potential (GaussianVar4 | LatentVar0 LatentVar1)
+potential (TotalCredit | LatentVar0 LatentVar1 LatentVar2)
 {
-    data = normal ( -0.120831 + 0.264121 * LatentVar0 - 0.00434 * LatentVar1, 0.432712 );
+    data = normal ( 1.73829 + 8.02304 * LatentVar0 - 1.98976 * LatentVar1 + 0.276787 * LatentVar2, 12.4125 );
 }
 
 potential (LatentVar0)
 {
-    data = normal ( 0.106762, 324.669 );
+    data = normal ( -0.00694043, 0.265038 );
 }
 
 potential (LatentVar1 | LatentVar0)
 {
-    data = normal ( -0.043344 + 0.772592 * LatentVar0, 12632 );
+    data = normal ( -2.9438E-05 - 0.0510064 * LatentVar0, 0.477893 );
+}
+
+potential (LatentVar2 | LatentVar0 LatentVar1)
+{
+    data = normal ( 0.0143708 - 2.13962 * LatentVar0 - 2.87517 * LatentVar1, 14.8981 );
 }

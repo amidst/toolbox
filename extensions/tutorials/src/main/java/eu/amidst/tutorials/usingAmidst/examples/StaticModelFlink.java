@@ -20,9 +20,9 @@ public class StaticModelFlink {
     public static void main(String[] args) throws IOException, ExceptionHugin {
 
         //Load the datastream
-        String filename = "datasets/simulated/exampleDS_d0_c5.arff";
+        String filename = "datasets/simulated/cajamarDistributed.arff";
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFile(env, filename, false);
+        DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFolder(env, filename, false);
 
         //Learn the model
         Model model = new FactorAnalysis(data.getAttributes());
