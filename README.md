@@ -4,7 +4,7 @@
 
 
 <p align="center">
-<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/pgm-crop.pdf" width="250">
+<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/pgm-crop.png" width="250">
 </p>
 
 
@@ -14,7 +14,7 @@ Then you fit your model with data using a Bayesian approach to handle modeling u
 ## Multi-core and distributed processing
 
 <p align="center">
-<img title="Taxonomy" src="https://amidst.github.io/toolbox/docs/web/figs/cluster-crop.pdf" width="250">
+<img title="Taxonomy" src="https://amidst.github.io/toolbox/docs/web/figs/cluster-crop.png" width="250">
 </p>
 
 AMIDST provides tailored parallel (powered by Java 8 Streams) and distributed (powered by [Flink](https://flink.apache.org) or [Spark](http://spark.apache.org)) implementations of Bayesian parameter learning for batch and streaming data. This processing is based on flexible and [scalable message passing algorithms](http://amidst.github.io/toolbox/docs/dVMP.pdf).
@@ -84,7 +84,7 @@ to other software tools such as Hugin, MOA, Weka, R, etc.
 
 
 <p align="center">
-<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/creditcard-crop.pdf" width="250">
+<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/creditcard-crop.png" width="250">
 </p>
 
 AMIDST Toolbox has been used to track concept drift and do risk prediction in credit operations, 
@@ -96,7 +96,7 @@ the Spanish bank BCC. It is expected to be into production at the beginning of 2
 ## Recognition of traffic maneuvers
 
 <p align="center">
-<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/cars-crop.pdf" width="350">
+<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/cars-crop.png" width="350">
 </p>
 
 AMIDST Toolbox has been used to prototype models for early recognition of traffic maneuver 
@@ -158,7 +158,7 @@ model similar to the one detailed in the above section from 42 million samples i
 our approach under these settings. 
 
 <p align="center">
-<img src="https://amidst.github.io/toolbox/docs/web/figs/flink-scalability.pdf" width="800">
+<img src="https://amidst.github.io/toolbox/docs/web/figs/flink-scalability.png" width="800">
 </p>
 
 # Publications & Use-Cases
