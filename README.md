@@ -1,12 +1,3 @@
-# New Release of AMIDST 0.4.2
-
-We have made a new release of AMIDST 0.4.2.
-
-The new features of this release are incorporated in the Core Dynamic module, specifically the Dynamic Inference Engine, 
-including all the inference algorithms for dynamic Bayesian networks. 
-It consists of the implementation of the dynamic versions of HUGIN Exact Inference, 
-Importance Sampling, Variational Message Passing by means of the Factored Frontier algorithm, as well as Dynamic MAP.
-
 # Scope
 
 This toolbox offers a collection of scalable and parallel algorithms for inference and learning of both static and dynamic Bayesian 
