@@ -30,42 +30,53 @@
 <img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/pgm-crop.pdf" width="250">
 </p>
 
-<p>Model your problem using a flexible probabilistic language based on graphical models. 
-Then, fit it with data using a Bayesian approach to handle modelling uncertainty.</p>
+<p>The AMIDST Toolbox allows you to model your problem using a flexible probabilistic language based on graphical models. 
+Then you fit your model with data using a Bayesian approach to handle modelling uncertainty.</p>
 
 <h2>
 <a id="multi-core-and-distributed-processing" class="anchor" href="#multi-core-and-distributed-processing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multi-core and distributed processing</h2>
 
 <p align="center">
-<img title="Taxonomy" src="https://amidst.github.io/toolbox/docs/cluster.png" width="250">
+<img title="Taxonomy" src="https://amidst.github.io/toolbox/dcluster.png.pdf" width="250">
 </p>
 
-<p>AMIDST provides tailored parallel and distributed implementations of Bayesian parameter 
-learning for batch and streaming data. This processing is based on flexible and scalable 
-message passing algorithms.</p>
+<p>AMIDST provides tailored parallel (powered by Java 8 Streams) and distributed (powered by <a href="https://flink.apache.org">Flink</a> or <a href="http://spark.apache.org">Spark</a>) implementations of Bayesian parameter learning for batch and streaming data. This processing is based on flexible and <a href="http://amidst.github.io/toolbox/docs/dVMP.pdf">scalable message passing algorithms</a>.</p>
 
 <h1>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features<a name="features"></a>
 </h1>
 
 <ul>
-<li><p>Probabilistic Graphical Models: Specify your model using probabilistic graphical models with latent variables
+<li><p><strong>Probabilistic Graphical Models</strong>: Specify your model using probabilistic graphical models with latent variables
 and temporal dependencies.</p></li>
-<li><p>Scalable inference: Perform inference on your probabilistic models with powerful approximate and
+<li><p><strong>Scalable inference</strong>: Perform inference on your probabilistic models with powerful approximate and
 scalable algorithms.</p></li>
-<li><p>Data Streams: Update your models when new data is available. This makes our toolbox 
+<li><p><strong>Data Streams</strong>: Update your models when new data is available. This makes our toolbox 
 appropriate for learning from (massive) data streams.</p></li>
-<li><p>Large-scale Data: Use your defined models to process massive data sets in a distributed 
-computer cluster using Flink or Spark. </p></li>
-<li><p>Extensible: Code your models or algorithms within AMiDST and expand the toolbox functionalities. 
+<li><p><strong>Large-scale Data</strong>: Use your defined models to process massive data sets in a distributed 
+computer cluster using Apache Flink or (soon) <strong>Apache Spark</strong>. </p></li>
+<li><p><strong>Extensible</strong>: Code your models or algorithms within AMiDST and expand the toolbox functionalities. 
 Flexible toolbox for researchers performing their experimentation in machine learning.</p></li>
-<li><p>Interoperability: Leverage existing functionalities and algorithms by interfacing 
+<li><p><strong>Interoperability</strong>: Leverage existing functionalities and algorithms by interfacing 
 to other software tools such as Hugin, MOA, Weka, R, etc.</p></li>
 </ul>
 
 <h1>
 <a id="simple-example" class="anchor" href="#simple-example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Simple Example<a name="example"></a>
 </h1>
+
+<div class="highlight highlight-source-java"><pre>        <span class="pl-c">//Load the datastream</span>
+        <span class="pl-smi">String</span> filename <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span>./data.arff<span class="pl-pds">"</span></span>;
+        <span class="pl-k">DataStream&lt;<span class="pl-smi">DataInstance</span>&gt;</span> data <span class="pl-k">=</span> <span class="pl-smi">DataStreamLoader</span><span class="pl-k">.</span>open(filename);
+
+        <span class="pl-c">//Learn the model</span>
+        <span class="pl-smi">Model</span> model <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">CustomGaussianMixture</span>(data<span class="pl-k">.</span>getAttributes());
+        model<span class="pl-k">.</span>updateModel(data);
+
+        <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(model<span class="pl-k">.</span>getModel());
+
+        <span class="pl-c">// Save with .bn format</span>
+        <span class="pl-smi">BayesianNetworkWriter</span><span class="pl-k">.</span>save(model<span class="pl-k">.</span>getModel(), <span class="pl-s"><span class="pl-pds">"</span>./example.bn<span class="pl-pds">"</span></span>);</pre></div>
 
 <h1>
 <a id="real-world-uses-cases" class="anchor" href="#real-world-uses-cases" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Real-World Uses Cases<a name="uses"></a>
@@ -87,16 +98,13 @@ the Spanish bank BCC. It is expected to be into production at the beginning of 2
 <a id="recognition-of-traffic-maneuvers" class="anchor" href="#recognition-of-traffic-maneuvers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Recognition of traffic maneuvers</h2>
 
 <p align="center">
-<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/cars-crop.pdf" width="250">
+<img title="PGM" src="https://amidst.github.io/toolbox/docs/web/figs/cars-crop.pdf" width="350">
 </p>
 
 <p>AMIDST Toolbox has been used to prototype models for early recognition of traffic maneuver 
 intentions. Similarly to the previous case, data is continuously collected by car on-board 
 sensors giving rise to a large and quickly evolving data stream. This work has been performed 
 in collaboration with one of our partners, DAIMLER. </p>
-
-<h1>
-<a id="team" class="anchor" href="#team" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Team</h1>
 
 <h1>
 <a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation<a name="documentation"></a>
