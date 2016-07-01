@@ -43,7 +43,9 @@ public class MultinomialType extends DistributionType{
      */
     @Override
     public boolean isParentCompatible(Variable parent) {
-        if (parent.getDistributionTypeEnum()== DistributionTypeEnum.MULTINOMIAL || parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL_LOGISTIC )
+        if (parent.getDistributionTypeEnum()== DistributionTypeEnum.MULTINOMIAL ||
+                parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL_LOGISTIC ||
+                parent.getDistributionTypeEnum()==DistributionTypeEnum.INDICATOR)
             return true;
         else
             return false;

@@ -20,8 +20,8 @@ package eu.amidst.core.conceptdrift.utils;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
-import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
 
 import java.io.Serializable;
 

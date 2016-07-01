@@ -1,20 +1,3 @@
-/*
- *
- *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
- *
- */
-
 package eu.amidst.core.examples.models;
 
 import eu.amidst.core.datastream.DataInstance;
@@ -29,7 +12,6 @@ import eu.amidst.core.variables.Variables;
 /**
  *  In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples
  *  of this data set. The numbers defining the probability distributions of the BN are randomly fixed.
- *
  *  Created by andresmasegosa on 18/6/15.
  */
 public class CreatingBayesianNetworks {
@@ -38,7 +20,7 @@ public class CreatingBayesianNetworks {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("datasets/simulated/syntheticData.arff");
 
 
         /**

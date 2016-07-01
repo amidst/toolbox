@@ -17,12 +17,18 @@
 
 package eu.amidst.core.utils;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -283,6 +289,15 @@ public final class Utils {
             L = L / 2;
         }
         return Y;
+    }
+
+    public static void shuffleData(String inputPath, String outputPath){
+
+        DataOnMemory<DataInstance> dataOnMemory = DataStreamLoader.loadDataOnMemoryFromFile(inputPath);
+        Collections.shuffle(dataOnMemory.getList());
+        try {
+            DataStreamWriter.writeDataToFile(dataOnMemory, outputPath);
+        }catch(IOException e){}
     }
 
 }

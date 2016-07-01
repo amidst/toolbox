@@ -125,7 +125,7 @@ public class Main {
         System.out.println(letterToCount.toString());
 
 
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("datasets/simulated/syntheticData.arff");
 
         Iterator<DataInstance> it = data.iterator();
         for (int i = 0; i < 3; i++) {

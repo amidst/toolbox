@@ -21,6 +21,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;
@@ -65,4 +67,11 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
      * batch. Or Double.NaN if this log-probability can not be estimated.
      */
     double predictedLogLikelihood(DataOnMemory<DataInstance> batch);
+
+
+    /**
+     * Sets the plateu structure of this SVB.
+     * @param plateuStructure a valid {@link PlateuStructure} object.
+     */
+    void setPlateuStructure(PlateuStructure plateuStructure);
 }

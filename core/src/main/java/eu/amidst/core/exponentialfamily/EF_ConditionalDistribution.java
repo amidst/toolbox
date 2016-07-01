@@ -56,6 +56,12 @@ public abstract class EF_ConditionalDistribution extends EF_Distribution {
         return this.parents;
     }
 
+
+
+    public double computeLogProbability(Map<Variable,MomentParameters> momentChildCoParents){
+        return this.getExpectedNaturalFromParents(momentChildCoParents).dotProduct(momentChildCoParents.get(this.getVariable())) - this.getExpectedLogNormalizer(momentChildCoParents);
+    }
+
     /**
      * Returns the expected value of the log-normalizer for a given parent according to the given moment parameters of
      * the rest of parent variables (i.e., Co-Parents).

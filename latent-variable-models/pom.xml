@@ -115,6 +115,11 @@
             <artifactId>flinklink</artifactId>
             <version>0.4.3</version>
         </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>lda</artifactId>
+            <version>0.4.3</version>
+        </dependency>
     </dependencies>
     
     

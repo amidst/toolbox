@@ -114,7 +114,7 @@ public class ExperimentsParallelSVB {
         long currentTime = System.nanoTime();
 
         // Load the data stream using {@link DataStreamLoader}.
-        data = DataStreamLoader.openFromFile("./datasets/simulated/tmp.arff");
+        data = DataStreamLoader.open("./datasets/simulated/tmp.arff");
 
         // Create a {@link ParallelSVB} object.
         ParallelSVB parameterLearningAlgorithm = new ParallelSVB();

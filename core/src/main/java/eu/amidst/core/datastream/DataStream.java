@@ -20,6 +20,7 @@ package eu.amidst.core.datastream;
 import eu.amidst.core.utils.FixedBatchParallelSpliteratorWrapper;
 
 import java.util.Iterator;
+import java.util.stream.Collectors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *
  * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
- *
+ *<
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
@@ -203,6 +204,15 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      */
     default Stream<DataOnMemory<E>> parallelStreamOfBatches(int batchSize){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(this.streamOfBatches(batchSize), 1);
+    }
+
+
+    /**
+     * Returns a {@link DataOnMemory} object containing the data instances of the stream.
+     * @return A {@link DataOnMemory} object.
+     */
+    default DataOnMemory<E> toDataOnMemory(){
+        return new DataOnMemoryListContainer<E>(this.getAttributes(),this.stream().collect(Collectors.toList()));
     }
 
 }

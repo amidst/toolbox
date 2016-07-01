@@ -22,9 +22,9 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -58,13 +58,13 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     TransitionMethod transitionMethod = null;
 
     /** Represents a {@link EF_LearningBayesianNetwork} object. */
-    EF_LearningBayesianNetwork ef_extendedBN;
+    protected EF_LearningBayesianNetwork ef_extendedBN;
 
     /** Represents the plateu structure {@link PlateuStructure}*/
-    PlateuStructure plateuStructure = new PlateuStructure();
+    protected PlateuStructure plateuStructure = new PlateuIIDReplication();
 
     /** Represents a directed acyclic graph {@link DAG}. */
-    DAG dag;
+    protected DAG dag;
 
     /** Represents the data stream to be used for parameter learning. */
     transient DataStream<DataInstance> dataStream;
@@ -122,9 +122,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     }
 
     /**
-     * Sets the plateu structure of this SVB.
-     * @param plateuStructure a valid {@link PlateuStructure} object.
+     * {@inheritDoc}
      */
+    @Override
     public void setPlateuStructure(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }
@@ -249,7 +249,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
         this.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
 
-        double elbo =  this.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> this.getPlateuStructure().getVMP().computeELBO(node)).sum();
+        double elbo = 0;// this.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> this.getPlateuStructure().getVMP().computeELBO(node)).sum();
 
         elbo += this.updateModelOnBatchParallel(batch).getElbo();
 
@@ -458,6 +458,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void initLearning(){
 
+
+        this.plateuStructure.initTransientDataStructure();
+
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
         this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
 
@@ -481,15 +484,6 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void setDataStream(DataStream<DataInstance> data) {
         this.dataStream=data;
-    }
-
-    /**
-     * Converts a {@link DAG} to an extended Exponential Family (EF) Bayesian network (BN).
-     * @param dag a directed acyclic graph {@link DAG}.
-     * @return an {@link EF_BayesianNetwork} object.
-     */
-    private static EF_BayesianNetwork convertDAGToExtendedEFBN(DAG dag){
-        return null;
     }
 
     /**

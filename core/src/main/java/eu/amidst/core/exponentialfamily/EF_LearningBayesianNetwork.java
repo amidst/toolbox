@@ -76,21 +76,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
      * @param distributions a list of {@link EF_ConditionalDistribution} objects.
      */
     public EF_LearningBayesianNetwork(List<EF_ConditionalDistribution> distributions){
-
-        this.non_expand = new ArrayList<>();
-
-        parametersVariables = new ParameterVariables(distributions.size());
-
-        distributionList =
-                distributions
-                        .stream()
-                        .map(dist -> dist.toExtendedLearningDistribution(parametersVariables))
-                        .flatMap(listOfDist -> listOfDist.stream())
-                        .sorted((a,b) -> a.getVariable().getVarID() - b.getVariable().getVarID())
-                        .collect(Collectors.toList());
-
-        this.naturalParameters = null;
-        this.momentParameters = null;
+        this(distributions,new ArrayList<>());
     }
 
     /**
