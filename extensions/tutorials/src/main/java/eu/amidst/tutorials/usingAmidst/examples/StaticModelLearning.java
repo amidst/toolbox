@@ -21,7 +21,7 @@ public class StaticModelLearning {
     public static void main(String[] args) throws ExceptionHugin, IOException {
 
         //Load the datastream
-        String filename = "datasets/simulated/exampleDS_d0_c5.arff";
+        String filename = "datasets/simulated/cajamar.arff";
         DataStream<DataInstance> data = DataStreamLoader.open(filename);
 
         //Learn the model

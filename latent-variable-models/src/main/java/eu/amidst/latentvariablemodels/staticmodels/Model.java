@@ -46,7 +46,7 @@ public abstract class Model {
 
     protected String errorMessage = "";
 
-    protected int windowSize = 1000;
+    protected int windowSize = 100;
 
     protected boolean initialized = false;
 
@@ -101,8 +101,8 @@ public abstract class Model {
             dVMP dvmp = new dVMP();
             dvmp.setBatchSize(100);
             dvmp.setMaximumGlobalIterations(10);
-            dvmp.setMaximumLocalIterations(100);
-            dvmp.setLocalThreshold(0.0001);
+            dvmp.setMaximumLocalIterations(1000);
+            dvmp.setLocalThreshold(0.00001);
             dvmp.setGlobalThreshold(0.01);
             learningAlgorithmFlink = dvmp;
         }
@@ -127,8 +127,8 @@ public abstract class Model {
             SVB svb = new SVB();
             svb.setWindowsSize(100);
             svb.getPlateuStructure().getVMP().setTestELBO(false);
-            svb.getPlateuStructure().getVMP().setMaxIter(100);
-            svb.getPlateuStructure().getVMP().setThreshold(0.0001);
+            svb.getPlateuStructure().getVMP().setMaxIter(1000);
+            svb.getPlateuStructure().getVMP().setThreshold(0.00001);
 
             learningAlgorithm = svb;
         }

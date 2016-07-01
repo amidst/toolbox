@@ -3,22 +3,14 @@ package eu.amidst.tutorials.usingAmidst.examples;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.variables.StateSpaceType;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-import eu.amidst.core.variables.stateSpaceTypes.RealStateSpace;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
-import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import org.apache.commons.lang.math.IntRange;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,7 +25,7 @@ public class CreateCajamarDataContinuous {
 
         int nContinuousAttributes=4;
         int nDiscreteAttributes=0;
-        String names[] = {"SEQUENCE_ID", "TIME_ID","VAR7","VAR8","VAR10","VAR13"};
+        String names[] = {"SEQUENCE_ID", "TIME_ID","Income","Expenses","Balance","TotalCredit"};
         String path = "datasets/simulated/";
         int nSamples=1000;
 

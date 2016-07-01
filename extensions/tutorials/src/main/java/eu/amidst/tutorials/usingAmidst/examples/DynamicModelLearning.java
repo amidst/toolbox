@@ -20,7 +20,7 @@ public class DynamicModelLearning {
     public static void main(String[] args) throws IOException, ExceptionHugin {
 
         //Load the datastream
-        String filename = "datasets/simulated/exampleDS_d0_c5.arff";
+        String filename = "datasets/simulated/cajamar.arff";
         DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile(filename);
 
 

@@ -28,7 +28,7 @@ public class StaticModelInference {
 
         //we set the evidence
         Assignment assignment = new HashMapAssignment(2);
-        varObserved = variables.getVariableByName("GaussianVar1");
+        varObserved = variables.getVariableByName("Income");
         assignment.setValue(varObserved,0.0);
 
         //we set the algorithm
@@ -39,10 +39,10 @@ public class StaticModelInference {
         //query
         infer.runInference();
         Distribution p = infer.getPosterior(varTarget);
-        System.out.println("P(LatentVar1|GaussianVar1=0.0) = "+p);
+        System.out.println("P(LatentVar1|Income=0.0) = "+p);
 
         //Or some more refined queries
-        System.out.println("P(0.7<LatentVar1<6.59 |GaussianVar1=0.0) = " + infer.getExpectedValue(varTarget, v -> (0.7 < v && v < 6.59) ? 1.0 : 0.0 ));
+        System.out.println("P(0.7<LatentVar1<6.59 |Income=0.0) = " + infer.getExpectedValue(varTarget, v -> (0.7 < v && v < 6.59) ? 1.0 : 0.0 ));
 
     }
 

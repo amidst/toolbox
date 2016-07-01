@@ -26,7 +26,7 @@ public class DynamicModelInference {
         System.out.println(dbn);
 
         //Testing dataset
-        String filenamePredict = "datasets/simulated/exampleDS_d0_c5_small.arff";
+        String filenamePredict = "datasets/simulated/cajamar.arff";
         DataStream<DynamicDataInstance> dataPredict = DynamicDataStreamLoader.loadFromFile(filenamePredict);
 
         //Select the inference algorithm
