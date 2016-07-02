@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html  lang="en-us">
-  <head>
-    <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
-    <title>AMIDST Toolbox 0.4.3 by amidst</title>
-    <meta  name="viewport"  content="width=device-width, initial-scale=1">
-    <link  rel="stylesheet"  type="text/css"  href="../stylesheets/normalize.css"
-       media="screen">
-    <link  href="https://fonts.googleapis.com/css?family=Open+Sans:400,700"  rel="stylesheet"
-       type="text/css">
-    <link  rel="stylesheet"  type="text/css"  href="../stylesheets/stylesheet.css"
-       media="screen">
-    <link  rel="stylesheet"  type="text/css"  href="../stylesheets/github-light.css"
-       media="screen">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
-  </head>
-  <body>
-    <section  class="page-header">
-      <h1  class="project-name">AMIDST Toolbox 0.4.3</h1>
-      <h2  class="project-tagline">A Java Toolbox for Analysis of MassIve Data
-        STreams using Probabilistic Graphical Models</h2>
-      <a  href="https://github.com/amidst/toolbox"  class="btn">View on GitHub</a>
-      <a  href="https://github.com/amidst/toolbox/zipball/master"  class="btn">Download
-        .zip</a> <a  href="https://github.com/amidst/toolbox/tarball/master"  class="btn">Download
-        .tar.gz</a> </section>
+<head>
+  <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
+  <title>AMIDST Toolbox by amidst</title>
+  <meta  name="viewport"  content="width=device-width, initial-scale=1">
+  <link  rel="stylesheet"  type="text/css"  href="stylesheets/normalize.css"  media="screen">
+  <link  href="https://fonts.googleapis.com/css?family=Open+Sans:400,700"  rel="stylesheet"
+         type="text/css">
+  <link  rel="stylesheet"  type="text/css"  href="../stylesheets/stylesheet.css"
+         media="screen">
+  <link  rel="stylesheet"  type="text/css"  href="../stylesheets/github-light.css"
+         media="screen">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/styles/default.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+<section  class="page-header">
+  <h1  class="project-name"><img  style="width: 342px; height: 97px;"  alt="AMiDST Toolbox"
+                                  src="../images/logo-toolbox-large.png"></h1>
+  <h2  class="project-tagline">A Java Toolbox for Scalable Probabilistic
+    Machine Learning</h2>
+  <div  style="text-align: center;"><a  href="https://github.com/amidst/toolbox"
+                                        class="btn">View
+    on GitHub</a><a  href="https://github.com/amidst/toolbox/zipball/master"
+                     class="btn">Download
+    .zip</a><a  href="https://github.com/amidst/toolbox/tarball/master"  class="btn">Download
+    .tar.gz</a></div>
+</section>
+<section  class="main-content">
 
-    <section  class="main-content">
-    <h1 id="requirements-amidst-toolbox">Wekalink: using an AMIDST classifier in Weka</h1>
+
+<h1 id="requirements-amidst-toolbox">Wekalink: using an AMIDST classifier in Weka</h1>
 <p>One of the greatests points of AMIDST is the integration with other tools for data analysis. This is the case of Weka whose integration fuctionality is provided by the module <em>wekalink</em>. We will be able to create a wrapper for evaluating an AMDIST classifier with Weka.</p>
 <h2 id="prepare-your-project">Prepare your project</h2>
 <p>The first thing we have to do is to load the required AMIDST dependencies in a Maven project. In this case, we will have to load the modules <strong>wekalink</strong> and <strong>latent-variable-models</strong>. For that, add the following code to the file pom.xml of your project.</p>
