@@ -11,8 +11,6 @@
        media="screen">
     <link  rel="stylesheet"  type="text/css"  href="stylesheets/github-light.css"
        media="screen">
-
-
   </head>
   <body>
     <section  class="page-header">
@@ -295,7 +293,7 @@
             engines, etc.) of the AMIDST toolbox.</p>
         </li>
         <li>
-          <p><a  href="http://amidst.github.io/toolbox/CodeExamples.html">Bayesian
+          <p><a  href="http://amidst.github.io/toolbox/examples/bnetworks.html">Bayesian
               networks: Code Examples</a> includes a list of source code
             examples explaining how to use some functionalities of the AMIDST
             toolbox.</p>
