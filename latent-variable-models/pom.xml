@@ -110,16 +110,6 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>flinklink</artifactId>
-            <version>0.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>lda</artifactId>
-            <version>0.4.1</version>
-        </dependency>
     </dependencies>
     
     

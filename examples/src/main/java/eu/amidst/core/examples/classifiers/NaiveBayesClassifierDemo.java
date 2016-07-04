@@ -23,16 +23,16 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
-import eu.amidst.standardmodels.classifiers.NaiveBayesClassifier;
-import eu.amidst.standardmodels.exceptions.WrongConfigurationException;
+
+
 
 /**
  * Created by andresmasegosa on 15/01/15.
  */
 public class NaiveBayesClassifierDemo {
-    public static void main(String[] args) throws WrongConfigurationException{
+    public static void main(String[] args){
 
-        BayesianNetworkGenerator.loadOptions();
+    /*    BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfGaussianVars(5900);
@@ -60,6 +60,8 @@ public class NaiveBayesClassifierDemo {
 
 
         //sampler.sampleToDataStream(sampleSize).stream().forEach(d -> System.out.println(model.predict(d)[0]));
+
+        */
 
     }
 }
