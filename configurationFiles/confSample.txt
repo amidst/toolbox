@@ -1,2 +1,0 @@
-ParallelTAN, -numCores 1, -batchSize= 500
-BayesianNetworkSampler -parallelMode T, -seed=1

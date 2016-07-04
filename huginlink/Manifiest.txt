@@ -1,1 +1,0 @@
-Class-Path: target/core-1.0-SNAPSHOT.jar /Users/afa/Dropbox/AMIDST-AFA/core/huginlink/huginlib/hgapi82_amidst-64.jar

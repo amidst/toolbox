@@ -1,0 +1,6 @@
+@attribute SEQUENCE_ID 0 real
+@attribute TIME_ID 1 real
+@attribute VAR7 2 real
+@attribute VAR8 3 real
+@attribute VAR10 4 real
+@attribute VAR13 5 real

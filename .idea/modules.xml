@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AmidstToolbox.iml" filepath="$PROJECT_DIR$/AmidstToolbox.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/caepia2015/caepia2015.iml" filepath="$PROJECT_DIR$/extensions/caepia2015/caepia2015.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/cajamar/cajamar.iml" filepath="$PROJECT_DIR$/extensions/cajamar/cajamar.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/core-dynamic/core-dynamic.iml" filepath="$PROJECT_DIR$/core-dynamic/core-dynamic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ignoredfolder/doc_new/doc_new.iml" filepath="$PROJECT_DIR$/ignoredfolder/doc_new/doc_new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/ecai2016/ecai2016.iml" filepath="$PROJECT_DIR$/extensions/ecai2016/ecai2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/examples.iml" filepath="$PROJECT_DIR$/examples/examples.iml" />
+      <module fileurl="file://$PROJECT_DIR$/flinklink/flinklink.iml" filepath="$PROJECT_DIR$/flinklink/flinklink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/huginlink/huginlink.iml" filepath="$PROJECT_DIR$/huginlink/huginlink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/ida2015/ida2015.iml" filepath="$PROJECT_DIR$/extensions/ida2015/ida2015.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/ida2016/ida2016.iml" filepath="$PROJECT_DIR$/extensions/ida2016/ida2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/latent-variable-models/latent-variable-models.iml" filepath="$PROJECT_DIR$/latent-variable-models/latent-variable-models.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/lda/lda.iml" filepath="$PROJECT_DIR$/extensions/lda/lda.iml" />
+      <module fileurl="file://$PROJECT_DIR$/moalink/moalink.iml" filepath="$PROJECT_DIR$/moalink/moalink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/nips2016/nips2016.iml" filepath="$PROJECT_DIR$/extensions/nips2016/nips2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ignoredfolder/rafatests/rafatests.iml" filepath="$PROJECT_DIR$/ignoredfolder/rafatests/rafatests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/reviewMeeting2016/reviewMeeting2016.iml" filepath="$PROJECT_DIR$/extensions/reviewMeeting2016/reviewMeeting2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/scai2015/scai2015.iml" filepath="$PROJECT_DIR$/extensions/scai2015/scai2015.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sparklink/sparklink.iml" filepath="$PROJECT_DIR$/sparklink/sparklink.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/tutorials/tutorials.iml" filepath="$PROJECT_DIR$/extensions/tutorials/tutorials.iml" />
+      <module fileurl="file://$PROJECT_DIR$/extensions/uai2016/uai2016.iml" filepath="$PROJECT_DIR$/extensions/uai2016/uai2016.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wekalink/wekalink.iml" filepath="$PROJECT_DIR$/wekalink/wekalink.iml" />
+    </modules>
+  </component>
+</project>

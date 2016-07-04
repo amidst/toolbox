@@ -1,0 +1,5 @@
+@attribute DiscreteVar0 0 {0.0, 1.0}
+@attribute DiscreteVar1 1 {0.0, 1.0}
+@attribute GaussianVar0 2 real
+@attribute GaussianVar1 3 real
+@attribute GaussianVar2 4 real
