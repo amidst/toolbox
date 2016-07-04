@@ -23,7 +23,7 @@
 
 
     <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
+        <!--AMIDSTver>0.4.3</AMIDSTver-->
     </properties>
 
     <url>http://amidst.github.io/toolbox/</url>

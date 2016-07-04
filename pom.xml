@@ -46,7 +46,7 @@
         <junit.version>4.11</junit.version>
         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
-        <AMIDSTver>0.4.2</AMIDSTver>
+        <!--AMIDSTver>0.4.2</AMIDSTver-->
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
