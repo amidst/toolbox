@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>moalink</artifactId>
   <versioning>
-    <release>0.4.1</release>
+    <release>0.4.2</release>
     <versions>
-      <version>0.4.1</version>
+      <version>0.4.2</version>
     </versions>
-    <lastUpdated>20160704172250</lastUpdated>
+    <lastUpdated>20160704174512</lastUpdated>
   </versioning>
 </metadata>
