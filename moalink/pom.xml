@@ -5,13 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.2</version>
+        <version>0.4.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>moalink</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.1</version>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -30,6 +30,10 @@
         <url>git@github.com:amidst/toolbox.git</url>
     </scm>
 
+
+    <properties>
+        <!--AMIDSTver>0.4.1</AMIDSTver-->
+    </properties>
 
     <developers>
         <developer>
@@ -93,7 +97,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.4.2</version>
+            <version>0.4.1</version>
         </dependency>
 
         <dependency>

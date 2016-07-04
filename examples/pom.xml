@@ -13,13 +13,18 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.2</version>
+        <version>0.4.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>examples</artifactId>
-    <version>0.4.2</version>
+    <version>0.4.1</version>
+
+
+    <properties>
+        <!--AMIDSTver>0.4.1</AMIDSTver-->
+    </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -102,24 +107,29 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.2</version>
+            <version>0.4.1</version>
         </dependency>
 
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.2</version>
+            <version>0.4.1</version>
         </dependency>
 
         <dependency>
             <artifactId>huginlink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.2</version>
+            <version>0.4.1</version>
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>standardmodels</artifactId>
-            <version>0.4.2</version>
+            <artifactId>latent-variable-models</artifactId>
+            <version>0.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.1</version>
         </dependency>
 
     </dependencies>
