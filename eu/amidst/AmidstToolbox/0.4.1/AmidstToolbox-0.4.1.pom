@@ -115,10 +115,6 @@
         <module>core-dynamic</module>
         <module>examples</module>
         <module>moalink</module>
-        <module>latent-variable-models</module>
-        
-        
-        <module>extensions/tutorials</module>
     </modules>
 
 
