@@ -1,7 +1,0 @@
-@attribute SEQUENCE_ID 0 real
-@attribute TIME_ID 1 real
-@attribute DiscreteVar0 2 {0.0, 1.0}
-@attribute DiscreteVar1 3 {0.0, 1.0}
-@attribute DiscreteVar2 4 {0.0, 1.0}
-@attribute DiscreteVar3 5 {0.0, 1.0}
-@attribute DiscreteVar4 6 {0.0, 1.0}

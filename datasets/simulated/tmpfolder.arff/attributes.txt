@@ -1,9 +1,0 @@
-@attribute B 0 {0.0, 1.0}
-@attribute F 1 {0.0, 1.0}
-@attribute W 2 {0.0, 1.0}
-@attribute E 3 real
-@attribute D 4 real
-@attribute C 5 real
-@attribute L 6 real
-@attribute Min 7 real
-@attribute Mout 8 real

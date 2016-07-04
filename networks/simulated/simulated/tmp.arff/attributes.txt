@@ -1,2 +1,0 @@
-@attribute B 0 real
-@attribute A 1 real
