@@ -119,7 +119,6 @@
         
         
         <module>extensions/tutorials</module>
-        <module>extensions/lda</module>
     </modules>
 
 
@@ -173,7 +172,7 @@
             </plugin>
 
 
-            <!-- plugin>
+            <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
                 <version>0.11</version>
@@ -219,7 +218,7 @@
                 <configuration>
                     <aggregate>true</aggregate>
                 </configuration>
-            </plugin-->
+            </plugin>
 
         </plugins>
     </build>
