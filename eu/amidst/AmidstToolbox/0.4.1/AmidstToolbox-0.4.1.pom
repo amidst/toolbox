@@ -119,7 +119,6 @@
         
         
         <module>extensions/tutorials</module>
-        <module>extensions/lda</module>
     </modules>
 
 
