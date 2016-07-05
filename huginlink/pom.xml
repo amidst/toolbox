@@ -166,6 +166,7 @@
             <version>2.9</version>
             <configuration>
                 <argLine>-Djava.library.path=${project.basedir}/huginlib/</argLine>
+                <skipTests>true</skipTests>
             </configuration>
         </plugin>
     </plugins>
