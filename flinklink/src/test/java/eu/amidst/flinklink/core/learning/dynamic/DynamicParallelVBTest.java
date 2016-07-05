@@ -197,6 +197,10 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testJoin() throws Exception {
+
+        createDBN1(true);
+        createDataSets("dbn1",null,null);
+
         //Set-up Flink session.
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
@@ -252,6 +256,9 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testFlatJoin() throws Exception {
+        createDBN1(true);
+        createDataSets("dbn1",null,null);
+
         //Set-up Flink session.
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
@@ -359,7 +366,7 @@ public class DynamicParallelVBTest extends TestCase {
         learn.setMaximumGlobalIterations(20);
         learn.setGlobalThreshold(0.0001);
         learn.setLocalThreshold(0.0001);
-        learn.setMaximumLocalIterations(100);
+        learn.setMaximumLocalIterations(200);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());
         learn.setOutput(true);

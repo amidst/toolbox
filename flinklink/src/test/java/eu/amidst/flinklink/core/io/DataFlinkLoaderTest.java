@@ -138,7 +138,7 @@ public class DataFlinkLoaderTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
                 env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
-        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/docword.simulated.arff", false);
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/text/docword.simulated.arff", false);
 
 
         for (int i = 0; i < 3; i++) {

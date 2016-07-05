@@ -865,13 +865,12 @@ public class ParallelVBTest extends TestCase {
         if (Main.VERBOSE) System.out.println(network.toString());
 
         //String dataset= "./datasets/dataStream/conceptdrift/data0.arff";
-        String dataset= "../datasets/simulated/tmpfolder.arff";
-        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
+        String dataset= "../datasets/simulated/tmp.arff";
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(1);
-        sampler.setBatchSize(500);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,SAMPLES),dataset);
+        DataStreamWriter.writeDataToFile(sampler.sampleToDataStream(SAMPLES),dataset);
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, dataset, false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, dataset, false);
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
         learn.setBatchSize(10);
