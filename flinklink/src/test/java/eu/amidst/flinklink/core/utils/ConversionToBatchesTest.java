@@ -16,6 +16,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 /**
  * Created by andresmasegosa on 12/5/16.
@@ -23,7 +24,11 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 public class ConversionToBatchesTest extends TestCase {
 
     public static void test1() throws Exception{
-        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
         env.setParallelism(1);
         DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.kos.arff", false);
 

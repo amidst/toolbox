@@ -29,6 +29,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -40,7 +41,11 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
 
     public void testingMLParallelAsia() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -83,7 +88,11 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
 
     public void testingMLParallelWaste() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");

@@ -30,6 +30,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -98,7 +99,11 @@ public class StochasticVITest extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(100);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         baseTest(env, data, bn, 100, 10, 0.05);
 
@@ -115,7 +120,11 @@ public class StochasticVITest extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         baseTest(env, data, bn, 10000, 1000, 0.2);
 

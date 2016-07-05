@@ -48,6 +48,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -121,7 +122,11 @@ public class ParallelVBTest extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(100);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         baseTest(env, data, bn, 10, 0.05);
 
@@ -149,7 +154,11 @@ public class ParallelVBTest extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         baseTest(env, data, bn, 100, 0.05);
 
@@ -166,7 +175,11 @@ public class ParallelVBTest extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            //Set-up Flink session.
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.getConfig().disableSysoutLogging();
 
             baseTest(env, data, bn, 1000, 0.1);
 
@@ -186,7 +199,11 @@ public class ParallelVBTest extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            //Set-up Flink session.
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.getConfig().disableSysoutLogging();
 
             baseTest(env, data, bn, 1000, 0.2);
 
@@ -195,7 +212,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelAsia() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -247,7 +268,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelAsiaWithUpdate() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -299,7 +324,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelAsiaHidden() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -350,7 +379,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelRandomBNHidden() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfGaussianVars(10);
@@ -411,7 +444,11 @@ public class ParallelVBTest extends TestCase {
 
 
     public void testingMLParallelWasteHidden() throws IOException, ClassNotFoundException {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
 
         // load the true WasteIncinerator Bayesian network
@@ -458,7 +495,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelWaste() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
@@ -519,7 +560,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelPosteriors() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -560,7 +605,11 @@ public class ParallelVBTest extends TestCase {
 
     public void testingMLParallelPosteriorsAssignment() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -636,7 +685,11 @@ public class ParallelVBTest extends TestCase {
 
         DataFlinkWriter.writeDataToARFFFolder(data,fileName);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
@@ -724,7 +777,11 @@ public class ParallelVBTest extends TestCase {
 
     public static void testGaussianCompareSVBvsParralelVB() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
         env.setParallelism(1);
 
 
@@ -791,7 +848,11 @@ public class ParallelVBTest extends TestCase {
 
     public static void testGaussianCompareSVBvsParralelVB2() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
         env.setParallelism(1);
 
         int SAMPLES = 1000;

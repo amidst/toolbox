@@ -35,6 +35,7 @@ import org.apache.flink.api.common.operators.base.JoinOperatorBase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
 import java.util.Arrays;
@@ -128,7 +129,11 @@ public class DynamicParallelVBTest extends TestCase {
 
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
@@ -191,7 +196,11 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testJoin() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
                 "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
@@ -242,7 +251,11 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testFlatJoin() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
                 "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
@@ -293,7 +306,11 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void update0Learn(String networkName) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + NETWORK_NAME);
         dbn.randomInitialization(new Random(0));
@@ -321,7 +338,11 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testUpdateN(String networkName, double threshold) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));

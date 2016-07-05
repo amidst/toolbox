@@ -21,6 +21,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 /**
  * Created by andresmasegosa on 23/9/15.
@@ -29,7 +30,11 @@ public class DataFlinkWriterTest extends TestCase {
 
 
     public static void test1() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);

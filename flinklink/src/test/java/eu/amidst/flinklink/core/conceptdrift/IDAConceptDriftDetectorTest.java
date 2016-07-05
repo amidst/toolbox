@@ -38,6 +38,7 @@ import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import eu.amidst.flinklink.core.utils.DBNSampler;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.util.HashSet;
 import java.util.List;
@@ -53,8 +54,6 @@ public class IDAConceptDriftDetectorTest extends TestCase {
     public static int BATCHSIZE = 500;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
         BayesianNetwork dbn = BayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
         System.out.println(dbn.toString());
@@ -111,7 +110,11 @@ public class IDAConceptDriftDetectorTest extends TestCase {
 
 
     public static void testUpdateN(String networkName) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/conceptdrift/data0.arff", false);
@@ -173,7 +176,13 @@ public class IDAConceptDriftDetectorTest extends TestCase {
 
 
     public static void createDataSetsDBN(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+
+
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));

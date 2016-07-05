@@ -57,12 +57,14 @@ public class dVMP_LDA {
 
         if(amazon_cluster){
             env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
         }else{
             Configuration conf = new Configuration();
             conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
             conf.setInteger("taskmanager.numberOfTaskSlots",ncores);
             env = ExecutionEnvironment.createLocalEnvironment(conf);
             env.setParallelism(ncores);
+            env.getConfig().disableSysoutLogging();
         }
 
         DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, dataPath, false);

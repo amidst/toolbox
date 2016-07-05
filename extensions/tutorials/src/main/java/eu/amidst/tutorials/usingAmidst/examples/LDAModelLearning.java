@@ -21,6 +21,7 @@ import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.latentvariablemodels.staticmodels.LDA;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.io.IOException;
 
@@ -30,10 +31,15 @@ import java.io.IOException;
 public class LDAModelLearning {
     public static void main(String[] args) throws ExceptionHugin, IOException {
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+
         //Load the datastream
         String filename = "datasets/text/docs.nips.small.arff";
         //DataStream<DataInstance> data = DataStreamLoader.open(filename);
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFile(env, filename, false);
 
         //Learn the model
