@@ -117,9 +117,6 @@
         <module>moalink</module>
         <module>standardmodels</module>
         <module>wekalink</module>
-        <module>flinklink</module>
-        <module>extensions/tutorials</module>
-        <module>extensions/lda</module>
     </modules>
 
 
