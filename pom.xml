@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.3</version> <!-- AmidstVersion -->
 
     <name>AmidstToolbox</name>
 
@@ -49,7 +49,6 @@
         <junit.version>4.11</junit.version>
          <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
-        <!--AMIDSTver>0.4.3</AMIDSTver-->
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 

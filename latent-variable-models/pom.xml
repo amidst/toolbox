@@ -16,18 +16,15 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.4.3</version>
+        <version>0.4.3</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
 
     <groupId>eu.amidst</groupId>
     <artifactId>latent-variable-models</artifactId>
-    <version>0.4.3</version>
+    <version>0.4.3</version> <!-- AmidstVersion -->
 
-    <properties>
-        <!--AMIDSTver>0.4.3</AMIDSTver-->
-    </properties>
     
     
         <developers>
@@ -92,17 +89,17 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.4.3</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.4.3</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>0.4.3</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -113,12 +110,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.4.3</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>lda</artifactId>
-            <version>0.4.3</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 
