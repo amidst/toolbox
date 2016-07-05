@@ -166,8 +166,6 @@
                 <configuration>
                     <forkMode>pertest</forkMode>
                     <argLine>-Xms1g -Xmx2g</argLine>
-                    <testFailureIgnore>false</testFailureIgnore>
-                    <skip>false</skip>
                 </configuration>
             </plugin>
 
