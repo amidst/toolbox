@@ -87,8 +87,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%4==1);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/simulated/conceptdrift/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/conceptdrift/data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
         }
     }
@@ -152,7 +152,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/simulated/conceptdrift/data" + i + ".arff", false);
+                    "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             out = learn.updateModelWithNewTimeSlice(i, dataNew);
             output[i] = out[0];
 
@@ -208,8 +208,8 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
 
 
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/conceptdrift/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/conceptdrift/data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         System.out.println(list);

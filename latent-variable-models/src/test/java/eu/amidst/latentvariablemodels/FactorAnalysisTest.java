@@ -29,7 +29,7 @@ public class FactorAnalysisTest extends TestCase {
     protected void setUp() throws WrongConfigurationException {
         int seed=6236;
         int nSamples=5000;
-        int nContinuousVars=10;
+        int nContinuousVars=3;
 
         data = DataSetGenerator.generate(seed,nSamples,0,nContinuousVars);
 

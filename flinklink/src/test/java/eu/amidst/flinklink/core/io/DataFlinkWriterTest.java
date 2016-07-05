@@ -34,7 +34,7 @@ public class DataFlinkWriterTest extends TestCase {
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
 
-        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "../datasets/simulated/tmp.arff");
+        DataFlinkWriter.writeDataToARFFFolder(dataFlink, "../datasets/simulated/tmp_2.arff");
 
     }
 }

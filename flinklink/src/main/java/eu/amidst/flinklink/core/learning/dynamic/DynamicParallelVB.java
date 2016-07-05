@@ -151,7 +151,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
                                         .map(name -> this.dagTime0.getVariables().getVariableByName(name))
                                         .collect(Collectors.toList());
 
-        this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(vars);
+        this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(newdata, vars);
 
     }
 

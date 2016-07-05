@@ -96,7 +96,7 @@ public class DataFlinkLoaderTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlinkWriterTest.test1();
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp_2.arff", false);
         DataSet<DataInstance> data = dataFlink.getDataSet();
 
         data.print();

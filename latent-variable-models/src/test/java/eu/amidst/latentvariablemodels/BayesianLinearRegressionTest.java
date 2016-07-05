@@ -35,7 +35,7 @@ public class BayesianLinearRegressionTest extends TestCase {
     DataStream<DataInstance> data;
 
     protected void setUp() throws WrongConfigurationException {
-        data = DataSetGenerator.generate(0,1000, 0, 10);
+        data = DataSetGenerator.generate(0,1000, 0, 3);
         System.out.println(data.getAttributes().toString());
 
         String className = "GaussianVar0";

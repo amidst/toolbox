@@ -39,7 +39,7 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());
@@ -83,7 +83,7 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel2() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
         System.out.println("\nAsia network \n ");
         //System.out.println(asianet.getDAG().outputString());

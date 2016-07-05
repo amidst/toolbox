@@ -87,13 +87,13 @@ public class ImportanceSamplingHuginTest {
         ImportanceSampling IS = new ImportanceSampling();
         IS.setModel(model);
         IS.setSamplingModel(samplingModel);
-        IS.setSampleSize(200000);
+        IS.setSampleSize(500000);
         IS.setEvidence(evidence);
         IS.setParallelMode(true);
         IS.setKeepDataOnMemory(true);
         //**************************************************************************************************************
 
-        double threshold = 0.005;
+        double threshold = 0.01;
 
         /* runInference() method must be called each time we compute a posterior because the Stream of Weighted
            Assignments is closed (reduced) in method getPosterior(var).*/

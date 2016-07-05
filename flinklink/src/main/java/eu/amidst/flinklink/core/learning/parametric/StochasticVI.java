@@ -59,12 +59,6 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     public static String SVB="SVB";
     public static String PRIOR="PRIOR";
 
-
-    /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
     /**
      * Represents the directed acyclic graph {@link DAG}.
      */
@@ -182,9 +176,9 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
             DataOnMemory<DataInstance> batch;
 
             if (batchConverter==null)
-                    batch= this.dataFlink.subsample(this.svb.getSeed(), this.batchSize);
+                    batch= dataUpdate.subsample(this.svb.getSeed(), this.batchSize);
             else
-                    batch= this.dataFlink.subsample(this.svb.getSeed(), this.batchSize, this.batchConverter);
+                    batch= dataUpdate.subsample(this.svb.getSeed(), this.batchSize, this.batchConverter);
 
             NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
@@ -209,7 +203,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
                 long startBatchELBO = System.nanoTime();
                 //Compute ELBO
 
-                double elbo = this.computeELBO(this.dataFlink, svb, this.batchConverter);
+                double elbo = this.computeELBO(dataUpdate, svb, this.batchConverter);
 
                 long endBatchELBO = System.nanoTime();
 

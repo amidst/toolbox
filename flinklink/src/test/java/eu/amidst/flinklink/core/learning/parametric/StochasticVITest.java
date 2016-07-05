@@ -117,7 +117,7 @@ public class StochasticVITest extends TestCase {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        baseTest(env, data, bn, 10000, 100, 0.2);
+        baseTest(env, data, bn, 10000, 1000, 0.2);
 
         //}
     }

@@ -22,7 +22,7 @@ public class EF_SparseMultinomialTest extends TestCase {
     public static void test1() {
         Variables variables = new Variables();
 
-        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newMultinomialVariable("A", 10));
+        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newSparseMultionomialVariable("A", 10));
 
 
         System.out.println(dist.getSufficientStatistics(1).output());
@@ -50,7 +50,7 @@ public class EF_SparseMultinomialTest extends TestCase {
     public static void test2() {
         Variables variables = new Variables();
 
-        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newMultinomialVariable("A", 10));
+        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newSparseMultionomialVariable("A", 10));
 
         int size = 10;
         SufficientStatistics sufficientStatistics = dist.getSufficientStatistics(1);
@@ -91,7 +91,7 @@ public class EF_SparseMultinomialTest extends TestCase {
     public static void test3() {
         Variables variables = new Variables();
 
-        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newMultinomialVariable("A", 10));
+        EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newSparseMultionomialVariable("A", 10));
         EF_Multinomial distM = new EF_Multinomial(variables.newMultinomialVariable("AM", 10));
 
         int size = 10;

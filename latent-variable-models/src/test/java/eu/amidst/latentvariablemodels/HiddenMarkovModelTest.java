@@ -37,8 +37,8 @@ public class HiddenMarkovModelTest extends TestCase{
         if (setUpIsDone) {
             return;
         }
-        dataHybrid = DataSetGenerator.generate(1,1000,3,5);
-        dataGaussians = DataSetGenerator.generate(1,1000,0,5);
+        dataHybrid = DataSetGenerator.generate(1,1000,3,3);
+        dataGaussians = DataSetGenerator.generate(1,1000,0,3);
         setUpIsDone = true;
     }
 

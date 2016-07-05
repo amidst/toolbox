@@ -22,7 +22,7 @@ public class EF_SparseDirichletTest extends TestCase {
     public static void test() {
         ParameterVariables variables = new ParameterVariables(0);
 
-        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newDirichletParameter("A", 10));
+        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newSparseDirichletParameter("A", 10));
 
 
         System.out.println(dist.getNaturalParameters().output());
@@ -47,7 +47,7 @@ public class EF_SparseDirichletTest extends TestCase {
     public static void test3() {
         ParameterVariables variables = new ParameterVariables(0);
 
-        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newDirichletParameter("A", 10));
+        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newSparseDirichletParameter("A", 10));
         EF_Dirichlet distM = new EF_Dirichlet(variables.newDirichletParameter("AM", 10));
 
         dist.getNaturalParameters().sumConstant(1.0);
