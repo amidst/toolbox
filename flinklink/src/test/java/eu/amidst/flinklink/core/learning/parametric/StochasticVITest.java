@@ -61,7 +61,7 @@ public class StochasticVITest extends TestCase {
         stochasticVI.setBatchSize(batchSize);
         stochasticVI.setLocalThreshold(0.001);
         stochasticVI.setMaximumLocalIterations(100);
-        stochasticVI.setTimiLimit(10);
+        stochasticVI.setTimiLimit(20);
 
         stochasticVI.setDAG(network.getDAG());
         stochasticVI.initLearning();
