@@ -18,6 +18,7 @@
 package eu.amidst.flinklink.core.io;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;

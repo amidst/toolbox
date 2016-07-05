@@ -17,6 +17,6 @@ package eu.amidst.flinklink;
 public class Main {
 
     public static boolean VERBOSE = false;
-    public static int PARALLELISM = 2;
+    public static int PARALLELISM = 3;
 
 }
