@@ -512,7 +512,7 @@ public class dVMPv1Test extends TestCase {
 
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(10000);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,10000);
 
         DataFlinkWriter.writeDataToARFFFolder(data, "../datasets/simulated/tmpfolder.arff");
 
@@ -653,6 +653,13 @@ public class dVMPv1Test extends TestCase {
         int localIter = 100;//Integer.parseInt(args[5]);
         int seed = 0;//Integer.parseInt(args[6]);
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
         /*
          * Logging
          */
@@ -673,15 +680,9 @@ public class dVMPv1Test extends TestCase {
         sampler.setSeed(seed);
 
         //Load the sampled data
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,nSamples);
 
         DataFlinkWriter.writeDataToARFFFolder(data,fileName);
-
-        //Set-up Flink session.
-        Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
@@ -781,7 +782,7 @@ public class dVMPv1Test extends TestCase {
 
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(2);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(10000),"../networks/simulated/simulated/tmpfolder.arff");
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,10000),"../networks/simulated/simulated/tmpfolder.arff");
 
 
 
@@ -859,7 +860,7 @@ public class dVMPv1Test extends TestCase {
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(1);
         sampler.setBatchSize(500);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(SAMPLES),dataset);
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,SAMPLES),dataset);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, dataset, false);
 

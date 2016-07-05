@@ -25,7 +25,6 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
 import java.io.Serializable;
@@ -82,14 +81,9 @@ public class BayesianNetworkSampler {
         return localSampler;
     }
 
-    public DataFlink<DataInstance>  sampleToDataFlink(int nSamples) {
+    public DataFlink<DataInstance>  sampleToDataFlink(ExecutionEnvironment env, int nSamples) {
 
         try{
-            Configuration conf = new Configuration();
-            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
-            final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-            env.getConfig().disableSysoutLogging();
-
             int nBatches = nSamples/this.batchSize;
 
             DataSet<DataInstance> data = env.generateSequence(0,nBatches-1)

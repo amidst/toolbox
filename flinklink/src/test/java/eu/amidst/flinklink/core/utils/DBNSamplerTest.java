@@ -26,6 +26,8 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.util.Random;
@@ -36,6 +38,13 @@ import java.util.Random;
 public class DBNSamplerTest extends TestCase {
 
     public static void test0() throws Exception {
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
@@ -46,7 +55,7 @@ public class DBNSamplerTest extends TestCase {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setBatchSize(100);
-        DataFlink<DataInstance> data0= sampler.sampleToDataFlink(1000);
+        DataFlink<DataInstance> data0= sampler.sampleToDataFlink(env,1000);
 
         double count = 0;
         for (DataInstance datainstance : data0.getDataSet().collect()) {
@@ -60,6 +69,14 @@ public class DBNSamplerTest extends TestCase {
 
 
     public static void test1() throws Exception {
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
@@ -71,7 +88,7 @@ public class DBNSamplerTest extends TestCase {
         sampler.setSeed(1);
 
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
         double count = 0;
         for (DataInstance datainstance : data0.getDataSet().collect()) {
@@ -86,6 +103,15 @@ public class DBNSamplerTest extends TestCase {
 
 
     public static void test2() throws Exception {
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
+
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
@@ -97,8 +123,8 @@ public class DBNSamplerTest extends TestCase {
         sampler.setSeed(1);
 
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
-        DataFlink<DynamicDataInstance> data1= sampler.cascadingSample(data0);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
+        DataFlink<DynamicDataInstance> data1= sampler.cascadingSample(env,data0);
 
         double countA = 0;
         for (DataInstance datainstance : data0.getDataSet().collect()) {
@@ -121,6 +147,13 @@ public class DBNSamplerTest extends TestCase {
 
     public static void test3() throws Exception {
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
         Multinomial_MultinomialParents dist = dbn.getConditionalDistributionTimeT(dbn.getDynamicVariables().getVariableByName("DEFAULTER"));
@@ -135,7 +168,7 @@ public class DBNSamplerTest extends TestCase {
         sampler.setSeed(1);
 
         if (Main.VERBOSE) System.out.println("--------------- DATA 0 --------------------------");
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
         data0.getDataSet().print();
 
         Assert.assertEquals(data0.getDataSet().count(), 10);
@@ -146,7 +179,7 @@ public class DBNSamplerTest extends TestCase {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < 10; i++) {
             if (Main.VERBOSE) System.out.println("--------------- DATA "+i+" --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);
             dataNew.getDataSet().print();
             Assert.assertEquals(dataNew.getDataSet().count(), 10);
             Assert.assertEquals(dataNew.getAttributes().getNumberOfAttributes(), 10);

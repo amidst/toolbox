@@ -74,7 +74,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
             }
         }
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
         DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data0.arff");
@@ -92,7 +92,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
             if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%4==1);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(env,dataPrev, i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
@@ -219,7 +219,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
             }
         }
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
         DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data0.arff");
@@ -269,7 +269,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
                 if (Main.VERBOSE) System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);//i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;

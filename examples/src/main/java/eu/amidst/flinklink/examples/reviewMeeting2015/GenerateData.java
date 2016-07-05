@@ -70,6 +70,9 @@ public class GenerateData {
     public static void createDataSets(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
                                       int NSETS) throws Exception {
 
+        //Set-up Flink session.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
         BayesianNetwork bn = createBN(numVars);
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
@@ -94,7 +97,7 @@ public class GenerateData {
                 sampler.setBatchSize(BATCHSIZE);
                 sampler.setSeed(1);
             }
-            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(SAMPLESIZE);
+            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(env,SAMPLESIZE);
             DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
         }
     }
@@ -160,7 +163,7 @@ public class GenerateData {
             }
         }
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
         System.out.println("--------------- CREATING DATA 0 --------------------------");
@@ -206,7 +209,7 @@ public class GenerateData {
                 //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);//i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data" + i + ".arff", false);
             dataPrev = dataNew;

@@ -32,6 +32,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import org.apache.flink.api.common.functions.RichMapPartitionFunction;
 import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
@@ -102,7 +103,7 @@ public class DBNSampler {
         this.nSamples = nSamples;
     }
 
-    public DataFlink<DynamicDataInstance> cascadingSample(DataFlink<DynamicDataInstance> previousSample){
+    public DataFlink<DynamicDataInstance> cascadingSample(ExecutionEnvironment env, DataFlink<DynamicDataInstance> previousSample){
         if (previousSample==null){
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(this.bnTime0);
             this.hiddenVars.keySet().stream().forEach(var -> sampler.setHiddenVar(bnTime0.getVariables().getVariableByName(var.getName())));
@@ -110,7 +111,7 @@ public class DBNSampler {
 
             sampler.setSeed(this.seed);
             sampler.setBatchSize(this.batchSize);
-            DataFlink<DataInstance> data= sampler.sampleToDataFlink(this.nSamples);
+            DataFlink<DataInstance> data= sampler.sampleToDataFlink(env, this.nSamples);
 
             Attribute attseq = new Attribute(data.getAttributes().getNumberOfAttributes(),Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace());
             Attribute atttime = new Attribute(data.getAttributes().getNumberOfAttributes()+1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace());
@@ -157,7 +158,7 @@ public class DBNSampler {
     }
 
 
-    public DataFlink<DynamicDataInstance> cascadingSampleConceptDrift(DataFlink<DynamicDataInstance> previousSample, boolean drift){
+    public DataFlink<DynamicDataInstance> cascadingSampleConceptDrift(ExecutionEnvironment env, DataFlink<DynamicDataInstance> previousSample, boolean drift){
         if (previousSample==null){
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(this.bnTime0);
             this.hiddenVars.keySet().stream().forEach(var -> sampler.setHiddenVar(bnTime0.getVariables().getVariableByName(var.getName())));
@@ -165,7 +166,7 @@ public class DBNSampler {
 
             sampler.setSeed(this.seed);
             sampler.setBatchSize(this.batchSize);
-            DataFlink<DataInstance> data= sampler.sampleToDataFlink(this.nSamples);
+            DataFlink<DataInstance> data= sampler.sampleToDataFlink(env,this.nSamples);
 
             Attribute attseq = new Attribute(data.getAttributes().getNumberOfAttributes(),Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace());
             Attribute atttime = new Attribute(data.getAttributes().getNumberOfAttributes()+1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace());

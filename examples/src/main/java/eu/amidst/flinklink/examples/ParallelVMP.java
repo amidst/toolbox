@@ -36,6 +36,10 @@ public class ParallelVMP {
 
     public static void main(String[] args) throws Exception {
 
+
+        //Set-up Flink session.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
         // load the true Asia Bayesian network
         BayesianNetwork originalBnet = BayesianNetworkLoader.loadFromFile(args[0]);
         System.out.println("\n Network \n " + args[0]);
@@ -51,11 +55,9 @@ public class ParallelVMP {
 
         //Load the sampled data
         int sizeData = Integer.parseInt(args[1]);
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(sizeData);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,sizeData);
 
         DataFlinkWriter.writeDataToARFFFolder(data, args[2]);
-
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadData(env, "./tmp.arff");
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,args[2], false);

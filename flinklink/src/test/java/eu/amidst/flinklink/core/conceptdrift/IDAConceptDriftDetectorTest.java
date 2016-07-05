@@ -55,6 +55,14 @@ public class IDAConceptDriftDetectorTest extends TestCase {
     public static int BATCHSIZE = 500;
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+
+
         BayesianNetwork dbn = BayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
         if (Main.VERBOSE) System.out.println(dbn.toString());
@@ -81,7 +89,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
                 sampler.setBatchSize(BATCHSIZE);
                 sampler.setSeed(1);
             }
-            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(SAMPLESIZE);
+            DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(env,SAMPLESIZE);
             DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data" + i + ".arff");
         }
     }
@@ -182,6 +190,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
         env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
 
 
 
@@ -219,7 +228,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
             }
         }
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
         DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/conceptdrift/data0.arff");
@@ -269,7 +278,7 @@ public class IDAConceptDriftDetectorTest extends TestCase {
                 if (Main.VERBOSE) System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);//i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             dataPrev = dataNew;
