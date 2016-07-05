@@ -20,6 +20,7 @@ package eu.amidst.flinklink.core.utils;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -37,11 +38,11 @@ public class BayesianNetworkSamplerTest extends TestCase {
 
         DataFlink<DataInstance> data = sampler.sampleToDataFlink(10);
 
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
         data.getDataSet().print();
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
         data.getDataSet().print();
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
 
     }
     public void testingAsia() throws Exception {

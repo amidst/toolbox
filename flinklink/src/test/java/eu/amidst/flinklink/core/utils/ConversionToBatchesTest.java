@@ -12,6 +12,7 @@
 package eu.amidst.flinklink.core.utils;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
@@ -30,10 +31,10 @@ public class ConversionToBatchesTest extends TestCase {
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
         env.getConfig().disableSysoutLogging();
         env.setParallelism(1);
-        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/docword.kos.arff", false);
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/text/docword.kos.arff", false);
 
-        System.out.println(dataInstances.getBatchedDataSet(100).count());
-        System.out.println(dataInstances.getBatchedDataSet(100,ConversionToBatches::toBatchesBySeqID).count());
+        if (Main.VERBOSE) System.out.println(dataInstances.getBatchedDataSet(100).count());
+        if (Main.VERBOSE) System.out.println(dataInstances.getBatchedDataSet(100,ConversionToBatches::toBatchesBySeqID).count());
 
     }
 }

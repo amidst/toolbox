@@ -132,7 +132,7 @@ public class BaseDistributionMultinomialParentsTest {
 
             logProb = testnet.getLogProbabiltyOf(e);
 
-            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
 
         }

@@ -33,6 +33,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetectorTest;
 import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
@@ -87,9 +88,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : network.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(network.getConditionalDistribution(var), error));
         }
 
@@ -110,7 +111,7 @@ public class dVMPv1Test extends TestCase {
 
         distA.setProbabilities(new double[]{1.0, 0.0});
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
@@ -216,9 +217,9 @@ public class dVMPv1Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -251,9 +252,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.02));
         }
 
@@ -272,9 +273,9 @@ public class dVMPv1Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -307,9 +308,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
         }
 
@@ -328,9 +329,9 @@ public class dVMPv1Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -363,11 +364,11 @@ public class dVMPv1Test extends TestCase {
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        System.out.println("Running time: \n" + seconds + " secs");
+        if (Main.VERBOSE) System.out.println("Running time: \n" + seconds + " secs");
 
     }
 
@@ -385,9 +386,9 @@ public class dVMPv1Test extends TestCase {
         BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 2);
         BayesianNetwork asianet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -426,11 +427,11 @@ public class dVMPv1Test extends TestCase {
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        System.out.println("Running time: \n" + seconds + " secs");
+        if (Main.VERBOSE) System.out.println("Running time: \n" + seconds + " secs");
 
     }
 
@@ -446,9 +447,9 @@ public class dVMPv1Test extends TestCase {
         // load the true WasteIncinerator Bayesian network
         BayesianNetwork wasteIncinerator = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
         wasteIncinerator.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(wasteIncinerator.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(wasteIncinerator.toString());
 
         //Sampling from WasteIncinerator BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(wasteIncinerator);
@@ -482,7 +483,7 @@ public class dVMPv1Test extends TestCase {
         //Run
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
     }
 
     public void testingMLParallelWaste() throws Exception {
@@ -496,9 +497,9 @@ public class dVMPv1Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nWasteIncinerator network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nWasteIncinerator network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
 /*        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -539,9 +540,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.4));
         }
 
@@ -576,13 +577,13 @@ public class dVMPv1Test extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
-        System.out.println(dag.toString());
+        if (Main.VERBOSE) System.out.println(dag.toString());
         parallelVB.setDAG(dag);
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
         DataSet<DataPosterior> dataPosteriorDataSet = parallelVB.computePosterior(dataFlink,Arrays.asList(dag.getVariables().getVariableByName("GlobalHidden")));
 
@@ -623,13 +624,13 @@ public class dVMPv1Test extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
-        System.out.println(dag.toString());
+        if (Main.VERBOSE) System.out.println(dag.toString());
         parallelVB.setDAG(dag);
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
         List<Variable> list = new ArrayList<>();
         list.add(dag.getVariables().getVariableByName("GlobalHidden"));
         list.add(dag.getVariables().getVariableById(0));
@@ -708,7 +709,7 @@ public class dVMPv1Test extends TestCase {
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
-        System.out.println(LearnedBnet.toString());
+        if (Main.VERBOSE) System.out.println(LearnedBnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
@@ -827,12 +828,12 @@ public class dVMPv1Test extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(network.toString());
-        System.out.println(bnet.toString());
-        System.out.println(parallelVB.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(parallelVB.getLogMarginalProbability());
 
-        System.out.println(svb.getLearntBayesianNetwork().toString());
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork().toString());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
     }
 
@@ -851,7 +852,7 @@ public class dVMPv1Test extends TestCase {
         IDAConceptDriftDetectorTest.createBN1(10);
         BayesianNetwork network = BayesianNetworkLoader.loadFromFile("../networks/simulated/dbn1.dbn");
         network.randomInitialization(new Random(0));
-        System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(network.toString());
 
         //String dataset= "./datasets/dataStream/conceptdrift/data0.arff";
         String dataset= "../datasets/simulated/tmpfolder.arff";
@@ -918,12 +919,12 @@ public class dVMPv1Test extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(network.toString());
-        System.out.println(bnet.toString());
-        System.out.println(parallelVB.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(parallelVB.getLogMarginalProbability());
 
-        System.out.println(svb.getLearntBayesianNetwork().toString());
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork().toString());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
     }
 

@@ -21,6 +21,7 @@ package eu.amidst.flinklink.core.io;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import junit.framework.TestCase;
@@ -58,7 +59,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
@@ -82,7 +83,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         int size = 0;
         for (DataOnMemory<DataInstance> dataInstanceDataBatch : batchList) {
-            System.out.println("Batch :" + dataInstanceDataBatch.getList().size());
+            if (Main.VERBOSE) System.out.println("Batch :" + dataInstanceDataBatch.getList().size());
             size += dataInstanceDataBatch.getList().size();
         }
         assertEquals(16, size);
@@ -95,7 +96,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
@@ -122,7 +123,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
@@ -147,7 +148,7 @@ public class DataFlinkLoaderTest extends TestCase {
             for (DataInstance dataInstance : batch) {
                 if (docId == -1) {
                     docId = (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id());
-                    System.out.println("DOC ID: " + docId);
+                    if (Main.VERBOSE) System.out.println("DOC ID: " + docId);
                 }
 
                 assertEquals(docId, (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id()));

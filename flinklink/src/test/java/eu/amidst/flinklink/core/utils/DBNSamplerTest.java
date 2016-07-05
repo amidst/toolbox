@@ -23,6 +23,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
 import org.junit.Assert;
@@ -38,10 +39,10 @@ public class DBNSamplerTest extends TestCase {
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         BayesianNetwork bn = dbn.toBayesianNetworkTime0();
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(1);
         sampler.setBatchSize(100);
@@ -53,7 +54,7 @@ public class DBNSamplerTest extends TestCase {
                     && datainstance.getValue(bn.getVariables().getVariableByName("CREDITCARD"))==1.0)
                 count++;
         }
-        System.out.println(count);
+        if (Main.VERBOSE) System.out.println(count);
 
     }
 
@@ -62,7 +63,7 @@ public class DBNSamplerTest extends TestCase {
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(1000);
@@ -78,7 +79,7 @@ public class DBNSamplerTest extends TestCase {
                 //    && datainstance.getValue(dbn.getDynamicVariables().getVariableByName("CREDITCARD"))==1.0)
                 count++;
         }
-        System.out.println(count);
+        if (Main.VERBOSE) System.out.println(count);
 
     }
 
@@ -88,7 +89,7 @@ public class DBNSamplerTest extends TestCase {
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/bnaic2015/BCC/HuginCajaMarDefaulterPredictor.dbn");
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(1000);
@@ -113,8 +114,8 @@ public class DBNSamplerTest extends TestCase {
                 countB++;
         }
 
-        System.out.println(countA);
-        System.out.println(countB);
+        if (Main.VERBOSE) System.out.println(countA);
+        if (Main.VERBOSE) System.out.println(countB);
 
     }
 
@@ -126,14 +127,14 @@ public class DBNSamplerTest extends TestCase {
         dist.getMultinomial(0).setProbabilities(new double[]{0.99,0.01});
         dist.getMultinomial(1).setProbabilities(new double[]{0.99, 0.01});
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(10);
         sampler.setBatchSize(2);
         sampler.setSeed(1);
 
-        System.out.println("--------------- DATA 0 --------------------------");
+        if (Main.VERBOSE) System.out.println("--------------- DATA 0 --------------------------");
         DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
         data0.getDataSet().print();
 
@@ -144,7 +145,7 @@ public class DBNSamplerTest extends TestCase {
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < 10; i++) {
-            System.out.println("--------------- DATA "+i+" --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA "+i+" --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
             dataNew.getDataSet().print();
             Assert.assertEquals(dataNew.getDataSet().count(), 10);

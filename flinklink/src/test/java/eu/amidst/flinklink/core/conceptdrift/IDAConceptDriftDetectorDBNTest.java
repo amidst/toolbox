@@ -25,6 +25,7 @@ import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
@@ -55,7 +56,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(1));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
@@ -80,17 +81,17 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated//conceptdrift/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        System.out.println(list);
+        if (Main.VERBOSE) System.out.println(list);
 
         HashSet<Long> noDupSet = new HashSet();
         noDupSet.addAll(list);
         assertEquals(SAMPLESIZE, noDupSet.size());
-        System.out.println(noDupSet);
+        if (Main.VERBOSE) System.out.println(noDupSet);
 
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSampleConceptDrift(dataPrev, i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/conceptdrift/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
@@ -120,7 +121,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         dag.setName("dbn1");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
@@ -136,7 +137,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
@@ -154,25 +155,25 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         learn.initLearning();
         double[] output = new double[NSETS];
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
+        if (Main.VERBOSE) System.out.println("--------------- DATA " + 0 + " --------------------------");
         double[] out = learn.updateModelWithNewTimeSlice(0, data0);
         output[0] = out[0];
 
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "../datasets/simulated/conceptdrift/data" + i + ".arff", false);
             out = learn.updateModelWithNewTimeSlice(i, dataNew);
             output[i] = out[0];
 
-            System.out.println(learn.getLearntDynamicBayesianNetwork());
+            if (Main.VERBOSE) System.out.println(learn.getLearntDynamicBayesianNetwork());
 
         }
 
-        System.out.println(learn.getLearntDynamicBayesianNetwork());
+        if (Main.VERBOSE) System.out.println(learn.getLearntDynamicBayesianNetwork());
 
         for (int i = 0; i < NSETS; i++) {
-            System.out.println("E(H_"+i+") =\t" + output[i]);
+            if (Main.VERBOSE) System.out.println("E(H_"+i+") =\t" + output[i]);
         }
 
     }
@@ -200,7 +201,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
             dist.getNormal_NormalParentsDistribution(1).setIntercept(10);
         }
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
@@ -225,17 +226,17 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
         data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/conceptdrift/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        System.out.println(list);
+        if (Main.VERBOSE) System.out.println(list);
 
         HashSet<Long> noDupSet = new HashSet();
         noDupSet.addAll(list);
         assertEquals(SAMPLESIZE, noDupSet.size());
-        System.out.println(noDupSet);
+        if (Main.VERBOSE) System.out.println(noDupSet);
 
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             if (i==5){
                 for (Variable variable : dbn.getDynamicVariables()) {
                     if (!variable.getName().startsWith("A"))
@@ -249,7 +250,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
                     dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
                     dist.getNormal_NormalParentsDistribution(1).setIntercept(0);
                 }
-                System.out.println(dbn);
+                if (Main.VERBOSE) System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
             if (i==10){
@@ -265,7 +266,7 @@ public class IDAConceptDriftDetectorDBNTest extends TestCase {
                     dist.getNormal_NormalParentsDistribution(1).setCoeffParents(new double[]{1.0});
                     dist.getNormal_NormalParentsDistribution(1).setIntercept(-10);
                 }
-                System.out.println(dbn);
+                if (Main.VERBOSE) System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);

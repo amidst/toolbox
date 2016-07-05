@@ -25,6 +25,8 @@ import java.util.Random;
  */
 public class Main {
 
+    public static boolean VERBOSE = false;
+
     public static void main(String[] args){
 
         Random random = new Random();
@@ -32,10 +34,10 @@ public class Main {
         for (int i = 0; i < 100; i++) {
             int val = random.nextInt();
             double value = (double) random.nextDouble();
-            System.out.println(val);
-            System.out.println(value);
-            System.out.println(format.format(value));
-            System.out.println();
+            if (Main.VERBOSE) System.out.println(val);
+            if (Main.VERBOSE) System.out.println(value);
+            if (Main.VERBOSE) System.out.println(format.format(value));
+            if (Main.VERBOSE) System.out.println();
         }
     }
 }

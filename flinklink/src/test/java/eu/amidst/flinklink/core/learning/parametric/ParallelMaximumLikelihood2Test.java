@@ -25,6 +25,7 @@ import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
@@ -50,9 +51,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -76,9 +77,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
         }
 
@@ -97,9 +98,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
-        System.out.println("\nWasteIncinerator network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nWasteIncinerator network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -123,9 +124,9 @@ public class ParallelMaximumLikelihood2Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.2));
         }
 
