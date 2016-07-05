@@ -17,6 +17,7 @@
 
 package eu.amidst.core.io;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -36,7 +37,7 @@ public class DataStreamLoaderTest extends TestCase {
 
         DataStream<DataInstance> dataTest = DataStreamLoader.open("../datasets/simulated/dataTest.arff");
         for (Attribute attribute : dataTest.getAttributes().getFullListOfAttributes()) {
-            System.out.println(attribute.getName() +", "+attribute.getIndex());
+            if (Main.VERBOSE) System.out.println(attribute.getName() +", "+attribute.getIndex());
         }
         assertEquals(dataTest.getAttributes().getNumberOfAttributes(),10);
         assertEquals(dataTest.stream().count(), 50);

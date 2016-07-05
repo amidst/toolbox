@@ -17,7 +17,7 @@
 package eu.amidst.core.conceptdrift;
 
 
-
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
@@ -51,20 +51,20 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         virtualDriftDetector.setNumberOfGlobalVars(1);
         virtualDriftDetector.initLearning();
 
-        System.out.print("Batch");
+        if (Main.VERBOSE) System.out.print("Batch");
         for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
-            System.out.print("\t" + hiddenVar.getName());
+            if (Main.VERBOSE) System.out.print("\t" + hiddenVar.getName());
         }
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
         int countBatch = 0;
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)){
             double[] out = virtualDriftDetector.updateModel(batch);
-            System.out.print(countBatch + "\t");
+            if (Main.VERBOSE) System.out.print(countBatch + "\t");
             for (int i = 0; i < out.length; i++) {
-                System.out.print(out[i]+"\t");
+                if (Main.VERBOSE) System.out.print(out[i]+"\t");
             }
-            System.out.println();
+            if (Main.VERBOSE) System.out.println();
             countBatch++;
         }
     }
@@ -87,22 +87,22 @@ public class NaiveBayesVirtualConceptDriftDetectorTest {
         virtualDriftDetector.setNumberOfGlobalVars(1);
         virtualDriftDetector.initLearning();
 
-        System.out.print("Batch");
+        if (Main.VERBOSE) System.out.print("Batch");
         for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
-            System.out.print("\t" + hiddenVar.getName());
+            if (Main.VERBOSE) System.out.print("\t" + hiddenVar.getName());
         }
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
         int countBatch = 0;
         for (int k = 1; k < 60; k++) {
             data = DataStreamLoader.open("../datasets/bnaic2015/BCC/Month" + k + ".arff");
             DataOnMemory<DataInstance> batch = new DataOnMemoryListContainer<DataInstance>(data.getAttributes(),data.stream().collect(Collectors.toList()));
             double[] out = virtualDriftDetector.updateModel(batch);
-            System.out.print(countBatch + "\t");
+            if (Main.VERBOSE) System.out.print(countBatch + "\t");
             for (int i = 0; i < out.length; i++) {
-                System.out.print(out[i]+"\t");
+                if (Main.VERBOSE) System.out.print(out[i]+"\t");
             }
-            System.out.println();
+            if (Main.VERBOSE) System.out.println();
         }
     }
 }

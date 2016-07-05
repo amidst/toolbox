@@ -18,6 +18,7 @@
 package eu.amidst.core.inference;
 
 
+import eu.amidst.core.Main;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.Utils;
@@ -53,14 +54,14 @@ public class MPEInferenceExperiments {
 
         int[] indexesEvidence = new int[numVarEvidence];
         //indexesEvidence[0]=varInterest.getVarID();
-        //System.out.println(variable.getVarID());
+        //if (Main.VERBOSE) System.out.println(variable.getVarID());
 
-        System.out.println("Evidence:");
+        if (Main.VERBOSE) System.out.println("Evidence:");
         for( int k=0; k<numVarEvidence; k++ ) {
             int varIndex=-1;
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
-                //System.out.println(varIndex);
+                //if (Main.VERBOSE) System.out.println(varIndex);
                 aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
@@ -75,12 +76,12 @@ public class MPEInferenceExperiments {
             } while (ArrayUtils.contains(indexesEvidence, varIndex) );
 
             indexesEvidence[k]=varIndex;
-            //System.out.println(Arrays.toString(indexesEvidence));
-            System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
+            //if (Main.VERBOSE) System.out.println(Arrays.toString(indexesEvidence));
+            if (Main.VERBOSE) System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
 
             assignment.setValue(aux,evidence[k]);
         }
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
         return assignment;
     }
 
@@ -106,8 +107,8 @@ public class MPEInferenceExperiments {
 
         int seed = seedNetwork + 231591;
 
-        //System.out.println(bn.getDAG());
-        System.out.println(bn.toString());
+        //if (Main.VERBOSE) System.out.println(bn.getDAG());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         MPEInference mpeInference = new MPEInference();
@@ -115,9 +116,9 @@ public class MPEInferenceExperiments {
         mpeInference.setParallelMode(true);
 
 
-        System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+        if (Main.VERBOSE) System.out.println("CausalOrder: " + Arrays.toString(Utils.getTopologicalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
         List<Variable> modelVariables = Utils.getTopologicalOrder(bn.getDAG());
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
 
 
@@ -141,19 +142,19 @@ public class MPEInferenceExperiments {
 
 
         // MPE INFERENCE WITH SIMULATED ANNEALING, ALL VARIABLES
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
         long timeStart = System.nanoTime();
         mpeInference.runInference(MPEInference.SearchAlgorithm.SA_GLOBAL);
 
 
         Assignment mpeEstimate = mpeInference.getEstimate();
-        System.out.println("MPE estimate (SA.All): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-        System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+        if (Main.VERBOSE) System.out.println("MPE estimate (SA.All): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+        if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
         long timeStop = System.nanoTime();
         double execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //if (Main.VERBOSE) System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        if (Main.VERBOSE) System.out.println();
 
 
 
@@ -164,13 +165,13 @@ public class MPEInferenceExperiments {
 
 
         mpeEstimate = mpeInference.getEstimate();
-        System.out.println("MPE estimate  (SA.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-        System.out.println("with probability: "+ Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+        if (Main.VERBOSE) System.out.println("MPE estimate  (SA.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+        if (Main.VERBOSE) System.out.println("with probability: "+ Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
         timeStop = System.nanoTime();
         execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        //if (Main.VERBOSE) System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+        if (Main.VERBOSE) System.out.println();
 
 
         /***********************************************
@@ -184,12 +185,12 @@ public class MPEInferenceExperiments {
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-        System.out.println("MPE estimate (HC.All): " + mpeEstimate.outputString(modelVariables));
-        System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+        if (Main.VERBOSE) System.out.println("MPE estimate (HC.All): " + mpeEstimate.outputString(modelVariables));
+        if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
         timeStop = System.nanoTime();
         execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        if (Main.VERBOSE) System.out.println();
 
 
 
@@ -200,12 +201,12 @@ public class MPEInferenceExperiments {
 
 
         mpeEstimate = mpeInference.getEstimate();
-        System.out.println("MPE estimate  (HC.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-        System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+        if (Main.VERBOSE) System.out.println("MPE estimate  (HC.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+        if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
         timeStop = System.nanoTime();
         execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        if (Main.VERBOSE) System.out.println();
 
 
         /***********************************************
@@ -222,12 +223,12 @@ public class MPEInferenceExperiments {
 
         mpeEstimate = mpeInference.getEstimate();
         //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-        System.out.println("MPE estimate (SAMPLING): " + mpeEstimate.outputString(modelVariables));
-        System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+        if (Main.VERBOSE) System.out.println("MPE estimate (SAMPLING): " + mpeEstimate.outputString(modelVariables));
+        if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
         timeStop = System.nanoTime();
         execTime = (double) (timeStop - timeStart) / 1000000000.0;
-        System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+        if (Main.VERBOSE) System.out.println();
 
 
         if(bn.getNumberOfVars()<=50) {
@@ -238,12 +239,12 @@ public class MPEInferenceExperiments {
 
             mpeEstimate = mpeInference.getEstimate();
             //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-            System.out.println("MPE estimate (DETERM.): " + mpeEstimate.outputString(modelVariables));
-            System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            if (Main.VERBOSE) System.out.println("MPE estimate (DETERM.): " + mpeEstimate.outputString(modelVariables));
+            if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            System.out.println();
+            if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            if (Main.VERBOSE) System.out.println();
 
         }
     }

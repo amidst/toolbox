@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
@@ -43,7 +44,7 @@ public class MLGenratedBNTest {
         BayesianNetworkGenerator.setNumberOfMultinomialVars(1, 2);
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetwork naiveBayes = BayesianNetworkGenerator.generateNaiveBayes(2);
-        System.out.println(naiveBayes.toString());
+        if (Main.VERBOSE) System.out.println(naiveBayes.toString());
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(naiveBayes);
@@ -64,9 +65,9 @@ public class MLGenratedBNTest {
 
         //Check the probability distributions of each node
         for (Variable var : naiveBayes.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ naiveBayes.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ naiveBayes.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(naiveBayes.getConditionalDistribution(var), 0.05));
         }
 

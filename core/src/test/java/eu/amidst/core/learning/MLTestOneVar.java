@@ -19,6 +19,7 @@ package eu.amidst.core.learning;
 
 
 import com.google.common.base.Stopwatch;
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Distribution;
@@ -42,18 +43,18 @@ public class MLTestOneVar {
         // load the true Asia Bayesian network
         BayesianNetwork net = BayesianNetworkLoader.loadFromFile("../networks/simulated/One.bn");
 
-        System.out.println("\nOne network \n ");
-        System.out.println(net.getDAG().toString());
-        System.out.println(net.toString());
+        if (Main.VERBOSE) System.out.println("\nOne network \n ");
+        if (Main.VERBOSE) System.out.println(net.getDAG().toString());
+        if (Main.VERBOSE) System.out.println(net.toString());
 
         //Sampling 5000 instances from Asia BN
         Stopwatch watch = Stopwatch.createStarted();
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(net);
         sampler.setSeed(0);
-        System.out.println(watch.stop());
+        if (Main.VERBOSE) System.out.println(watch.stop());
 
         DataStream<DataInstance> data = sampler.sampleToDataStream(10);
-        data.stream().forEach( e -> System.out.println(e.outputString()));
+        if (Main.VERBOSE) data.stream().forEach( e ->  System.out.println(e.outputString()));
 
         //Load the sampled data
         data = sampler.sampleToDataStream(10);
@@ -70,17 +71,17 @@ public class MLTestOneVar {
         parallelMaximumLikelihood.updateModel(data);
         BayesianNetwork bn = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         //Check if the probability distributions of the true and learned networks are equals
         for (Variable var : net.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
             Distribution trueCD = net.getConditionalDistribution(var);
-            System.out.println("\nThe true distribution:\n"+ trueCD);
+            if (Main.VERBOSE) System.out.println("\nThe true distribution:\n"+ trueCD);
 
             Distribution learnedCD = bn.getConditionalDistribution(var);
-            System.out.println("\nThe learned distribution:\n"+ learnedCD);
+            if (Main.VERBOSE) System.out.println("\nThe learned distribution:\n"+ learnedCD);
 
         }
 

@@ -11,6 +11,7 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -57,9 +58,9 @@ public class StochasticVITest extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : network.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(network.getConditionalDistribution(var), error));
         }
 
@@ -79,7 +80,7 @@ public class StochasticVITest extends TestCase {
 
         //distA.setProbabilities(new double[]{1.0, 0.0});
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);

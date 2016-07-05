@@ -11,6 +11,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 
@@ -25,26 +26,26 @@ public class EF_SparseMultinomialTest extends TestCase {
         EF_SparseMultinomial dist = new EF_SparseMultinomial(variables.newSparseMultionomialVariable("A", 10));
 
 
-        System.out.println(dist.getSufficientStatistics(1).output());
-        System.out.println(dist.getNaturalParameters().output());
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getSufficientStatistics(1).output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
 
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.setMomentParameters(dist.getSufficientStatistics(1));
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
 
         dist.updateNaturalFromMomentParameters();
-        System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.updateMomentFromNaturalParameters();
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
     }
 
     public static void test2() {
@@ -57,30 +58,30 @@ public class EF_SparseMultinomialTest extends TestCase {
         sufficientStatistics.multiplyBy(size);
 
         sufficientStatistics.sum(dist.createInitSufficientStatistics());
-        System.out.println(sufficientStatistics.output());
+        if (Main.VERBOSE) System.out.println(sufficientStatistics.output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
 
         dist.setMomentParameters(sufficientStatistics);
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
 
         dist.updateNaturalFromMomentParameters();
-        System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.fixNumericalInstability();
-        System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.updateMomentFromNaturalParameters();
-        System.out.println(dist.getMomentParameters().output());
-        System.out.println((size+0.1)/(size+1));
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println((size+0.1)/(size+1));
 
         assertEquals((size+0.1)/(size+1),dist.getMomentParameters().get(1),0.0000001);
 

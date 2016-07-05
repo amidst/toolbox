@@ -1,5 +1,6 @@
 package eu.amidst.core.variables.distributionTypes;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
@@ -22,9 +23,9 @@ public class IndicatorTypeTest {
          *  ORIGINAL BN - Bayesian network WITHOUT indicator variables.
          */
 
-        System.out.println("----------------------------------------------------------");
-        System.out.println("ORIGINAL BN - Bayesian network WITHOUT indicator variables");
-        System.out.println("----------------------------------------------------------");
+        if (Main.VERBOSE) System.out.println("----------------------------------------------------------");
+        if (Main.VERBOSE) System.out.println("ORIGINAL BN - Bayesian network WITHOUT indicator variables");
+        if (Main.VERBOSE) System.out.println("----------------------------------------------------------");
 
         DataStream<DataInstance> data = DataStreamLoader.open("../datasets/dataWeka/labor.arff");
         Variables variables = new Variables();
@@ -44,16 +45,16 @@ public class IndicatorTypeTest {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
 
 
         /**
          *  Bayesian network WITH indicator variables.
          */
 
-        System.out.println("------------------------------------------");
-        System.out.println("Bayesian network WITH indicator variables.");
-        System.out.println("------------------------------------------");
+        if (Main.VERBOSE) System.out.println("------------------------------------------");
+        if (Main.VERBOSE) System.out.println("Bayesian network WITH indicator variables.");
+        if (Main.VERBOSE) System.out.println("------------------------------------------");
 
         Variable duration_IndVar = variables.newIndicatorVariable(durationVar,1.0);
         Variable wageIncreaseFirstYear_IndVar = variables.newIndicatorVariable(wageIncreaseFirstYearVar,Double.NaN);
@@ -75,7 +76,7 @@ public class IndicatorTypeTest {
 
         learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
 
 
 
