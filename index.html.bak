@@ -63,42 +63,44 @@
           </tr>
         </tbody>
       </table>
-      <h1>Description</h1>
-      <table  style="width: 100%"  border="0">
-        <tbody>
-          <tr>
-            <td>
-              <h2>Probabilistic Machine Learning</h2>
-              <p  style="text-align: justify;">The AMIDST Toolbox allows you to
-                model your problem using a flexible probabilistic language based
-                on graphical models. Then you fit your model with data using a
-                Bayesian approach to handle modeling uncertainty.</p>
-              <p  align="center"> </p>
-            </td>
-            <td>
-              <p  align="center"><img  title="PGM"  src="https://amidst.github.io/toolbox/docs/web/figs/pgm-crop.png"
-                   width="250">
-              </p>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <p  align="center"> <img  title="Taxonomy"  src="https://amidst.github.io/toolbox/docs/web/figs/cluster-crop.png"
-                   width="250"></p>
-            </td>
-            <td>
-              <h2>Multi-core and distributed processing</h2>
-              <p  style="text-align: justify;">AMIDST provides tailored parallel
-                (powered by Java 8 Streams) and distributed (powered by <a  href="https://flink.apache.org">Flink</a>
-                or <a  href="http://spark.apache.org">Spark</a>)
-                implementations of Bayesian parameter learning for batch and
-                streaming data. This processing is based on flexible and <a  href="http://amidst.github.io/toolbox/docs/dVMP.pdf">scalable
-                  message passing algorithms</a>.</p>
-              <p  style="text-align: justify;"> </p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div style="width: 960px; background-color=pink">
+        <h1>Description</h1>
+        <table  style="width: 100%"  border="0">
+          <tbody>
+            <tr>
+              <td>
+                <h2>Probabilistic Machine Learning</h2>
+                <p  style="text-align: justify;">The AMIDST Toolbox allows you
+                  to model your problem using a flexible probabilistic language
+                  based on graphical models. Then you fit your model with data
+                  using a Bayesian approach to handle modeling uncertainty.</p>
+                <p  align="center"> </p>
+              </td>
+              <td>
+                <p  align="center"><img  title="PGM"  src="https://amidst.github.io/toolbox/docs/web/figs/pgm-crop.png"
+                     width="250">
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p  align="center"> <img  title="Taxonomy"  src="https://amidst.github.io/toolbox/docs/web/figs/cluster-crop.png"
+                     width="250"></p>
+              </td>
+              <td>
+                <h2>Multi-core and distributed processing</h2>
+                <p  style="text-align: justify;">AMIDST provides tailored
+                  parallel (powered by Java 8 Streams) and distributed (powered
+                  by <a  href="https://flink.apache.org">Flink</a> or <a  href="http://spark.apache.org">Spark</a>)
+                  implementations of Bayesian parameter learning for batch and
+                  streaming data. This processing is based on flexible and <a  href="http://amidst.github.io/toolbox/docs/dVMP.pdf">scalable
+                    message passing algorithms</a>.</p>
+                <p  style="text-align: justify;"> </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <h1  style="text-align: justify;"><br>
         <a  id="features"  class="anchor"  href="#features"  aria-hidden="true"><span
              aria-hidden="true"
@@ -281,10 +283,10 @@
       </h1>
       <ul>
         <li>
-          <p><a  href="http://amidst.github.io/toolbox/GettingStarted.html">Getting
-              Started!</a> explains how to install the AMIDST toolbox, how this
-            toolbox makes use of Java 8 new functional style programming
-            features, and why it is based on a module based architecture.</p>
+          <p><a  href="GettingStarted/index.html">Getting Started!</a> explains
+            how to install the AMIDST toolbox, how this toolbox makes use of
+            Java 8 new functional style programming features, and why it is
+            based on a module based architecture.</p>
         </li>
         <li>
           <p><a  href="http://amidst.github.io/toolbox/ToolboxFunctionalities.html">Toolbox
@@ -293,10 +295,9 @@
             engines, etc.) of the AMIDST toolbox.</p>
         </li>
         <li>
-          <p><a  href="http://amidst.github.io/toolbox/examples/bnetworks.html">Bayesian
-              networks: Code Examples</a> includes a list of source code
-            examples explaining how to use some functionalities of the AMIDST
-            toolbox.</p>
+          <p><a  href="examples/bnetworks.html">Bayesian networks: Code Examples</a>
+            includes a list of source code examples explaining how to use some
+            functionalities of the AMIDST toolbox.</p>
         </li>
         <li>
           <p><a  href="http://amidst.github.io/toolbox/DynamicCodeExamples.html">Dynamic
