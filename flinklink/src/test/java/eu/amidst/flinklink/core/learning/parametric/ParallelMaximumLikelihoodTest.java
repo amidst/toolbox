@@ -46,7 +46,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -92,7 +92,7 @@ public class ParallelMaximumLikelihoodTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
 
         // load the true Asia Bayesian network

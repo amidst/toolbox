@@ -121,7 +121,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 10, 0.05);
 
@@ -153,7 +153,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 100, 0.05);
 
@@ -175,7 +175,7 @@ public class dVMPTest extends TestCase {
             Configuration conf = new Configuration();
             conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
             final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-            env.getConfig().disableSysoutLogging();
+                    env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
             baseTest(env, data, bn, 1000, 0.1);
 
@@ -199,7 +199,7 @@ public class dVMPTest extends TestCase {
             Configuration conf = new Configuration();
             conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
             final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-            env.getConfig().disableSysoutLogging();
+                    env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
             baseTest(env, data, bn, 1000, 0.2);
 
@@ -212,7 +212,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -268,7 +268,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -324,7 +324,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
@@ -379,7 +379,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfGaussianVars(10);
@@ -441,7 +441,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
 
         // load the true WasteIncinerator Bayesian network
@@ -492,7 +492,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
@@ -557,7 +557,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -602,7 +602,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -658,8 +658,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
-        env.setParallelism(Main.PARALLELISM);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         /*
          * Logging
@@ -775,7 +774,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
         env.setParallelism(1);
 
 
@@ -846,7 +845,7 @@ public class dVMPTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
         env.setParallelism(1);
 
         int SAMPLES = 1000;

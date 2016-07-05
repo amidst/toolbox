@@ -34,7 +34,7 @@ public class DataFlinkWriterTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);

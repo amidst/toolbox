@@ -43,7 +43,7 @@ public class DataFlinkLoaderTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
@@ -71,7 +71,7 @@ public class DataFlinkLoaderTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
@@ -107,7 +107,7 @@ public class DataFlinkLoaderTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlinkWriterTest.test1();
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp_2.arff", false);
@@ -136,7 +136,7 @@ public class DataFlinkLoaderTest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/simulated/docword.simulated.arff", false);
 

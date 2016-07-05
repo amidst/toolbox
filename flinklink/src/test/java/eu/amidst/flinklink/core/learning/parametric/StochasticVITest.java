@@ -104,7 +104,7 @@ public class StochasticVITest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 100, 10, 0.05);
 
@@ -125,7 +125,7 @@ public class StochasticVITest extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 10000, 1000, 0.2);
 
