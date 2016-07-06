@@ -14,14 +14,14 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.4.3</version> <!-- AmidstVersion -->
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>ida2015</artifactId>
-    <version>${AMIDSTver}</version>
+    <version>0.4.3</version> <!-- AmidstVersion -->
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -33,12 +33,6 @@
         </license>
     </licenses>
 
-    <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
-    </properties>
-
-
-
     <scm>
         <url>http://github.com/amidst/core</url>
     </scm>
@@ -47,12 +41,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>moalink</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 

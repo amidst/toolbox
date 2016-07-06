@@ -16,15 +16,15 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.4.3</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.amidst</groupId>
     <artifactId>cajamar</artifactId>
-    <properties>
-        <AMIDSTver>0.4.3</AMIDSTver>
-    </properties>
+    <version>0.4.3</version> <!-- AmidstVersion -->
+
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -45,12 +45,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>
@@ -60,12 +60,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 

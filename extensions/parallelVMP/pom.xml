@@ -16,17 +16,20 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>1.0.0</version>
+        <version>0.4.3</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.amidst</groupId>
     <artifactId>parallelVMP</artifactId>
+    <version>0.4.3</version> <!-- AmidstVersion -->
+
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>1.0.0</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -36,12 +39,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
-            <version>0.4.3-alpha</version>
+            <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 
