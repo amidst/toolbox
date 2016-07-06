@@ -34,6 +34,8 @@ import java.io.Serializable;
  */
 public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Serializable {
 
+    private int nGlobalIterations = 10;
+
     private static final long serialVersionUID = 329639736967237932L;
 
     protected DynamicParallelVB learningAlgorithmFlink = null;
@@ -88,6 +90,10 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
         learningAlgorithmFlink.updateModelWithNewTimeSlice(timeSlice, dataStream);
     }
 
+    public void setGlobalIterations(int nGlobalIterations) {
+        this.nGlobalIterations = nGlobalIterations;
+    }
+
     private void initLearningFlink() {
         if(learningAlgorithmFlink==null) {
             learningAlgorithmFlink = new DynamicParallelVB();
@@ -95,8 +101,8 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
             learningAlgorithmFlink.setOutput(false);
             learningAlgorithmFlink.setTestELBO(false);
-            learningAlgorithmFlink.setMaximumGlobalIterations(10);
-            learningAlgorithmFlink.setMaximumLocalIterations(100);
+            learningAlgorithmFlink.setMaximumGlobalIterations(this.nGlobalIterations);
+            learningAlgorithmFlink.setMaximumLocalIterations(10*this.nGlobalIterations);
             learningAlgorithmFlink.setGlobalThreshold(0.1);
             learningAlgorithmFlink.setLocalThreshold(0.1);
             learningAlgorithmFlink.initLearning();

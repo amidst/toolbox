@@ -26,19 +26,22 @@ public class DynamicNaiveBayesEval {
 
         String dataFolderPath;
         String folderOutput;
+        int nGlobalIterations;
 
         if (args.length == 2) {
             dataFolderPath = args[0];
             folderOutput = args[1];
+            nGlobalIterations = Integer.parseInt(args[2]);
         }
-
         else {
             System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_bug/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_bug/output/";
+
+            nGlobalIterations = 5;
         }
 
         File dataFolder = new File(dataFolderPath);
@@ -67,7 +70,7 @@ public class DynamicNaiveBayesEval {
             String modelOutput = folderOutput + currentDayFolder.getName() + "_model.txt";
             String networkOutput = folderOutput + currentDayFolder.getName() + "_dynNaiveBayes.dbn";
 
-            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, false);
+            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, true);
 
             if(firstFile) {
                 dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dataTrain.getAttributes());
@@ -83,7 +86,7 @@ public class DynamicNaiveBayesEval {
             dynamicNaiveBayesClassifier.updateModel(timeID,dataTrain);
             System.out.println("DAY " + timeID + " TRAINING FINISHED");
 
-            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, false);
+            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, true);
 
             System.out.println("DAY " + timeID + " TESTING...");
             DataSet<Tuple2<Long,Double>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);

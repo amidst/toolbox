@@ -827,7 +827,23 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
             if (prior!=null) {
                 svb.updateNaturalParameterPrior(prior);
                 svb.updateNaturalParameterPosteriors(updatedPrior);
-                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
+
+
+                basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> {
+                    try {
+                        return svb.getPlateuStructure().getVMP().computeELBO(node);
+                    }
+                    catch (Exception e) {
+                        System.out.println(e.getMessage());
+                        System.out.println(svb.getPlateuStructure().getVMP().toString());
+                        e.printStackTrace();
+                        System.out.println(node.toString());
+                        System.out.println(parameters.toString());
+                        return Double.NaN;
+                    }
+                }).sum();
+
+
                 //svb.initLearning();
                 //System.out.println("BaseELBO:"+ basedELBO);
             }else{

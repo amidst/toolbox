@@ -249,8 +249,12 @@ public class DataFlinkLoader implements Serializable{
                                             ((RealStateSpace) att.getStateSpaceType()).getMinInterval());
                                     double Nvalue = (dataInstance.getValue(att) -
                                             ((RealStateSpace) att.getStateSpaceType()).getMinInterval())/interval;
-                                    if (Double.isNaN(Nvalue)|| Nvalue<0 || Nvalue>factor)
-                                        throw new IllegalStateException("Non proper normalization"+Nvalue);
+                                    if ( (Double.isFinite(dataInstance.getValue(att)) && Double.isNaN(Nvalue)) || Nvalue<0 || Nvalue>1) { //
+                                        double a = (dataInstance.getValue(att));
+                                        DataInstance aux = dataInstance;
+                                        //throw new IllegalStateException("Non proper normalization " + Nvalue);
+                                        System.out.println("WARNING: DataFlinkLoader -  Non proper normalization " + Nvalue);
+                                    }
                                     dataInstance.setValue(att, Nvalue);
                                 }
                         );
