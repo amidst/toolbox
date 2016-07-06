@@ -11,6 +11,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
@@ -34,7 +35,7 @@ public class EF_TruncatedExponentialTest extends TestCase {
 
         dist.getNaturalParameters().set(0,100);
         dist.updateMomentFromNaturalParameters();
-        System.out.println(dist.getExpectedParameters().get(0));
+        if (Main.VERBOSE) System.out.println(dist.getExpectedParameters().get(0));
 
     }
 

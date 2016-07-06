@@ -48,9 +48,9 @@ public class DynamicBayesianNetworkSamplerTest extends TestCase {
         dynamicSampler.setMARVar(classVar,0.5);
         DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3, 100);
 
-        for (DynamicDataInstance dynamicDataInstance : dataPredict) {
-            System.out.println(dynamicDataInstance.toString());
-        }
+        assertEquals(300,dataPredict.stream().count());
+
+        assertEquals(6,dataPredict.streamOfBatches(50).count());
     }
 
 }

@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
@@ -71,7 +72,7 @@ public class SVBTest extends TestCase {
         BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
 
-        System.out.println(learntNormalVarBN.toString());
+        if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
 
         SVB svb = new SVB();
         svb.setWindowsSize(1000);
@@ -88,8 +89,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         assertTrue(bn.equalBNs(learnBN, 0.05));
     }
 
@@ -141,8 +142,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         assertTrue(bn.equalBNs(learnBN, 0.05));
     }
 
@@ -182,8 +183,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         assertTrue(bn.equalBNs(learnBN, 0.1));
     }
 
@@ -225,8 +226,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         assertTrue(bn.equalBNs(learnBN, 0.1));
 
     }
@@ -268,8 +269,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         //assertTrue(bn.equalBNs(learnBN, 0.1));
 
     }
@@ -310,8 +311,8 @@ public class SVBTest extends TestCase {
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             //assertTrue(bn.equalBNs(learnBN, 0.5));
         }
     }
@@ -320,7 +321,7 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
@@ -338,12 +339,12 @@ public class SVBTest extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
         BayesianNetwork learnAsianet = svb.getLearntBayesianNetwork();
 
-        System.out.println(asianet.toString());
-        System.out.println(learnAsianet.toString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println(learnAsianet.toString());
         assertTrue(asianet.equalBNs(learnAsianet, 0.05));
 
     }
@@ -351,9 +352,9 @@ public class SVBTest extends TestCase {
     public static void testAsia2() throws IOException, ClassNotFoundException{
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setHiddenVar(asianet.getVariables().getVariableByName("E"));
@@ -377,12 +378,12 @@ public class SVBTest extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
         BayesianNetwork learnAsianet = svb.getLearntBayesianNetwork();
 
-        //System.out.println(asianet.outputString());
-        //System.out.println(learnAsianet.outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
+        //if (Main.VERBOSE) System.out.println(learnAsianet.outputString());
         //assertTrue(asianet.equalBNs(learnAsianet,0.05));
 
     }
@@ -401,7 +402,7 @@ public class SVBTest extends TestCase {
 
             oneNormalVarBN.randomInitialization(new Random(i));
 
-            System.out.println("\nOne normal variable network \n ");
+            if (Main.VERBOSE) System.out.println("\nOne normal variable network \n ");
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
             sampler.setSeed(0);
@@ -418,7 +419,7 @@ public class SVBTest extends TestCase {
             parallelMaximumLikelihood.updateModel(data);
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
 
             SVB svb = new SVB();
             svb.setWindowsSize(1);
@@ -433,12 +434,12 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println(svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
             BayesianNetwork learntOneNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(oneNormalVarBN.toString());
-            System.out.println(learntOneNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(oneNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntOneNormalVarBN.toString());
             assertTrue(oneNormalVarBN.equalBNs(learntOneNormalVarBN, 0.1));
         }
     }
@@ -454,9 +455,9 @@ public class SVBTest extends TestCase {
 
 
         for (int i = 0; i < bns.length; i++) {
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + bns[i] + "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            if (Main.VERBOSE) System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            if (Main.VERBOSE) System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" + bns[i] + "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+            if (Main.VERBOSE) System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
             BayesianNetwork normalVarBN = BayesianNetworkLoader.loadFromFile(bns[i]);
             //normalVarBN.randomInitialization(new Random(0));
 
@@ -476,8 +477,8 @@ public class SVBTest extends TestCase {
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
 
             SVB svb = new SVB();
@@ -492,12 +493,12 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println(svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
             learntNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
         }
     }
@@ -508,7 +509,7 @@ public class SVBTest extends TestCase {
 
         for (int i = 0; i < 10; i++) {
 
-            System.out.println("\nNormal|Normal variable network \n ");
+            if (Main.VERBOSE) System.out.println("\nNormal|Normal variable network \n ");
 
             normalVarBN.randomInitialization(new Random(i));
 
@@ -527,8 +528,8 @@ public class SVBTest extends TestCase {
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
 
             SVB svb = new SVB();
@@ -546,11 +547,11 @@ public class SVBTest extends TestCase {
 
 
 
-            System.out.println(svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
             learntNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
         }
 
@@ -564,7 +565,7 @@ public class SVBTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
             normalVarBN.randomInitialization(new Random(i));
-            System.out.println("\nNormal|2Normal variable network \n ");
+            if (Main.VERBOSE) System.out.println("\nNormal|2Normal variable network \n ");
 
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
@@ -582,8 +583,8 @@ public class SVBTest extends TestCase {
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
 
 
@@ -601,8 +602,8 @@ public class SVBTest extends TestCase {
 
             learntNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.25));
         }
     }
@@ -615,7 +616,7 @@ public class SVBTest extends TestCase {
 
 
             normalVarBN.randomInitialization(new Random(i));
-            System.out.println("\nNormal|2Normal variable network \n ");
+            if (Main.VERBOSE) System.out.println("\nNormal|2Normal variable network \n ");
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
             sampler.setSeed(0);
@@ -631,8 +632,8 @@ public class SVBTest extends TestCase {
             parallelMaximumLikelihood.updateModel(data);
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.6));
 
             SVB svb = new SVB();
@@ -649,8 +650,8 @@ public class SVBTest extends TestCase {
 
             learntNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.6));
         }
     }
@@ -664,7 +665,7 @@ public class SVBTest extends TestCase {
         for (int i = 1; i < 2; i++) {
 
             normalVarBN.randomInitialization(new Random(i));
-            System.out.println("\nNormal|2Normal variable network \n ");
+            if (Main.VERBOSE) System.out.println("\nNormal|2Normal variable network \n ");
 
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(normalVarBN);
@@ -682,8 +683,8 @@ public class SVBTest extends TestCase {
             BayesianNetwork learntNormalVarBN = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.3));
             if (normalVarBN.equalBNs(learntNormalVarBN, 0.3)) contA++;
 
@@ -701,13 +702,13 @@ public class SVBTest extends TestCase {
 
             learntNormalVarBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(normalVarBN.toString());
-            System.out.println(learntNormalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(normalVarBN.toString());
+            if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
             assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.5));
             if (normalVarBN.equalBNs(learntNormalVarBN, 0.5)) contB++;
         }
-        System.out.println(contA);
-        System.out.println(contB);
+        if (Main.VERBOSE) System.out.println(contA);
+        if (Main.VERBOSE) System.out.println(contB);
 
     }
 
@@ -726,7 +727,7 @@ public class SVBTest extends TestCase {
         BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
         sampler.setHiddenVar(varA);
@@ -747,8 +748,8 @@ public class SVBTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         //assertTrue(bn.equalBNs(learnBN,0.1));
     }
 
@@ -770,7 +771,7 @@ public class SVBTest extends TestCase {
 
             bn.randomInitialization(new Random(i));
 
-            System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB, 0.8);
@@ -789,12 +790,12 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             assertTrue(bn.equalBNs(learnBN, 0.2));
         }
     }
@@ -830,13 +831,13 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             //assertTrue(bn.equalBNs(learnBN, 0.5));
         }
     }
@@ -860,7 +861,7 @@ public class SVBTest extends TestCase {
 
             bn.randomInitialization(new Random(i));
 
-            //System.out.println(bn.outputString());
+            //if (Main.VERBOSE) System.out.println(bn.outputString());
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB,0.7);
@@ -879,13 +880,13 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             ConditionalLinearGaussian distCP = bn.getConditionalDistribution(varC);
             ConditionalLinearGaussian distCQ = learnBN.getConditionalDistribution(varC);
 
@@ -931,13 +932,13 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             //assertTrue(bn.equalBNs(learnBN, 0.5));
         }
     }
@@ -976,13 +977,13 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             assertTrue(bn.equalBNs(learnBN, 0.5));
         }
     }
@@ -1017,13 +1018,13 @@ public class SVBTest extends TestCase {
             svb.setDataStream(data);
             svb.runLearning();
 
-            System.out.println("Data Prob: " + svb.getLogMarginalProbability());
+            if (Main.VERBOSE) System.out.println("Data Prob: " + svb.getLogMarginalProbability());
 
 
             BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-            System.out.println(bn.toString());
-            System.out.println(learnBN.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(learnBN.toString());
             assertTrue(bn.equalBNs(learnBN, 0.2));
         }
     }

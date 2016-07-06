@@ -495,6 +495,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
             if (this.size()!=vector.size())
                 throw new IllegalArgumentException("Vectors has different sizes");
 
+            if (!vector.getClass().isAssignableFrom(ArrayVectorParameter.class))
+                throw new IllegalArgumentException("Not compatible class");
+
             this.copy((ArrayVectorParameter)vector);
         }
 

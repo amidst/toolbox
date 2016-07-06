@@ -17,6 +17,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -47,9 +48,9 @@ public class BaseDistributionMultinomialParentsTest {
         //distE.getMultinomial(2).setProbabilities(new double[]{0.9, 0.1});
         //distE.getMultinomial(3).setProbabilities(new double[]{0.1, 0.9});
 
-        System.out.println(testnet.toString());
+        if (Main.VERBOSE) System.out.println(testnet.toString());
 
-        System.out.println("\nMultinomial_MultinomialParents probabilities comparison \n ");
+        if (Main.VERBOSE) System.out.println("\nMultinomial_MultinomialParents probabilities comparison \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -68,7 +69,7 @@ public class BaseDistributionMultinomialParentsTest {
 
             logProb = testnet.getLogProbabiltyOf(e);
 
-            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //if (Main.VERBOSE) System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
 
         }
@@ -80,8 +81,8 @@ public class BaseDistributionMultinomialParentsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialParents.bn");
 
-        System.out.println(testnet.toString());
-        System.out.println("\nNormal_MultinomialParents probabilities comparison \n ");
+        if (Main.VERBOSE) System.out.println(testnet.toString());
+        if (Main.VERBOSE) System.out.println("\nNormal_MultinomialParents probabilities comparison \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -99,7 +100,7 @@ public class BaseDistributionMultinomialParentsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
             logProb = testnet.getLogProbabiltyOf(e);
-            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //if (Main.VERBOSE) System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
 
         }
@@ -110,9 +111,9 @@ public class BaseDistributionMultinomialParentsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_MultinomialNormalParents.bn");
 
-        System.out.println(testnet.toString());
+        if (Main.VERBOSE) System.out.println(testnet.toString());
 
-        System.out.println("\nNormal_MultinomialNormalParents probabilities comparison \n ");
+        if (Main.VERBOSE) System.out.println("\nNormal_MultinomialNormalParents probabilities comparison \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -132,7 +133,7 @@ public class BaseDistributionMultinomialParentsTest {
 
             logProb = testnet.getLogProbabiltyOf(e);
 
-            System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //if (Main.VERBOSE) System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
 
         }

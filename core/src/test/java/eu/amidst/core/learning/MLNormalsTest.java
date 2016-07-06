@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
@@ -43,7 +44,7 @@ public class MLNormalsTest {
 
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_1NormalParents.bn");
-        System.out.println("\nNormal_withOneNormalParent network \n ");
+        if (Main.VERBOSE) System.out.println("\nNormal_withOneNormalParent network \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -74,7 +75,7 @@ public class MLNormalsTest {
     public void testingML_GaussiansTwoParents() throws  IOException, ClassNotFoundException {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_NormalParents.bn");
-        System.out.println("\nNormal_withTwoNormalParents network \n ");
+        if (Main.VERBOSE) System.out.println("\nNormal_withTwoNormalParents network \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -95,9 +96,9 @@ public class MLNormalsTest {
 
         //Check the probability distributions of each node
         for (Variable var : testnet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ testnet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ testnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(testnet.getConditionalDistribution(var), 0.05));
         }
 

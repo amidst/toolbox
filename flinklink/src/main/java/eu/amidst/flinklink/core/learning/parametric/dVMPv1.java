@@ -72,11 +72,6 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     public static String LATENT_VARS="LATENT_VARS";
 
     /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
-    /**
      * Represents the directed acyclic graph {@link DAG}.
      */
     protected DAG dag;
@@ -183,9 +178,9 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         return this.globalELBO;
     }
 
-    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
+    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -195,7 +190,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize)
                     .flatMap(new ParallelVBMapInferenceAssignment())
                     .withParameters(config);
@@ -206,9 +201,9 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
 
     }
 
-    public DataSet<DataPosterior> computePosterior(List<Variable> latentVariables){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -218,7 +213,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);
@@ -229,9 +224,9 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
 
     }
 
-    public DataSet<DataPosterior> computePosterior(){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -240,7 +235,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);

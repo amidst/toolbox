@@ -17,11 +17,12 @@
 
 package eu.amidst.core.models;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -62,7 +63,7 @@ public class BayesianNetworkTest {
         dag.getParentSet(G).addParent(C);
         dag.getParentSet(G).addParent(D);
 
-        System.out.println(dag.toString());
+        if (Main.VERBOSE) System.out.println(dag.toString());
 
         /* testing adding duplicate parents */
         try {
@@ -84,7 +85,7 @@ public class BayesianNetworkTest {
 
         BayesianNetwork bn = new BayesianNetwork(dag);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         /* testing the number of variables*/
         Assert.assertEquals(8, bn.getNumberOfVars());
@@ -97,6 +98,6 @@ public class BayesianNetworkTest {
             logProb += bn.getLogProbabiltyOf(instance);
         }
 
-        System.out.println(logProb);
+        if (Main.VERBOSE) System.out.println(logProb);
     }
 }

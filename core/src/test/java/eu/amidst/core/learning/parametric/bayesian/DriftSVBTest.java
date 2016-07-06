@@ -11,6 +11,7 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.Normal;
@@ -32,7 +33,7 @@ public class DriftSVBTest extends TestCase {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal.bn");
 
-        //System.out.println(oneNormalVarBN);
+        //if (Main.VERBOSE) System.out.println(oneNormalVarBN);
         int batchSize = 100;
 
 
@@ -53,7 +54,7 @@ public class DriftSVBTest extends TestCase {
 
             if (i % 3 == 0) {
                 oneNormalVarBN.randomInitialization(new Random(i));
-                //System.out.println(oneNormalVarBN);
+                //if (Main.VERBOSE) System.out.println(oneNormalVarBN);
             }
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
@@ -61,7 +62,7 @@ public class DriftSVBTest extends TestCase {
 
             svb.updateModelWithConceptDrift(sampler.sampleToDataStream(batchSize).toDataOnMemory());
 
-            System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
+            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
 
 
             if (i > 0 && i % 3 == 0) {
@@ -77,7 +78,7 @@ public class DriftSVBTest extends TestCase {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal.bn");
 
-        System.out.println(oneNormalVarBN);
+        if (Main.VERBOSE) System.out.println(oneNormalVarBN);
         int batchSize = 1;
 
 
@@ -103,7 +104,7 @@ public class DriftSVBTest extends TestCase {
                 normal.setMean(normal.getMean()+5);
                 normal.setVariance(normal.getVariance()+0.5);
 
-                //System.out.println(oneNormalVarBN);
+                //if (Main.VERBOSE) System.out.println(oneNormalVarBN);
             }
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(oneNormalVarBN);
@@ -117,9 +118,9 @@ public class DriftSVBTest extends TestCase {
             svb.updateModelWithConceptDrift(batch);
             //svb.updateModel(batch);
 
-            //System.out.println(svb.getLearntBayesianNetwork());
+            //if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork());
 
-            System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
+            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
 
 
             /*if (i > 0 && i % 3 == 0) {
@@ -129,10 +130,10 @@ public class DriftSVBTest extends TestCase {
             }*/
         }
 
-        System.out.println(svb.getLearntBayesianNetwork());
+        if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork());
 
 
-        System.out.println(pred);
+        if (Main.VERBOSE) System.out.println(pred);
 
     }
 

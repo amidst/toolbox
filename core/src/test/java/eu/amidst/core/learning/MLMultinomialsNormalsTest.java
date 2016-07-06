@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -41,9 +42,9 @@ public class MLMultinomialsNormalsTest {
 
             BayesianNetwork trueBN = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
-            System.out.println("\nWasteIncinerator network \n ");
-            System.out.println(trueBN.getDAG().toString());
-            System.out.println(trueBN.toString());
+            if (Main.VERBOSE) System.out.println("\nWasteIncinerator network \n ");
+            if (Main.VERBOSE) System.out.println(trueBN.getDAG().toString());
+            if (Main.VERBOSE) System.out.println(trueBN.toString());
 
             //Sampling from trueBN
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(trueBN);
@@ -73,9 +74,9 @@ public class MLMultinomialsNormalsTest {
 
                  //Check if the probability distributions of each node
             for (Variable var : trueBN.getVariables()) {
-                System.out.println("\n------ Variable " + var.getName() + " ------");
-                System.out.println("\nTrue distribution:\n"+ trueBN.getConditionalDistribution(var));
-                System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+                if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+                if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ trueBN.getConditionalDistribution(var));
+                if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
                 Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(trueBN.getConditionalDistribution(var), 0.07));
             }
 

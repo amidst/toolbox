@@ -77,11 +77,6 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
     public static String LATENT_VARS="LATENT_VARS";
 
     /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
-    /**
      * Represents the directed acyclic graph {@link DAG}.
      */
     protected DAG dag;
@@ -188,9 +183,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         return this.globalELBO;
     }
 
-    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
+    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -200,7 +195,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInferenceAssignment())
                     .withParameters(config);
@@ -211,9 +206,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     }
 
-    public DataSet<DataPosterior> computePosterior(List<Variable> latentVariables){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -223,7 +218,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);
@@ -234,9 +229,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     }
 
-    public DataSet<DataPosterior> computePosterior(){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
@@ -245,7 +240,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
 
-            return this.dataFlink
+            return dataFlink
                     .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);
@@ -628,12 +623,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
-                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
-                // ", "+ (value.getValue() +">" + previousELBO));
-                //this.previousELBO=value.getValue();
-                //return true;
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                 ", "+ (value.getValue() +">" + previousELBO));
+                this.previousELBO=value.getValue();
+                return false;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
@@ -642,7 +637,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                         "," + (df.format(value.getValue()) +">" + df.format(previousELBO))+ ","+
                         df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
                 this.previousELBO=value.getValue();
-                return false;
+                return true;
             }else {
                 logger.info("Global bound Convergence: {},{},{},{} seconds",iteration,df.format(percentage),
                         df.format(value.getValue()), df.format((System.nanoTime() - start) / 1000000000.0));

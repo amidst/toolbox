@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -39,11 +40,11 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -68,9 +69,9 @@ public class ParallelMLMissingDataTest extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.1));
         }
 
@@ -83,11 +84,11 @@ public class ParallelMLMissingDataTest extends TestCase {
     public void testingMLParallel2() throws IOException, ClassNotFoundException {
 
         // load the true Asia Bayesian network
-        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/wasteIncinerator.bn");
+        BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -114,9 +115,9 @@ public class ParallelMLMissingDataTest extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.15));
         }
 

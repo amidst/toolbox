@@ -17,6 +17,7 @@
 
 package eu.amidst.core.inference;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.Multinomial_MultinomialParents;
 import eu.amidst.core.exponentialfamily.EF_Multinomial;
@@ -27,8 +28,8 @@ import eu.amidst.core.utils.MultinomialIndex;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
@@ -65,7 +66,7 @@ public class VMPTest extends TestCase {
         pB[0] = distB.getMultinomial(0).getProbabilities();
         pB[1] = distB.getMultinomial(1).getProbabilities();
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -93,9 +94,9 @@ public class VMPTest extends TestCase {
         vmp.runInference();
 
         Multinomial postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Multinomial postB = vmp.getPosterior(varB);
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
 
 
         boolean convergence = false;
@@ -120,8 +121,8 @@ public class VMPTest extends TestCase {
 
 
         }
-        System.out.println(qA[0]);
-        System.out.println(qB[0]);
+        if (Main.VERBOSE) System.out.println(qA[0]);
+        if (Main.VERBOSE) System.out.println(qB[0]);
 
         assertEquals(postA.getProbabilities()[0], qA[0], 0.01);
         assertEquals(postB.getProbabilities()[0], qB[0], 0.01);
@@ -150,7 +151,7 @@ public class VMPTest extends TestCase {
 
         //bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -167,7 +168,7 @@ public class VMPTest extends TestCase {
         vmp.runInference();
 
         Multinomial postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
 
         assertEquals(postA.getProbabilities()[0], 0.75, 0.01);
 
@@ -202,7 +203,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -222,9 +223,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -248,9 +249,9 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -307,7 +308,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         VMP vmp = new VMP();
@@ -325,8 +326,8 @@ public class VMPTest extends TestCase {
         vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -347,8 +348,8 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -393,7 +394,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -413,9 +414,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -439,9 +440,9 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -467,7 +468,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -487,9 +488,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -513,9 +514,9 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -543,7 +544,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -563,9 +564,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -589,9 +590,9 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -618,7 +619,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         VMP vmp = new VMP();
@@ -636,8 +637,8 @@ public class VMPTest extends TestCase {
         vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -658,8 +659,8 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -684,7 +685,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         VMP vmp = new VMP();
@@ -703,8 +704,8 @@ public class VMPTest extends TestCase {
         vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
 
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
@@ -725,8 +726,8 @@ public class VMPTest extends TestCase {
             oldvalue = qCDist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(C) = " + qCDist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
 
         assertTrue(vmp.getPosterior(varC).equalDist(qCDist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -760,7 +761,7 @@ public class VMPTest extends TestCase {
         distB.getMultinomial(0).setProbabilities(new double[]{0.75, 0.25});
         distB.getMultinomial(1).setProbabilities(new double[]{0.25, 0.75});
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         VMP vmp = new VMP();
@@ -776,7 +777,7 @@ public class VMPTest extends TestCase {
         vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         double result = 0.7 * 0.75 * 0.5 / (0.7 * 0.75 * 0.5 + 0.2 * 0.25 * 0.5);
         assertEquals(vmp.getPosterior(varC).getProbability(0), result, 0.01);
@@ -801,7 +802,7 @@ public class VMPTest extends TestCase {
 
         bn.randomInitialization(new Random(0));
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -821,9 +822,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         //assertEquals(postA.getMultinomialDistributions()[0],0.75,0.01);
 
@@ -847,9 +848,9 @@ public class VMPTest extends TestCase {
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -898,7 +899,7 @@ public class VMPTest extends TestCase {
 
 
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         HashMapAssignment assignment = new HashMapAssignment(1);
@@ -918,9 +919,9 @@ public class VMPTest extends TestCase {
         //vmp.setEvidence(assignment);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
-        System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
-        System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + vmp.getPosterior(varB).toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + vmp.getPosterior(varC).toString());
 
         List<Variable> vars = Arrays.asList(varA, varB, varC);
         boolean convergence = false;
@@ -946,15 +947,15 @@ public class VMPTest extends TestCase {
             }
 
             oldvalue = qADist.getProbabilityOfState(0) + qBDist.getProbabilityOfState(0) + qCDist.getProbabilityOfState(0);
-            System.out.println(oldvalue);
-            //System.out.println("P'(A) = " + qADist.outputString());
-            //System.out.println("P'(B) = " + qBDist.outputString());
-            //System.out.println("P'(C) = " + qCDist.outputString());
+            if (Main.VERBOSE) System.out.println(oldvalue);
+            //if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.outputString());
+            //if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.outputString());
+            //if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.outputString());
         }
 
-        System.out.println("P'(A) = " + qADist.toString());
-        System.out.println("P'(B) = " + qBDist.toString());
-        System.out.println("P'(C) = " + qCDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(A) = " + qADist.toString());
+        if (Main.VERBOSE) System.out.println("P'(B) = " + qBDist.toString());
+        if (Main.VERBOSE) System.out.println("P'(C) = " + qCDist.toString());
 
         assertTrue(vmp.getPosterior(varA).equalDist(qADist, 0.01));
         assertTrue(vmp.getPosterior(varB).equalDist(qBDist, 0.01));
@@ -992,7 +993,7 @@ public class VMPTest extends TestCase {
         vmp.setModel(bn);
         vmp.runInference();
 
-        System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + vmp.getPosterior(varA).toString());
 
     }
 

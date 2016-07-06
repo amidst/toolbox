@@ -64,6 +64,7 @@ public class CreateCajamarDataContinuous {
 
         //Write to a distributed folder
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        env.getConfig().disableSysoutLogging();
         DataFlink<DataInstance> data2Flink = DataFlinkLoader.loadDataFromFile(env, path + "cajamar.arff", false);
         DataFlinkWriter.writeDataToARFFFolder(data2Flink, path+"cajamarDistributed.arff");
 

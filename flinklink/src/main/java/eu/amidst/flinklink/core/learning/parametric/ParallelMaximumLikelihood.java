@@ -44,11 +44,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
 
     /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
-    /**
      * Represents the directed acyclic graph {@link DAG}.
      */
     protected DAG dag;
@@ -106,7 +101,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
             config.setString(BN_NAME, this.dag.getName());
             config.setBytes(EFBN_NAME, Serialization.serializeObject(efBayesianNetwork));
 
-            DataSet<DataInstance> dataset = this.dataFlink.getDataSet();
+            DataSet<DataInstance> dataset = dataUpdate.getDataSet();
             this.sumSS = dataset.map(new SufficientSatisticsMAP())
                     .withParameters(config)
                     .reduce(new SufficientSatisticsReduce())

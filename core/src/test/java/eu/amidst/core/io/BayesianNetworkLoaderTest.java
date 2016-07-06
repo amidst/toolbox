@@ -17,6 +17,7 @@
 
 package eu.amidst.core.io;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.models.BayesianNetwork;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,7 @@ public class BayesianNetworkLoaderTest {
 
             if (fileName.endsWith(".bn")) { //Static BN
 
-                System.out.println("Reading file: "+fileName);
+                if (Main.VERBOSE) System.out.println("Reading file: "+fileName);
 
                 BayesianNetwork amidstBN = BayesianNetworkLoader.loadFromFile(fullFileName);
                 BayesianNetworkWriter.save(amidstBN, fullFileName);

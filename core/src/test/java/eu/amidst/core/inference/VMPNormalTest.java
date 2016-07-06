@@ -18,17 +18,19 @@
 package eu.amidst.core.inference;
 
 //import cern.jet.random.Normal;
+
 import com.google.common.base.Stopwatch;
-import eu.amidst.core.exponentialfamily.EF_Normal;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.core.variables.Variable;
+import eu.amidst.core.Main;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.HashMapAssignment;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 import org.junit.Assert;
 
@@ -46,7 +48,7 @@ public class VMPNormalTest extends TestCase {
         for (int i = 0; i < 10; i++) {
 
             //bn.randomInitialization(new Random(i));
-            //System.out.println(bn.outputString());
+            //if (Main.VERBOSE) System.out.println(bn.outputString());
             VMP vmp = new VMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(1000);
@@ -56,9 +58,9 @@ public class VMPNormalTest extends TestCase {
             Stopwatch watch = Stopwatch.createStarted();
 
             vmp.runInference();
-            System.out.println(watch.stop());
+            if (Main.VERBOSE) System.out.println(watch.stop());
 
-            //bn.getVariables().getListOfParamaterVariables().forEach( var -> System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getVariables().getVariableByName(var.getName())).outputString()));
+            //bn.getVariables().getListOfParamaterVariables().forEach( var -> if (Main.VERBOSE) System.out.println(var.getName()+": "+InferenceEngineForBN.getPosterior(bn.getVariables().getVariableByName(var.getName())).outputString()));
         }
     }
 
@@ -84,7 +86,7 @@ public class VMPNormalTest extends TestCase {
         distB.setCoeffForParent(varA, 1);
         distB.setVariance(0.25);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
@@ -112,9 +114,9 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)vmp.getPosterior(varB));
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -134,8 +136,8 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB ;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);
@@ -174,7 +176,7 @@ public class VMPNormalTest extends TestCase {
         distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
@@ -212,11 +214,11 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)vmp.getPosterior(varB));
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
         Normal postC = ((Normal)vmp.getPosterior(varC));
-        System.out.println("P(C) = " + postC.toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -238,9 +240,9 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB + sdQC + meanQC;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
-        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);
@@ -284,7 +286,7 @@ public class VMPNormalTest extends TestCase {
         distC.setCoeffForParent(varB, 1);
         distC.setVariance(0.25);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
@@ -325,9 +327,9 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postB = vmp.getPosterior(varB);
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -346,8 +348,8 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);
@@ -387,7 +389,7 @@ public class VMPNormalTest extends TestCase {
         distC.setMean(1);
         distC.setVariance(0.25);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double b0PA =  distA.getIntercept();
         //double b1PA = distA.getCoeffParents()[0];
@@ -424,11 +426,11 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)vmp.getPosterior(varB));
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
         Normal postC = ((Normal)vmp.getPosterior(varC));
-        System.out.println("P(C) = " + postC.toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -449,9 +451,9 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB + sdQC + meanQC;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
-        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);
@@ -495,7 +497,7 @@ public class VMPNormalTest extends TestCase {
         distC.setMean(1);
         distC.setVariance(0.25);
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double b0PA =  distA.getIntercept();
         //double b1PA = distA.getCoeffParents()[0];
@@ -534,7 +536,7 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postC = ((Normal)vmp.getPosterior(varC));
-        System.out.println("P(C) = " + postC.toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -549,7 +551,7 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQC + meanQC;
         }
 
-        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
         Assert.assertEquals(postC.getMean(),meanQC,0.01);
         Assert.assertEquals(postC.getSd(),sdQC,0.01);
@@ -589,7 +591,7 @@ public class VMPNormalTest extends TestCase {
         distC.setVariance(0.25);
 
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
@@ -626,11 +628,11 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postB = ((Normal)vmp.getPosterior(varB));
-        System.out.println("P(B) = " + postB.toString());
+        if (Main.VERBOSE) System.out.println("P(B) = " + postB.toString());
         Normal postC = ((Normal)vmp.getPosterior(varC));
-        System.out.println("P(C) = " + postC.toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -652,9 +654,9 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + sdQB + meanQB + sdQC + meanQC;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
-        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of B: " + meanQB +", " + sdQB );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.02);
         Assert.assertEquals(postA.getSd(),sdQA,0.02);
@@ -699,7 +701,7 @@ public class VMPNormalTest extends TestCase {
         distC.setVariance(0.25);
 
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         double meanPA =  distA.getMean();
         double sdPA =  distA.getSd();
@@ -739,9 +741,9 @@ public class VMPNormalTest extends TestCase {
         vmp.runInference();
 
         Normal postA = vmp.getPosterior(varA);
-        System.out.println("P(A) = " + postA.toString());
+        if (Main.VERBOSE) System.out.println("P(A) = " + postA.toString());
         Normal postC = ((Normal)vmp.getPosterior(varC));
-        System.out.println("P(C) = " + postC.toString());
+        if (Main.VERBOSE) System.out.println("P(C) = " + postC.toString());
 
         boolean convergence = false;
         double oldvalue = 0;
@@ -760,8 +762,8 @@ public class VMPNormalTest extends TestCase {
             oldvalue = sdQA + meanQA + + sdQC + meanQC;
         }
 
-        System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
-        System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of A: " + meanQA +", " + sdQA );
+        if (Main.VERBOSE) System.out.println("Mean and Sd of C: " + meanQC +", " + sdQC );
 
         Assert.assertEquals(postA.getMean(),meanQA,0.01);
         Assert.assertEquals(postA.getSd(),sdQA,0.01);

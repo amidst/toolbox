@@ -8,15 +8,18 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.DistributedVI;
 import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.flinklink.core.utils.DataSetGenerator;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
  * Created by rcabanas on 14/06/16.
  */
 public class DistributedVIExample {
     public static void main(String[] args) throws Exception {
+        //Set-up Flink session.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         //generate a random dataset
-        DataFlink<DataInstance> dataFlink = new DataSetGenerator().generate(1234,1000,5,0);
+        DataFlink<DataInstance> dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);
 
         //Creates a DAG with the NaiveBayes structure for the random dataset
         DAG dag = DAGGenerator.getNaiveBayesStructure(dataFlink.getAttributes(), "DiscreteVar4");

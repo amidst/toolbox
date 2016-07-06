@@ -28,8 +28,8 @@ public class EF_SparseMultinomial_SparseDirichletTest extends TestCase {
         Variables variables = new Variables();
         ParameterVariables parameterVariables = new ParameterVariables(1);
 
-        Variable multiA = variables.newMultinomialVariable("A", 10);
-        Variable dirichlet = parameterVariables.newDirichletParameter("A", 10);
+        Variable multiA = variables.newSparseMultionomialVariable("A", 10);
+        Variable dirichlet = parameterVariables.newSparseDirichletParameter("A", 10);
 
         EF_SparseMultinomial_SparseDirichlet dist = new EF_SparseMultinomial_SparseDirichlet(multiA,dirichlet);
 
@@ -37,7 +37,7 @@ public class EF_SparseMultinomial_SparseDirichletTest extends TestCase {
         EF_SparseDirichlet distDirichlet = new EF_SparseDirichlet(dirichlet);
 
 
-        EF_LearningBayesianNetwork ef_learningBayesianNetwork = new EF_LearningBayesianNetwork(Arrays.asList(dist,distDirichlet));
+        EF_LearningBayesianNetwork ef_learningBayesianNetwork = new EF_LearningBayesianNetwork(Arrays.asList(dist,distDirichlet),Arrays.asList(multiA,dirichlet));
 
 
 

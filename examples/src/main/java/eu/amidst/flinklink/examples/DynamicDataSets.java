@@ -74,7 +74,7 @@ public class DynamicDataSets {
         sampler.setBatchSize(windowSize);
         sampler.setNSamples(nSamples);
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
         logger.info("--------------- DATA " + 0 + " --------------------------");
         DataFlinkWriter.writeDataToARFFFolder(data0, fileName+"_iter_"+0+".arff");
@@ -84,7 +84,7 @@ public class DynamicDataSets {
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < nsets; i++) {
             logger.info("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, fileName+"_iter_"+i+".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, fileName+"_iter_"+i+".arff", false);
             dataPrev = dataNew;

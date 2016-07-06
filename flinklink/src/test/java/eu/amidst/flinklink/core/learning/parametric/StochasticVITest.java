@@ -26,10 +26,12 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -61,7 +63,7 @@ public class StochasticVITest extends TestCase {
         stochasticVI.setBatchSize(batchSize);
         stochasticVI.setLocalThreshold(0.001);
         stochasticVI.setMaximumLocalIterations(100);
-        stochasticVI.setTimiLimit(10);
+        stochasticVI.setTimiLimit(20);
 
         stochasticVI.setDAG(network.getDAG());
         stochasticVI.initLearning();
@@ -70,9 +72,9 @@ public class StochasticVITest extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : network.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(network.getConditionalDistribution(var), error));
         }
 
@@ -92,13 +94,17 @@ public class StochasticVITest extends TestCase {
 
         //distA.setProbabilities(new double[]{1.0, 0.0});
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(100);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 100, 10, 0.05);
 
@@ -115,9 +121,13 @@ public class StochasticVITest extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
-        baseTest(env, data, bn, 10000, 100, 0.2);
+        baseTest(env, data, bn, 10000, 1000, 0.2);
 
         //}
     }

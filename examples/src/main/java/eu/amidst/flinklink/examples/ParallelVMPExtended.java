@@ -120,6 +120,9 @@ public class ParallelVMPExtended {
         int localIter = Integer.parseInt(args[5]);
         int seed = Integer.parseInt(args[6]);
 
+        //Set-up Flink session.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
         /*
          * Logging
          */
@@ -140,11 +143,9 @@ public class ParallelVMPExtended {
         sampler.setSeed(seed);
 
         //Load the sampled data
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,nSamples);
 
         DataFlinkWriter.writeDataToARFFFolder(data,fileName);
-
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 

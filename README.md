@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=master)](https://travis-ci.org/amidst/toolbox)
 # Description<a name="Description"></a>
 
 ## Probabilistic Machine Learning

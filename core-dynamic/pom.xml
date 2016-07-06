@@ -13,19 +13,14 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.5.0-alpha</version>
+        <version>0.5.0</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core-dynamic</artifactId>
-    <version>0.5.0-alpha</version>
+    <version>0.5.0</version> <!-- AmidstVersion -->
 
-
-
-    <properties>
-        <!--AMIDSTver>0.4.3</AMIDSTver-->
-    </properties>
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -107,7 +102,7 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.5.0-alpha</version>
+            <version>0.5.0</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>

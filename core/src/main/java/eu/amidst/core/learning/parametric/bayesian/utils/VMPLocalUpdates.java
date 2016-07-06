@@ -94,9 +94,13 @@ public class VMPLocalUpdates extends VMP {
             //Collect messages from active nodes to non-replicated nodes.
             int count = 0;
             for (Node node : nodes) {
-                if (!node.isActive() || node.isObserved() || plateuStructure.isReplicatedVar(node.getMainVariable()))
+                if (node.isObserved() || plateuStructure.isReplicatedVar(node.getMainVariable()))
                     continue;
 
+                if(!node.isActive() && plateuStructure.isNonReplicatedVar(node.getMainVariable())) {
+                    count++;
+                    continue;
+                }
 
                 Message<NaturalParameters> selfMessage = newSelfMessage(node);
 

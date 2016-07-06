@@ -10,6 +10,7 @@ import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.io.IOException;
 
@@ -19,9 +20,14 @@ import java.io.IOException;
 public class StaticModelFlink {
     public static void main(String[] args) throws IOException, ExceptionHugin {
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+
         //Load the datastream
         String filename = "datasets/simulated/cajamarDistributed.arff";
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFolder(env, filename, false);
 
         //Learn the model

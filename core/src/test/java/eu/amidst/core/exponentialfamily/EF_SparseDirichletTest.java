@@ -11,6 +11,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.Main;
 import junit.framework.TestCase;
 import org.apache.commons.math3.special.Gamma;
 
@@ -22,22 +23,22 @@ public class EF_SparseDirichletTest extends TestCase {
     public static void test() {
         ParameterVariables variables = new ParameterVariables(0);
 
-        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newDirichletParameter("A", 10));
+        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newSparseDirichletParameter("A", 10));
 
 
-        System.out.println(dist.getNaturalParameters().output());
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
 
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.getNaturalParameters().sumConstant(1.0);
-        System.out.println(dist.getNaturalParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getNaturalParameters().output());
 
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         dist.updateMomentFromNaturalParameters();
-        System.out.println(dist.getMomentParameters().output());
+        if (Main.VERBOSE) System.out.println(dist.getMomentParameters().output());
 
         assertEquals(Gamma.digamma(2.0) - Gamma.digamma(10 + 10), dist.getMomentParameters().get(0));
 
@@ -47,7 +48,7 @@ public class EF_SparseDirichletTest extends TestCase {
     public static void test3() {
         ParameterVariables variables = new ParameterVariables(0);
 
-        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newDirichletParameter("A", 10));
+        EF_SparseDirichlet dist = new EF_SparseDirichlet(variables.newSparseDirichletParameter("A", 10));
         EF_Dirichlet distM = new EF_Dirichlet(variables.newDirichletParameter("AM", 10));
 
         dist.getNaturalParameters().sumConstant(1.0);

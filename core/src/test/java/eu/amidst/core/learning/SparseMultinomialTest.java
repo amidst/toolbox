@@ -11,6 +11,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
@@ -63,8 +64,8 @@ public class SparseMultinomialTest extends TestCase {
 
         BayesianNetwork learnBN = svb.getLearntBayesianNetwork();
 
-        System.out.println(bn.toString());
-        System.out.println(learnBN.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(learnBN.toString());
         assertTrue(bn.equalBNs(learnBN, 0.05));
     }
 

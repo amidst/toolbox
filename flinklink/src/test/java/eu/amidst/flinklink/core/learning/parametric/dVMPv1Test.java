@@ -33,6 +33,7 @@ import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.DAGGenerator;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetectorTest;
 import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
@@ -42,6 +43,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 import java.io.IOException;
@@ -86,9 +88,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : network.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + network.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(network.getConditionalDistribution(var), error));
         }
 
@@ -109,13 +111,17 @@ public class dVMPv1Test extends TestCase {
 
         distA.setProbabilities(new double[]{1.0, 0.0});
 
-        System.out.println(bn.toString());
+        if (Main.VERBOSE) System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(100);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 10, 0.05);
 
@@ -143,7 +149,11 @@ public class dVMPv1Test extends TestCase {
         sampler.setSeed(2);
         DataStream<DataInstance> data = sampler.sampleToDataStream(1000);
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         baseTest(env, data, bn, 100, 0.05);
 
@@ -161,7 +171,11 @@ public class dVMPv1Test extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            //Set-up Flink session.
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                    env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
             baseTest(env, data, bn, 1000, 0.1);
 
@@ -181,7 +195,11 @@ public class dVMPv1Test extends TestCase {
             sampler.setSeed(2);
             DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
 
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+            //Set-up Flink session.
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                    env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
             baseTest(env, data, bn, 1000, 0.2);
 
@@ -190,14 +208,18 @@ public class dVMPv1Test extends TestCase {
 
     public void testingMLParallelAsia() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -230,9 +252,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.02));
         }
 
@@ -242,14 +264,18 @@ public class dVMPv1Test extends TestCase {
 
     public void testingMLParallelAsiaWithUpdate() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -282,9 +308,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.05));
         }
 
@@ -294,14 +320,18 @@ public class dVMPv1Test extends TestCase {
 
     public void testingMLParallelAsiaHidden() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
         asianet.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -334,27 +364,31 @@ public class dVMPv1Test extends TestCase {
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        System.out.println("Running time: \n" + seconds + " secs");
+        if (Main.VERBOSE) System.out.println("Running time: \n" + seconds + " secs");
 
     }
 
 
     public void testingMLParallelRandomBNHidden() throws IOException, ClassNotFoundException {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         BayesianNetworkGenerator.setSeed(0);
         BayesianNetworkGenerator.setNumberOfGaussianVars(10);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 2);
         BayesianNetwork asianet  = BayesianNetworkGenerator.generateBayesianNetwork();
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -393,25 +427,29 @@ public class dVMPv1Test extends TestCase {
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
-        System.out.println("Running time: \n" + seconds + " secs");
+        if (Main.VERBOSE) System.out.println("Running time: \n" + seconds + " secs");
 
     }
 
 
     public void testingMLParallelWasteHidden() throws IOException, ClassNotFoundException {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
 
         // load the true WasteIncinerator Bayesian network
         BayesianNetwork wasteIncinerator = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
         wasteIncinerator.randomInitialization(new Random(0));
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(wasteIncinerator.toString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(wasteIncinerator.toString());
 
         //Sampling from WasteIncinerator BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(wasteIncinerator);
@@ -445,19 +483,23 @@ public class dVMPv1Test extends TestCase {
         //Run
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
     }
 
     public void testingMLParallelWaste() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/simulated/WasteIncinerator.bn");
-
-        System.out.println("\nWasteIncinerator network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        System.out.println(asianet.toString());
+        asianet.randomInitialization(new Random(0));
+        if (Main.VERBOSE) System.out.println("\nWasteIncinerator network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        if (Main.VERBOSE) System.out.println(asianet.toString());
 
         //Sampling from Asia BN
 /*        BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -470,7 +512,7 @@ public class dVMPv1Test extends TestCase {
 
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(asianet);
         sampler.setSeed(0);
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(10000);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,10000);
 
         DataFlinkWriter.writeDataToARFFFolder(data, "../datasets/simulated/tmpfolder.arff");
 
@@ -498,9 +540,9 @@ public class dVMPv1Test extends TestCase {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n" + asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n" + bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.4));
         }
 
@@ -510,7 +552,11 @@ public class dVMPv1Test extends TestCase {
 
     public void testingMLParallelPosteriors() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -531,15 +577,15 @@ public class dVMPv1Test extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
-        System.out.println(dag.toString());
+        if (Main.VERBOSE) System.out.println(dag.toString());
         parallelVB.setDAG(dag);
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
 
-        DataSet<DataPosterior> dataPosteriorDataSet = parallelVB.computePosterior(Arrays.asList(dag.getVariables().getVariableByName("GlobalHidden")));
+        DataSet<DataPosterior> dataPosteriorDataSet = parallelVB.computePosterior(dataFlink,Arrays.asList(dag.getVariables().getVariableByName("GlobalHidden")));
 
         dataPosteriorDataSet.print();
 
@@ -551,7 +597,11 @@ public class dVMPv1Test extends TestCase {
 
     public void testingMLParallelPosteriorsAssignment() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,
                 "../datasets/simulated/test_not_modify/MONTH1.arff", true);
@@ -574,18 +624,18 @@ public class dVMPv1Test extends TestCase {
         parallelVB.setMaximumGlobalIterations(100);
 
         DAG dag = DAGGenerator.getHiddenNaiveBayesStructure(dataFlink.getAttributes(), "GlobalHidden", 2);
-        System.out.println(dag.toString());
+        if (Main.VERBOSE) System.out.println(dag.toString());
         parallelVB.setDAG(dag);
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork bnet = parallelVB.getLearntBayesianNetwork();
 
-        System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
         List<Variable> list = new ArrayList<>();
         list.add(dag.getVariables().getVariableByName("GlobalHidden"));
         list.add(dag.getVariables().getVariableById(0));
 
-        DataSet<DataPosteriorAssignment> dataPosteriorDataSet = parallelVB.computePosteriorAssignment(list);
+        DataSet<DataPosteriorAssignment> dataPosteriorDataSet = parallelVB.computePosteriorAssignment(dataFlink,list);
 
         dataPosteriorDataSet.print();
 
@@ -602,6 +652,12 @@ public class dVMPv1Test extends TestCase {
         int globalIter = 10;//Integer.parseInt(args[4]);
         int localIter = 100;//Integer.parseInt(args[5]);
         int seed = 0;//Integer.parseInt(args[6]);
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         /*
          * Logging
@@ -623,11 +679,9 @@ public class dVMPv1Test extends TestCase {
         sampler.setSeed(seed);
 
         //Load the sampled data
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nSamples);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,nSamples);
 
         DataFlinkWriter.writeDataToARFFFolder(data,fileName);
-
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
@@ -655,7 +709,7 @@ public class dVMPv1Test extends TestCase {
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
-        System.out.println(LearnedBnet.toString());
+        if (Main.VERBOSE) System.out.println(LearnedBnet.toString());
 
         long duration = (System.nanoTime() - start) / 1;
         double seconds = duration / 1000000000.0;
@@ -715,7 +769,11 @@ public class dVMPv1Test extends TestCase {
 
     public static void testGaussianCompareSVBvsParralelVB() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
         env.setParallelism(1);
 
 
@@ -723,13 +781,13 @@ public class dVMPv1Test extends TestCase {
 
         eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
         sampler.setSeed(2);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(10000),"../networks/simulated/simulated/tmp.arff");
+        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,10000),"../networks/simulated/simulated/tmpfolder.arff");
 
 
 
 
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../networks/simulated/simulated/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../networks/simulated/simulated/tmpfolder.arff", false);
 
         network.getDAG().getVariables().setAttributes(dataFlink.getAttributes());
 
@@ -770,36 +828,39 @@ public class dVMPv1Test extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(network.toString());
-        System.out.println(bnet.toString());
-        System.out.println(parallelVB.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(parallelVB.getLogMarginalProbability());
 
-        System.out.println(svb.getLearntBayesianNetwork().toString());
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork().toString());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
     }
 
 
     public static void testGaussianCompareSVBvsParralelVB2() throws Exception {
 
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
         env.setParallelism(1);
 
-        int SAMPLES = 10000;
+        int SAMPLES = 1000;
 
         IDAConceptDriftDetectorTest.createBN1(10);
         BayesianNetwork network = BayesianNetworkLoader.loadFromFile("../networks/simulated/dbn1.dbn");
         network.randomInitialization(new Random(0));
-        System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(network.toString());
 
         //String dataset= "./datasets/dataStream/conceptdrift/data0.arff";
         String dataset= "../datasets/simulated/tmp.arff";
-        eu.amidst.flinklink.core.utils.BayesianNetworkSampler sampler = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(network);
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(network);
         sampler.setSeed(1);
-        sampler.setBatchSize(500);
-        DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(SAMPLES),dataset);
+        DataStreamWriter.writeDataToFile(sampler.sampleToDataStream(SAMPLES),dataset);
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, dataset, false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, dataset, false);
 
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
         learn.setBatchSize(10);
@@ -822,8 +883,8 @@ public class dVMPv1Test extends TestCase {
         parallelVB.setMaximumGlobalIterations(10);
         parallelVB.setSeed(0);
         parallelVB.setBatchSize(100);
-        parallelVB.setLocalThreshold(0.01);
-        parallelVB.setGlobalThreshold(0.01);
+        parallelVB.setLocalThreshold(0.1);
+        parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(100);
         parallelVB.setMaximumGlobalIterations(100);
 
@@ -857,12 +918,12 @@ public class dVMPv1Test extends TestCase {
         svb.setDataStream(data);
         svb.runLearning();
 
-        System.out.println(network.toString());
-        System.out.println(bnet.toString());
-        System.out.println(parallelVB.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(network.toString());
+        if (Main.VERBOSE) System.out.println(bnet.toString());
+        if (Main.VERBOSE) System.out.println(parallelVB.getLogMarginalProbability());
 
-        System.out.println(svb.getLearntBayesianNetwork().toString());
-        System.out.println(svb.getLogMarginalProbability());
+        if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork().toString());
+        if (Main.VERBOSE) System.out.println(svb.getLogMarginalProbability());
 
     }
 

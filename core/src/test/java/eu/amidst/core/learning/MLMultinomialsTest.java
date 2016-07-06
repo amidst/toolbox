@@ -17,6 +17,7 @@
 
 package eu.amidst.core.learning;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
@@ -41,9 +42,9 @@ public class MLMultinomialsTest {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -66,9 +67,9 @@ public class MLMultinomialsTest {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 
@@ -83,9 +84,9 @@ public class MLMultinomialsTest {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -110,9 +111,9 @@ public class MLMultinomialsTest {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 
@@ -126,9 +127,9 @@ public class MLMultinomialsTest {
         // load the true Asia Bayesian network
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
-        System.out.println("\nAsia network \n ");
-        //System.out.println(asianet.getDAG().outputString());
-        //System.out.println(asianet.outputString());
+        if (Main.VERBOSE) System.out.println("\nAsia network \n ");
+        //if (Main.VERBOSE) System.out.println(asianet.getDAG().outputString());
+        //if (Main.VERBOSE) System.out.println(asianet.outputString());
 
         //Sampling from Asia BN
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
@@ -152,9 +153,9 @@ public class MLMultinomialsTest {
 
         //Check if the probability distributions of each node
         for (Variable var : asianet.getVariables()) {
-            System.out.println("\n------ Variable " + var.getName() + " ------");
-            System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
-            System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\n------ Variable " + var.getName() + " ------");
+            if (Main.VERBOSE) System.out.println("\nTrue distribution:\n"+ asianet.getConditionalDistribution(var));
+            if (Main.VERBOSE) System.out.println("\nLearned distribution:\n"+ bnet.getConditionalDistribution(var));
             Assert.assertTrue(bnet.getConditionalDistribution(var).equalDist(asianet.getConditionalDistribution(var), 0.07));
         }
 

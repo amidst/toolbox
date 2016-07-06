@@ -3,6 +3,7 @@ package eu.amidst.flinklink.core.utils;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.flinklink.core.data.DataFlink;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
  * Created by rcabanas on 10/06/16.
@@ -18,7 +19,7 @@ public final class DataSetGenerator {
          * @return A valid {@code DataStream} object.
          */
 
-        public static DataFlink<DataInstance> generate(int seed, int nSamples, int nDiscreteAtts, int nContinuousAttributes){
+        public static DataFlink<DataInstance> generate(ExecutionEnvironment env, int seed, int nSamples, int nDiscreteAtts, int nContinuousAttributes){
             BayesianNetworkGenerator.setSeed(seed);
             BayesianNetworkGenerator.setNumberOfGaussianVars(nContinuousAttributes);
             BayesianNetworkGenerator.setNumberOfMultinomialVars(nDiscreteAtts,2);
@@ -29,7 +30,7 @@ public final class DataSetGenerator {
 
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(BayesianNetworkGenerator.generateBayesianNetwork());
             sampler.setSeed(seed);
-            return sampler.sampleToDataFlink(nSamples);
+            return sampler.sampleToDataFlink(env,nSamples);
         }
 
 

@@ -178,6 +178,8 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
 
         this.momentParameters = this.createZeroMomentParameters();
 
+        this.momentParameters.copy(this.naturalParameters);
+
         this.getSparseMomentParameters().apply(new Function<Double, Double>() {
             @Override
             public Double apply(Double aDouble) {

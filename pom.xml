@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.5.0-alpha</version>
+    <version>0.5.0</version> <!-- AmidstVersion -->
 
     <name>AmidstToolbox</name>
 
@@ -46,7 +46,6 @@
         <junit.version>4.11</junit.version>
         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
-        <AMIDSTver>0.5.0-alpha</AMIDSTver>
         <additionalparam>-Xdoclint:none</additionalparam>
     </properties>
 
@@ -120,6 +119,7 @@
         <module>flinklink</module>
         <module>extensions/tutorials</module>
         <module>extensions/lda</module>
+
     </modules>
 
 
@@ -141,7 +141,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <forkMode>pertest</forkMode>
+                    <argLine>-Xms1g -Xmx2g</argLine>
                 </configuration>
             </plugin>
 

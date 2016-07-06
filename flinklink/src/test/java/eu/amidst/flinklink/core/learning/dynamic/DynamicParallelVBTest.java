@@ -24,6 +24,7 @@ import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
@@ -35,6 +36,7 @@ import org.apache.flink.api.common.operators.base.JoinOperatorBase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.util.Collector;
 
 import java.util.Arrays;
@@ -73,7 +75,7 @@ public class DynamicParallelVBTest extends TestCase {
         dag.setName("dbn1");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn1.dbn");
     }
@@ -97,7 +99,7 @@ public class DynamicParallelVBTest extends TestCase {
         dag.setName("dbn2");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn2.dbn");
     }
@@ -121,18 +123,22 @@ public class DynamicParallelVBTest extends TestCase {
         dag.setName("dbn1");
         DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dag);
         dbn.randomInitialization(new Random(0));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DynamicBayesianNetworkWriter.save(dbn, "../networks/simulated/dbn3.dbn");
     }
 
 
     public static void createDataSets(String networkName, List<String> hiddenVars, List<String> noisyVars) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName + ".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName + ".dbn");
         dbn.randomInitialization(new Random(0));
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
         DBNSampler sampler = new DBNSampler(dbn);
         sampler.setNSamples(SAMPLESIZE);
@@ -150,37 +156,37 @@ public class DynamicParallelVBTest extends TestCase {
             }
         }
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
-        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/cajaMarSynthetic/data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/cajaMarSynthetic/data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "../datasets/simulated/cajaMarSynthetic/data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
-        System.out.println(list);
+        if (Main.VERBOSE) System.out.println(list);
 
         HashSet<Long> noDupSet = new HashSet();
         noDupSet.addAll(list);
         assertEquals(SAMPLESIZE, noDupSet.size());
-        System.out.println(noDupSet);
+        if (Main.VERBOSE) System.out.println(noDupSet);
 
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
             dataPrev = dataNew;
 
             List<Long> listNew = dataNew.getDataSet().map(d -> d.getSequenceID()).collect();
-            System.out.println(listNew);
+            if (Main.VERBOSE) System.out.println(listNew);
 
             HashSet<Long> noDupSetNew = new HashSet();
             noDupSetNew.addAll(listNew);
             assertEquals(SAMPLESIZE, noDupSetNew.size());
-            System.out.println(noDupSetNew);
+            if (Main.VERBOSE) System.out.println(noDupSetNew);
 
 
             for (Long id : noDupSetNew) {
@@ -191,7 +197,15 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testJoin() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        createDBN1(true);
+        createDataSets("dbn1",null,null);
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
                 "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
@@ -204,7 +218,7 @@ public class DynamicParallelVBTest extends TestCase {
 
 
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
@@ -227,12 +241,12 @@ public class DynamicParallelVBTest extends TestCase {
             });
 
             List<Long> listNew = dataJoin.map(d -> d).collect();
-            //System.out.println(listNew);
+            //if (Main.VERBOSE) System.out.println(listNew);
 
             HashSet<Long> noDupSetNew = new HashSet();
             noDupSetNew.addAll(listNew);
             assertEquals(SAMPLESIZE, noDupSetNew.size());
-            //System.out.println(noDupSetNew);
+            //if (Main.VERBOSE) System.out.println(noDupSetNew);
 
 
             for (Long id : noDupSetNew) {
@@ -242,7 +256,14 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void testFlatJoin() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        createDBN1(true);
+        createDataSets("dbn1",null,null);
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
                 "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
@@ -255,7 +276,7 @@ public class DynamicParallelVBTest extends TestCase {
 
 
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
                     "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 
@@ -278,12 +299,12 @@ public class DynamicParallelVBTest extends TestCase {
             });
 
             List<Long> listNew = dataJoin.map(d -> d).collect();
-            //System.out.println(listNew);
+            //if (Main.VERBOSE) System.out.println(listNew);
 
             HashSet<Long> noDupSetNew = new HashSet();
             noDupSetNew.addAll(listNew);
             assertEquals(SAMPLESIZE, noDupSetNew.size());
-            //System.out.println(noDupSetNew);
+            //if (Main.VERBOSE) System.out.println(noDupSetNew);
 
 
             for (Long id : noDupSetNew) {
@@ -293,12 +314,16 @@ public class DynamicParallelVBTest extends TestCase {
     }
 
     public static void update0Learn(String networkName) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + NETWORK_NAME);
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
@@ -312,49 +337,53 @@ public class DynamicParallelVBTest extends TestCase {
         learn.setOutput(true);
         learn.initLearning();
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
+        if (Main.VERBOSE) System.out.println("--------------- DATA " + 0 + " --------------------------");
         learn.updateModelWithNewTimeSlice(0, data0);
 
-        System.out.println(learn.getLearntDynamicBayesianNetwork().toBayesianNetworkTime0());
+        if (Main.VERBOSE) System.out.println(learn.getLearntDynamicBayesianNetwork().toBayesianNetworkTime0());
 
         assertEquals(true, dbn.toBayesianNetworkTime0().equalBNs(learn.getLearntDynamicBayesianNetwork().toBayesianNetworkTime0(), 0.1));
     }
 
     public static void testUpdateN(String networkName, double threshold) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/" + networkName+".dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("../networks/simulated/" + networkName+".dbn");
         dbn.randomInitialization(new Random(0));
 
-        System.out.println(dbn.toString());
+        if (Main.VERBOSE) System.out.println(dbn.toString());
 
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                "./datasets/simulated/cajaMarSynthetic/data0.arff", false);
+                "../datasets/simulated/cajaMarSynthetic/data0.arff", false);
         dbn.getDynamicVariables().setAttributes(data0.getAttributes());
 
         DynamicParallelVB learn = new DynamicParallelVB();
         learn.setMaximumGlobalIterations(20);
         learn.setGlobalThreshold(0.0001);
         learn.setLocalThreshold(0.0001);
-        learn.setMaximumLocalIterations(100);
+        learn.setMaximumLocalIterations(200);
         learn.setBatchSize(BATCHSIZE);
         learn.setDAG(dbn.getDynamicDAG());
         learn.setOutput(true);
         learn.initLearning();
 
-        System.out.println("--------------- DATA " + 0 + " --------------------------");
+        if (Main.VERBOSE) System.out.println("--------------- DATA " + 0 + " --------------------------");
         learn.updateModelWithNewTimeSlice(0, data0);
 
         for (int i = 1; i < NSETS; i++) {
-            System.out.println("--------------- DATA " + i + " --------------------------");
+            if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env,
-                    "./datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
+                    "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
             learn.updateModelWithNewTimeSlice(i, dataNew);
             assertEquals(SAMPLESIZE, learn.dataPosteriorDataSet.count());
         }
 
-        System.out.println(learn.getLearntDynamicBayesianNetwork());
+        if (Main.VERBOSE) System.out.println(learn.getLearntDynamicBayesianNetwork());
         if (threshold>0) assertEquals(true, dbn.equalDBNs(learn.getLearntDynamicBayesianNetwork(), threshold));
         //learn.getLearntBayesianNetwork()
     }

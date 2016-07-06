@@ -17,6 +17,7 @@
 
 package eu.amidst.core.exponentialfamily;
 
+import eu.amidst.core.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
@@ -47,9 +48,9 @@ public class NormalNormalParentsTest {
         //dist.setIntercept(0.1);
         //dist.setSd(2.234);
 
-        System.out.println(testnet.toString());
+        if (Main.VERBOSE) System.out.println(testnet.toString());
 
-        System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
+        if (Main.VERBOSE) System.out.println("\nNormal_1NormalParents probabilities comparison \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -64,8 +65,8 @@ public class NormalNormalParentsTest {
         dataTmp.setValue(testnet.getVariables().getVariableByName("B"), 1.0);
 
 
-        System.out.println(testnet.getConditionalDistributions().get(1).getLogConditionalProbability(dataTmp));
-        System.out.println(ef_testnet.getDistributionList().get(1).computeLogProbabilityOf(dataTmp));
+        if (Main.VERBOSE) System.out.println(testnet.getConditionalDistributions().get(1).getLogConditionalProbability(dataTmp));
+        if (Main.VERBOSE) System.out.println(ef_testnet.getDistributionList().get(1).computeLogProbabilityOf(dataTmp));
 
 
         for(DataInstance e: data){
@@ -74,7 +75,7 @@ public class NormalNormalParentsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
             logProb = testnet.getLogProbabiltyOf(e);
-            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //if (Main.VERBOSE) System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
 
         }
@@ -86,9 +87,9 @@ public class NormalNormalParentsTest {
 
         BayesianNetwork testnet = BayesianNetworkLoader.loadFromFile("../networks/simulated/Normal_NormalParents.bn");
 
-        System.out.println(testnet.toString());
+        if (Main.VERBOSE) System.out.println(testnet.toString());
 
-        System.out.println("\nNormal_2NormalParents probabilities comparison \n ");
+        if (Main.VERBOSE) System.out.println("\nNormal_2NormalParents probabilities comparison \n ");
 
         //Sampling
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(testnet);
@@ -103,8 +104,8 @@ public class NormalNormalParentsTest {
         dataTmp.setValue(testnet.getVariables().getVariableByName("B"), 1.0);
         dataTmp.setValue(testnet.getVariables().getVariableByName("C"), 1.0);
 
-        System.out.println(testnet.getConditionalDistributions().get(2).getLogConditionalProbability(dataTmp));
-        System.out.println(ef_testnet.getDistributionList().get(2).computeLogProbabilityOf(dataTmp));
+        if (Main.VERBOSE) System.out.println(testnet.getConditionalDistributions().get(2).getLogConditionalProbability(dataTmp));
+        if (Main.VERBOSE) System.out.println(ef_testnet.getDistributionList().get(2).computeLogProbabilityOf(dataTmp));
 
         for(DataInstance e: data){
             double ef_logProb = 0,logProb = 0;
@@ -112,7 +113,7 @@ public class NormalNormalParentsTest {
                 ef_logProb += ef_dist.computeLogProbabilityOf(e);
             }
             logProb = testnet.getLogProbabiltyOf(e);
-            //System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
+            //if (Main.VERBOSE) System.out.println("Distributions: "+ logProb + " = EF-Distributions: "+ ef_logProb);
             Assert.assertEquals(logProb, ef_logProb, 0.0001);
         }
     }
