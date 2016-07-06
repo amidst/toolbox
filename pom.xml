@@ -121,9 +121,11 @@
         <module>wekalink</module>
         <module>flinklink</module>
         <module>extensions/tutorials</module>
+        <module>extensions/lda</module>
 
 
         <!-- Remove the following references to modules before publishing a new release -->
+        <module>extensions/lda</module>
 
         
         
@@ -134,8 +136,7 @@
         
         
         
-        <module>extensions/lda</module>
-        
+
     </modules>
 
 

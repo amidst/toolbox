@@ -1,0 +1,82 @@
+aws emr create-cluster --termination-protected --applications Name=Hadoop --bootstrap-actions '[{"Path":"s3://amidst2/emr_bootstrap_java_8_emr400.sh","Name":"Bootstrap action"}]' --ec2-attributes '{"KeyName":"AmidstToolbox","InstanceProfile":"EMR_EC2_DefaultRole","SubnetId":"subnet-0e205679","EmrManagedSlaveSecurityGroup":"sg-e07dea84","EmrManagedMasterSecurityGroup":"sg-e77dea83"}' --service-role EMR_DefaultRole --enable-debugging --release-label emr-4.3.0 --log-uri 's3n://amidst2/logsForClusters/' --name 'Cluster8-2xlargeNodes-UAI' --instance-groups '[{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"m3.2xlarge","Name":"MASTER"},{"InstanceCount":8,"InstanceGroupType":"CORE","InstanceType":"m3.2xlarge","Name":"CORE"}]' --region us-west-2
+
+
+aws emr describe-cluster --cluster-id j-NP8Q63RLR7MY
+
+#16 nodes
+ssh hadoop@ec2-54-191-9-23.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+#8nodes
+ssh hadoop@ec2-54-187-219-26.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+#4nodes
+ssh hadoop@ec2-54-191-154-202.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+#2nodes
+ssh hadoop@ec2-54-213-14-120.us-west-2.compute.amazonaws.com -i ~/key/AmidstToolbox.pem
+
+wget http://ftp.download-by.net/apache/flink/flink-0.10.0/flink-0.10.0-bin-hadoop26-scala_2.10.tgz
+tar xzf flink-*.tgz
+export HADOOP\_CONF\_DIR=/etc/hadoop/conf
+
+scp -i ~/key/AmidstToolbox.pem /Users/ana/Documents/coreClone/core/classes/artifacts/uai2016_jar/uai2016.jar  hadoop@ec2-54-191-9-23.us-west-2.compute.amazonaws.com:
+
+aws s3 cp s3://amidstdata/uai42M.arff.tar.gz /mnt/
+cd /mnt
+tar -xvzf /mnt/uai42M.arff.tar.gz
+hadoop fs -copyFromLocal /mnt/uai42M.arff /
+
+
+## Run in programo
+java -cp amidst/uai2016/uai2016.jar eu.amidst.modelExperiments.IDAmodelDistributedVMP amidst/uai2016/data/totalWeka-ContinuousReducedFolder.arff 1000 100 1 100 0.1 300 0 1 2 
+
+flink-0.10.0/bin/flink run -c eu.amidst.modelExperiments.MixtureModelDistributedVMP amidst/uai2016/uai2016.jar file:///home/ana/amidst/uai2016/data/totalWeka-ContinuousReducedFolder.arff 1000 100 1 100 0.1 300 0 1 2  > outputVMP_1000_100_1_100_0.1_300_0_1_2.txt 2>&1
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 1 -ys 32 -yjm 1024 -ytm 4024 -c eu.amidst.modelExperiments.MixtureModelDistributedVMP amidst/uai2016/uai2016.jar hdfs://totalWeka-ContinuousReducedFolder.arff 1000 100 1 100 0.1 300 0 1 2  > outputVMP_1000_100_1_100_0.1_300_0_1_2.txt 2>&1
+###### end run in programo
+
+
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 8024 -c eu.amidst.dataGeneration.AddMissingValues uai2016.jar hdfs:///uai100M.arff hdfs:///uai100MwithMissing.arff 
+
+######-------------------------------------------------------
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 8 -ys 8 -yjm 2000 -ytm 21000 -c eu.amidst.modelExperiments.MixtureModelDistributedVMPAmazon uai2016.jar hdfs:///uai42M.arff 500 100 1 100 1 50000 0 true > outputVMP_500_100_1_100_1_50000_0_true8nodes.txt 2>&1 &
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 8 -yjm 2000 -ytm 21000 -c eu.amidst.modelExperiments.MixtureModelDistributedVMPAmazon uai2016.jar hdfs:///uai42M.arff 1000 100 1 100 1 86400 0 true > outputVMP_1000_100_1_100_1_86400_0_true4nodes.txt 2>&1 &
+######-------------------------------------------------------
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 1024 -ytm 9024 -c eu.amidst.modelExperiments.IDAmodelDistributedVMP uai2016.jar hdfs:///uai100K_Month1.arff 1000 100 0.000000001 100 1 300 0 > output100K_1000_100_tiny_100_1_300_0.txt 2>&1
+
+flink-0.10.0/bin/flink run -m yarn-cluster -yn 4 -ys 4 -yjm 5024 -ytm 5024 -c eu.amidst.modelExperiments.IDAmodelDistributedSVI uai2016.jar hdfs:///uai100K_Month1.arff 1000 100 0.1 100 1 100000 0.75 > outputSVI_1000_100_0.1_100_1_100K_0.75.txt 2>&1
+
+yarn logs -applicationId 
+
+java -cp uai2016.jar eu.amidst.modelExperiments.ParseOutput output100K_1000_100_tiny_100_1_300_0.logs.txt parsedoutput100K_1000_100_tiny_100_1_300_0.txt
+
+--------
+# Download logs from s3 or cluster
+
+aws s3 cp --recursive s3://amidst2/logsForClusters/j-1DKJ8ZH4VWFEB/containers/application_1455180483578_0005 ./
+
+scp -r -i ~/key/AmidstToolbox.pem hadoop@ec2-54-191-66-20.us-west-2.compute.amazonaws.com:/mnt/uai100K.arff /Users/ana/core/extensions/uai2016/doc-experiments/
+————————
+# Data generation
+
+tar -czf uai100M.arff.tar.gz uai100M.arff/
+aws s3 cp /mnt/uai100M_1file.arff.tar.gz s3://amidstdata/
+#This command in local, it does not normalize on the cluster
+./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 1024 -c eu.amidst.dataGeneration.NormalizeData ../uai2016.jar hdfs:///uai1K.arff
+head -n100000 uai100M_1file.arff/data/bank_data_active_IDA_all.csv  > 100KsampleMONTH1.arff
+
+-------
+#GUI
+
+http://ip-172-31-41-214.us-west-2.compute.internal:8088/
+ec2-54-191-98-115.us-west-2.compute.amazonaws.com:8088
+
+#Missing values
+hadoop distcp hdfs:///file s3n://amidstdata
+#or
+hadoop fs -get hdfs:///file /mnt
+aws s3 cp --recursive /mnt/file s3://amidstdata
+for i in {1..16}
+do
+	a=(`wc -l $i`) ; lines=`echo $a/4+1 | bc -l` ; split -l${lines%.*} $i $i
+done

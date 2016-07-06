@@ -1,0 +1,10 @@
+UP, DOWN
+
+date:	ignore.
+day:	1,2,3,4,5,6,7.
+period:	continuous.
+nswprice:	ignore.
+nswdemand:	continuous.
+vicprice:	continuous.
+vicdemand:	continuous.
+transfer:	continuous.
