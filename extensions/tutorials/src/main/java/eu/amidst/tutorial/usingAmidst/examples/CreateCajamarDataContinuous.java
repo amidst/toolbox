@@ -8,7 +8,9 @@ import eu.amidst.dynamic.utils.DataSetGenerator;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
+import eu.amidst.tutorial.usingAmidst.Main;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,8 +64,14 @@ public class CreateCajamarDataContinuous {
         DataStreamWriter.writeDataToFile(data2, path+"cajamar.arff");
 
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
         //Write to a distributed folder
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         DataFlink<DataInstance> data2Flink = DataFlinkLoader.loadDataFromFile(env, path + "cajamar.arff", false);
         DataFlinkWriter.writeDataToARFFFolder(data2Flink, path+"cajamarDistributed.arff");
 

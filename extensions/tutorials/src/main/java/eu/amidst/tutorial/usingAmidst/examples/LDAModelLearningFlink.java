@@ -47,7 +47,7 @@ public class LDAModelLearningFlink {
         model.updateModel(data);
         BayesianNetwork bn = model.getModel();
 
-        System.out.println(bn);
+        //System.out.println(bn);
 
         // Save with .bn format
         BayesianNetworkWriter.save(bn, "networks/simulated/exampleBN.bn");

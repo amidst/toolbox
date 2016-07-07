@@ -12,7 +12,6 @@
 package eu.amidst.tutorial.usingAmidst.examples;
 
 
-import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
@@ -38,7 +37,7 @@ public class LDAModelLearning {
         model.updateModel(data);
         BayesianNetwork bn = model.getModel();
 
-        System.out.println(bn);
+        //System.out.println(bn);
 
         // Save with .bn format
         BayesianNetworkWriter.save(bn, "networks/simulated/exampleBN.bn");
