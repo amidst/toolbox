@@ -18,7 +18,7 @@ public class ParallelTanExampleTest extends TestCase {
             ParallelTANExample.main(null);
         }catch (UnsatisfiedLinkError error) {
             //This error is due to the missing hugin lib and so it is ignored
-            //error.printStackTrace();
+            error.printStackTrace();
         }
     }
 

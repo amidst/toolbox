@@ -13,7 +13,7 @@ public class LDAModelLearningTest extends TestCase {
 
     @Test
     public void test() throws Exception {
-        //LDAModelLearning.main(null);
+        LDAModelLearning.main(null);
     }
 
 }
