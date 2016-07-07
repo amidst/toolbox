@@ -38,7 +38,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>--Djava.library.path="huginlink/huginlib/"
+                    <argLine>-Djava.library.path="huginlink/huginlib/"
                     </argLine>
                 </configuration>
             </plugin>
@@ -98,6 +98,11 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>latent-variable-models</artifactId>
+            <version>0.4.3</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>huginlink</artifactId>
             <version>0.4.3</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
