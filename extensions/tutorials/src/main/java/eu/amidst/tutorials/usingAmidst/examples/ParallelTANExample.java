@@ -18,7 +18,7 @@ public class ParallelTANExample {
     public static void main(String[] args) throws Exception {
 
         int sampleSize = 10000;
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/dataWeka/asia.bn");
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile("networks/simulated/asia.bn");
         System.out.println(bn);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 

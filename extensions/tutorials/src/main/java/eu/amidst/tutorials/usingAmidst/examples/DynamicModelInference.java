@@ -21,7 +21,7 @@ public class DynamicModelInference {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/exampleDBN.dbn");
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkLoader.loadFromFile("networks/simulated/exampleDBN.bn");
 
         System.out.println(dbn);
 
