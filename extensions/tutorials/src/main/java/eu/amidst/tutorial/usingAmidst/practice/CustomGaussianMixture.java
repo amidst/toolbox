@@ -8,6 +8,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 

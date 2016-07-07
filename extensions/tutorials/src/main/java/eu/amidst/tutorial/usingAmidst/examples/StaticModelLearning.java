@@ -8,7 +8,9 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
 import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.MixtureOfFactorAnalysers;
 import eu.amidst.latentvariablemodels.staticmodels.Model;
 
 import java.io.IOException;

@@ -2,14 +2,22 @@ package eu.amidst.tutorial.usingAmidst.practice;
 
 import COM.hugin.HAPI.ExceptionHugin;
 import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
+import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
+import eu.amidst.latentvariablemodels.dynamicmodels.KalmanFilter;
+import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
+import eu.amidst.latentvariablemodels.staticmodels.Model;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 import java.io.IOException;
