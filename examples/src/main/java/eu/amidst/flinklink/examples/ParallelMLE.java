@@ -18,12 +18,15 @@
 package eu.amidst.flinklink.examples;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
 /**
@@ -37,22 +40,17 @@ public class ParallelMLE {
         BayesianNetwork originalBnet = BayesianNetworkLoader.loadFromFile(args[0]);
         System.out.println("\n Network \n " + args[0]);
 
-        //System.out.println(originalBnet.getDAG().outputString());
-        //System.out.println(originalBnet.outputString());
+
 
         //Sampling from Asia BN
-        //BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
-        //sampler.setSeed(0);
+        BayesianNetworkSampler sampler = new BayesianNetworkSampler(originalBnet);
+        sampler.setSeed(0);
         //Load the sampled data
 
-        //int sizeData = Integer.parseInt(args[1]);
-        //DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
-
-        //DataStreamWriter.writeDataToFile(data, "./tmp.arff");
+        int sizeData = Integer.parseInt(args[1]);
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,"hdfs:///tmp.arff", false);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env, sizeData);
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure
         // and just learn then test the parameter learning
@@ -63,7 +61,7 @@ public class ParallelMLE {
         ParallelMaximumLikelihood parallelMaximumLikelihood = new ParallelMaximumLikelihood();
         parallelMaximumLikelihood.setDAG(originalBnet.getDAG());
         parallelMaximumLikelihood.initLearning();
-        parallelMaximumLikelihood.updateModel(dataFlink);
+        parallelMaximumLikelihood.updateModel(data);
         BayesianNetwork LearnedBnet = parallelMaximumLikelihood.getLearntBayesianNetwork();
 
         //Check if the probability distributions of each node

@@ -246,7 +246,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         int time = 0 ;
 
         double average = 0;
-        for (int j = 0; j < 15; j++) {
+        for (int j = 0; j < 2; j++) {
             long start = System.nanoTime();
             for (DynamicDataInstance instance : dataPredictList) {
                 //The InferenceEngineForDBN must be reset at the begining of each Sequence.
@@ -270,7 +270,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
             }
             long duration = (System.nanoTime() - start) / 1;
             double seconds = duration / 1000000000.0;
-            if (j > 4) {
+            if (j > 1) {
                 average += seconds;
             }
         }
@@ -292,6 +292,8 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
     public String classNameID() {
         return "DynamicIS_Scalability";
     }
+
+
 
     @Override
     public String listOptions() {

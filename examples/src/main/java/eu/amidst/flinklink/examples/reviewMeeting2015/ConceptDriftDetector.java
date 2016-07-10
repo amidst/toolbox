@@ -34,14 +34,16 @@ public class ConceptDriftDetector {
     public static void learnIDAConceptDriftDetector(int NSETS) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
-                "hdfs:///tmp_conceptdrift_data0.arff", false);
+      //  DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
+      //          "hdfs:///tmp_conceptdrift_data0.arff", false);
 
+          DataFlink<DataInstance> data0 = DataFlinkLoader.open(env,
+                  "./datasets/DriftSets/sea.arff", false);
 
         long start = System.nanoTime();
         IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
         learn.setBatchSize(1000);
-        learn.setClassIndex(0);
+        learn.setClassIndex(3);
         learn.setAttributes(data0.getAttributes());
         learn.setNumberOfGlobalVars(1);
         learn.setTransitionVariance(0.1);
@@ -57,8 +59,8 @@ public class ConceptDriftDetector {
 
         for (int i = 1; i < NSETS; i++) {
             System.out.println("--------------- LEARNING DATA " + i + " --------------------------");
-            DataFlink<DataInstance> dataNew = DataFlinkLoader.loadDataFromFolder(env,
-                    "hdfs:///tmp_conceptdrift_data" + i + ".arff", false);
+            DataFlink<DataInstance> dataNew = DataFlinkLoader.open(env,
+                    "./datasets/DriftSets/sea.arff", false);
             out = learn.updateModelWithNewTimeSlice(dataNew);
             //System.out.println(learn.getLearntDynamicBayesianNetwork());
             output[i] = out[0];

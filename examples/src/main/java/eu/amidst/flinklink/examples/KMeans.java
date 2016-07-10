@@ -300,7 +300,6 @@ public class KMeans {
     private static int numIterations = 10;
 
     private static boolean parseParameters(String[] programArguments) {
-
         if(programArguments.length > 0) {
             // parse input arguments
             fileOutput = true;

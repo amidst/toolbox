@@ -98,7 +98,7 @@ public class GenerateData {
                 sampler.setSeed(1);
             }
             DataFlink<DataInstance> data0 = sampler.sampleToDataFlink(env,SAMPLESIZE);
-            DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
+            DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/tmp_conceptdrift_data" + i + ".arff");
         }
     }
 
@@ -167,8 +167,8 @@ public class GenerateData {
 
 
         System.out.println("--------------- CREATING DATA 0 --------------------------");
-        DataFlinkWriter.writeDataToARFFFolder(data0, "hdfs:///tmp_conceptdrift_data0.arff");
-        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data0.arff", false);
+        DataFlinkWriter.writeDataToARFFFolder(data0, "./datasets/simulated/tmp_conceptdrift_data0.arff");
+        data0 = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/tmp_conceptdrift_data0.arff", false);
 
         List<Long> list = data0.getDataSet().map(d -> d.getSequenceID()).collect();
         //System.out.println(list);
@@ -210,8 +210,8 @@ public class GenerateData {
                 sampler.setDBN(dbn);
             }
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);//i%4==1);
-            DataFlinkWriter.writeDataToARFFFolder(dataNew, "hdfs:///tmp_conceptdrift_data" + i + ".arff");
-            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "hdfs:///tmp_conceptdrift_data" + i + ".arff", false);
+            DataFlinkWriter.writeDataToARFFFolder(dataNew, "./datasets/simulated/tmp_conceptdrift_data" + i + ".arff");
+            dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "./datasets/simulated/tmp_conceptdrift_data" + i + ".arff", false);
             dataPrev = dataNew;
         }
     }

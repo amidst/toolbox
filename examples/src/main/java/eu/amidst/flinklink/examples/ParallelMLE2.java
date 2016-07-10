@@ -49,8 +49,8 @@ public class ParallelMLE2 {
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-        //DataFlink<DataInstance> dataStream = DataFlinkLoader.loadData(env, "./tmp.arff");
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,"hdfs:///tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, "./datasets/simulated/tmp.arff", false);
+        //DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFolder(env,"hdfs:///tmp.arff", false);
 
 
         //Structure learning is excluded from the test, i.e., we use directly the initial Asia network structure

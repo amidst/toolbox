@@ -38,9 +38,9 @@ import java.util.stream.IntStream;
  */
 public final class ExperimentsParallelML {
 
-    static int[] batchSizes = {100,200,500,1000,2000,5000,10000};
+    static int[] batchSizes = {100};
     /*Options for core comparisons*/
-    static boolean coreComparison = true;
+    static boolean coreComparison = false;
     static int batchSize = 1000;
 
     /*Options for batch size comparisons*/
@@ -200,7 +200,7 @@ public final class ExperimentsParallelML {
         //We discard the first five experiments and then record the following 10 repetitions
         for (int i = 0; i < batchSizes.length; i++) {
             long average = 0L;
-            for (int j = 0; j < 15; j++) {
+            for (int j = 0; j < 5; j++) {
                 parameterLearningAlgorithm.setWindowsSize(batchSizes[i]);
                 long start = System.nanoTime();
                 parameterLearningAlgorithm.runLearning();

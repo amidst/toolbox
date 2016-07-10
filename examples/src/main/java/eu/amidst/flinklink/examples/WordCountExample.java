@@ -42,7 +42,7 @@ public class WordCountExample {
     public static void main(String[] args) throws Exception {
 
         //BasicConfigurator.configure();
-        PropertyConfigurator.configure(args[0]);
+        //PropertyConfigurator.configure(args[0]);
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 

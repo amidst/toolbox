@@ -129,7 +129,7 @@ public class ParallelVMPExtended {
         BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[7]);
 
-        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
+        String fileName = "./datasets/simulated/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
         //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
 
         // Randomly generate the data stream using {@link BayesianNetworkGenerator} and {@link BayesianNetworkSampler}.
@@ -182,4 +182,4 @@ public class ParallelVMPExtended {
 
     }
 
-    }
+}

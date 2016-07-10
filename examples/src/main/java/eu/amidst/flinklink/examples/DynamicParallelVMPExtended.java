@@ -160,8 +160,8 @@ public class DynamicParallelVMPExtended {
         logger.info("Starting DynamicVMPExtended experiments");
 
 
-        String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
-        //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        //String fileName = "hdfs:///tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
+        String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+nsets+"_"+seed;
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 

@@ -98,10 +98,9 @@ public class DynamicNaiveBayes {
 
     public static void main(String[] args) throws Exception {
 
-        Boolean includeHidden = Boolean.parseBoolean(args[0]);
-
-        //String fileName = "hdfs:///tmp_conceptdrift_data";
-        String fileName = "./datasets/simulated//conceptdrift/data";
+        //Boolean includeHidden = Boolean.parseBoolean(args[0]);
+        Boolean includeHidden = true;
+        String fileName = "./datasets/simulated/tmp0_0_100_3_0_iter_";
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -113,7 +112,7 @@ public class DynamicNaiveBayes {
 
         System.out.println(NBdag.toString());
 
-        int nsets = 10;
+        int nsets = 3;
 
         long start = System.nanoTime();
 

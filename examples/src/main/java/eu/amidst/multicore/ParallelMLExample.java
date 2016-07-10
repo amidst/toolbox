@@ -2,22 +2,14 @@ package eu.amidst.multicore;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
-import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.DAGGenerator;
-import eu.amidst.core.utils.Vector;
-import org.dom4j.util.IndexedElement;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by rcabanas on 16/06/16.

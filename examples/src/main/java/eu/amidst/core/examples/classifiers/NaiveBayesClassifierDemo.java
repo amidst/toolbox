@@ -35,12 +35,12 @@ public class NaiveBayesClassifierDemo {
         BayesianNetworkGenerator.loadOptions();
 
         BayesianNetworkGenerator.setSeed(0);
-        BayesianNetworkGenerator.setNumberOfGaussianVars(5900);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(100, 10);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(10);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(10, 5);
         BayesianNetwork bn = BayesianNetworkGenerator.generateNaiveBayes(2);
         System.out.println(bn.toString());
 
-        int sampleSize = 10000;
+        int sampleSize = 100;
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setMARVar(bn.getVariables().getVariableById(0),0.2);
         sampler.setMARVar(bn.getVariables().getVariableById(3),0.2);

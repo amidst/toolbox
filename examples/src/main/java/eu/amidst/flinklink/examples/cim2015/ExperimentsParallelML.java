@@ -132,7 +132,7 @@ public class ExperimentsParallelML {
         System.out.println("Comparison with different number of cores");
         System.out.println("-----------------------------------------");
         createBayesianNetwork();
-        if(isSampleData())
+        if (isSampleData())
             sampleBayesianNetwork();
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
@@ -148,28 +148,28 @@ public class ExperimentsParallelML {
         System.out.println("AverageTime");
         //We discard the first five experiments and then record the following 10 repetitions
         double average = 0.0;
-        for (int j = 0; j <15; j++) {
+        for (int j = 0; j < 15; j++) {
             long start = System.nanoTime();
             parameterLearningAlgorithm.updateModel(dataFlink);
             long duration = (System.nanoTime() - start) / 1;
             double seconds = duration / 1000000000.0;
-            System.out.println("Iteration ["+j+"] = "+seconds + " secs");
-            if(j>4){
-                average+=seconds;
+            System.out.println("Iteration [" + j + "] = " + seconds + " secs");
+            if (j > 4) {
+                average += seconds;
             }
             //dataStream.restart();
         }
-        System.out.println(average/10.0 + " secs");
+        System.out.println(average / 10.0 + " secs");
     }
 
 
-    private static void createBayesianNetwork(){
+    private static void createBayesianNetwork() {
         /* ********** */
         /* Create DAG */
         /* Create all variables */
         Variables variables = new Variables();
 
-        IntStream.range(0, getNumDiscVars() -1)
+        IntStream.range(0, getNumDiscVars() - 1)
                 .forEach(i -> variables.newMultinomialVariable("DiscreteVar" + i, getNumStates()));
 
         IntStream.range(0, getNumGaussVars())
@@ -177,7 +177,7 @@ public class ExperimentsParallelML {
 
         Variable classVar = variables.newMultinomialVariable("ClassVar", getNumStates());
 
-        if(getNumHiddenGaussVars() > 0)
+        if (getNumHiddenGaussVars() > 0)
             IntStream.rangeClosed(0, getNumHiddenGaussVars() - 1).forEach(i -> variables.newGaussianVariable("GaussianSPVar_" + i));
         //if(numStatesHiddenDiscVars > 0)
         Variable discreteHiddenVar = variables.newMultinomialVariable("DiscreteSPVar", getNumStatesHiddenDiscVars());
@@ -196,8 +196,8 @@ public class ExperimentsParallelML {
                 });
 
         /*Add classVar as parent of all super-parent variables*/
-        if(getNumHiddenGaussVars() > 0)
-            IntStream.rangeClosed(0, getNumHiddenGaussVars()-1).parallel()
+        if (getNumHiddenGaussVars() > 0)
+            IntStream.rangeClosed(0, getNumHiddenGaussVars() - 1).parallel()
                     .forEach(hv -> dag.getParentSet(variables.getVariableByName("GaussianSPVar_" + hv)).addParent(classVar));
         dag.getParentSet(variables.getVariableByName("DiscreteSPVar")).addParent(classVar);
 
@@ -205,7 +205,7 @@ public class ExperimentsParallelML {
         System.out.println(dag.toString());
     }
 
-    private static void sampleBayesianNetwork()  throws IOException {
+    private static void sampleBayesianNetwork() throws IOException {
 
 
         BayesianNetwork bn = new BayesianNetwork(dag);
@@ -220,7 +220,7 @@ public class ExperimentsParallelML {
         DataStreamWriter.writeDataToFile(dataStream, "datasets/sampleBatchSize.arff");
     }
 
-    public static String classNameID(){
+    public static String classNameID() {
         return "eu.amidst.flinklink.examples.cim2015.ExperimentsParallelML";
     }
 
@@ -228,27 +228,30 @@ public class ExperimentsParallelML {
         return OptionParser.parse(classNameID(), listOptions(), optionName);
     }
 
-    public static int getIntOption(String optionName){
+    public static int getIntOption(String optionName) {
         return Integer.parseInt(getOption(optionName));
     }
 
-    public static boolean getBooleanOption(String optionName){
+    public static boolean getBooleanOption(String optionName) {
         return getOption(optionName).equalsIgnoreCase("true") || getOption(optionName).equalsIgnoreCase("T");
     }
 
-    public static String listOptions(){
+    public static String listOptions() {
 
-        return  classNameID() +",\\"+
+        return classNameID() + ",\\" +
                 "-sampleSize, 1000000, Sample size of the dataset\\" +
-                "-numStates, 10, Num states of all disc. variables (including the class)\\"+
-                "-GV, 5, Num of gaussian variables\\"+
-                "-DV, 5, Num of discrete variables\\"+
-                "-SPGV, 2, Num of gaussian super-parent variables\\"+
-                "-SPDV, 10, Num of states for super-parent discrete variable\\"+
-                "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\"+
-                "-parallelMode, true, Run in parallel\\"+
+                "-numStates, 10, Num states of all disc. variables (including the class)\\" +
+                "-GV, 5, Num of gaussian variables\\" +
+                "-DV, 5, Num of discrete variables\\" +
+                "-SPGV, 2, Num of gaussian super-parent variables\\" +
+                "-SPDV, 10, Num of states for super-parent discrete variable\\" +
+                "-sampleData, true, Sample arff data (if not read datasets/sampleBatchSize.arff by default)\\" +
+                "-parallelMode, true, Run in parallel\\" +
                 "-windowsSize, 1000, Batch size for comparisons in the number of cores\\";
     }
+
+
+
 
     public static void loadOptions(){
         setNumGaussVars(getIntOption("-GV"));
