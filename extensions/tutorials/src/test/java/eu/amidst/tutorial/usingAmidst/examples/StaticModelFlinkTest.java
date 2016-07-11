@@ -13,6 +13,7 @@ public class StaticModelFlinkTest extends TestCase {
 
     @Test
     public void test() throws Exception {
+        CreateCajamarDataContinuous.main(null);
         StaticModelFlink.main(null);
     }
 

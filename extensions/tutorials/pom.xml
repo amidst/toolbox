@@ -38,8 +38,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <argLine>-Djava.library.path="huginlink/huginlib/"
-                    </argLine>
+                    <argLine>-Djava.library.path="huginlink/huginlib/"</argLine>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <plugin>
