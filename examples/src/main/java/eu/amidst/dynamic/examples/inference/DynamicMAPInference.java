@@ -59,7 +59,6 @@ public class DynamicMAPInference {
         Variable mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
         dynMAP.setMAPvariable(mapVariable);
 
-
         /*
          * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
          */
