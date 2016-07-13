@@ -266,7 +266,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
                 posterior = InferenceEngineForDBN.getFilteredPosterior(varH1);
 
                 //We show the output
-                System.out.println("P(varH1|e[0:" + (time++) + "]) = " + posterior);
+                //System.out.println("P(varH1|e[0:" + (time++) + "]) = " + posterior);
             }
             long duration = (System.nanoTime() - start) / 1;
             double seconds = duration / 1000000000.0;

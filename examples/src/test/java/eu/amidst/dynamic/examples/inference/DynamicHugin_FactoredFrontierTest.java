@@ -10,6 +10,8 @@ public class DynamicHugin_FactoredFrontierTest extends TestCase  {
 			DynamicHugin_FactoredFrontier.main(null);
 		}catch (NoClassDefFoundError ex) {
 
+		}catch (UnsatisfiedLinkError err) {
+
 		}
 	}
 }

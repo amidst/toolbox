@@ -11,6 +11,8 @@ public class HuginConversionExampleTest extends TestCase  {
 			HuginConversionExample.main(null);
 		}catch (UnsatisfiedLinkError err) {
 
+		}catch (NoClassDefFoundError ex) {
+
 		}
 	}
 }

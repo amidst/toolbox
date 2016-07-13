@@ -1,5 +1,6 @@
 package eu.amidst.flinklink.examples.learning;
 
+import eu.amidst.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -9,6 +10,7 @@ import eu.amidst.flinklink.core.learning.parametric.DistributedVI;
 import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.flinklink.core.utils.DataSetGenerator;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 /**
  * Created by rcabanas on 14/06/16.
@@ -16,7 +18,11 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 public class DistributedVIExample {
     public static void main(String[] args) throws Exception {
         //Set-up Flink session.
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
 
         //generate a random dataset
         DataFlink<DataInstance> dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);

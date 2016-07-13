@@ -1,21 +1,15 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
-package eu.amidst.flinklink.examples;
+package eu.amidst.flinklink.examples.misc;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
@@ -31,7 +25,6 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +86,7 @@ public class ParallelVMPExtended {
 
     /**
      *
-     * ./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 5000 -c eu.amidst.flinklink.examples.ParallelVMPExtended ../flinklink.jar 50 50 10000 100 10 100
+     * ./bin/flink run -m yarn-cluster -yn 2 -ys 4 -yjm 1024 -ytm 5000 -c eu.amidst.flinklink.examples.misc.ParallelVMPExtended ../flinklink.jar 50 50 10000 100 10 100
      *
      * yn  = 1, 2, 4, 8, 16
      *
@@ -121,13 +114,15 @@ public class ParallelVMPExtended {
         int seed = Integer.parseInt(args[6]);
 
         //Set-up Flink session.
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
         /*
          * Logging
          */
-        BasicConfigurator.configure();
+       // BasicConfigurator.configure();
+        env.getConfig().disableSysoutLogging();
         //PropertyConfigurator.configure(args[7]);
+
 
         String fileName = "./datasets/simulated/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
         //String fileName = "./datasets/tmp"+nCVars+"_"+nMVars+"_"+nSamples+"_"+windowSize+"_"+globalIter+"_"+localIter+".arff";
@@ -164,6 +159,7 @@ public class ParallelVMPExtended {
         parallelVB.setLocalThreshold(0.1);
         parallelVB.setMaximumLocalIterations(localIter);
         parallelVB.setSeed(5);
+        parallelVB.setOutput(false);
 
         //Set the window size
         parallelVB.setBatchSize(windowSize);

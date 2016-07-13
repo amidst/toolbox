@@ -19,7 +19,7 @@ public class DataStreamsExample {
         //DataStream<DataInstance> data = DataStreamLoader.open("datasetsTests/data.arff");
 
         //Generate the data stream using the class DataSetGenerator
-        DataStream<DataInstance> data = DataSetGenerator.generate(1,1000,5,5);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1,10,5,5);
 
 
         //Access to the attributes defining the data set

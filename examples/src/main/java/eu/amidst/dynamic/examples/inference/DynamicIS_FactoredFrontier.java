@@ -55,7 +55,7 @@ public class DynamicIS_FactoredFrontier {
         //We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
         dynamicSampler.setHiddenVar(classVar);
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3, 1000);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(1, 10);
 
         //We select IS with the factored frontier algorithm as the Inference Algorithm
         ImportanceSampling importanceSampling = new ImportanceSampling();

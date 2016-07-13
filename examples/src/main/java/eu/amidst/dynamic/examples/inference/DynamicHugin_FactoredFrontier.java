@@ -56,7 +56,7 @@ public class DynamicHugin_FactoredFrontier {
         //We first generate a dynamic Bayesian network (NB structure, only class is temporally linked)
         DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
         dynamicSampler.setHiddenVar(classVar);
-        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(3,100);
+        DataStream<DynamicDataInstance> dataPredict = dynamicSampler.sampleToDataBase(1,10);
 
 
         //We select VMP with the factored frontier algorithm as the Inference Algorithm

@@ -17,6 +17,7 @@
 
 package eu.amidst.flinklink.examples.reviewMeeting2015;
 
+import eu.amidst.Main;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.Normal_MultinomialNormalParents;
 import eu.amidst.core.models.BayesianNetwork;
@@ -33,6 +34,7 @@ import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import eu.amidst.flinklink.core.utils.DBNSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.util.List;
 import java.util.Random;
@@ -71,7 +73,11 @@ public class GenerateData {
                                       int NSETS) throws Exception {
 
         //Set-up Flink session.
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
 
         BayesianNetwork bn = createBN(numVars);
 
@@ -128,7 +134,12 @@ public class GenerateData {
 
     public static void createDataSetsDBN(List<String> hiddenVars, List<String> noisyVars, int numVars, int SAMPLESIZE,
                                          int NSETS) throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
 
         DynamicBayesianNetwork dbn = createDBN1(numVars);
 

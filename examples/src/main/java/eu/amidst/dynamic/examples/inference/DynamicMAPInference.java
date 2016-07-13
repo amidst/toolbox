@@ -17,6 +17,7 @@
 
 package eu.amidst.dynamic.examples.inference;
 
+import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
@@ -25,9 +26,9 @@ import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * This example shows how to use the Dynamic MAP Inference algorithm described in Deliverable 3.4 (Section 6).
@@ -58,6 +59,7 @@ public class DynamicMAPInference {
 
         Variable mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName("ClassVar");
         dynMAP.setMAPvariable(mapVariable);
+
 
         /*
          * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
@@ -119,17 +121,16 @@ public class DynamicMAPInference {
         /*
          *  SHOW RESULTS
          */
-        int[] MAPsequence = dynMAP.getMAPsequence();
+        Assignment MAPestimate = dynMAP.getMAPestimate();
         double MAPestimateProbability = dynMAP.getMAPestimateProbability();
 
         System.out.println("MAP sequence over " + mapVariable.getName() + ":");
-        //List<Variable> MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID()? 1 : -1)).collect(Collectors.toList());
-        System.out.println(Arrays.toString(MAPsequence));
+        List<Variable> MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1,var2) -> (var1.getVarID()>var2.getVarID()? 1 : -1)).collect(Collectors.toList());
 
-//        StringBuilder sequence = new StringBuilder();
-//        MAPvarReplications.stream().forEachOrdered(var -> sequence.append(Integer.toString((int) MAPestimate.getValue(var)) + ", "));
-//        //System.out.println(MAPestimate.outputString(MAPvarReplications));
-//        System.out.println(sequence.toString());
+        StringBuilder sequence = new StringBuilder();
+        MAPvarReplications.stream().forEachOrdered(var -> sequence.append(Integer.toString((int) MAPestimate.getValue(var)) + ", "));
+        //System.out.println(MAPestimate.outputString(MAPvarReplications));
+        System.out.println(sequence.toString());
         System.out.println("with probability prop. to: " + MAPestimateProbability);
 
     }

@@ -8,7 +8,7 @@ public class GenerateDataTest extends TestCase  {
 	public void test() throws Exception {
 
 
-		String args[] = {"3","2000", "5", "false"};
+		String args[] = {"3","2000", "5", "true"};
 
 
 		GenerateData.main(args);

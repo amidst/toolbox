@@ -28,6 +28,9 @@ public class ParallelMaximumLikelihoodExample {
         //We activate the parallel mode.
         parameterLearningAlgorithm.setParallelMode(true);
 
+        //We desactivate the debug mode.
+        parameterLearningAlgorithm.setDebug(false);
+
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(MaximimumLikelihoodByBatchExample.getNaiveBayesStructure(data, 0));
 

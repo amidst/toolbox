@@ -38,7 +38,7 @@ public class SVBByBatchExample {
         parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),"H",2));
 
         //We fix the size of the window, which must be equal to the size of the data batches we use for learning
-        parameterLearningAlgorithm.setWindowsSize(5);
+        parameterLearningAlgorithm.setWindowsSize(100);
 
         //We can activate the output
         parameterLearningAlgorithm.setOutput(true);
@@ -48,7 +48,7 @@ public class SVBByBatchExample {
 
 
         //Then we show how we can perform parameter learning by a sequential updating of data batches.
-        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(5)){
+        for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
             double log_likelhood_of_batch = parameterLearningAlgorithm.updateModel(batch);
             System.out.println("Log-Likelihood of Batch: "+ log_likelhood_of_batch);
         }

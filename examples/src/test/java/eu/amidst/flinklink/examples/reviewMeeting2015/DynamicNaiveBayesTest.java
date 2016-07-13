@@ -6,6 +6,11 @@ import org.junit.Test;
 public class DynamicNaiveBayesTest extends TestCase  {
 	@Test
 	public void test() throws Exception {
+
+		String args[] = {"3","500", "5", "true"};
+
+
+		GenerateData.main(args);
 		DynamicNaiveBayes.main(null);
 	}
 }

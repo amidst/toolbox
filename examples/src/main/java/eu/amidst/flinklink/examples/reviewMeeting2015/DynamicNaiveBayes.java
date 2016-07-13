@@ -17,6 +17,7 @@
 
 package eu.amidst.flinklink.examples.reviewMeeting2015;
 
+import eu.amidst.Main;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
@@ -26,6 +27,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,11 +100,17 @@ public class DynamicNaiveBayes {
 
     public static void main(String[] args) throws Exception {
 
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
+
         //Boolean includeHidden = Boolean.parseBoolean(args[0]);
         Boolean includeHidden = true;
-        String fileName = "./datasets/simulated/tmp0_0_100_3_0_iter_";
-
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        String fileName = "./datasets/simulated/tmp_conceptdrift_data";
 
         DataFlink<DynamicDataInstance> data0 = DataFlinkLoader.loadDynamicDataFromFolder(env,fileName+0+".arff", false);
 
