@@ -637,7 +637,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                         "," + (df.format(value.getValue()) +">" + df.format(previousELBO))+ ","+
                         df.format((System.nanoTime() - start) / 1000000000.0) + " seconds");
                 this.previousELBO=value.getValue();
-                return true;
+                return false;
             }else {
                 logger.info("Global bound Convergence: {},{},{},{} seconds",iteration,df.format(percentage),
                         df.format(value.getValue()), df.format((System.nanoTime() - start) / 1000000000.0));
