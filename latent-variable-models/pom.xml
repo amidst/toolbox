@@ -131,6 +131,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/TANTest.java</exclude>
+                        <skipTests>true</skipTests>
                     </excludes>
                 </configuration>
             </plugin>

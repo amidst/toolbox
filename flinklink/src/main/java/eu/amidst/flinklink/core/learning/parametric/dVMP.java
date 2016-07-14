@@ -317,6 +317,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             this.svb.applyTransition();
 
         }catch(Exception ex){
+            System.out.println(ex.getMessage().toString());
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -623,12 +625,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
-                System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
-                 ", "+ (value.getValue() +">" + previousELBO));
-                this.previousELBO=value.getValue();
-                return false;
+                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                // ", "+ (value.getValue() +">" + previousELBO));
+                //this.previousELBO=value.getValue();
+                //return false;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),
