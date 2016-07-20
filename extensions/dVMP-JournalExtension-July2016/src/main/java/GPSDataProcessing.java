@@ -47,6 +47,7 @@ public class GPSDataProcessing {
             else
                 client=i+"";
 
+            System.out.println(path + client + "/Trajectory/");
             File folder = new File(path + client + "/Trajectory/");
 
             for (final String fileEntry : folder.list()) {
