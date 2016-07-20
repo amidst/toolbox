@@ -27,14 +27,15 @@ import java.util.Locale;
  */
 public class GPSDataProcessing {
 
-    private static final int LIMIT = 10;
 
 
     public static void createDataForFactorAnalysis(String[] args) throws Exception{
 
-        String path = args[0];
+        int LIMIT = Integer.parseInt(args[0]);
 
-        String output = args[1];
+        String path = args[1];
+
+        String output = args[2];
 
         FileWriter fileWriter = new FileWriter(output);
 
@@ -90,8 +91,10 @@ public class GPSDataProcessing {
 
     public static void createDataForMixture(String[] args) throws Exception{
 
-        String path = args[0];
-        String output = args[2];
+        int LIMIT = Integer.parseInt(args[0]);
+
+        String path = args[1];
+        String output = args[3];
 
         FileWriter fileWriter = new FileWriter(output);
 
