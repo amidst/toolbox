@@ -58,17 +58,17 @@ public class BayesianRegressionExpVMP {
         bn.randomInitialization(new Random(10));
 
         Normal dist0 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_0"));
-        dist0.setMean(10);
-        dist0.setVariance(1);
-        Normal dist1 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_1"));
-        dist1.setMean(10);
-        dist1.setVariance(1);
+        dist0.setMean(100);
+        dist0.setVariance(1000);
+//        Normal dist1 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_1"));
+//        dist1.setMean(10);
+//        dist1.setVariance(10);
 
         ConditionalLinearGaussian conditionalLinearGaussian = bn.getConditionalDistribution(bn.getVariables().getVariableByName("G0"));
 
         conditionalLinearGaussian.setIntercept(1.0);
-        conditionalLinearGaussian.setCoeffParents(new double[]{1.0, 1.0});
-        conditionalLinearGaussian.setVariance(1);
+        conditionalLinearGaussian.setCoeffParents(new double[]{1.0});
+        conditionalLinearGaussian.setVariance(1000);
 
         System.out.println(bn.toString());
 
@@ -106,7 +106,7 @@ public class BayesianRegressionExpVMP {
         int nsamples = Integer.parseInt(args[1]);
         int batchsize = Integer.parseInt(args[2]);
 
-        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,2);
+        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,1);
 
         generateData(nsamples, "./tmp.arff");
         learn(batchsize, "./tmp.arff");

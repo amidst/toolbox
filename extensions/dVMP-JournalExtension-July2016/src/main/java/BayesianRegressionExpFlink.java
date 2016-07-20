@@ -10,8 +10,6 @@
  */
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -56,33 +54,30 @@ public class BayesianRegressionExpFlink {
         return dag;
     }
 
-    public static void generateData(ExecutionEnvironment env,int samples, int batchsize, String file) throws Exception {
+    public static void generateData(ExecutionEnvironment env,int samples, int batchsize, String file, int natts) throws Exception {
 
         BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(10));
 
-        Normal dist0 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_0"));
-        dist0.setMean(10);
-        dist0.setVariance(1);
-        Normal dist1 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_1"));
-        dist1.setMean(10);
-        dist1.setVariance(1);
-
-        ConditionalLinearGaussian conditionalLinearGaussian = bn.getConditionalDistribution(bn.getVariables().getVariableByName("G0"));
-
-        conditionalLinearGaussian.setIntercept(1.0);
-        conditionalLinearGaussian.setCoeffParents(new double[]{1.0, 1.0});
-        conditionalLinearGaussian.setVariance(1);
+        /*for (int i = 0; i < natts; i++) {
+            Normal dist0 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_"+i));
+            dist0.setMean(1);
+            dist0.setVariance(10);
+            ConditionalLinearGaussian conditionalLinearGaussian = bn.getConditionalDistribution(bn.getVariables().getVariableByName("G0"));
+            conditionalLinearGaussian.setIntercept(1.0);
+            conditionalLinearGaussian.setCoeffForParent(bn.getVariables().getVariableByName("LocalHidden_"+i),1.0);
+            conditionalLinearGaussian.setVariance(10);
+        }*/
 
         System.out.println(bn.toString());
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setBatchSize(batchsize);
 
-        /*for (Variable variable : bn.getVariables()) {
+        for (Variable variable : bn.getVariables()) {
             if (variable.getName().contains("Hidden"))
                 sampler.setHiddenVar(variable);
-        }*/
+        }
 
         DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,samples),file);
 
@@ -96,9 +91,9 @@ public class BayesianRegressionExpFlink {
         dVMP dvmp = new dVMP();
         dvmp.setDAG(dag);
 
-        dvmp.setLocalThreshold(0.01);
+        dvmp.setLocalThreshold(0.0001);
         dvmp.setGlobalThreshold(0.0001);
-        dvmp.setMaximumLocalIterations(1000);
+        dvmp.setMaximumLocalIterations(100);
         dvmp.setMaximumGlobalIterations(20);
         dvmp.setBatchSize(batchsize);
 
@@ -111,7 +106,7 @@ public class BayesianRegressionExpFlink {
     }
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"1", "3", "10000", "10000"};
+        args = new String[]{"4", "5", "7000", "1000"};
 
         int ncores = Integer.parseInt(args[0]);
         int natts = Integer.parseInt(args[1]);
@@ -125,9 +120,9 @@ public class BayesianRegressionExpFlink {
         env.setParallelism(ncores);
         env.getConfig().disableSysoutLogging();
 
-        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,2);
+        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(10,natts);
 
-        generateData(env,nsamples,batchsize, "./tmpFolder.arff");
+        generateData(env,nsamples,batchsize, "./tmpFolder.arff",natts);
         learn(env, batchsize, "./tmpFolder.arff");
     }
 }

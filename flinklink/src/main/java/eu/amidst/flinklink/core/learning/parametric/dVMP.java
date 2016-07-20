@@ -515,7 +515,6 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
 
             this.svb.setNonSequentialModel(true);
-            System.out.println(svb.getLearntBayesianNetwork().toString());
 
         }
     }
