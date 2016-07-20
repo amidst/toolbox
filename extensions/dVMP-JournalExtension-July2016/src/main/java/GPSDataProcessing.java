@@ -39,6 +39,15 @@ public class GPSDataProcessing {
 
         FileWriter fileWriter = new FileWriter(output);
 
+        fileWriter.write("@relation mixture-"+LIMIT+"\n");
+
+        for (int i = 0; i < LIMIT; i++) {
+            fileWriter.write("@attribute GPSX_"+i+" real\n");
+            fileWriter.write("@attribute GPSY_"+i+" real\n");
+        }
+
+        fileWriter.write("@data\n");
+
         for (int i = 0; i < 182; i++) {
             String client=null;
             if (i<10)
@@ -98,6 +107,16 @@ public class GPSDataProcessing {
 
         FileWriter fileWriter = new FileWriter(output);
 
+        fileWriter.write("@relation mixture-"+LIMIT+"\n");
+
+        for (int i = 0; i < LIMIT; i++) {
+            fileWriter.write("@attribute GPSX_"+i+" real\n");
+            fileWriter.write("@attribute GPSY_"+i+" real\n");
+        }
+
+        fileWriter.write("@attribute DAY {1,2,3,4,5,6,7}\n");
+
+        fileWriter.write("@data\n");
 
         for (int i = 0; i < 182; i++) {
             String client=null;
