@@ -9,7 +9,7 @@
  *
  */
 
-import eu.amidst.core.datastream.DataInstance;
+package eu.amidst.dVMPJournalExtensionJuly2016;import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.ConditionalLinearGaussian;
 import eu.amidst.core.distribution.Normal;

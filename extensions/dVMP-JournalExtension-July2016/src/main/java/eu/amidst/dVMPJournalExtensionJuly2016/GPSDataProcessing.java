@@ -9,7 +9,7 @@
  *
  */
 
-import java.io.BufferedReader;
+package eu.amidst.dVMPJournalExtensionJuly2016;import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Reader;
@@ -18,9 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * Created by andresmasegosa on 19/7/16.
@@ -60,7 +58,11 @@ public class GPSDataProcessing {
             System.out.println(path + client + "/Trajectory/");
             File folder = new File(path + client + "/Trajectory/");
 
-            for (final String fileEntry : folder.list()) {
+            List<String> trajectories = Arrays.asList(folder.list());
+
+            Collections.shuffle(trajectories);
+
+            for (final String fileEntry : trajectories) {
                 Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
                 Reader source = Files.newBufferedReader(path1);
                 BufferedReader reader = new BufferedReader(source);
@@ -129,7 +131,11 @@ public class GPSDataProcessing {
 
             File folder = new File(path + client + "/Trajectory/");
 
-            for (final String fileEntry : folder.list()) {
+            List<String> trajectories = Arrays.asList(folder.list());
+
+            Collections.shuffle(trajectories);
+
+            for (final String fileEntry : trajectories) {
                 Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
                 Reader source = Files.newBufferedReader(path1);
                 BufferedReader reader = new BufferedReader(source);

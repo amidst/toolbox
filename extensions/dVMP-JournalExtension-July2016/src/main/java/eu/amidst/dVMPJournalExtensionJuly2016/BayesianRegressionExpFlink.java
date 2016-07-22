@@ -9,7 +9,7 @@
  *
  */
 
-import eu.amidst.core.datastream.DataInstance;
+package eu.amidst.dVMPJournalExtensionJuly2016;import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
