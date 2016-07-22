@@ -1,0 +1,7 @@
+mvn exec:java -Dexec.mainClass="eu.amidst.dVMPJournalExtensionJuly2016.GPSDataProcessing" -Dexec.args="3 /home/andres/data/gps/Data/ /home/andres/data/gps/FA.arff /home/andres/data/gps/Mixture.arff"  
+
+mvn exec:java -Dexec.mainClass="eu.amidst.dVMPJournalExtensionJuly2016.TrainTestDivision" -Dexec.args="/home/andres/data/gps/FA.arff"  
+
+mvn exec:java -Dexec.mainClass="eu.amidst.dVMPJournalExtensionJuly2016.TrainTestDivision" -Dexec.args="/home/andres/data/gps/Mixture.arff"  
+
+

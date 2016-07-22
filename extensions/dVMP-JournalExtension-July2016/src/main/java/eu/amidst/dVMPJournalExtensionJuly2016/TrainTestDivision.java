@@ -9,7 +9,8 @@
  *
  */
 
-package eu.amidst.dVMPJournalExtensionJuly2016;import java.io.BufferedReader;
+package eu.amidst.dVMPJournalExtensionJuly2016;
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.Reader;
 import java.nio.file.Files;
@@ -43,10 +44,10 @@ public class TrainTestDivision {
 
         while (headerLines.hasNext()) {
             String line = headerLines.next();
-            fileWriterTrain.write(line);
-            fileWriterTest.write(line);
+            fileWriterTrain.write(line+"\n");
+            fileWriterTest.write(line+"\n");
 
-            if (line.compareTo("@data")==0)
+            if (line.compareTo("@data"+"\n")==0)
                 break;
         }
 
@@ -55,9 +56,9 @@ public class TrainTestDivision {
             String line = headerLines.next();
 
             if (countTraining%3==0){
-                fileWriterTest.write(line);
+                fileWriterTest.write(line+"\n");
             }else{
-                fileWriterTrain.write(line);
+                fileWriterTrain.write(line+"\n");
             }
             countTraining++;
         }
