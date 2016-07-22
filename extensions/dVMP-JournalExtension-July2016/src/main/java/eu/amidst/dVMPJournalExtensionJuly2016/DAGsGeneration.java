@@ -180,4 +180,40 @@ public class DAGsGeneration {
         return dag;
     }
 
+    public static DAG getIDAMultiLocalGaussianDAG(int natts, int nlocals) {
+
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables();
+
+        // Define a local hidden variable.
+        List<Variable> localHiddenVars = new ArrayList<>();
+        for (int i = 0; i < nlocals; i++) {
+            localHiddenVars.add(variables.newGaussianVariable("LocalHidden_"+i));
+        }
+
+        for (int i = 0; i < natts; i++) {
+            variables.newGaussianVariable("G"+i);
+        }
+
+
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+
+        // Link the local hidden as parent of all predictive attributes
+        for (Variable localHiddenVar : localHiddenVars) {
+            dag.getParentSets()
+                    .stream()
+                    .filter(w -> !w.getMainVar().getName().startsWith("Local"))
+                    .forEach(w -> w.addParent(localHiddenVar));
+        }
+
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
 }
