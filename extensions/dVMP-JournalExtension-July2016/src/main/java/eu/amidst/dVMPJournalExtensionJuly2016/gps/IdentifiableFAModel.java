@@ -44,18 +44,43 @@ public class IdentifiableFAModel implements IdenitifableModelling, Serializable 
         if (epoch==0)
             return true;
 
-        if (variable.getName().contains("_Gamma_"))
-            return epoch%getNumberOfEpochs() ==0;
-        else if (variable.getName().contains("Beta0"))
-            return epoch%getNumberOfEpochs() ==1;
-        else if (variable.getName().contains("Beta_LocalHidden")) {
-            for (int i = 0; i < this.numLocalHiddenVariables; i++) {
-                if (variable.getName().contains("Beta_LocalHidden_"+i))
-                    return epoch % getNumberOfEpochs() == i+2;
+        if (variable.getName().startsWith("GPS")) {
+            if (variable.getName().contains("_Gamma_"))
+                return epoch % getNumberOfEpochs() == 0;
+            else if (variable.getName().contains("Beta0"))
+                return epoch % getNumberOfEpochs() == 1;
+            else if (variable.getName().contains("Beta_LocalHidden")) {
+                for (int i = 0; i < this.numLocalHiddenVariables; i++) {
+                    if (variable.getName().contains("Beta_LocalHidden_" + i))
+                        return epoch % getNumberOfEpochs() == i + 2;
+                }
+                return true;
+            } else
+                return true;
+        }
+
+
+        for (int k=0; k<this.numLocalHiddenVariables-1; k++) {
+
+            if (variable.getName().startsWith("LocalHidden_"+k)) {
+                int epochs = this.numLocalHiddenVariables - 1 - k + 2;
+                if (variable.getName().contains("_Gamma_"))
+                    return epoch % epochs == 0;
+                else if (variable.getName().contains("Beta0"))
+                    return epoch % epochs == 1;
+                else if (variable.getName().contains("Beta_LocalHidden")) {
+                    for (int i = 0; i < this.numLocalHiddenVariables; i++) {
+                        if (variable.getName().contains("Beta_LocalHidden_" + (i+k+1)))
+                            return epoch % epoch == i + 2;
+                    }
+                    return true;
+                } else
+                    return true;
             }
-            return true;
-        }else
-            return true;
+
+        }
+
+        return true;
     }
 
 }

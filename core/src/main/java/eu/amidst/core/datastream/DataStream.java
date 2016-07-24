@@ -135,27 +135,27 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
         return new DataStream<R>() {
             @Override
             public Attributes getAttributes() {
-                return this.getAttributes();
+                return DataStream.this.getAttributes();
             }
 
             @Override
             public void close() {
-                this.close();
+                DataStream.this.close();
             }
 
             @Override
             public boolean isRestartable() {
-                return this.isRestartable();
+                return DataStream.this.isRestartable();
             }
 
             @Override
             public void restart() {
-                this.restart();
+                DataStream.this.restart();
             }
 
             @Override
             public Stream<R> stream() {
-                return ((Stream<E>)this.stream()).map(mapper);
+                return ((Stream<E>)DataStream.this.stream()).map(mapper);
             }
         };
     }

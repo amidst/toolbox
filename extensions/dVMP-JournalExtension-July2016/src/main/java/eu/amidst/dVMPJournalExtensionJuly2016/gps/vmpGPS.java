@@ -9,17 +9,16 @@
  *
  */
 
-package eu.amidst.dVMPJournalExtensionJuly2016.bcc;
+package eu.amidst.dVMPJournalExtensionJuly2016.gps;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.dVMPJournalExtensionJuly2016.DAGsGeneration;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
-import eu.amidst.flinklink.core.learning.parametric.dVMPv1;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
@@ -28,9 +27,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by ana@cs.aau.dk on 08/02/16.
  */
-public class dVMPv1BCC {
+public class vmpGPS {
 
-    static Logger logger = LoggerFactory.getLogger(dVMPv1BCC.class);
+    static Logger logger = LoggerFactory.getLogger(vmpGPS.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -44,9 +43,9 @@ public class dVMPv1BCC {
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
         int localIter = 100;
-        double localThreshold = 0.0001;
+        double localThreshold = 0.0000000001;
         int seed = 0;
-        int nParallelDegree = 32;
+        int nParallelDegree = 1;
 
 
         //BasicConfigurator.configure();
@@ -54,39 +53,34 @@ public class dVMPv1BCC {
 
         // set up the execution environment
         Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 16000);
+        //conf.setInteger("taskmanager.network.numberOfBuffers", 16000);
         conf.setInteger("taskmanager.numberOfTaskSlots",nParallelDegree);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
         env.setParallelism(nParallelDegree);
         env.getConfig().disableSysoutLogging();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
+        DataStream<DataInstance> dataFlink = DataStreamLoader.open(fileName);
+
 
         DAG hiddenNB = null;
         if (model.compareTo("mixture")==0){
-            hiddenNB = DAGsGeneration.getBCCMixtureDAG(dataFlink.getAttributes(), nStates);
+            hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
-            hiddenNB = DAGsGeneration.getBCCFADAG(dataFlink.getAttributes(), nStates);
+            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
         }
 
         long start = System.nanoTime();
 
         //Parameter Learning
-        dVMPv1 parallelVB = new dVMPv1();
+        SVB parallelVB = new SVB();
         parallelVB.setOutput(true);
-        parallelVB.setGlobalThreshold(globalThreshold);
-        parallelVB.setMaximumGlobalIterations(globalIter);
-        parallelVB.setLocalThreshold(localThreshold);
-        parallelVB.setMaximumLocalIterations(localIter);
-        parallelVB.setTimeLimit(timeLimit);
+        parallelVB.getPlateuStructure().getVMP().setThreshold(localThreshold);
+        parallelVB.getPlateuStructure().getVMP().setMaxIter(localIter);
         parallelVB.setSeed(seed);
 
         //Set the window size
-        parallelVB.setBatchSize(windowSize);
+        parallelVB.setWindowsSize(windowSize);
 
-        if (model.compareTo("FA")==0) {
-            parallelVB.setIdenitifableModelling(new IdentifiableFAModel(nStates));
-        }
 
         parallelVB.setOutput(true);
         parallelVB.setDAG(hiddenNB);
@@ -99,16 +93,8 @@ public class dVMPv1BCC {
             builder.append(args[i]);
             builder.append("_");
         }
-        BayesianNetworkWriter.save(LearnedBnet, "./dVMPv1BCC_"+ builder.toString() +".bn");
+        BayesianNetworkWriter.save(LearnedBnet, "./dVMPv1GPS_"+ builder.toString() +".bn");
         System.out.println(LearnedBnet.toString());
-
-        /// TEST
-
-        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
-
-        double elboTest = StochasticVI.computeELBO(dataTest,parallelVB.getSVB());
-
-        System.out.println("Test Marginal-Loglikelihood:" + elboTest);
 
 
         long duration = (System.nanoTime() - start) / 1;

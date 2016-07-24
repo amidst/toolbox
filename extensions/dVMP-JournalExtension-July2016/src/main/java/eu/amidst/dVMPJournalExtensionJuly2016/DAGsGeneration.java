@@ -95,6 +95,13 @@ public class DAGsGeneration {
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
+
+        for (int i = 0; i < localHiddenVars.size(); i++) {
+            for (int j = i+1; j < localHiddenVars.size(); j++) {
+                dag.getParentSet(localHiddenVars.get(i)).addParent(localHiddenVars.get(j));
+            }
+        }
+
         // Link the class as parent of all attributes
         dag.getParentSets()
                 .stream()
@@ -164,6 +171,12 @@ public class DAGsGeneration {
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
+
+        for (int i = 0; i < localHiddenVars.size(); i++) {
+            for (int j = i+1; j < localHiddenVars.size(); j++) {
+                dag.getParentSet(localHiddenVars.get(i)).addParent(localHiddenVars.get(j));
+            }
+        }
 
         // Link the local hidden as parent of all predictive attributes
         for (Variable localHiddenVar : localHiddenVars) {

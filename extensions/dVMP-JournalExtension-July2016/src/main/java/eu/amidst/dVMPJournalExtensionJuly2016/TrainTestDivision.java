@@ -47,7 +47,7 @@ public class TrainTestDivision {
             fileWriterTrain.write(line+"\n");
             fileWriterTest.write(line+"\n");
 
-            if (line.compareTo("@data"+"\n")==0)
+            if (line.contains("@data"))
                 break;
         }
 
