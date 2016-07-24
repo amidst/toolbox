@@ -60,7 +60,7 @@ public class dVMPv2BCC {
         env.setParallelism(nParallelDegree);
         env.getConfig().disableSysoutLogging();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, fileName, false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
 
         DAG hiddenNB = null;
         if (model.compareTo("mixture")==0){
@@ -100,7 +100,7 @@ public class dVMPv2BCC {
 
         /// TEST
 
-        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFile(env,fileTest, false);
+        DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
 
         double elboTest = StochasticVI.computeELBO(dataTest,parallelVB.getSVB());
 
