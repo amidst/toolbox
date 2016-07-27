@@ -42,11 +42,16 @@ public class StochasticVIGPS {
         int dataSetSize = Integer.parseInt(args[5]);
         String model =args[6];
 
-        int localIter = 100;
+        int localIter = 10;
         double localThreshold = 0.1;
         int seed = 0;
         int nParallelDegree = 32;
 
+        if (args.length>7){
+            localIter = Integer.parseInt(args[5]);
+            localThreshold = Double.parseDouble(args[6]);
+            nParallelDegree = Integer.parseInt(args[7]);
+        }
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -89,7 +94,7 @@ public class StochasticVIGPS {
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i < args.length; i++) {
             builder.append(args[i]);
             builder.append("_");
         }

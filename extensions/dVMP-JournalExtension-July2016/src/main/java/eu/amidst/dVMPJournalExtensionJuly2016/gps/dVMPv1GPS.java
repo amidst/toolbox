@@ -44,10 +44,10 @@ public class dVMPv1GPS {
 
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
-        int localIter = 100;
+        int localIter = 10;
         double localThreshold = 0.1;
         int seed = 0;
-        int nParallelDegree = 23;
+        int nParallelDegree = 32;
 
         if (args.length>5){
             localIter = Integer.parseInt(args[5]);
@@ -72,7 +72,7 @@ public class dVMPv1GPS {
         if (model.compareTo("mixture")==0){
             hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
-            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes().subList(0,4), nStates);
+            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
         }
 
         long start = System.nanoTime();
