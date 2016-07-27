@@ -600,12 +600,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
 
-
+/*
             if (iteration==1)
                 return false;
 
             iteration--;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 
@@ -671,12 +671,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
 
-
+/*
             if (iteration==1)
                 return false;
 
             iteration--;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 

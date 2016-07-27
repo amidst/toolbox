@@ -44,10 +44,15 @@ public class dVMPv2GPS {
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
         int localIter = 100;
-        double localThreshold = 0.0001;
+        double localThreshold = 0.1;
         int seed = 0;
         int nParallelDegree = 32;
 
+        if (args.length>5){
+            localIter = Integer.parseInt(args[5]);
+            localThreshold = Double.parseDouble(args[6]);
+            nParallelDegree = Integer.parseInt(args[7]);
+        }
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -91,7 +96,7 @@ public class dVMPv2GPS {
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i < args.length; i++) {
             builder.append(args[i]);
             builder.append("_");
         }

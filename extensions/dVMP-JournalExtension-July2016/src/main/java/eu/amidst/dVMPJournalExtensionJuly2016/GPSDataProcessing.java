@@ -31,9 +31,11 @@ public class GPSDataProcessing {
 
         int LIMIT = Integer.parseInt(args[0]);
 
-        String path = args[1];
+        int SKIP = Integer.parseInt(args[1]);
 
-        String output = args[2];
+        String path = args[2];
+
+        String output = args[3];
 
         FileWriter fileWriter = new FileWriter(output);
 
@@ -70,9 +72,15 @@ public class GPSDataProcessing {
                 Iterator<String> headerLines =  reader.lines().skip(6).iterator();
 
                 StringBuilder builder = new StringBuilder();
+                int countLine = 0;
                 int count = 0;
                 while (headerLines.hasNext()){
                     String line = headerLines.next();
+                    countLine++;
+                    if (countLine%SKIP!=0){
+                        continue;
+                    }
+
                     String[] parts= line.split(",");
 
                     if (count<LIMIT-1){
@@ -104,8 +112,11 @@ public class GPSDataProcessing {
 
         int LIMIT = Integer.parseInt(args[0]);
 
-        String path = args[1];
-        String output = args[3];
+        int SKIP = Integer.parseInt(args[1]);
+
+        String path = args[2];
+
+        String output = args[4];
 
         FileWriter fileWriter = new FileWriter(output);
 
@@ -130,6 +141,7 @@ public class GPSDataProcessing {
                 client=i+"";
 
             File folder = new File(path + client + "/Trajectory/");
+            System.out.println(path + client + "/Trajectory/");
 
             List<String> trajectories = Arrays.asList(folder.list());
 
@@ -143,9 +155,15 @@ public class GPSDataProcessing {
                 Iterator<String> headerLines =  reader.lines().skip(6).iterator();
                 StringBuilder builder = new StringBuilder();
                 int count = 0;
+                int countLine = 0;
 
                 while (headerLines.hasNext()){
                     String line = headerLines.next();
+                    countLine++;
+                    if (countLine%SKIP!=0){
+                        continue;
+                    }
+
                     String[] parts= line.split(",");
 
                     DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);

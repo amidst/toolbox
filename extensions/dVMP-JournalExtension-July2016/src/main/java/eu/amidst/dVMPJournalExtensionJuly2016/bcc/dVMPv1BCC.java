@@ -44,7 +44,7 @@ public class dVMPv1BCC {
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
         int localIter = 100;
-        double localThreshold = 0.0001;
+        double localThreshold = 0.1;
         int seed = 0;
         int nParallelDegree = 32;
 

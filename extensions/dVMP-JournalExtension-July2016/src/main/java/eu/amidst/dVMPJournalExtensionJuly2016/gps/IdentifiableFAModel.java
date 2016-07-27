@@ -69,9 +69,9 @@ public class IdentifiableFAModel implements IdenitifableModelling, Serializable 
                 else if (variable.getName().contains("Beta0"))
                     return epoch % epochs == 1;
                 else if (variable.getName().contains("Beta_LocalHidden")) {
-                    for (int i = 0; i < this.numLocalHiddenVariables; i++) {
-                        if (variable.getName().contains("Beta_LocalHidden_" + (i+k+1)))
-                            return epoch % epoch == i + 2;
+                    for (int i = k+1; i < this.numLocalHiddenVariables; i++) {
+                        if (variable.getName().contains("Beta_LocalHidden_" + i))
+                            return epoch % epochs == (i-k-1) + 2 ;
                     }
                     return true;
                 } else

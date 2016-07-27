@@ -41,13 +41,19 @@ public class dVMPv1GPS {
         int nStates = Integer.parseInt(args[3]);
         String model =args[4];
 
+
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
         int localIter = 100;
-        double localThreshold = 0.0001;
+        double localThreshold = 0.1;
         int seed = 0;
-        int nParallelDegree = 32;
+        int nParallelDegree = 23;
 
+        if (args.length>5){
+            localIter = Integer.parseInt(args[5]);
+            localThreshold = Double.parseDouble(args[6]);
+            nParallelDegree = Integer.parseInt(args[7]);
+        }
 
         //BasicConfigurator.configure();
         //PropertyConfigurator.configure(args[4]);
@@ -66,7 +72,7 @@ public class dVMPv1GPS {
         if (model.compareTo("mixture")==0){
             hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
-            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
+            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes().subList(0,4), nStates);
         }
 
         long start = System.nanoTime();
@@ -91,11 +97,24 @@ public class dVMPv1GPS {
         parallelVB.setOutput(true);
         parallelVB.setDAG(hiddenNB);
         parallelVB.initLearning();
+
+/*
+        IdentifiableFAModel modelI = new IdentifiableFAModel(nStates);
+        for (int i = 0; i < 10; i++) {
+            System.out.println("ITER:" + i);
+            for (Variable variable : parallelVB.getSVB().getPlateuStructure().getNonReplicatedVariables()) {
+                if (modelI.isActiveAtEpoch(variable, i))
+                    System.out.print(variable.getName()+",");
+            }
+            System.out.println();
+        }
+*/
+
         parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <args.length; i++) {
             builder.append(args[i]);
             builder.append("_");
         }
