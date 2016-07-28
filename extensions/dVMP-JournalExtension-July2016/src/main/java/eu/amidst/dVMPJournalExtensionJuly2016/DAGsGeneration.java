@@ -96,11 +96,11 @@ public class DAGsGeneration {
         DAG dag = new DAG(variables);
 
 
-        for (int i = 0; i < localHiddenVars.size(); i++) {
+        /*for (int i = 0; i < localHiddenVars.size(); i++) {
             for (int j = i+1; j < localHiddenVars.size(); j++) {
                 dag.getParentSet(localHiddenVars.get(i)).addParent(localHiddenVars.get(j));
             }
-        }
+        }*/
 
         // Link the class as parent of all attributes
         dag.getParentSets()

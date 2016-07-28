@@ -215,7 +215,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
                 logger.info("SVI ELBO: {},{},{},{} seconds, {} seconds", t, 0,
                         df.format(elbo), df.format(totalTime / 1e9), df.format(totalTimeElbo / 1e9));
 
-                System.out.println("SVI ELBO: " + t + ", " + stepSize + ", " + elbo + ", " + totalTime / 1e9 + " seconds " + totalTimeElbo / 1e9 + " seconds" + (totalTime - totalTimeElbo) / 1e9 + " seconds");
+                System.out.println("SVI ELBO: " + t + ", " + stepSize + ", " + elbo + ", " + totalTime / 1e9 + " seconds " + totalTimeElbo / 1e9 + " seconds " + (totalTime - totalTimeElbo) / 1e9 + " seconds");
             }
 
             if ((totalTime-totalTimeElbo)/1e9>timiLimit){// || t>this.maximumLocalIterations){
