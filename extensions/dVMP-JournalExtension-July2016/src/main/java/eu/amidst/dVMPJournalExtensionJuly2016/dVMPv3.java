@@ -1,20 +1,14 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.flinklink.core.learning.parametric;
+package eu.amidst.dVMPJournalExtensionJuly2016;
 
 
 import eu.amidst.core.datastream.Attribute;
@@ -31,6 +25,8 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.BayesianParameterLearningAlgorithm;
+import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
@@ -55,7 +51,6 @@ import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -65,12 +60,12 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
+public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
 
-    static Logger logger = LoggerFactory.getLogger(dVMP.class);
+    static Logger logger = LoggerFactory.getLogger(dVMPv3.class);
 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
@@ -103,15 +98,10 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter = ConversionToBatches::toBatches;
 
-    double learningRate = 1.0;
-
-    public dVMP(){
+    public dVMPv3(){
         this.svb = new SVB();
     }
 
-    public void setLearningRate(double learningRate) {
-        this.learningRate = learningRate;
-    }
 
     public void setBatchConverter(Function2<DataFlink<DataInstance>, Integer, DataSet<DataOnMemory<DataInstance>>> batchConverter) {
         this.batchConverter = batchConverter;
@@ -271,7 +261,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             // get input data
             CompoundVector parameterPrior = this.svb.getNaturalParameterPrior();
 
-            DataSet<CompoundVector> paramSet = env.fromElements(parameterPrior);
+            SVB.BatchOutput initOutput = new SVB.BatchOutput(parameterPrior, 0.0);
+
+            DataSet<SVB.BatchOutput> paramSet = env.fromElements(initOutput);
 
             ConvergenceCriterion convergenceELBO;
             if(timeLimit == -1) {
@@ -282,7 +274,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                 this.setMaximumGlobalIterations(5000);
             }
             // set number of bulk iterations for KMeans algorithm
-            IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
+            IterativeDataSet<SVB.BatchOutput> loop = paramSet.iterate(maximumGlobalIterations)
                     .registerAggregationConvergenceCriterion("ELBO_" + this.getName(), new DoubleSumAggregator(),convergenceELBO);
 
             Configuration config = new Configuration();
@@ -298,7 +290,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                             .union(env.fromCollection(Arrays.asList(emtpyBatch),
                                     TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
 
-            DataSet<CompoundVector> newparamSet =
+            DataSet<SVB.BatchOutput> newparamSet =
                     unionData
                     .map(new ParallelVBMap(randomStart, idenitifableModelling))
                     .withParameters(config)
@@ -306,9 +298,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                     .reduce(new ParallelVBReduce());
 
             // feed new centroids back into next iteration
-            DataSet<CompoundVector> finlparamSet = loop.closeWith(newparamSet);
+            DataSet<SVB.BatchOutput> finlparamSet = loop.closeWith(newparamSet);
 
-            parameterPrior = finlparamSet.collect().get(0);
+            parameterPrior = finlparamSet.collect().get(0).getVector();
 
             this.svb.updateNaturalParameterPosteriors(parameterPrior);
 
@@ -377,8 +369,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
 
 
-    public static class ParallelVBMap extends RichMapFunction<DataOnMemory<DataInstance>, CompoundVector> {
+    public static class ParallelVBMap extends RichMapFunction<DataOnMemory<DataInstance>, SVB.BatchOutput> {
 
+        double oldelbo;
         DoubleSumAggregator elbo;
 
         double basedELBO = -Double.MAX_VALUE;
@@ -398,30 +391,27 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         IdenitifableModelling idenitifableModelling;
 
         boolean randomStart;
-
-        double learningRate = 1.0;
+        private double learningRate = 1.0;
+        private CompoundVector oldPosterior;
+        private CompoundVector currentPosterior;
 
         public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling) {
             this.randomStart = randomStart;
             this.idenitifableModelling = idenitifableModelling;
         }
 
-        public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling, double learningRate) {
-            this.randomStart = randomStart;
-            this.idenitifableModelling = idenitifableModelling;
-            this.learningRate = learningRate;
-        }
 
         @Override
-        public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
+        public SVB.BatchOutput map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
             if (dataBatch.getNumberOfDataInstances()==0){
-                elbo.aggregate(basedELBO);
                 System.out.println(basedELBO);
-                return prior;//this.svb.getNaturalParameterPrior();
+                elbo.aggregate(basedELBO);
+                SVB.BatchOutput output = new SVB.BatchOutput(prior, basedELBO);
+                return output;
             }else {
 
-                this.svb.updateNaturalParameterPosteriors(updatedPosterior);
+                this.svb.updateNaturalParameterPosteriors(currentPosterior);
 
                 svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
                 svb.setOutput(true);
@@ -447,16 +437,19 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                 if (superstep == 0){
                     this.svb.getPlateuStructure().setSeed(this.svb.getSeed());
                     this.svb.getPlateuStructure().resetQs();
-                    this.svb.updateNaturalParameterPosteriors(updatedPosterior);
+                    this.svb.updateNaturalParameterPosteriors(currentPosterior);
                 }
 
-                outElbo = svb.updateModelOnBatchParallel(dataBatch);
+                SVB.BatchOutput outElbo2 = svb.updateModelOnBatchParallel(dataBatch);
+
 
 
                 if (Double.isNaN(outElbo.getElbo()))
                     throw new IllegalStateException("NaN elbo");
 
-                return outElbo.getVector();
+                outElbo2.setElbo(outElbo.getElbo());
+
+                return outElbo2;
             }
 
         }
@@ -485,23 +478,48 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                 ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
             }
 
-        svb.initLearning();
 
-            Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
+            svb.initLearning();
 
-            if(updatedPosterior==null || learningRate==1.0)
-                updatedPosterior = collection.iterator().next();
-            else{
-                updatedPosterior.multiplyBy(1-learningRate);
-                CompoundVector update= collection.iterator().next();
-                update.multiplyBy(learningRate);
-                updatedPosterior.sum(update);
+
+            elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
+
+
+            SVB.BatchOutput output = (SVB.BatchOutput) getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName).iterator().next();
+
+            double newelbo = output.getElbo();
+
+            CompoundVector newPosterior = output.getVector();
+
+            if(updatedPosterior==null) {
+                updatedPosterior = newPosterior;
+                currentPosterior = updatedPosterior;
+                oldelbo = Double.NEGATIVE_INFINITY;
+            }else{
+
+                if (newelbo>= oldelbo || learningRate<0.2){
+                    oldPosterior = Serialization.deepCopy(currentPosterior);
+                    updatedPosterior = newPosterior;
+
+                    //try learning rate 1.0
+                    currentPosterior = updatedPosterior;
+                    learningRate=1.0;
+                    oldelbo=newelbo;
+                }else {
+                    System.out.println("LineSearch");
+                    learningRate*= 0.5;
+                    currentPosterior = Serialization.deepCopy(oldPosterior);
+                    currentPosterior.multiplyBy(1 - learningRate);
+                    CompoundVector gradient = Serialization.deepCopy(updatedPosterior);
+                    gradient.multiplyBy(learningRate);
+                    currentPosterior.sum(gradient);
+                }
             }
 
 
             if (prior!=null) {
                 svb.updateNaturalParameterPrior(prior);
-                svb.updateNaturalParameterPosteriors(updatedPosterior);
+                svb.updateNaturalParameterPosteriors(currentPosterior);
                 basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
             }else{
                 this.prior=Serialization.deepCopy(updatedPosterior);
@@ -520,11 +538,11 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                 basedELBO = svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
 
                 updatedPosterior=initialPosterior;
+                currentPosterior = updatedPosterior;
             }
 
 
 
-            elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
 
             this.svb.setNonSequentialModel(true);
 
@@ -580,15 +598,17 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         }
     }
 
-    public static class ParallelVBReduce extends RichReduceFunction<CompoundVector> {
+    public static class ParallelVBReduce extends RichReduceFunction<SVB.BatchOutput> {
         @Override
-        public CompoundVector reduce(CompoundVector value1, CompoundVector value2) throws Exception {
+        public SVB.BatchOutput reduce(SVB.BatchOutput value1, SVB.BatchOutput value2) throws Exception {
 /*            value2.sum(value1);
             return value2;
 */
 
-            CompoundVector newValue  = Serialization.deepCopy(value1);
-            newValue.sum(value2);
+            SVB.BatchOutput newValue = Serialization.deepCopy(value1);
+            newValue.getVector().sum(value2.getVector());
+            newValue.setElbo(newValue.getElbo()+value2.getElbo());
+
             return newValue;
         }
     }
