@@ -16,6 +16,7 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.dVMPJournalExtensionJuly2016.DAGsGeneration;
+import eu.amidst.dVMPJournalExtensionJuly2016.IdentifiableLRModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
@@ -73,6 +74,8 @@ public class dVMPv1GPS {
             hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
             hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
+        }else if (model.compareTo("LR")==0) {
+            hiddenNB = DAGsGeneration.getGPSLRDAG(dataFlink.getAttributes());
         }
 
         long start = System.nanoTime();
@@ -92,6 +95,8 @@ public class dVMPv1GPS {
 
         if (model.compareTo("FA")==0) {
             parallelVB.setIdenitifableModelling(new IdentifiableFAModel(nStates));
+        }else if (model.compareTo("LR")==0) {
+            parallelVB.setIdenitifableModelling(new IdentifiableLRModel(hiddenNB.getVariables().getNumberOfVars()-1));
         }
 
         parallelVB.setOutput(true);

@@ -72,6 +72,8 @@ public class dVMPv2GPS {
             hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
             hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
+        }else if (model.compareTo("LR")==0) {
+            hiddenNB = DAGsGeneration.getGPSLRDAG(dataFlink.getAttributes());
         }
 
         long start = System.nanoTime();

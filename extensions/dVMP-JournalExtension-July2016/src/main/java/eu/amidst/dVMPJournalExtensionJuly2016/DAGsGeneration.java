@@ -193,6 +193,52 @@ public class DAGsGeneration {
         return dag;
     }
 
+    public static DAG getGPSLRDAG(Attributes attributes) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        Variable classVar = variables.getVariableById(variables.getNumberOfVars()-1);
+
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+
+        for (Variable variable : variables) {
+            if (variable==classVar)
+                continue;
+            dag.getParentSet(classVar).addParent(variable);
+        }
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
+    public static DAG getBCCLRDAG(Attributes attributes) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        Variable classVar = variables.getVariableByName("NMDebit1");
+
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+
+        for (Variable variable : variables) {
+            if (variable==classVar)
+                continue;
+            dag.getParentSet(classVar).addParent(variable);
+        }
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
     public static DAG getIDAMultiLocalGaussianDAG(int natts, int nlocals) {
 
         // Create a Variables object from the attributes of the input data stream.
@@ -228,5 +274,7 @@ public class DAGsGeneration {
 
         return dag;
     }
+
+
 
 }

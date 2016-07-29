@@ -67,6 +67,8 @@ public class dVMPv2BCC {
             hiddenNB = DAGsGeneration.getBCCMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
             hiddenNB = DAGsGeneration.getBCCFADAG(dataFlink.getAttributes(), nStates);
+        }else if (model.compareTo("LR")==0) {
+            hiddenNB = DAGsGeneration.getBCCLRDAG(dataFlink.getAttributes());
         }
 
         long start = System.nanoTime();
@@ -91,7 +93,7 @@ public class dVMPv2BCC {
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i < args.length; i++) {
             builder.append(args[i]);
             builder.append("_");
         }

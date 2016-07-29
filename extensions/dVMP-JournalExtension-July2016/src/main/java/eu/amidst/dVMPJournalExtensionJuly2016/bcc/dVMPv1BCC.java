@@ -16,6 +16,7 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.dVMPJournalExtensionJuly2016.DAGsGeneration;
+import eu.amidst.dVMPJournalExtensionJuly2016.IdentifiableLRModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
@@ -67,6 +68,8 @@ public class dVMPv1BCC {
             hiddenNB = DAGsGeneration.getBCCMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
             hiddenNB = DAGsGeneration.getBCCFADAG(dataFlink.getAttributes(), nStates);
+        }else if (model.compareTo("LR")==0) {
+            hiddenNB = DAGsGeneration.getBCCLRDAG(dataFlink.getAttributes());
         }
 
         long start = System.nanoTime();
@@ -86,6 +89,8 @@ public class dVMPv1BCC {
 
         if (model.compareTo("FA")==0) {
             parallelVB.setIdenitifableModelling(new IdentifiableFAModel(nStates));
+        }else if (model.compareTo("LR")==0) {
+            parallelVB.setIdenitifableModelling(new IdentifiableLRModel(hiddenNB.getVariables().getNumberOfVars()-1));
         }
 
         parallelVB.setOutput(true);
@@ -95,7 +100,7 @@ public class dVMPv1BCC {
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i < args.length; i++) {
             builder.append(args[i]);
             builder.append("_");
         }
