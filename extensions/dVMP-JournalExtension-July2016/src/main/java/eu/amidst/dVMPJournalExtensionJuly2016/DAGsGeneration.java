@@ -222,13 +222,14 @@ public class DAGsGeneration {
 
         Variable classVar = variables.getVariableByName("NMDebit1");
 
+        Variable defaultVar = variables.getVariableByName("Default");
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
 
         for (Variable variable : variables) {
-            if (variable==classVar)
+            if (variable==classVar || variable==defaultVar)
                 continue;
             dag.getParentSet(classVar).addParent(variable);
         }
