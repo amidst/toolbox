@@ -28,6 +28,7 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.learning.parametric.utils.VMPParameterv1;
@@ -69,6 +70,8 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
+
+    private static boolean INITIALIZE = false;
 
     /**
      * Represents the directed acyclic graph {@link DAG}.
@@ -437,13 +440,22 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0) {
+            if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
                 vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
                 this.svb.getPlateuStructure().setVmp(vmp);
             }
+
+            if (INITIALIZE && superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(true);
+            }
+
+            if (INITIALIZE && superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
+            }
+            
             svb.initLearning();
 
             CompoundVector newVector = (CompoundVector)getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName).iterator().next();

@@ -192,6 +192,8 @@ public class EF_Gamma extends EF_UnivariateDistribution {
      */
     @Override
     public void fixNumericalInstability() {
+
+        /*
         double alpha = this.naturalParameters.get(0) + 1;
         double beta = -this.naturalParameters.get(1);
 
@@ -200,7 +202,7 @@ public class EF_Gamma extends EF_UnivariateDistribution {
             double K = (alpha/beta)/PRECISION_LIMIT;
             double alphaPrime = alpha/K;
             this.naturalParameters.set(0,alphaPrime-1);
-        }
+        }*/
 
     }
 

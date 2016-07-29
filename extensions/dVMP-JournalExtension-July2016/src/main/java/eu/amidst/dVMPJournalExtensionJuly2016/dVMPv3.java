@@ -67,6 +67,8 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
 
     static Logger logger = LoggerFactory.getLogger(dVMPv3.class);
 
+    private static boolean INITIALIZE = false;
+
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
@@ -461,7 +463,7 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0) {
+            if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
@@ -470,11 +472,11 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
 
             }
 
-            if (superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+            if (INITIALIZE && superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
                 ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(true);
             }
 
-            if (superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+            if (INITIALIZE && superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
                 ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
             }
 
