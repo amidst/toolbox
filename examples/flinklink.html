@@ -50,19 +50,7 @@
 <h2 id="sec:flinklink:io">Input/output</h2>
 <h3 id="sec:flinklink:io:read">Reading data</h3>
 <p>In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
-<pre><code>package eu.amidst.flinklink.examples.io;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 10/06/16.
- */
-public class DataStreamLoaderExample {
+<pre><code>public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
 
         //Set-up Flink session.
@@ -89,20 +77,7 @@ public class DataStreamLoaderExample {
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
 <h3 id="sec:flinklink:io:write">Writing data</h3>
 <p>Below we generate a random Flink dataset with 1000 instances, 2 discrete variables and 3 continuous ones. The seed used is 1234. Eventually, we save it as a distributed dataset (format ARFF folder).</p>
-<pre><code>package eu.amidst.flinklink.examples.io;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.core.utils.DataSetGenerator;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 09/06/16.
- */
-public class DataStreamWriterExample {
+<pre><code>public class DataStreamWriterExample {
     public static void main(String[] args) throws Exception {
 
         //Set-up Flink session.
@@ -126,24 +101,7 @@ public class DataStreamWriterExample {
 <h2 id="sec:flinklink:learning">Parametric learning</h2>
 <p>Here give examples of the provided algorithms by AMiDST for learning the probability distributions from a Flink data set. For shake of simplicity, we will consider the Naive Bayes DAG structure. Note that the code is almost the same of each of the algoritms, they only differ on the constructor used (e.g. <em>new ParallelMaximumLikelihood()</em>, <em>new dVMP()</em>, etc.)</p>
 <h3 id="sec:flinklink:learning:pml">Parallel Maximum Likelihood</h3>
-<pre><code>package eu.amidst.flinklink.examples.learning;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DAGGenerator;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.flinklink.core.utils.DataSetGenerator;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 14/06/16.
- */
-public class ParallelMLExample {
+<pre><code>public class ParallelMLExample {
     public static void main(String[] args) throws Exception {
         //Set-up Flink session.
         Configuration conf = new Configuration();
@@ -184,24 +142,7 @@ public class ParallelMLExample {
 }</code></pre>
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
 <h3 id="sec:flinklink:learning:dvmp">Distributed Variational Message Passing</h3>
-<pre><code>package eu.amidst.flinklink.examples.learning;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DAGGenerator;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.flinklink.core.learning.parametric.dVMP;
-import eu.amidst.flinklink.core.utils.DataSetGenerator;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 14/06/16.
- */
-public class dVMPExample {
+<pre><code>public class dVMPExample {
     public static void main(String[] args) throws Exception {
 
         //Set-up Flink session.
@@ -243,24 +184,7 @@ public class dVMPExample {
 }</code></pre>
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
 <h3 id="sec:flinklink:learning:dvi">Distributed VI</h3>
-<pre><code>package eu.amidst.flinklink.examples.learning;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DAGGenerator;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.parametric.DistributedVI;
-import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.flinklink.core.utils.DataSetGenerator;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 14/06/16.
- */
-public class DistributedVIExample {
+<pre><code>public class DistributedVIExample {
     public static void main(String[] args) throws Exception {
         //Set-up Flink session.
         Configuration conf = new Configuration();
@@ -302,24 +226,7 @@ public class DistributedVIExample {
 <p><a href="#sec:flinklink">[Back to Top]</a></p>
 <h3 id="sec:flinklink:learning:svi">Stochastic VI</h3>
 <p>An example of the learning algorithm Stochastic VI is given below. Note that two specific parameters must be set, namely the <em>learning factor</em> and the <em>data size</em>.</p>
-<pre><code>package eu.amidst.flinklink.examples.learning;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DAGGenerator;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
-import eu.amidst.flinklink.core.utils.DataSetGenerator;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by rcabanas on 14/06/16.
- */
-public class StochasticVIExample {
+<pre><code>public class StochasticVIExample {
     public static void main(String[] args) throws Exception {
 
         //Set-up Flink session.
@@ -368,24 +275,7 @@ public class StochasticVIExample {
 <h2 id="sec:flinklink:ext">Extensions and applications</h2>
 <h3 id="sec:flinklink:ext:models">Latent variable models with Flink</h3>
 <p>The module <em>latent-variable-models</em> contains a large set of classes that allow to easily learn some of the standard models with latent variables. These models can be learnt from not only from local datasets (e.g. a single ARFF file) but also from distributed ones (e.g. ARFF folder). These last ones are managed using Flink. In code example shown below the model <em>Factor Analysis</em> is learnt from a distributed dataset.</p>
-<pre><code>package eu.amidst.flinklink.examples.extensions;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
-import eu.amidst.latentvariablemodels.staticmodels.Model;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-import java.io.FileNotFoundException;
-
-/**
- * Created by rcabanas on 14/06/16.
- */
-public class LatentModelsFlink {
+<pre><code>public class LatentModelsFlink {
     public static void main(String[] args) throws FileNotFoundException {
         //Set-up Flink session.
         Configuration conf = new Configuration();
@@ -410,37 +300,7 @@ public class LatentModelsFlink {
 }</code></pre>
 <p><a href="#sec:flinklink">[Back to Top]</a> In previous example,</p>
 <h3 id="sec:flinklink:ext:conceptdrift">Concept drift detection</h3>
-<pre><code>/*
- *
- *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
- *
- */
-
-package eu.amidst.flinklink.examples.reviewMeeting2015;
-
-import eu.amidst.Main;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-/**
- * Created by ana@cs.aau.dk on 18/01/16.
- */
-public class ConceptDriftDetector {
+<pre><code>public class ConceptDriftDetector {
 
     //public int NSETS = 15;
 

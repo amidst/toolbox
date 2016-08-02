@@ -74,20 +74,7 @@
 </ul>
 <h2 id="sec:bns:datastreams">Data Streams</h2>
 <p>In this example we show how to use the main features of a DataStream object. More precisely, we show six different ways of iterating over the data samples of a DataStream object.</p>
-<pre><code>package eu.amidst.core.examples.datastream;
-
-
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.utils.DataSetGenerator;
-
-/**
- * An example showing how to use the main features of a DataStream object. More precisely, we show six different
- * ways of iterating over the data samples of a DataStream object.
- */
-public class DataStreamsExample {
+<pre><code>public class DataStreamsExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -155,23 +142,7 @@ public class DataStreamsExample {
 }</code></pre>
 <h2 id="sec:bns:randomvars">Data Streams</h2>
 <p>This example show the basic functionality of the classes Variables and Variable.</p>
-<pre><code>package eu.amidst.core.examples.variables;
-
-
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace;
-
-import java.util.Arrays;
-
-/**
- *
- * This example show the basic functionality of the classes Variables and Variable.
- *
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class VariablesExample {
+<pre><code>public class VariablesExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -205,23 +176,7 @@ public class VariablesExample {
 <h2 id="sec:bns:models">Models</h2>
 <h3 id="sec:bns:models:creating">Creating BNs</h3>
 <p>In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples of this data set. The numbers defining the probability distributions of the BN are randomly fixed.</p>
-<pre><code>package eu.amidst.core.examples.models;
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-
-/**
- *  In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples
- *  of this data set. The numbers defining the probability distributions of the BN are randomly fixed.
- *  Created by andresmasegosa on 18/6/15.
- */
-public class CreatingBayesianNetworks {
+<pre><code>public class CreatingBayesianNetworks {
 
 
     public static void main(String[] args) throws Exception {
@@ -323,26 +278,7 @@ public class CreatingBayesianNetworks {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:models:creatinglatent">Creating Bayesian networks with latent variables</h3>
 <p>In this example, we simply show how to create a BN model with hidden variables. We simply create a BN for clustering, i.e., a naive-Bayes like structure with a single common hidden variable acting as parant of all the observable variables.</p>
-<pre><code>package eu.amidst.core.examples.models;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-
-import java.util.Arrays;
-
-/**
- * In this example, we simply show how to create a BN model with latent variables. We simply
- * create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common latent or hidden variable
- * acting as parent of all the observable variables.
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class CreatingBayesianNetworksWithLatentVariables {
+<pre><code>public class CreatingBayesianNetworksWithLatentVariables {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
@@ -433,19 +369,7 @@ public class CreatingBayesianNetworksWithLatentVariables {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:models:modif">Modifiying Bayesian networks</h3>
 <p>In this example we show how to access and modify the conditional probabilities of a Bayesian network model.</p>
-<pre><code>package eu.amidst.core.examples.models;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Normal_MultinomialParents;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
-import eu.amidst.core.variables.Variable;
-
-/**
- *
- * In this example we show how to access and modify the conditional probabilities of a Bayesian network model.
- * Created by andresmasegosa on 24/6/15.
- */
-public class ModifiyingBayesianNetworks {
+<pre><code>public class ModifiyingBayesianNetworks {
 
     public static void main (String[] args){
 
@@ -485,21 +409,7 @@ public class ModifiyingBayesianNetworks {
 <h2 id="sec:bns:io">Input/Output</h2>
 <h3 id="sec:bns:io:iods">I/O of data streams</h3>
 <p>In this example we show how to load and save data sets from .arff files.</p>
-<pre><code>package eu.amidst.core.examples.io;
-
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.io.DataStreamWriter;
-
-/**
- *
- * In this example we show how to load and save data sets from &quot;.arff&quot; files (http://www.cs.waikato.ac.nz/ml/weka/arff.html)
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class DataStreamIOExample {
+<pre><code>public class DataStreamIOExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -516,23 +426,7 @@ public class DataStreamIOExample {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:io:iobn">I/O of BNs</h3>
 <p>In this example we show how to load and save Bayesian networks models for a binary file with “.bn” extension. In this toolbox Bayesian networks models are saved as serialized objects.</p>
-<pre><code>package eu.amidst.core.examples.io;
-
-
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.models.BayesianNetwork;
-
-import java.util.Random;
-
-/**
- *
- * In this example we show how to load and save Bayesian networks models for a binary file with &quot;.bn&quot; extension. In
- * this toolbox Bayesian networks models are saved as serialized objects.
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class BayesianNetworkIOExample {
+<pre><code>public class BayesianNetworkIOExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -554,23 +448,7 @@ public class BayesianNetworkIOExample {
 <h2 id="sec:bns:inference">Inference</h2>
 <h3 id="sec:bns:inference:engine">The inference engine</h3>
 <p>This example show how to perform inference in a Bayesian network model using the InferenceEngine static class. This class aims to be a straigthfoward way to perform queries over a Bayesian network model. By the default the <em>VMP</em> inference method is invoked.</p>
-<pre><code>package eu.amidst.core.examples.inference;
-
-
-import eu.amidst.core.inference.InferenceEngine;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-
-/**
- * This example show how to perform inference in a Bayesian network model using the InferenceEngine static class.
- * This class aims to be a straigthfoward way to perform queries over a Bayesian network model.
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class InferenceEngineExample {
+<pre><code>public class InferenceEngineExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -601,26 +479,7 @@ public class InferenceEngineExample {
 <blockquote>
 <p>Winn, J. M., Bishop, C. M. (2005). Variational message passing. In Journal of Machine Learning Research (pp. 661-694).</p>
 </blockquote>
-<pre><code>package eu.amidst.core.examples.inference;
-
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-
-/**
- *
- * This example we show how to perform inference on a general Bayesian network using the Variational Message Passing (VMP)
- * algorithm detailed in
- *
- * &lt;i&gt; Winn, J. M., and Bishop, C. M. (2005). Variational message passing. In Journal of Machine Learning Research (pp. 661-694). &lt;/i&gt;
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class VMPExample {
+<pre><code>public class VMPExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -662,28 +521,7 @@ public class VMPExample {
 <blockquote>
 <p>Fung, R., Chang, K. C. (2013). Weighing and integrating evidence for stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504.</p>
 </blockquote>
-<pre><code>package eu.amidst.core.examples.inference;
-
-
-import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-
-/**
- *
- * This example we show how to perform inference on a general Bayesian network using an importance sampling
- * algorithm detailed in
- *
- * &lt;i&gt; Fung, R., and Chang, K. C. (2013). Weighing and integrating evidence for
- * stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504.
- * &lt;/i&gt;
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class ImportanceSamplingExample {
+<pre><code>public class ImportanceSamplingExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -730,28 +568,7 @@ public class ImportanceSamplingExample {
 <h2 id="sec:bns:learning">Learning Algorithms</h2>
 <h3 id="sec:bns:learning:batchml">Maximum Likelihood</h3>
 <p>This other example shows how to learn incrementally the parameters of a Bayesian network using data batches,</p>
-<pre><code>package eu.amidst.core.examples.learning;
-
-
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-
-/**
- *
- * This other example shows how to learn incrementally the parameters of a Bayesian network using data batches
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class MaximimumLikelihoodByBatchExample {
+<pre><code>public class MaximimumLikelihoodByBatchExample {
 
 
     /**
@@ -810,23 +627,7 @@ public class MaximimumLikelihoodByBatchExample {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:learning:parallelml">Parallel Maximum Likelihood</h3>
 <p>This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum likelihood.</p>
-<pre><code>package eu.amidst.core.examples.learning;
-
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
-import eu.amidst.core.models.BayesianNetwork;
-
-/**
- *
- * This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum
- * likelihood.
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class ParallelMaximumLikelihoodExample {
+<pre><code>public class ParallelMaximumLikelihoodExample {
 
 
     public static void main(String[] args) throws Exception {
@@ -871,32 +672,7 @@ public class ParallelMaximumLikelihoodExample {
 <p>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes. In Advances in Neural Information Processing Systems (pp. 1727-1735).</p>
 </blockquote>
 <p>In this second example we show a alternative implementation which explicitly updates the model by batches by using the class SVB.</p>
-<pre><code>
-package eu.amidst.core.examples.learning;
-
-
-
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.DAGGenerator;
-
-/**
- *
- * This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian
- * approach using the following algorithm
- *
- * &lt;i&gt; Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational bayes.
- * In Advances in Neural Information Processing Systems (pp. 1727-1735). &lt;/i&gt;
- *
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class SVBByBatchExample {
+<pre><code>public class SVBByBatchExample {
 
 
     public static void main(String[] args) throws Exception {
@@ -941,29 +717,7 @@ public class SVBByBatchExample {
 <blockquote>
 <p>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes. In Advances in Neural Information Processing Systems (pp. 1727-1735).</p>
 </blockquote>
-<pre><code>
-package eu.amidst.core.examples.learning;
-
-
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.DAGGenerator;
-
-/**
- *
- * This example shows how to learn the parameters of a Bayesian network from a stream of data with a Bayesian
- * approach using a **parallel** version of the following algorithm
- *
- * &lt;i&gt; Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes.
- * In Advances in Neural Information Processing Systems (pp. 1727-1735). &lt;/i&gt;
- *
- *
- * Created by andresmasegosa on 18/6/15.
- */
-public class ParallelSVBExample {
+<pre><code>public class ParallelSVBExample {
 
     public static void main(String[] args) throws Exception {
 
@@ -1007,41 +761,7 @@ public class ParallelSVBExample {
 <blockquote>
 <p>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</p>
 </blockquote>
-<pre><code>/*
- *
- *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
- *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
- *
- */
-
-package eu.amidst.core.examples.conceptdrift;
-
-
-import eu.amidst.core.conceptdrift.NaiveBayesVirtualConceptDriftDetector;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.variables.Variable;
-
-/**
- * This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
- * detector detailed in
- *
- * &lt;i&gt;Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.&lt;/i&gt;
- *
- */
-public class NaiveBayesVirtualConceptDriftDetectorExample {
+<pre><code>public class NaiveBayesVirtualConceptDriftDetectorExample {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
@@ -1102,19 +822,7 @@ public class NaiveBayesVirtualConceptDriftDetectorExample {
 <h2 id="sec:bns:huginlink">HuginLink</h2>
 <h3 id="sec:bns:huginlink:conversion">Models conversion between AMiDST and Hugin</h3>
 <p>This example shows how to use the class BNConverterToAMIDST and BNConverterToHugin to convert a Bayesian network models between Hugin and AMIDST formats</p>
-<pre><code>package eu.amidst.core.examples.huginlink;
-
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.huginlink.converters.BNConverterToAMIDST;
-import eu.amidst.huginlink.converters.BNConverterToHugin;
-import eu.amidst.huginlink.io.BNLoaderFromHugin;
-
-/**
- * Created by rcabanas on 24/06/16.
- */
-public class HuginConversionExample {
+<pre><code>public class HuginConversionExample {
     public static void main(String[] args) throws ExceptionHugin {
         //We load from Hugin format
         Domain huginBN = BNLoaderFromHugin.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
@@ -1133,19 +841,7 @@ public class HuginConversionExample {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:huginlink:io">I/O of Bayesian Networks with Hugin net format</h3>
 <p>This example shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and write Bayesian networks in Hugin format</p>
-<pre><code>package eu.amidst.core.examples.huginlink;
-
-import COM.hugin.HAPI.Domain;
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.huginlink.converters.BNConverterToAMIDST;
-import eu.amidst.huginlink.io.BNLoaderFromHugin;
-import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
-
-/**
- * Created by rcabanas on 24/06/16.
- */
-public class HuginIOExample {
+<pre><code>public class HuginIOExample {
     public static void main(String[] args) throws ExceptionHugin {
         //We load from Hugin format
         Domain huginBN = BNLoaderFromHugin.loadFromFile(&quot;networks/asia.net&quot;);
@@ -1159,22 +855,7 @@ public class HuginIOExample {
 <p><a href="#sec:bns">[Back to Top]</a></p>
 <h3 id="sec:bns:huginlink:inference">Invoking Hugin’s inference engine</h3>
 <p>This example we show how to perform inference using <a href="http://www.hugin.com">Hugin</a> inference engine within the AMiDST toolbox</p>
-<pre><code>package eu.amidst.core.examples.huginlink;
-
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.inference.HuginInference;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 24/06/16.
- */
-public class HuginInferenceExample {
+<pre><code>public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
@@ -1217,22 +898,7 @@ public class HuginInferenceExample {
 <blockquote>
 <p>Madsen, A.L. et al. A New Method for Vertical Parallelisation of TAN Learning Based on Balanced Incomplete Block Designs. Probabilistic Graphical Models. Lecture Notes in Computer Science Volume 8754, 2014, pp 302-317.</p>
 </blockquote>
-<pre><code>package eu.amidst.core.examples.huginlink;
-
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.huginlink.inference.HuginInference;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 24/06/16.
- */
-public class HuginInferenceExample {
+<pre><code>public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
