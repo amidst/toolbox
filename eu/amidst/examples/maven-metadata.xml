@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>examples</artifactId>
   <versioning>
-    <release>0.5.1</release>
+    <release>0.5.2-alpha</release>
     <versions>
-      <version>0.5.1</version>
+      <version>0.5.2-alpha</version>
     </versions>
-    <lastUpdated>20160715102026</lastUpdated>
+    <lastUpdated>20160802123506</lastUpdated>
   </versioning>
 </metadata>
