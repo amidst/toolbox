@@ -4,6 +4,8 @@
 import sys
 import re
 import os
+import string
+
 
 
 
@@ -35,6 +37,24 @@ def preprocessTex( file, fileFolder):
 
             with open(codePath, 'r') as content_file:
                 code = content_file.read()
+
+            codeVector = code.split('\n');
+
+
+
+            firstCodeLine = 0;
+            found = False;
+            for c in codeVector:
+                if 'public class' in c or 'public static class' in c:
+                    found = True;
+                    break;
+                else:
+                    firstCodeLine = firstCodeLine+1;
+
+
+            if found and firstCodeLine>0:
+                del codeVector[0:firstCodeLine];
+                code  = '\n'.join(codeVector);
 
             os.chdir(initialPath);
 
@@ -69,7 +89,7 @@ def main(argv):
     if len(argv)>1:
         filePath=sys.argv[1];
     else:
-        filePath="../tex/integration/flinklink.tex";
+        filePath="../tex/examples/bnetworks.tex";
 
     match=re.search('(.*)/(.*)\.(.*)', filePath,flags=0);
 

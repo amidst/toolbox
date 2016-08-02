@@ -64,27 +64,7 @@
 <p class="caption" style="text-align:center">Static learning process<span data-label="fig:lvmodels:static:learning:scheme"></span></p>
 </div>
 <p>Note that the required functionality for learning the predefined model is provided by the module <em>latent-variable-models</em>. A code-example for learning a factor analysis model is shown below.</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.examples;
-
-
-
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.huginlink.io.BayesianNetworkWriterToHugin;
-import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
-import eu.amidst.latentvariablemodels.staticmodels.MixtureOfFactorAnalysers;
-import eu.amidst.latentvariablemodels.staticmodels.Model;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-public class StaticModelLearning {
+<pre><code>public class StaticModelLearning {
     public static void main(String[] args) throws ExceptionHugin, IOException {
 
         //Load the datastream
@@ -125,26 +105,7 @@ public class StaticModelLearning {
 <p class="caption" style="text-align:center">Distributed learning process scheme<span data-label="fig:lvmodels:static:flinklearning:scheme"></span></p>
 </div>
 <p>A code example for learning from Flink is shown below. Note that it only differs from the one in previous section in lines 25 to 33. In these lines, the Flink session is configurated and the stream is loaded, which is managed with an object of the class <code>DataFlink</code> (instead of <code>DataStream</code>).</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.examples;
-
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.io.BayesianNetworkWriter;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.flinklink.core.data.DataFlink;
-import eu.amidst.flinklink.core.io.DataFlinkLoader;
-import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
-import eu.amidst.latentvariablemodels.staticmodels.Model;
-import eu.amidst.tutorial.usingAmidst.Main;
-import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.configuration.Configuration;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-public class StaticModelFlink {
+<pre><code>public class StaticModelFlink {
     public static void main(String[] args) throws IOException, ExceptionHugin {
 
 
@@ -187,24 +148,7 @@ public class StaticModelFlink {
 <p class="caption" style="text-align:center">Learning process scheme<span data-label="fig:lvmodels:static:inference:scheme"></span></p>
 </div>
 <p>The inference process is the same regardless of the way we have learnt our model: we simply have to obtain the BN learnt (stored as an object of the class <code>BayesianNetwork</code>), set the target variables and the evidence. As an example, let us consider the following code:</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.examples;
-
-import eu.amidst.core.distribution.Distribution;
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Assignment;
-import eu.amidst.core.variables.HashMapAssignment;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-public class StaticModelInference {
+<pre><code>public class StaticModelInference {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -243,25 +187,7 @@ public class StaticModelInference {
 <pre><code>InferenceAlgorithm infer = new HuginInference();</code></pre>
 <h3 id="sec:lvmodels:static:custom">Custom static model</h3>
 <p>It could happend that your model of interest is not predifined. In that case you can implement it yourself. For that purpose, create a new class inheriting the class <code>Model</code>. Then, add the code to the constructor with an object <code>Attributes</code> as input parameter, and the code of the method <code>void buildDAG()</code>. This last method is called before learning process and creates the object representing the DAG. As an example, the code below shows how to create a custom Gaussian Mixture.</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.practice;
-
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
-import eu.amidst.latentvariablemodels.staticmodels.Model;
-import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-
-public class CustomGaussianMixture extends Model{
+<pre><code>public class CustomGaussianMixture extends Model{
 
     Attributes attributes;
 
@@ -320,23 +246,7 @@ public class CustomGaussianMixture extends Model{
 <p class="caption" style="text-align:center">Learning process scheme of a dynamic model<span data-label="fig:lvmodels:dynamic:learning:scheme"></span></p>
 </div>
 <p>A code-example is given below. Here, a <em>Hidden Markov Model (HMM)</em> is learnt from a financial dataset with temporal information. Note the difference within the static learning is the way the dataset is loaded: now, it is handled with an object of the class <code>DataStream&lt;DynamicDataInstance&gt;</code>. Finally, the DBN learnt is saved to disk with the method <code>DynamicBayesianNetworkWriter::save(String pathFile)</code>.</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.examples;
-
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
-import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-public class DynamicModelLearning {
+<pre><code>public class DynamicModelLearning {
 
     public static void main(String[] args) throws IOException, ExceptionHugin {
 
@@ -367,26 +277,7 @@ public class DynamicModelLearning {
 <p><a href="https://github.com/amidst/tutorial/blob/master/src/main/java/eu/amidst/tutorial/usingAmidst/examples/DynamicModelLearning.java">See on GitHub</a></p>
 <h3 id="inference">Inference</h3>
 <p>In the following code-example, the inference process of dynamic models is illustrated. First, a DBN is loaded from disk (line 24). Then, a dynamic dataset is loaded for testing our model (lines 29 to 30). Then the inference algorithm and target variables are set. In the final loop, the inference is perform for each data instance.</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.examples;
-
-
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.inference.FactoredFrontierForDBN;
-import eu.amidst.dynamic.inference.InferenceAlgorithmForDBN;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-
-import java.io.IOException;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-public class DynamicModelInference {
+<pre><code>public class DynamicModelInference {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
@@ -437,37 +328,7 @@ public class DynamicModelInference {
 <pre><code>InferenceAlgorithmForDBN = new FactoredFrontierForDBN(new VMP());</code></pre>
 <h3 id="sec:lvmodels:dynamic:custom">Custom dynamic model</h3>
 <p>Like for static models, we might be interested in creating our own dynamic models. In this case, you will have to create a class inheriting <code>DynamicModel</code>. Here below an example of a custom <em>Kalman Filter</em> is given.</p>
-<pre><code>package eu.amidst.tutorial.usingAmidst.practice;
-
-import COM.hugin.HAPI.ExceptionHugin;
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.variables.Variable;
-import eu.amidst.dynamic.datastream.DynamicDataInstance;
-import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
-import eu.amidst.dynamic.io.DynamicDataStreamLoader;
-import eu.amidst.dynamic.models.DynamicBayesianNetwork;
-import eu.amidst.dynamic.models.DynamicDAG;
-import eu.amidst.dynamic.variables.DynamicVariables;
-import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
-import eu.amidst.latentvariablemodels.dynamicmodels.HiddenMarkovModel;
-import eu.amidst.latentvariablemodels.dynamicmodels.KalmanFilter;
-import eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis;
-import eu.amidst.latentvariablemodels.staticmodels.Model;
-import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by rcabanas on 23/05/16.
- */
-
-public class CustomKalmanFilter extends DynamicModel {
+<pre><code>public class CustomKalmanFilter extends DynamicModel {
 
     Attributes attributes;
 
