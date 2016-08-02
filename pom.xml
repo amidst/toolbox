@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.3</version> <!-- AmidstVersion -->
+    <version>0.5.2-alpha</version> <!-- AmidstVersion -->
 
     <name>AmidstToolbox</name>
 
@@ -112,19 +112,24 @@
 
 
     <modules>
+        <module>module-all</module>
+
         <module>huginlink</module>
         <module>core</module>
         <module>core-dynamic</module>
+
         <module>examples</module>
         <module>moalink</module>
         <module>latent-variable-models</module>
+
         <module>wekalink</module>
         <module>flinklink</module>
         <module>extensions/tutorials</module>
+
         <module>extensions/lda</module>
 
         <!-- Remove the following references to modules before publishing a new release -->
-        <module>extensions/caepia2015</module>
+        <!--module>extensions/caepia2015</module>
         <module>extensions/cajamar</module>
         <module>extensions/ecai2016</module>
         <module>extensions/ida2015</module>
@@ -133,7 +138,7 @@
         <module>extensions/parallelVMP</module>
         <module>extensions/reviewMeeting2016</module>
         <module>extensions/scai2015</module>
-        <module>extensions/uai2016</module>
+        <module>extensions/uai2016</module-->
 
 
     </modules>

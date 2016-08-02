@@ -9,26 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <artifactId>module-all</artifactId>
     <groupId>eu.amidst</groupId>
-    <artifactId>moalink</artifactId>
     <version>0.5.2-alpha</version> <!-- AmidstVersion -->
-
-    <url>http://amidst.github.io/toolbox/</url>
-
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-
-    <scm>
-        <connection>scm:git:git@github.com:amidst/toolbox.git</connection>
-        <developerConnection>scm:git:git@github.com:amidst/toolbox.git</developerConnection>
-        <url>git@github.com:amidst/toolbox.git</url>
-    </scm>
 
 
 
@@ -96,42 +79,67 @@
             <artifactId>core</artifactId>
             <version>0.5.2-alpha</version> <!-- AmidstVersion -->
         </dependency>
-
         <dependency>
-            <groupId>nz.ac.waikato.cms.weka</groupId>
-            <artifactId>weka-dev</artifactId>
-            <version>3.7.12</version>
+            <artifactId>core-dynamic</artifactId>
+            <groupId>eu.amidst</groupId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
         </dependency>
-
         <dependency>
-            <groupId>nz.ac.waikato.cms.moa</groupId>
-            <artifactId>moa</artifactId>
-            <version>2013.11</version>
+            <artifactId>examples</artifactId>
+            <groupId>eu.amidst</groupId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
         </dependency>
-
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>huginlink</artifactId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>flinklink</artifactId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>lda</artifactId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>tutorials</artifactId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <artifactId>latent-variable-models</artifactId>
+            <groupId>eu.amidst</groupId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <artifactId>moalink</artifactId>
+            <groupId>eu.amidst</groupId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <artifactId>wekalink</artifactId>
+            <groupId>eu.amidst</groupId>
+            <version>0.5.2-alpha</version> <!-- AmidstVersion -->
+        </dependency>
     </dependencies>
-
-
-
 
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2.2</version>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.9</version>
                 <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>amidstModels</mainClass>
-                        </manifest>
-                    </archive>
+                    <excludes>
+                        <exclude>**/TANTest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -171,4 +179,7 @@
             <!-- end - needed for deploying to repository using webdav -->
         </extensions>
     </build>
+
+
+
 </project>
