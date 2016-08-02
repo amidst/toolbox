@@ -77,7 +77,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
     public static String LATENT_VARS="LATENT_VARS";
 
 
-    private static boolean INITIALIZE = true;
+    private static boolean INITIALIZE = false;
     /**
      * Represents the directed acyclic graph {@link DAG}.
      */

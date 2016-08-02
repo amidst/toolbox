@@ -67,7 +67,7 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
 
     static Logger logger = LoggerFactory.getLogger(dVMPv3.class);
 
-    private static boolean INITIALIZE = true;
+    private static boolean INITIALIZE = false;
 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
