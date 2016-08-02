@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>eu.amidst</groupId>
+  <artifactId>module-all</artifactId>
+  <versioning>
+    <release>0.5.2-alpha</release>
+    <versions>
+      <version>0.5.2-alpha</version>
+    </versions>
+    <lastUpdated>20160802123553</lastUpdated>
+  </versioning>
+</metadata>
