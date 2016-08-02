@@ -16,6 +16,11 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.io.DataFlinkWriter;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.io.IOException;
 
@@ -58,7 +63,7 @@ public class Normalize {
         DataStreamWriter.writeDataToFile(data,args[1]+"_train.arff");
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
         DataStream<DataInstance> data = DataStreamLoader.open(args[0]);
 
@@ -73,6 +78,8 @@ public class Normalize {
 
         for (DataInstance dataInstance : data) {
             for (Attribute attribute : data.getAttributes()) {
+                    if (attribute.isSpecialAttribute() || attribute.getNumberOfStates()!=-1)
+                        continue;
                     mean[attribute.getIndex()]+=dataInstance.getValue(attribute);
                     square[attribute.getIndex()]+=Math.pow(dataInstance.getValue(attribute),2);
             }
@@ -82,6 +89,8 @@ public class Normalize {
         final int total = count;
         data = data.map(dataInstance -> {
             for (Attribute attribute : dataInstance.getAttributes()) {
+                if (attribute.isSpecialAttribute() || attribute.getNumberOfStates()!=-1)
+                    continue;
                 double meanAtt = mean[attribute.getIndex()]/total;
                 double squareAtt = square[attribute.getIndex()]/total;
                 double varAtt = squareAtt-Math.pow(meanAtt,2);
@@ -91,6 +100,21 @@ public class Normalize {
         });
 
         DataStreamWriter.writeDataToFile(data,args[1]);
+
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(32);
+
+
+
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,args[1],false);
+
+        DataFlinkWriter.writeDataToARFFFolder(dataFlink,args[2]);
     }
+
 
 }

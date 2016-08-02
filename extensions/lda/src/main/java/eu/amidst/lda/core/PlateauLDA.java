@@ -356,7 +356,7 @@ public class PlateauLDA extends PlateuStructure {
                     double localELBO = 0;
 
                     MomentParameters topicMoments = momentParents.get(topicVariable);
-                    int wordIndex = (int) node.getAssignment().getValue(node.getMainVariable());
+                    int wordIndex = (int) node.getAssignment().getValue(node.getMainVariable())%node.getMainVariable().getNumberOfStates();
 
                     for (int i = 0; i < topicMoments.size(); i++) {
                         EF_SparseMultinomial_Dirichlet dist = (EF_SparseMultinomial_Dirichlet)base.getBaseEFConditionalDistribution(i);

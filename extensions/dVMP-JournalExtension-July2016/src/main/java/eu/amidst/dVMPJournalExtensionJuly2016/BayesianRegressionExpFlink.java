@@ -9,7 +9,9 @@
  *
  */
 
-package eu.amidst.dVMPJournalExtensionJuly2016;import eu.amidst.core.datastream.DataInstance;
+package eu.amidst.dVMPJournalExtensionJuly2016;
+
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -17,7 +19,6 @@ import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
-import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
@@ -73,12 +74,12 @@ public class BayesianRegressionExpFlink {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setBatchSize(batchsize);
-
+/*
         for (Variable variable : bn.getVariables()) {
             if (variable.getName().contains("Hidden"))
                 sampler.setHiddenVar(variable);
         }
-
+*/
         DataFlinkWriter.writeDataToARFFFolder(sampler.sampleToDataFlink(env,samples),file);
 
     }
@@ -88,14 +89,16 @@ public class BayesianRegressionExpFlink {
         DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFolder(env,dataFile,false);
         dag.getVariables().setAttributes(data.getAttributes());
 
-        dVMP dvmp = new dVMP();
+        dVMPv3 dvmp = new dVMPv3();
         dvmp.setDAG(dag);
 
         dvmp.setLocalThreshold(0.0001);
-        dvmp.setGlobalThreshold(0.0001);
-        dvmp.setMaximumLocalIterations(100);
-        dvmp.setMaximumGlobalIterations(20);
+        dvmp.setGlobalThreshold(0.00000000000);
+        dvmp.setMaximumLocalIterations(10);
+        dvmp.setMaximumGlobalIterations(100);
         dvmp.setBatchSize(batchsize);
+
+        //dvmp.setIdenitifableModelling(new IdentifiableLRModel());
 
         dvmp.initLearning();
 
@@ -106,7 +109,7 @@ public class BayesianRegressionExpFlink {
     }
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"4", "5", "7000", "1000"};
+        args = new String[]{"4", "2", "4000", "1000"};
 
         int ncores = Integer.parseInt(args[0]);
         int natts = Integer.parseInt(args[1]);
@@ -120,7 +123,7 @@ public class BayesianRegressionExpFlink {
         env.setParallelism(ncores);
         env.getConfig().disableSysoutLogging();
 
-        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(10,natts);
+        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,natts);
 
         generateData(env,nsamples,batchsize, "./tmpFolder.arff",natts);
         learn(env, batchsize, "./tmpFolder.arff");

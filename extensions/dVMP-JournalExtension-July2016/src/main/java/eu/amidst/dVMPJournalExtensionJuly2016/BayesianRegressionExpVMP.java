@@ -11,8 +11,6 @@
 
 package eu.amidst.dVMPJournalExtensionJuly2016;import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalLinearGaussian;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
@@ -56,7 +54,7 @@ public class BayesianRegressionExpVMP {
 
         BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(10));
-
+/*
         Normal dist0 =  bn.getConditionalDistribution(bn.getVariables().getVariableByName("LocalHidden_0"));
         dist0.setMean(100);
         dist0.setVariance(1000);
@@ -69,7 +67,7 @@ public class BayesianRegressionExpVMP {
         conditionalLinearGaussian.setIntercept(1.0);
         conditionalLinearGaussian.setCoeffParents(new double[]{1.0});
         conditionalLinearGaussian.setVariance(1000);
-
+*/
         System.out.println(bn.toString());
 
 
@@ -86,7 +84,7 @@ public class BayesianRegressionExpVMP {
 
         SVB svb = new SVB();
         svb.setDAG(dag);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setMaxIter(200);
         svb.getPlateuStructure().getVMP().setThreshold(1e-100);
         svb.setWindowsSize(batchsize);
         svb.setOutput(true);
@@ -100,13 +98,13 @@ public class BayesianRegressionExpVMP {
     }
 
     public static void main(String[] args) throws Exception {
-        args = new String[]{"3", "1000", "1000"};
+        args = new String[]{"2", "4000", "4000"};
 
         int natts = Integer.parseInt(args[0]);
         int nsamples = Integer.parseInt(args[1]);
         int batchsize = Integer.parseInt(args[2]);
 
-        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,1);
+        dag = DAGsGeneration.getIDAMultiLocalGaussianDAG(1,natts);
 
         generateData(nsamples, "./tmp.arff");
         learn(batchsize, "./tmp.arff");
