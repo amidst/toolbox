@@ -2,7 +2,7 @@
 <html  lang="en-us">
   <head>
     <meta  content="text/html; charset=UTF-8"  http-equiv="content-type">
-    <title>AMIDST Toolbox 0.4.3 by amidst</title>
+    <title>AMIDST Toolbox 0.5.1 by amidst</title>
     <meta  name="viewport"  content="width=device-width, initial-scale=1">
     <link  rel="stylesheet"  type="text/css"  href="../stylesheets/normalize.css"
        media="screen">
@@ -17,36 +17,32 @@
     <script>hljs.initHighlightingOnLoad();</script>
   </head>
   <body>
-  <section  class="page-header">
-    <h1  class="project-name"><img  style="width: 342px; height: 97px;"  alt="AMiDST Toolbox"
-                                    src="../images/logo-toolbox-large.png"></h1>
-    <h2  class="project-tagline">A Java Toolbox for Scalable Probabilistic
-      Machine Learning</h2>
-    <div  style="text-align: center;"><a  href="https://github.com/amidst/toolbox"
-                                          class="btn">View
-      on GitHub</a><a  href="https://github.com/amidst/toolbox/zipball/master"
-                       class="btn">Download
-      .zip</a><a  href="https://github.com/amidst/toolbox/tarball/master"  class="btn">Download
-      .tar.gz</a></div>
-  </section>
+    <section  class="page-header">
+      <h1  class="project-name">AMIDST Toolbox 0.5.1</h1>
+      <h2  class="project-tagline">A Java Toolbox for Analysis of MassIve Data
+        STreams using Probabilistic Graphical Models</h2>
+      <a  href="https://github.com/amidst/toolbox"  class="btn">View on GitHub</a>
+      <a  href="https://github.com/amidst/toolbox/zipball/master"  class="btn">Download
+        .zip</a> <a  href="https://github.com/amidst/toolbox/tarball/master"  class="btn">Download
+        .tar.gz</a> </section>
+
     <section  class="main-content">
-<h1 id="sec:bns">Bayesian Networks: Code Examples</h1>
+    <h1 id="sec:bns">Bayesian Networks: Code Examples</h1>
 <ul>
 <li><p><a href="#sec:bns:datastreams">Data Streams</a></p></li>
-<li><p><a href="#sec:bns:randomvars">Random Variables</a></p></li>
-<li><p><a href="#sec:bns:randomvars">Random Variables</a></p></li>
+<li><p><a href="#sec:bns:randomvars">Data Streams</a></p></li>
 <li><p><a href="#sec:bns:models">Models</a></p>
 <ul>
 <li><p><a href="#sec:bns:models:creating">Creating BNs</a></p></li>
 <li><p><a href="#sec:bns:models:creatinglatent">Creating Bayesian networks with latent variables</a></p></li>
-<li><p><a href="#sec:bns:models:modif">Modifying BNs</a></p></li>
+<li><p><a href="#sec:bns:models:modif">Modifiying Bayesian networks</a></p></li>
 </ul></li>
 <li><p><a href="#sec:bns:io">Input/Output</a></p>
 <ul>
 <li><p><a href="#sec:bns:io:iods">I/O of data streams</a></p></li>
 <li><p><a href="#sec:bns:io:iobn">I/O of BNs</a></p></li>
 </ul></li>
-<li><p><a href="#sec:bns:inference">Input/Output</a></p>
+<li><p><a href="#sec:bns:inference">Inference</a></p>
 <ul>
 <li><p><a href="#sec:bns:inference:engine">The inference engine</a></p></li>
 <li><p><a href="#sec:bns:inference:vmp">Variational Message Passing</a></p></li>
@@ -59,20 +55,21 @@
 <li><p><a href="#sec:bns:learning:svb">Streaming Variational Bayes</a></p></li>
 <li><p><a href="#sec:bns:learning:parallelsvb">Parallel Streaming Variational Bayes</a></p></li>
 </ul></li>
-<li><p><a href="#sec:bns:conceptdrift">Concept Drift Method</a></p>
+<li><p><a href="#sec:bns:conceptdrift">Concept Drift Methods</a></p>
 <ul>
-<li><p><a href="#sec:bns:conceptdrift:nbayes">Naive Bayes with Virtual Concept Drift Method</a></p></li>
+<li><p><a href="#sec:bns:conceptdrift:nbayes">Naive Bayes with Virtual Concept Drift Detection</a></p></li>
 </ul></li>
 <li><p><a href="#sec:bns:huginlink">HuginLink</a></p>
 <ul>
 <li><p><a href="#sec:bns:huginlink:conversion">Models conversion between AMiDST and Hugin</a></p></li>
 <li><p><a href="#sec:bns:huginlink:io">I/O of Bayesian Networks with Hugin net format</a></p></li>
 <li><p><a href="#sec:bns:huginlink:inference">Invoking Hugin’s inference engine</a></p></li>
-<li><p><a href="#sec:bns:huginlink:huginTAM">Invoking Hugin’s Parallel TAN</a></p></li>
+<li><p><a href="#sec:bns:huginlink:huginTAN">Invoking Hugin’s Parallel TAN</a></p></li>
 </ul></li>
 <li><p><a href="#sec:bns:moalink">MoaLink</a></p>
 <ul>
 <li><p><a href="#sec:bns:moalink:moaclass">AMIDST Classifiers from MOA</a></p></li>
+<li><p><a href="#sec:bns:moalink:moareg">AMIDST Classifiers from MOA</a></p></li>
 </ul></li>
 </ul>
 <h2 id="sec:bns:datastreams">Data Streams</h2>
@@ -98,7 +95,7 @@ public class DataStreamsExample {
         //DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasetsTests/data.arff&quot;);
 
         //Generate the data stream using the class DataSetGenerator
-        DataStream&lt;DataInstance&gt; data = DataSetGenerator.generate(1,1000,5,5);
+        DataStream&lt;DataInstance&gt; data = DataSetGenerator.generate(1,10,5,5);
 
 
         //Access to the attributes defining the data set
@@ -156,7 +153,7 @@ public class DataStreamsExample {
     }
 
 }</code></pre>
-<h2 id="sec:bns:randomvars">Random Variables</h2>
+<h2 id="sec:bns:randomvars">Data Streams</h2>
 <p>This example show the basic functionality of the classes Variables and Variable.</p>
 <pre><code>package eu.amidst.core.examples.variables;
 
@@ -598,6 +595,7 @@ public class InferenceEngineExample {
 
 }</code></pre>
 <p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:inference">Inference</h2>
 <h3 id="sec:bns:inference:vmp">Variational Message Passing</h3>
 <p>This example we show how to perform inference on a general Bayesian network using the Variational Message Passing (VMP) algorithm detailed in</p>
 <blockquote>
@@ -842,6 +840,9 @@ public class ParallelMaximumLikelihoodExample {
         //We activate the parallel mode.
         parameterLearningAlgorithm.setParallelMode(true);
 
+        //We desactivate the debug mode.
+        parameterLearningAlgorithm.setDebug(false);
+
         //We fix the DAG structure
         parameterLearningAlgorithm.setDAG(MaximimumLikelihoodByBatchExample.getNaiveBayesStructure(data, 0));
 
@@ -910,7 +911,7 @@ public class SVBByBatchExample {
         parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),&quot;H&quot;,2));
 
         //We fix the size of the window, which must be equal to the size of the data batches we use for learning
-        parameterLearningAlgorithm.setWindowsSize(5);
+        parameterLearningAlgorithm.setWindowsSize(100);
 
         //We can activate the output
         parameterLearningAlgorithm.setOutput(true);
@@ -920,7 +921,7 @@ public class SVBByBatchExample {
 
 
         //Then we show how we can perform parameter learning by a sequential updating of data batches.
-        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(5)){
+        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(100)){
             double log_likelhood_of_batch = parameterLearningAlgorithm.updateModel(batch);
             System.out.println(&quot;Log-Likelihood of Batch: &quot;+ log_likelhood_of_batch);
         }
@@ -1177,7 +1178,7 @@ public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/WasteIncinerator.bn&quot;);
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
 
         //We recover the relevant variables for this example:
         //Mout which is normally distributed, and W which is multinomial.
@@ -1235,7 +1236,7 @@ public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/WasteIncinerator.bn&quot;);
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
 
         //We recover the relevant variables for this example:
         //Mout which is normally distributed, and W which is multinomial.
@@ -1289,7 +1290,7 @@ moa.DoTask EvaluatePrequentialRegression -l bayes.AmidstRegressor
 -s (ArffFileStream -f ./quake.arff)</code></pre>
 <p>Note that the simpler the dataset the less complex the model should be. In this case, <code>quake.arff</code> is a very simple and small dataset that should probably be learn with a more simple classifier, that is, a high-bias-low-variance classifier, in order to avoid overfitting. This aims at providing a simple running example. <a href="#sec:bns">[Back to Top]</a></p>
   <footer  class="site-footer"> <span  class="site-footer-owner"><a  href="https://github.com/amidst/toolbox">AMIDST
-            Toolbox 0.4.3</a> is maintained by <a  href="https://github.com/amidst">amidst</a>.</span>
+            Toolbox 0.5.1</a> is maintained by <a  href="https://github.com/amidst">amidst</a>.</span>
         <span  class="site-footer-credits">This page was generated by <a  href="https://pages.github.com">GitHub
             Pages</a> using the <a  href="https://github.com/jasonlong/cayman-theme">Cayman
             theme</a> by <a  href="https://twitter.com/jasonlong">Jason Long</a>.</span>
