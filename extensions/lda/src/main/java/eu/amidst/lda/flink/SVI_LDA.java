@@ -94,7 +94,7 @@ public class SVI_LDA {
 
         DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);
 
-        double test_log_likelihood = StochasticVI.computeELBO(instancesTest,svb.getSVB(),ConversionToBatches::toBatchesBySeqID);
+        double test_log_likelihood = StochasticVI.computeELBO(instancesTest,svb.getSVI().getSVB(),ConversionToBatches::toBatchesBySeqID);
 
         System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
 
@@ -105,7 +105,7 @@ public class SVI_LDA {
         }
         String pathNetwork = "SVI_"+ Arrays.toString(args)+"_.bn";
 
-        svb.getSVB().setDAG(((PlateauLDAFlink)svb.getSVB().getPlateuStructure()).getDagLDA());
+        svb.getSVI().getSVB().setDAG(((PlateauLDAFlink)svb.getSVI().getSVB().getPlateuStructure()).getDagLDA());
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
         BayesianNetworkWriter.save(svb.getLearntBayesianNetwork(),pathNetwork);
