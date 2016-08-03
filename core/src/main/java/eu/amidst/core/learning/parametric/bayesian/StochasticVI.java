@@ -74,6 +74,14 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     private CompoundVector currentParam;
     private int iteration;
 
+    public int getBatchSize() {
+        return batchSize;
+    }
+
+    public int getSeed(){
+        return this.svb.getSeed();
+    }
+
     public void setLearningFactor(double learningFactor) {
         this.learningFactor = learningFactor;
     }

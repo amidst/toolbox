@@ -149,11 +149,6 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         this.batchSize = batchSize;
     }
 
-    @Override
-    public int getBatchSize() {
-        return batchSize;
-    }
-
     public SVB getSVB() {
         return svb;
     }

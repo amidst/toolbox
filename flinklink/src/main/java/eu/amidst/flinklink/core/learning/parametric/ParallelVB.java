@@ -142,11 +142,6 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
         this.batchSize = batchSize;
     }
 
-    @Override
-    public int getBatchSize() {
-        return batchSize;
-    }
-
     public SVB getSVB() {
         return svb;
     }

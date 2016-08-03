@@ -78,11 +78,6 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
     public void setBatchSize(int batchSize) {
     }
 
-    @Override
-    public int getBatchSize() {
-        return 0;
-    }
-
     /**
      * {@inheritDoc}
      */
