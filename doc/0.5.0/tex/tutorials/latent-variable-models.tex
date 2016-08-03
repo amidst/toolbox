@@ -1,0 +1,155 @@
+% !TeX spellcheck = <none>
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+\begin{document}
+
+\section{Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST}\label{sec:lvmodels}
+%\subsection{Introduction}\label{sec:lvmodels:intro}
+
+In AMIDST toolbox 0.4.2 the module \textit{latent-variable-models}, that contains a wide range of predefined latent variable models (see table below), was included. In this tutorial we will show how the use of this module simplifies the learning and inference processes.  In fact, you will be able to learn your model and to perform inference with a few lines of code.
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=13cm]{img/amidstModels.png}
+	\caption{Set of predefined latent variable models in AMIDST}
+	\label{fig:lvmodels:amidstModels}	
+\end{figure}
+
+
+Besides of the simplicity, the required code for learning a latent variable model is also flexible: you will be able to change the learnt model or the inference algorithm just with some slight modfications in the code. Another advantage of using AMIDST for learning one of the predefined models is that the procedure is traparent to the format of your training data: you will use the same methods regardless of learning from a local or a distributed dataset (with Flink). Note that this last feature was included in the version 0.5.0 of the toolbox.
+
+\subsection{Setting up}
+
+%Requirements, Project example, overview, project structure
+In order to follow this tutorial, you will need to have the java 8 (i.e. SDK 1.8 or higher) installed in your system. For more details about the system requirements, see this \href{../GettingStarted/requirements.html}{link}. Additionally, you can download a ready-to-use IntelliJ maven project with all the code examples in this tutorial. For that, use the following command:
+
+\begin{verbatim}
+$ git clone https://github.com/amidst/tutorial.git      
+\end{verbatim}
+
+
+Alternativelly, you would rather create a new maven project or use an existing one. For that, you might check the \href{../GettingStarted/index.html}{Getting Started} page.\newline 
+
+Note that this project does not contain any AMIDST source or binary, it only has some .java files using the AMIDST functionallity. Instead, each of the AMIDST modules are provided through maven. Doing that, the transitive dependences of the AMIDST toolbox are also downloaded in a transparent way for the user. An scheme of this idea is shown below:
+
+ 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=13cm]{img/overview.png}
+	\caption{Set of predefined latent variable models in AMIDST}
+	\label{fig:lvmodels:amidstModels}	
+\end{figure}
+
+
+\newpage 
+If we open the downloaded project, we will see that it contains the following relevant folders and files:
+
+\begin{itemize}
+	\item \textbf{datasets}: folder with local and distributed datasets used in this tutorial in ARFF format.
+	\item \textbf{doc}: folder containing documentation about this tutorial.
+	\item \textbf{lib}: folder for storing those libraries not available through maven.
+	\item \textbf{src/main/java}: folder with all the code example.
+	\item \textbf{pom.xml}: this is the maven configuration file where the AMIDST dependencies are defined.
+\end{itemize}
+
+
+%dependencies
+In the pom.xml file of the downloaded project, only the module called \textit{latent-variable-models} is linked. However some other AMIDST are also loaded as \textit{latent-variable-models} module depends on them. This is the case of the modules called \textit{core}, \textit{core-dynamic}, \textit{flinklink}, etc. You can see the full list of dependencies in the \textbf{maven project panel}, usually located on the right side of the window (see image below). If dependencies are not automatically downloaded, click on \textbf{Upload} button. It is recommended to download the sources and java 
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=10cm]{img/mavenpanel.png}
+	%\caption{Set of predefined latent variable models in AMIDST}
+	\label{fig:lvmodels:mavenpanel}	
+\end{figure}
+
+\newpage 
+\subsection{Static Models}\label{sec:lvmodels:static}
+\subsubsection{Learning and saving to disk}\label{sec:lvmodels:static:learning}
+
+
+Here we will see how can we learnt a static model from a local dataset (non-distributed). In particular, we will use the financial-like dataset \textbf{datasets/simulated/cajamar.arff} containing 4 continuous (normal distributed) variables. From this data,  a \textit{Factor Analysis} model will be learnt. In short, this model aims to reduce the dimensionality of a set of observed continuous variables by expressing them as combination of gaussians. A synthesis of this process is shown in the image below where: $X1, X2, X3$ and $X4$ are the observed variables and $H1, H2$ and $H3$ are the latent variables representing the combination of gaussians.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=10cm]{img/staticlearning.png}
+	%\caption{Set of predefined latent variable models in AMIDST}
+	\label{fig:lvmodels:static:learning:scheme}	
+\end{figure}
+
+
+Note that the required functionality for learning the predefined model is provided by the module \textit{latent-variable-models}. A code-example for learning a factor analysis model is shown below.
+
+
+
+\includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelLearning.java}
+\href{https://github.com/amidst/tutorial/blob/master/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelLearning.java}{See on GitHub}
+\vspace{3mm}
+
+
+For learning any of the available static models, we create an object of any of the classes inheriting from the class \texttt{Model}. These classes encapsulates all the fuctionality for learning/updating a latent-variable model. For example, in the code above we create an object of the class \texttt{FactorAnalysis} which is actually stored as \texttt{Model} object. The flexibility of the toolbox is due to this hierarchical desing: if we aim to change the model learnt from our data, we simply have to change the constructor used (assuming that our data also fits the constraints of the new model). For example, if we aim to learn a mixture of factor analysers instead, we simply have to replace the line 
+
+\begin{verbatim}
+Model model = new FactorAnalysis(data.getAtributes());
+\end{verbatim}
+
+\noindent by
+
+\begin{verbatim}
+Model model = new MixtureOfFactorAnalysers(data.getAtributes());
+\end{verbatim}
+
+\noindent Note that the method for learning the model, namely \texttt{Model::updateMode(DataStream<DataInstance>)} will always be the same regardless of the particular type of static model.\newline 
+
+The actual learnt model is an object of the class \texttt{BayesianNetwork} which is stored as a member variable of \texttt{Model}. Thus, for using the network, we simply have to extract with the method \texttt{Model::getModel()}. One of the actions we can perform with it is saving it into the local file system. For saving it in \texttt{.bn} format:
+
+\begin{verbatim}
+BayesianNetworkWriter::save(BayesianNetwork bn, String path)
+\end{verbatim}
+
+\noindent Alternatively, and assuming that we have the hugin library available, we can also save it in \texttt{.net} format:
+
+\begin{verbatim}
+BayesianNetworkWriteToHuginr::save(BayesianNetwork bn, String path)
+\end{verbatim}
+
+
+
+\subsubsection{Learning from Flink}\label{sec:lvmodels:static:flinklearning}
+
+
+
+\includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelFlink.java}
+\href{https://github.com/amidst/tutorial/blob/master/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelFlink.java}{See on GitHub}
+\vspace{3mm}
+
+
+
+
+\subsubsection{Inference}\label{sec:lvmodels:static:inference}
+\subsubsection{Custom static model}\label{sec:lvmodels:static:custom}
+
+
+
+
+\subsection{Dynamic Models}\label{sec:lvmodels:dynamic}
+\subsubsection{Learning}\label{sec:lvmodels:dynamic:learning}
+\subsubsection{Save to disk}\label{sec:lvmodels:dynamic:save} %% avoid hugin part
+\subsubsection{Custom static model}\label{sec:lvmodels:dynamic:custom}
+
+
+\end{document}
