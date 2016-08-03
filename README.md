@@ -178,3 +178,10 @@ is still in progress which will expand the AMIDST user-base.
 AMIDST is an open source toolbox and the end-users are encouraged to upload their
 contributions (which may include basic contributions, major extensions, and/or use-cases)
 following the indications given in this [link](http://amidst.github.io/toolbox/ContributingToAMIDST.html).
+
+
+
+# Acknowledgements and License
+This software was performed as part of the AMIDST project. AMIDST has received funding from the European Union’s Seventh Framework Programme for research, technological development and demonstration under grant agreement no 619209.
+
+This software is distributed under Apache License Version 2.0
