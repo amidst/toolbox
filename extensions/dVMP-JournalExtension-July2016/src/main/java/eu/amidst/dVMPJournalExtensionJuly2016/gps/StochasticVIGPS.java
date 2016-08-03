@@ -105,7 +105,7 @@ public class StochasticVIGPS {
 
         DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFile(env,fileTest, false);
 
-        double elboTest = StochasticVI.computeELBO(dataTest,stochasticVI.getSVB());
+        double elboTest = StochasticVI.computeELBO(dataTest,stochasticVI.getSVI().getSVB());
 
         System.out.println("Test Marginal-Loglikelihood:" + elboTest);
 
