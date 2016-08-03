@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
-    <version>0.4.3</version> <!-- AmidstVersion -->
+    <version>0.5.2-alpha</version> <!-- AmidstVersion -->
 
     <name>AmidstToolbox</name>
 
@@ -113,15 +113,19 @@
 
     <modules>
         <module>extensions/fractionalUpdating-August2016</module>
+        <module>module-all</module>
         <module>huginlink</module>
         <module>core</module>
         <module>core-dynamic</module>
+
         <module>examples</module>
         <module>moalink</module>
         <module>latent-variable-models</module>
+
         <module>wekalink</module>
         <module>flinklink</module>
         <module>extensions/tutorials</module>
+
         <module>extensions/lda</module>
 
         <!-- Remove the following references to modules before publishing a new release -->

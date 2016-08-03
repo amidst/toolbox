@@ -28,6 +28,50 @@
 
     <section  class="main-content">
     <h1 id="sec:bns">Bayesian Networks: Code Examples</h1>
+<ul>
+<li><p><a href="#sec:bns:datastreams">Data Streams</a></p></li>
+<li><p><a href="#sec:bns:randomvars">Data Streams</a></p></li>
+<li><p><a href="#sec:bns:models">Models</a></p>
+<ul>
+<li><p><a href="#sec:bns:models:creating">Creating BNs</a></p></li>
+<li><p><a href="#sec:bns:models:creatinglatent">Creating Bayesian networks with latent variables</a></p></li>
+<li><p><a href="#sec:bns:models:modif">Modifiying Bayesian networks</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:io">Input/Output</a></p>
+<ul>
+<li><p><a href="#sec:bns:io:iods">I/O of data streams</a></p></li>
+<li><p><a href="#sec:bns:io:iobn">I/O of BNs</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:inference">Inference</a></p>
+<ul>
+<li><p><a href="#sec:bns:inference:engine">The inference engine</a></p></li>
+<li><p><a href="#sec:bns:inference:vmp">Variational Message Passing</a></p></li>
+<li><p><a href="#sec:bns:inference:sampling">Importance Sampling</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:learning">Learning Algorithms</a></p>
+<ul>
+<li><p><a href="#sec:bns:learning:batchml">Maximum Likelihood</a></p></li>
+<li><p><a href="#sec:bns:learning:parallelml">Parallel Maximum Likelihood</a></p></li>
+<li><p><a href="#sec:bns:learning:svb">Streaming Variational Bayes</a></p></li>
+<li><p><a href="#sec:bns:learning:parallelsvb">Parallel Streaming Variational Bayes</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:conceptdrift">Concept Drift Methods</a></p>
+<ul>
+<li><p><a href="#sec:bns:conceptdrift:nbayes">Naive Bayes with Virtual Concept Drift Detection</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:huginlink">HuginLink</a></p>
+<ul>
+<li><p><a href="#sec:bns:huginlink:conversion">Models conversion between AMiDST and Hugin</a></p></li>
+<li><p><a href="#sec:bns:huginlink:io">I/O of Bayesian Networks with Hugin net format</a></p></li>
+<li><p><a href="#sec:bns:huginlink:inference">Invoking Hugin’s inference engine</a></p></li>
+<li><p><a href="#sec:bns:huginlink:huginTAN">Invoking Hugin’s Parallel TAN</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:moalink">MoaLink</a></p>
+<ul>
+<li><p><a href="#sec:bns:moalink:moaclass">AMIDST Classifiers from MOA</a></p></li>
+<li><p><a href="#sec:bns:moalink:moareg">AMIDST Classifiers from MOA</a></p></li>
+</ul></li>
+</ul>
 <h2 id="sec:bns:datastreams">Data Streams</h2>
 <p>In this example we show how to use the main features of a DataStream object. More precisely, we show six different ways of iterating over the data samples of a DataStream object.</p>
 <pre><code>package eu.amidst.core.examples.datastream;
@@ -1131,7 +1175,7 @@ public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/WasteIncinerator.bn&quot;);
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
 
         //We recover the relevant variables for this example:
         //Mout which is normally distributed, and W which is multinomial.
@@ -1189,7 +1233,7 @@ public class HuginInferenceExample {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         //We first load the WasteIncinerator bayesian network
         //which has multinomial and Gaussian variables.
-        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/WasteIncinerator.bn&quot;);
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
 
         //We recover the relevant variables for this example:
         //Mout which is normally distributed, and W which is multinomial.

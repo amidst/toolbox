@@ -19,6 +19,8 @@ import java.io.IOException;
  */
 public class StaticModelFlink {
     public static void main(String[] args) throws IOException, ExceptionHugin {
+
+
         //Set-up Flink session.
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
@@ -28,7 +30,7 @@ public class StaticModelFlink {
 
         //Load the datastream
         String filename = "datasets/simulated/cajamarDistributed.arff";
-        DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFolder(env, filename, false);
+        DataFlink<DataInstance> data = DataFlinkLoader.open(env, filename, false);
 
         //Learn the model
         Model model = new FactorAnalysis(data.getAttributes());

@@ -81,12 +81,6 @@ public interface ParameterLearningAlgorithm {
     void setOutput(boolean activateOutput);
 
     /**
-     * Returns the batch size.
-     * @return the window size.
-     */
-    int getBatchSize();
-
-    /**
      * Sets the batch size.
      * @param windowsSize the window size.
      */
