@@ -13,16 +13,14 @@ package gps;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by andresmasegosa on 4/5/16.
@@ -31,20 +29,25 @@ public class RunDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out/";
-        int ntopics = 0;
+        String model = "BCC1";
+//        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_small/";
+
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 50000;
 
         if (args.length>1){
-            dataPath=args[0];
-            ntopics= Integer.parseInt(args[1]);
-            niter = Integer.parseInt(args[2]);
-            threshold = Double.parseDouble(args[3]);
-            docsPerBatch = Integer.parseInt(args[4]);
+            int cont=0;
+            model = args[cont++];
+            dataPath=args[cont++];
+            ntopics= Integer.parseInt(args[cont++]);
+            niter = Integer.parseInt(args[cont++]);
+            threshold = Double.parseDouble(args[cont++]);
+            docsPerBatch = Integer.parseInt(args[cont++]);
 
-            args[0]="";
+            args[1]="";
         }
 
 
@@ -62,57 +65,87 @@ public class RunDrift {
         svb.getPlateuStructure().getVMP().setThreshold(threshold);
 
         svb.setWindowsSize(docsPerBatch);
-        svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(),ntopics));
+
+        if (model.compareTo("GPS0")==0) {
+            svb.setDAG(DAGsGeneration.getGPSMixtureDAGNoDay(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("GPS1")==0) {
+            svb.setDAG(DAGsGeneration.getGPSMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("GPS2")==0) {
+            svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC0")==0) {
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+        }else if (model.compareTo("BCC1")==0) {
+            svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC2")==0) {
+            svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
+        }
+
         svb.setOutput(true);
 
         svb.initLearning();
 
 
-        FileWriter fw = new FileWriter(dataPath+"DriftSVBoutput_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"DriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
 
 //        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
 
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
-        Iterator<DataOnMemory<DataInstance>> iterator =
-                Arrays.asList(new File(dataPath).list())
-                        .stream()
-                        .filter(string -> string.endsWith(".arff"))
-                        .map(string -> DataStreamLoader.loadDataOnMemoryFromFile(path+string))
-                        .flatMap(data -> data.streamOfBatches(finalDocsPerBatch))
-                        .iterator();
 
         int count=0;
 
-        int eval = 1;
 
-        List<DataOnMemory<DataInstance>> list = new ArrayList<>();
-        for (int i = 0; i < (eval-1) && iterator.hasNext(); i++) {
-            DataOnMemory<DataInstance> batch= iterator.next();
-            if (batch.getNumberOfDataInstances()==0)
-                continue;
-            list.add(batch);
-        }
 
-        while(iterator.hasNext()){
+        Random random = new Random(0);
 
-            DataOnMemory<DataInstance> batch= iterator.next();
-            if (batch.getNumberOfDataInstances()==0)
+        String[] strings = new File(dataPath).list();
+        Arrays.sort(strings);
+        for (String string : strings) {
+
+            if (!string.endsWith(".arff"))
                 continue;
 
-            list.add(batch);
+            System.out.println("EPOCH: " + count +", "+ string);
+
+            DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
+            if (batch.getNumberOfDataInstances()<10)
+                continue;
+
+            Collections.shuffle(batch.getList(),random);
+
+            int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
+            DataOnMemoryListContainer<DataInstance> train= new
+                    DataOnMemoryListContainer(batch.getAttributes());
+            train.addAll(batch.getList().subList(0,limit));
+
+            DataOnMemoryListContainer<DataInstance> test= new
+                    DataOnMemoryListContainer(batch.getAttributes());
+            test.addAll(batch.getList().subList(limit+1,batch.getNumberOfDataInstances()));
+
+            Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
+
+            double lambda = 0;
+            int n = 0;
+            while (iteratorInner.hasNext()){
+                svb.updateModelWithConceptDrift(iteratorInner.next());
+                lambda += svb.getLambdaValue();
+                n++;
+            }
+            lambda/=n;
 
             double log = 0;
-            double inst =0;
-            for (int i = 0; i < list.size(); i++) {
-                log+=svb.predictedLogLikelihood(list.get(i));
-                inst+=list.get(i).getNumberOfDataInstances();
+            iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
+            while (iteratorInner.hasNext()) {
+                log+=svb.predictedLogLikelihood(iteratorInner.next());
             }
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+svb.getLambdaValue()+"\n");
-            fw.flush();
 
-            svb.updateModelWithConceptDrift(list.remove(0));
+            double inst =test.getNumberOfDataInstances();
+
+            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
         }
+        fw.close();
     }
 }

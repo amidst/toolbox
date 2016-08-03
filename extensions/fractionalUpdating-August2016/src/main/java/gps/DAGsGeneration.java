@@ -25,12 +25,44 @@ import java.util.List;
  */
 public class DAGsGeneration {
 
+    public static DAG getBCCFullMixtureDAG(Attributes attributes, int nstates) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes.subList(10,14));
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DEFAULTING");
+
+        // Define the global hidden variable.
+        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the global hidden as parent of all predictive attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(globalHiddenVar));
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
     public static DAG getBCCMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("Default");
+        Variable classVar = variables.getVariableByName("DEFAULTING");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -83,7 +115,7 @@ public class DAGsGeneration {
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("Default");
+        Variable classVar = variables.getVariableByName("DEFAULTING");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -103,10 +135,10 @@ public class DAGsGeneration {
         }
 
         // Link the class as parent of all attributes
-        dag.getParentSets()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .forEach(w -> w.addParent(classVar));
+//        dag.getParentSets()
+//                .stream()
+//                .filter(w -> w.getMainVar() != classVar)
+//                .forEach(w -> w.addParent(classVar));
 
         // Link the local hidden as parent of all predictive attributes
         for (Variable localHiddenVar : localHiddenVars) {
@@ -148,6 +180,32 @@ public class DAGsGeneration {
         // Link all the vars to the globalhidden
         dag.getParentSets()
                 .stream()
+                .filter(w -> w.getMainVar() != globalHiddenVar)
+                .forEach(w -> w.addParent(globalHiddenVar));
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
+    public static DAG getGPSMixtureDAGNoDay(Attributes attributes, int nstates) {
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DAY");
+
+        // Define the global hidden variable.
+        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link all the vars to the globalhidden
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
                 .filter(w -> w.getMainVar() != globalHiddenVar)
                 .forEach(w -> w.addParent(globalHiddenVar));
 

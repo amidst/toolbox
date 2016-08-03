@@ -63,9 +63,11 @@ public class DriftSVB extends SVB{
         super.initLearning();
         truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
         this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+
+        prior = this.plateuStructure.getPlateauNaturalParameterPrior();
+
         this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
         firstBatch=true;
-        prior = this.plateuStructure.getPlateauNaturalParameterPrior();
     }
 
     /**
@@ -102,14 +104,12 @@ public class DriftSVB extends SVB{
         }
 
         //Restart Truncated-Exp
-        double delta = -1;//-this.plateuStructure.getPosteriorSampleSize()*0.1;
+        double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
         this.ef_TExpP.getNaturalParameters().set(0,delta);
         this.ef_TExpP.updateMomentFromNaturalParameters();
 
         this.ef_TExpQ.getNaturalParameters().set(0,delta);
         this.ef_TExpQ.updateMomentFromNaturalParameters();
-
-        this.plateuStructure.getVMP().setMaxIter(1);
 
         boolean convergence = false;
         double elbo = Double.NaN;
@@ -118,23 +118,23 @@ public class DriftSVB extends SVB{
 
             //Messages for TExp to Theta
             double lambda = this.ef_TExpQ.getMomentParameters().get(0);
-            //if (this.ef_TExpQ.getMomentParameters().get(0)>0)
-            //    lambda+=0.1;
-            //else
-            //    lambda-=0.1;
+
+
 
             CompoundVector newPrior = Serialization.deepCopy(prior);
             newPrior.multiplyBy(1 - lambda);
+
+
             CompoundVector newPosterior = Serialization.deepCopy(posteriorT_1);
             newPosterior.multiplyBy(lambda);
+
+
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
             this.plateuStructure.runInference();
-
-            CompoundVector updatedPosterior = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
             //Compute elbo
             double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
@@ -181,6 +181,8 @@ public class DriftSVB extends SVB{
             niter++;
         }
 
+
+        System.out.println("end");
 
 
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();

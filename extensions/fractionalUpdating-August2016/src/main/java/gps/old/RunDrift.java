@@ -9,23 +9,26 @@
  *
  */
 
-package gps;
+package gps.old;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
+import gps.DAGsGeneration;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by andresmasegosa on 4/5/16.
  */
-public class RunDrift_Mont {
+public class RunDrift {
 
     public static void main(String[] args) throws Exception{
 
@@ -78,46 +81,39 @@ public class RunDrift_Mont {
                         .stream()
                         .filter(string -> string.endsWith(".arff"))
                         .map(string -> DataStreamLoader.loadDataOnMemoryFromFile(path+string))
+                        .flatMap(data -> data.streamOfBatches(finalDocsPerBatch))
                         .iterator();
 
         int count=0;
 
+        int eval = 1;
 
-
+        List<DataOnMemory<DataInstance>> list = new ArrayList<>();
+        for (int i = 0; i < (eval-1) && iterator.hasNext(); i++) {
+            DataOnMemory<DataInstance> batch= iterator.next();
+            if (batch.getNumberOfDataInstances()==0)
+                continue;
+            list.add(batch);
+        }
 
         while(iterator.hasNext()){
 
             DataOnMemory<DataInstance> batch= iterator.next();
-            if (batch.getNumberOfDataInstances()<10)
+            if (batch.getNumberOfDataInstances()==0)
                 continue;
 
-            Collections.shuffle(batch.getList());
-
-            int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
-            DataOnMemoryListContainer<DataInstance> train= new
-                    DataOnMemoryListContainer(batch.getAttributes());
-            train.addAll(batch.getList().subList(0,limit));
-
-            DataOnMemoryListContainer<DataInstance> test= new
-                    DataOnMemoryListContainer(batch.getAttributes());
-            test.addAll(batch.getList().subList(limit+1,batch.getNumberOfDataInstances()));
-
-            Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
-
-            while (iteratorInner.hasNext()){
-                svb.updateModelWithConceptDrift(iteratorInner.next());
-            }
+            list.add(batch);
 
             double log = 0;
-            iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
-            while (iteratorInner.hasNext()) {
-                log+=svb.predictedLogLikelihood(iteratorInner.next());
+            double inst =0;
+            for (int i = 0; i < list.size(); i++) {
+                log+=svb.predictedLogLikelihood(list.get(i));
+                inst+=list.get(i).getNumberOfDataInstances();
             }
-
-            double inst =test.getNumberOfDataInstances();
-
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+svb.getLambdaValue()+"\n");
+            fw.flush();
+
+            svb.updateModelWithConceptDrift(list.remove(0));
         }
-        fw.close();
     }
 }

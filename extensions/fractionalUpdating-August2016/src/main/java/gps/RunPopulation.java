@@ -16,7 +16,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.PopulationVI;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +28,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 4/5/16.
  */
-public class RunSVB {
+public class RunPopulation {
 
     public static void main(String[] args) throws Exception{
 
@@ -38,6 +38,8 @@ public class RunSVB {
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
+        int setSIZE = 5000;
+        double learningRate = 0.75;
 
         if (args.length>1){
             int cont = 0;
@@ -48,25 +50,27 @@ public class RunSVB {
             niter = Integer.parseInt(args[cont++]);
             threshold = Double.parseDouble(args[cont++]);
             docsPerBatch = Integer.parseInt(args[cont++]);
+            setSIZE = Integer.parseInt(args[cont++]);
+            learningRate = Double.parseDouble(args[cont++]);
 
             args[1]="";
         }
 
 
 
-        SVB svb = new SVB();
+        PopulationVI svb = new PopulationVI();
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
                 .stream()
                 .filter(string -> string.endsWith(".arff")).findFirst().get());
 
-        svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(niter);
-        svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(threshold);
+        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(niter);
+        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
+        svb.getSVB().getPlateuStructure().getVMP().setThreshold(threshold);
 
-        svb.setWindowsSize(docsPerBatch);
+
         if (model.compareTo("GPS0")==0) {
             svb.setDAG(DAGsGeneration.getGPSMixtureDAGNoDay(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("GPS1")==0) {
@@ -79,13 +83,19 @@ public class RunSVB {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
-        }
+        }        svb.setOutput(true);
+
+        svb.setLocalThreshold(threshold);
         svb.setOutput(true);
+        svb.setMaximumLocalIterations(niter);
+        svb.setBatchSize(docsPerBatch);
+        svb.setMemorySize(setSIZE);
+        svb.setLearningFactor(learningRate);
 
         svb.initLearning();
 
 
-        FileWriter fw = new FileWriter(dataPath+"SVB_Output_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"Population_Output_"+Arrays.toString(args)+"_.txt");
 
 
 //        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
@@ -102,12 +112,12 @@ public class RunSVB {
         Arrays.sort(strings);
         for (String string : strings) {
 
-            if (!string.endsWith(".arff"))
-                continue;
+                if (!string.endsWith(".arff"))
+                    continue;
 
-            System.out.println("EPOCH: " + count +", "+ string);
+                System.out.println("EPOCH: " + count);
 
-            DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
+                DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
             if (batch.getNumberOfDataInstances()<10)
                 continue;
 

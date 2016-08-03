@@ -9,7 +9,7 @@
  *
  */
 
-package gps;
+package gps.old;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -18,6 +18,7 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
+import gps.DAGsGeneration;
 
 import java.io.File;
 import java.io.FileWriter;

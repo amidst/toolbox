@@ -37,7 +37,7 @@ public class MultiDriftSVB extends SVB{
 
 
     EF_TruncatedExponential ef_TExpP;
-    EF_TruncatedExponential ef_TExpQ;
+    EF_TruncatedExponential[] ef_TExpQ;
 
     Variable truncatedExpVar;
 
@@ -65,9 +65,15 @@ public class MultiDriftSVB extends SVB{
         super.initLearning();
         truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
         this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
-        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
-        firstBatch=true;
+
         prior = this.plateuStructure.getPlateauNaturalParameterPrior();
+
+        int size = prior.getNumberOfBaseVectors();
+        this.ef_TExpQ = new EF_TruncatedExponential[size];
+        for (int i = 0; i < size; i++) {
+            this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+        }
+        firstBatch=true;
     }
 
     /**
@@ -90,6 +96,8 @@ public class MultiDriftSVB extends SVB{
 
     public double updateModelWithConceptDrift(DataOnMemory<DataInstance> batch) {
 
+        System.out.println("SAMPLE:" + this.plateuStructure.getPosteriorSampleSize());
+
         this.plateuStructure.setEvidence(batch.getList());
 
         if (firstBatch){
@@ -97,23 +105,38 @@ public class MultiDriftSVB extends SVB{
             this.plateuStructure.runInference();
 
             posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
+            this.plateuStructure.updateNaturalParameterPrior(posteriorT_1);
             return this.plateuStructure.getLogProbabilityOfEvidence();
         }
 
         //Restart Truncated-Exp
-        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+        double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
+        this.ef_TExpP.getNaturalParameters().set(0,delta);
+        this.ef_TExpP.updateMomentFromNaturalParameters();
+
+        //Restart Truncated-Exp
+        for (int i = 0; i < prior.getNumberOfBaseVectors(); i++) {
+            this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+        }
 
         boolean convergence = false;
         double elbo = Double.NaN;
         double niter=0;
-        while(!convergence && niter<100) {
+        while(!convergence && niter<10) {
 
             //Messages for TExp to Theta
-            double lambda = this.ef_TExpQ.getMomentParameters().get(0);
+            double[] lambda = new double[prior.getNumberOfBaseVectors()];
+            for (int i = 0; i < lambda.length; i++) {
+                lambda[i] = this.ef_TExpQ[i].getMomentParameters().get(0);
+            }
             CompoundVector newPrior = Serialization.deepCopy(prior);
-            newPrior.multiplyBy(1 - lambda);
+            for (int i = 0; i < lambda.length; i++) {
+                newPrior.getVectorByPosition(i).multiplyBy(1 - lambda[i]);
+            }
             CompoundVector newPosterior = Serialization.deepCopy(posteriorT_1);
-            newPosterior.multiplyBy(lambda);
+            for (int i = 0; i < lambda.length; i++) {
+                newPosterior.getVectorByPosition(i).multiplyBy(lambda[i]);
+            }
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
@@ -124,69 +147,46 @@ public class MultiDriftSVB extends SVB{
             //Compute elbo
             double newELBO = this.plateuStructure.getLogProbabilityOfEvidence();
 
-            double[] kl_q_p0_vals = new double[(int)this.plateuStructure.getNonReplictedNodes().count()];
-            double[] kl_q_pt_1_vals = new double[(int)this.plateuStructure.getNonReplictedNodes().count()];
 
-
-
-            double kl_q_p0 =0;
+            double[] kl_q_p0 = new double[this.prior.getNumberOfBaseVectors()];
             int count = 0;
             //Messages to TExp
             this.plateuStructure.updateNaturalParameterPrior(this.prior);
             for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                kl_q_p0_vals[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+                kl_q_p0[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
                         node.getPDist().getExpectedLogNormalizer(momentParents));
-                kl_q_p0+=kl_q_p0_vals[count];
                 count++;
             }
 
-//            double kl_q_p0 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
-//                Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-//                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-//                        node.getPDist().getExpectedLogNormalizer(momentParents));
-//            }).sum();
-
-            double kl_q_pt_1 =0;
+            double[] kl_q_pt_1 = new double[this.prior.getNumberOfBaseVectors()];
             count = 0;
             //Messages to TExp
             this.plateuStructure.updateNaturalParameterPrior(this.posteriorT_1);
             for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                kl_q_pt_1_vals[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
+                kl_q_pt_1[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
                         node.getPDist().getExpectedLogNormalizer(momentParents));
-                kl_q_pt_1+=kl_q_pt_1_vals[count];
                 count++;
             }
 
-//            this.plateuStructure.updateNaturalParameterPrior(this.posteriorT_1);
-//            double kl_q_pt_1 = this.plateuStructure.getNonReplictedNodes().mapToDouble(node-> {
-//                Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-//                return node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-//                        node.getPDist().getExpectedLogNormalizer(momentParents));
-//            }).sum();
-
-            ef_TExpQ.getNaturalParameters().set(0,
-                    - kl_q_pt_1 + kl_q_p0 +
-                    this.ef_TExpP.getNaturalParameters().get(0));
-            ef_TExpQ.fixNumericalInstability();
-            ef_TExpQ.updateMomentFromNaturalParameters();
+            for (int i = 0; i < ef_TExpQ.length; i++) {
+                ef_TExpQ[i].getNaturalParameters().set(0,
+                        - kl_q_pt_1[i] + kl_q_p0[i] +
+                                this.ef_TExpP.getNaturalParameters().get(0));
+                ef_TExpQ[i].fixNumericalInstability();
+                ef_TExpQ[i].updateMomentFromNaturalParameters();
 
 
-            //Elbo component assocaited to the truncated exponential.
-            newELBO-=this.ef_TExpQ.kl(this.ef_TExpP.getNaturalParameters(),this.ef_TExpP.computeLogNormalizer());
+                //Elbo component assocaited to the truncated exponential.
+                newELBO-=this.ef_TExpQ[i].kl(this.ef_TExpP.getNaturalParameters(),this.ef_TExpP.computeLogNormalizer());
+
+            }
 
             if (!Double.isNaN(elbo) &&  newELBO<elbo){
                 new IllegalStateException("Non increasing lower bound");
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
-
-            System.out.print("Delta: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda+ ", " + (- kl_q_pt_1 + kl_q_p0));
-
-            for (int i = 0; i < kl_q_p0_vals.length; i++) {
-                System.out.print(", "+ (- kl_q_pt_1_vals[i] + kl_q_p0_vals[i]));
-            }
-            System.out.println();
 
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
@@ -196,15 +196,25 @@ public class MultiDriftSVB extends SVB{
             niter++;
         }
 
+        System.out.println("end");
+
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();
+
+        this.plateuStructure.updateNaturalParameterPrior(posteriorT_1);
 
 
         return elbo;
     }
 
 
-    public double getLambdaValue(){
-        return this.ef_TExpQ.getMomentParameters().get(0);
+    public double[] getLambdaValues(){
+
+        double[] out = new double[this.prior.getNumberOfBaseVectors()];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = this.ef_TExpQ[i].getMomentParameters().get(0);
+        }
+
+        return out;
     }
 
 

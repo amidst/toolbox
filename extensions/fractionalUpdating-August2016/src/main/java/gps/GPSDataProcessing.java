@@ -9,7 +9,9 @@
  *
  */
 
-package gps;import java.io.BufferedReader;
+package gps;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.Reader;
@@ -18,14 +20,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Created by andresmasegosa on 19/7/16.
  */
 public class GPSDataProcessing {
 
-    public static void createDataByWeek(String[] args) throws Exception{
+    public static void createDataByMonth(String[] args) throws Exception{
 
 
 
@@ -36,6 +40,8 @@ public class GPSDataProcessing {
         String path = args[2];
 
         String output = args[3];
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
         for (int year = 2007; year <= 2012; year++) {
             for (int month = 0; month < 13; month++) {
@@ -53,8 +59,7 @@ public class GPSDataProcessing {
 
                 fileWriter.write("@data\n");
 
-//                for (int i = 0; i < 182; i++) {
-                for (int i = 0; i < 20; i++) {
+                for (int i = 0; i < 182; i++) {
 
                         String client=null;
                         if (i<10)
@@ -86,7 +91,6 @@ public class GPSDataProcessing {
 
                                 String[] parts= line.split(",");
 
-                                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
                                 format.parse(parts[5]);
                                 int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
@@ -121,15 +125,118 @@ public class GPSDataProcessing {
 
     }
 
+    public static void createDataByWeek(String[] args) throws Exception{
+
+
+
+        int LIMIT = Integer.parseInt(args[0]);
+
+        int SKIP = Integer.parseInt(args[1]);
+
+        String path = args[2];
+
+        String output = args[3];
+
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+        for (int year = 2007; year <= 2012; year++) {
+            for (int week = 0; week <= 53; week++) {
+
+                FileWriter fileWriter = new FileWriter(output+"_year_"+year+"_week_"+String.format("%02d", week)+".arff");
+
+                fileWriter.write("@relation mixture-"+LIMIT+"\n");
+
+                for (int i = 0; i < LIMIT; i++) {
+                    fileWriter.write("@attribute GPSX_"+i+" real\n");
+                    fileWriter.write("@attribute GPSY_"+i+" real\n");
+                }
+
+                fileWriter.write("@attribute DAY {1,2,3,4,5,6,7}\n");
+
+                fileWriter.write("@data\n");
+
+                for (int i = 0; i < 182; i++) {
+
+                    String client=null;
+                    if (i<10)
+                        client="00"+i;
+                    else if (i<100)
+                        client="0"+i;
+                    else
+                        client=i+"";
+
+                    File folder = new File(path + client + "/Trajectory/");
+                    System.out.println(path + client + "/Trajectory/");
+
+                    for (final String fileEntry : folder.list()) {
+                        Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
+                        Reader source = Files.newBufferedReader(path1);
+                        BufferedReader reader = new BufferedReader(source);
+
+                        Iterator<String> headerLines =  reader.lines().skip(6).iterator();
+                        StringBuilder builder = new StringBuilder();
+                        int count = 0;
+                        int countLine = 0;
+
+                        while (headerLines.hasNext()){
+                            String line = headerLines.next();
+                            countLine++;
+                            if (countLine%SKIP!=0){
+                                continue;
+                            }
+
+                            String[] parts= line.split(",");
+
+
+                            format.parse(parts[5]);
+                            int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
+
+                            if (year!=format.getCalendar().get(Calendar.YEAR))
+                                continue;
+
+                            if (week!=format.getCalendar().get(Calendar.WEEK_OF_YEAR))
+                                continue;
+
+                            if (count<LIMIT){
+                                builder.append(parts[0]+","+parts[1]+",");
+                                count++;
+                            }else {
+                                fileWriter.write(builder.toString()+dayOfWeek+"\n");
+                                count=0;
+                                builder = new StringBuilder();
+                            }
+
+                        }
+
+
+                        reader.close();
+                        source.close();
+
+
+                    }
+                }
+                fileWriter.close();
+            }
+        }
+
+    }
+
     public static void main(String[] args) throws Exception {
 
+/*
         args = new String[4];
         args[0]="1";
         args[1]="10";
         args[2]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/Data/";
         args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out/Mix";
+*/
 
-        createDataByWeek(args);
+        if (args[4].contains("month"))
+             createDataByMonth(args);
+        else if (args[4].contains("week"))
+            createDataByWeek(args);
+
+
     }
 
 }

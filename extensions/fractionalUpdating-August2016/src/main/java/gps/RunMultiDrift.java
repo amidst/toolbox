@@ -16,7 +16,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,21 +28,22 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 4/5/16.
  */
-public class RunSVB {
+public class RunMultiDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
-        int ntopics = 10;
+        String model = "BCC1";
+//        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_small/";
+
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 50000;
 
         if (args.length>1){
             int cont = 0;
             model = args[cont++];
-
             dataPath=args[cont++];
             ntopics= Integer.parseInt(args[cont++]);
             niter = Integer.parseInt(args[cont++]);
@@ -54,7 +55,7 @@ public class RunSVB {
 
 
 
-        SVB svb = new SVB();
+        MultiDriftSVB svb = new MultiDriftSVB();
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
@@ -79,13 +80,12 @@ public class RunSVB {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
-        }
-        svb.setOutput(true);
+        }        svb.setOutput(true);
 
         svb.initLearning();
 
 
-        FileWriter fw = new FileWriter(dataPath+"SVB_Output_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"MultiDriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
 
 //        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
@@ -95,6 +95,8 @@ public class RunSVB {
 
 
         int count=0;
+
+
 
         Random random = new Random(0);
 
@@ -122,12 +124,19 @@ public class RunSVB {
                     DataOnMemoryListContainer(batch.getAttributes());
             test.addAll(batch.getList().subList(limit+1,batch.getNumberOfDataInstances()));
 
-
             Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
 
+            double lambda = 0;
+            int n = 0;
             while (iteratorInner.hasNext()){
-                svb.updateModel(iteratorInner.next());
+                svb.updateModelWithConceptDrift(iteratorInner.next());
+                double[] vals =  svb.getLambdaValues();
+                for (int i = 0; i < vals.length; i++) {
+                    lambda +=vals[i];
+                    n++;
+                }
             }
+            lambda/=n;
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
@@ -137,9 +146,9 @@ public class RunSVB {
 
             double inst =test.getNumberOfDataInstances();
 
-            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
+            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
         }
         fw.close();
     }

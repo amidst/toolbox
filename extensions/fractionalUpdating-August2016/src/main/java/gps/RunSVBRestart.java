@@ -23,28 +23,35 @@ import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 
 /**
  * Created by andresmasegosa on 4/5/16.
  */
-public class RunSVB_Mont {
+public class RunSVBRestart {
 
     public static void main(String[] args) throws Exception{
 
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out/";
-        int ntopics = 0;
+        String model = "BCC1";
+//        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_small/";
+
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 50000;
 
         if (args.length>1){
-            dataPath=args[0];
-            ntopics= Integer.parseInt(args[1]);
-            niter = Integer.parseInt(args[2]);
-            threshold = Double.parseDouble(args[3]);
-            docsPerBatch = Integer.parseInt(args[4]);
+            int cont = 0;
+            model = args[cont++];
 
-            args[0]="";
+            dataPath=args[cont++];
+            ntopics= Integer.parseInt(args[cont++]);
+            niter = Integer.parseInt(args[cont++]);
+            threshold = Double.parseDouble(args[cont++]);
+            docsPerBatch = Integer.parseInt(args[cont++]);
+
+            args[1]="";
         }
 
 
@@ -62,38 +69,53 @@ public class RunSVB_Mont {
         svb.getPlateuStructure().getVMP().setThreshold(threshold);
 
         svb.setWindowsSize(docsPerBatch);
-        svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(),ntopics));
+        if (model.compareTo("GPS0")==0) {
+            svb.setDAG(DAGsGeneration.getGPSMixtureDAGNoDay(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("GPS1")==0) {
+            svb.setDAG(DAGsGeneration.getGPSMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("GPS2")==0) {
+            svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC0")==0) {
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+        }else if (model.compareTo("BCC1")==0) {
+            svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC2")==0) {
+            svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
+        }
+
         svb.setOutput(true);
 
         svb.initLearning();
 
 
-        FileWriter fw = new FileWriter(dataPath+"SVBoutput_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"SVBRestart_Output_"+Arrays.toString(args)+"_.txt");
 
 
 //        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
 
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
-        Iterator<DataOnMemory<DataInstance>> iterator =
-                Arrays.asList(new File(dataPath).list())
-                        .stream()
-                        .filter(string -> string.endsWith(".arff"))
-                        .map(string -> DataStreamLoader.loadDataOnMemoryFromFile(path+string))
-                        .iterator();
 
         int count=0;
 
 
 
+        Random random = new Random(0);
+        String[] strings = new File(dataPath).list();
+        Arrays.sort(strings);
+        for (String string : strings) {
 
-        while(iterator.hasNext()){
+            if (!string.endsWith(".arff"))
+                continue;
 
-            DataOnMemory<DataInstance> batch= iterator.next();
+            System.out.println("EPOCH: " + count);
+
+            DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
+
             if (batch.getNumberOfDataInstances()<10)
                 continue;
 
-            Collections.shuffle(batch.getList());
+            Collections.shuffle(batch.getList(),random);
 
             int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
             DataOnMemoryListContainer<DataInstance> train= new
@@ -119,7 +141,11 @@ public class RunSVB_Mont {
 
             double inst =test.getNumberOfDataInstances();
 
+            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
+
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+
+            svb.initLearning();
         }
         fw.close();
     }
