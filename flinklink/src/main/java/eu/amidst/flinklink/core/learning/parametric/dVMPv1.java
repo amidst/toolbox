@@ -71,7 +71,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
 
-    private static boolean INITIALIZE = false;
+    private static boolean INITIALIZE = true;
 
     /**
      * Represents the directed acyclic graph {@link DAG}.
