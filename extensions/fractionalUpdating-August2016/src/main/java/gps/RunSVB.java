@@ -113,7 +113,13 @@ public class RunSVB {
 
             Collections.shuffle(batch.getList(),random);
 
-            int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
+            int limit = 0;
+            if (batch.getNumberOfDataInstances()>docsPerBatch){
+                limit = docsPerBatch;
+            }else{
+                limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
+            }
+
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
             train.addAll(batch.getList().subList(0,limit));
