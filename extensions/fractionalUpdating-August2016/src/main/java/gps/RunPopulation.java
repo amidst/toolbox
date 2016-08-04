@@ -118,7 +118,7 @@ public class RunPopulation {
                 System.out.println("EPOCH: " + count);
 
                 DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
-            if (batch.getNumberOfDataInstances()<10)
+                        if (batch.getNumberOfDataInstances()<Main.MIN)
                 continue;
 
             Collections.shuffle(batch.getList(),random);

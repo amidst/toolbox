@@ -22,7 +22,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by andresmasegosa on 19/7/16.
@@ -41,14 +44,18 @@ public class GPSDataProcessing {
 
         String output = args[3];
 
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
         for (int year = 2007; year <= 2012; year++) {
+
+            final int finalYear = year;
             for (int month = 0; month < 13; month++) {
 
-                FileWriter fileWriter = new FileWriter(output+"_year_"+year+"_mont_"+month+".arff");
+                try {
+
+                FileWriter fileWriter = new FileWriter(output+"_year_"+ finalYear +"_mont_"+String.format("%02d", month)+".arff");
 
                 fileWriter.write("@relation mixture-"+LIMIT+"\n");
+
 
                 for (int i = 0; i < LIMIT; i++) {
                     fileWriter.write("@attribute GPSX_"+i+" real\n");
@@ -59,7 +66,14 @@ public class GPSDataProcessing {
 
                 fileWriter.write("@data\n");
 
-                for (int i = 0; i < 182; i++) {
+
+                //for (int i = 0; i < 182; i++) {
+                 final int finalMonth = month;
+                 List<String> outputString =   IntStream.range(0,182).parallel().mapToObj(i -> {
+
+                        StringBuilder out = new StringBuilder();
+
+                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
                         String client=null;
                         if (i<10)
@@ -74,7 +88,10 @@ public class GPSDataProcessing {
 
                         for (final String fileEntry : folder.list()) {
                             Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
-                            Reader source = Files.newBufferedReader(path1);
+                            Reader source = null;
+                            try {
+                                source = Files.newBufferedReader(path1);
+
                             BufferedReader reader = new BufferedReader(source);
 
                             Iterator<String> headerLines =  reader.lines().skip(6).iterator();
@@ -95,17 +112,17 @@ public class GPSDataProcessing {
                                 format.parse(parts[5]);
                                 int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
 
-                                if (year!=format.getCalendar().get(Calendar.YEAR))
+                                if (finalYear !=format.getCalendar().get(Calendar.YEAR))
                                     continue;
 
-                                if (month!=format.getCalendar().get(Calendar.MONTH))
+                                if (finalMonth !=format.getCalendar().get(Calendar.MONTH))
                                     continue;
 
                                 if (count<LIMIT){
                                     builder.append(parts[0]+","+parts[1]+",");
                                     count++;
                                 }else {
-                                    fileWriter.write(builder.toString()+dayOfWeek+"\n");
+                                    out.append(builder.toString()+dayOfWeek+"\n");
                                     count=0;
                                     builder = new StringBuilder();
                                 }
@@ -116,10 +133,22 @@ public class GPSDataProcessing {
                             reader.close();
                             source.close();
 
-
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
+
+                        return out.toString();
+                    }).collect(Collectors.toList());
+
+                    for (String s : outputString) {
+                        fileWriter.write(s);
                     }
+
                 fileWriter.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -137,12 +166,13 @@ public class GPSDataProcessing {
 
         String output = args[3];
 
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
         for (int year = 2007; year <= 2012; year++) {
+            final int finalYear = year;
             for (int week = 0; week <= 53; week++) {
 
-                FileWriter fileWriter = new FileWriter(output+"_year_"+year+"_week_"+String.format("%02d", week)+".arff");
+                try{
+                FileWriter fileWriter = new FileWriter(output+"_year_"+ finalYear +"_week_"+String.format("%02d", week)+".arff");
 
                 fileWriter.write("@relation mixture-"+LIMIT+"\n");
 
@@ -155,7 +185,12 @@ public class GPSDataProcessing {
 
                 fileWriter.write("@data\n");
 
-                for (int i = 0; i < 182; i++) {
+
+                    final int finalWeek = week;
+                    List<String> outputString =   IntStream.range(0,182).parallel().mapToObj(i -> {
+
+                    StringBuilder out = new StringBuilder();
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
                     String client=null;
                     if (i<10)
@@ -170,7 +205,9 @@ public class GPSDataProcessing {
 
                     for (final String fileEntry : folder.list()) {
                         Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
-                        Reader source = Files.newBufferedReader(path1);
+                        try {
+                            Reader source = Files.newBufferedReader(path1);
+
                         BufferedReader reader = new BufferedReader(source);
 
                         Iterator<String> headerLines =  reader.lines().skip(6).iterator();
@@ -191,10 +228,10 @@ public class GPSDataProcessing {
                             format.parse(parts[5]);
                             int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
 
-                            if (year!=format.getCalendar().get(Calendar.YEAR))
+                            if (finalYear !=format.getCalendar().get(Calendar.YEAR))
                                 continue;
 
-                            if (week!=format.getCalendar().get(Calendar.WEEK_OF_YEAR))
+                            if (finalWeek !=format.getCalendar().get(Calendar.WEEK_OF_YEAR))
                                 continue;
 
                             if (count<LIMIT){
@@ -211,25 +248,36 @@ public class GPSDataProcessing {
 
                         reader.close();
                         source.close();
-
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
+
+                    return out.toString();
+                }).collect(Collectors.toList());
+
+                for (String s : outputString) {
+                    fileWriter.write(s);
+                }
                 fileWriter.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
+    }
 
     }
 
     public static void main(String[] args) throws Exception {
 
-/*
-        args = new String[4];
+
+        args = new String[5];
         args[0]="1";
         args[1]="10";
         args[2]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/Data/";
-        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out/Mix";
-*/
+        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_week_10/Mix";
+        args[4]="week";
+
 
         if (args[4].contains("month"))
              createDataByMonth(args);

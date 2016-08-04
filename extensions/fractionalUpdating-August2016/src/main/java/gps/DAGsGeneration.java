@@ -27,7 +27,7 @@ public class DAGsGeneration {
 
     public static DAG getBCCFullMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
-        Variables variables = new Variables(attributes.subList(10,14));
+        Variables variables = new Variables(attributes);
 
         // Define the class variable.
         Variable classVar = variables.getVariableByName("DEFAULTING");
