@@ -155,7 +155,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
     }
 
-    private void updateFirstBatch(DataOnMemory<DataInstance> firstBatch){
+    private double updateFirstBatch(DataOnMemory<DataInstance> firstBatch){
 
         //We perform full VMP on the first batch
         this.svb.getPlateuStructure().setVmp(new VMP());
@@ -171,7 +171,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
         this.svb.updateNaturalParameterPosteriors(initialPosterior);
 
-        this.svb.updateModel(firstBatch);
+        double out = this.svb.updateModel(firstBatch);
 
         currentParam =  Serialization.deepCopy(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
 
@@ -191,14 +191,16 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.svb.updateNaturalParameterPosteriors(currentParam);
 
         iteration=0;
+
+        return out;
     }
 
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
         if (firstBatch) {
-            this.updateFirstBatch(batch);
             firstBatch = false;
+            return this.updateFirstBatch(batch);
         }
 
 
