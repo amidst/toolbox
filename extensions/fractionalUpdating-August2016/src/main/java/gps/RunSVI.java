@@ -37,9 +37,9 @@ public class RunSVI {
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 100;
         int setSIZE = 165000;
-        double learningRate = 0.75;
+        double learningRate = 0.55;
 
         if (args.length>1){
             int cont  = 0;
@@ -59,6 +59,8 @@ public class RunSVI {
 
 
         StochasticVI svb = new StochasticVI();
+
+        svb.setVMPOnFirstBatch(true);
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
@@ -83,7 +85,10 @@ public class RunSVI {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC3")==0) {
+            svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
         }
+
 
         svb.setOutput(true);
 
@@ -125,12 +130,13 @@ public class RunSVI {
 
             Collections.shuffle(batch.getList(),random);
 
-            int limit = 0;
-            if (batch.getNumberOfDataInstances()>docsPerBatch){
-                limit = docsPerBatch;
-            }else{
-                limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
-            }
+            int maxTrain = 10000;
+            if (batch.getNumberOfDataInstances()<maxTrain)
+                maxTrain= batch.getNumberOfDataInstances();
+
+
+            int limit = (int) ((maxTrain*2.0)/3.0);
+
 
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());

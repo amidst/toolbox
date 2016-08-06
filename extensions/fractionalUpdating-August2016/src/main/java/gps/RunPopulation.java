@@ -33,13 +33,13 @@ public class RunPopulation {
     public static void main(String[] args) throws Exception{
 
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
-        int setSIZE = 5000;
-        double learningRate = 0.75;
+        int docsPerBatch = 100;
+        int setSIZE = 1000;
+        double learningRate = 0.55;
 
         if (args.length>1){
             int cont = 0;
@@ -59,6 +59,7 @@ public class RunPopulation {
 
 
         PopulationVI svb = new PopulationVI();
+        svb.setVMPOnFirstBatch(true);
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
@@ -83,7 +84,14 @@ public class RunPopulation {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
-        }        svb.setOutput(true);
+        }else if (model.compareTo("BCC3")==0) {
+            svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }
+
+
+
+
+        svb.setOutput(true);
 
         svb.setLocalThreshold(threshold);
         svb.setOutput(true);
@@ -123,12 +131,13 @@ public class RunPopulation {
 
             Collections.shuffle(batch.getList(),random);
 
-            int limit = 0;
-            if (batch.getNumberOfDataInstances()>docsPerBatch){
-                limit = docsPerBatch;
-            }else{
-                limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
-            }
+            int maxTrain = 10000;
+            if (batch.getNumberOfDataInstances()<maxTrain)
+                maxTrain= batch.getNumberOfDataInstances();
+
+
+            int limit = (int) ((maxTrain*2.0)/3.0);
+
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
             train.addAll(batch.getList().subList(0,limit));

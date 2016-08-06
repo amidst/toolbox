@@ -68,7 +68,7 @@ public class DAGsGeneration {
         List<Variable> localHiddenVars = new ArrayList<>();
         List<Attribute> attributesList = attributes.getListOfNonSpecialAttributes();
         for (Attribute attribute : attributesList) {
-            if (attribute.getName().compareTo("Default")==0)
+            if (attribute.getName().compareTo("DEFAULTING")==0)
                 continue;
             localHiddenVars.add(variables.newMultinomialVariable("LocalHidden_"+attribute.getName(),nstates));
         }
@@ -98,7 +98,52 @@ public class DAGsGeneration {
         // Link the local hidden as parent of all predictive attributes
 
         for (Attribute attribute : attributesList) {
-            if (attribute.getName().compareTo("Default")==0)
+            if (attribute.getName().compareTo("DEFAULTING")==0)
+                continue;
+
+            dag.getParentSet(variables.getVariableByName(attribute.getName())).addParent(variables.getVariableByName("LocalHidden_"+attribute.getName()));
+        }
+
+        // Show the new dynamic DAG structure
+        System.out.println(dag.toString());
+
+        return dag;
+    }
+
+
+    public static DAG getBCCLocalMixtureDAG(Attributes attributes, int nstates) {
+        // Create a Variables object from the attributes of the input data stream.
+        List<Attribute> atts = attributes.getFullListOfAttributes().subList(2,8);
+        atts.add(attributes.getAttributeByName("DEFAULTING"));
+
+        attributes = new Attributes(atts);
+
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DEFAULTING");
+
+        // Define a local hidden variable.
+        List<Variable> localHiddenVars = new ArrayList<>();
+        List<Attribute> attributesList = attributes.getListOfNonSpecialAttributes();
+        for (Attribute attribute : attributesList) {
+            if (attribute.getName().compareTo("DEFAULTING")==0)
+                continue;
+            localHiddenVars.add(variables.newMultinomialVariable("LocalHidden_"+attribute.getName(),nstates));
+        }
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .forEach(w -> w.addParent(classVar));
+
+        // Link the local hidden as parent of all predictive attributes
+        for (Attribute attribute : attributesList) {
+            if (attribute.getName().compareTo("DEFAULTING")==0)
                 continue;
 
             dag.getParentSet(variables.getVariableByName(attribute.getName())).addParent(variables.getVariableByName("LocalHidden_"+attribute.getName()));

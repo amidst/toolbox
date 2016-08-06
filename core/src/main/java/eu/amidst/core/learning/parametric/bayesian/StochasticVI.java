@@ -206,7 +206,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
         NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
-        newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
+        newParam.multiplyBy(this.dataSetSize/(double)batch.getNumberOfDataInstances());
         newParam.sum(prior);
 
         double stepSize = Math.pow(1+ iteration,-learningFactor);

@@ -78,7 +78,11 @@ public class RunMultiDrift {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
-        }        svb.setOutput(true);
+        }else if (model.compareTo("BCC3")==0) {
+            svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }
+
+        svb.setOutput(true);
 
         svb.initLearning();
 
@@ -113,12 +117,13 @@ public class RunMultiDrift {
 
             Collections.shuffle(batch.getList(),random);
 
-            int limit = 0;
-            if (batch.getNumberOfDataInstances()>docsPerBatch){
-                limit = docsPerBatch;
-            }else{
-                limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
-            }
+            int maxTrain = 10000;
+            if (batch.getNumberOfDataInstances()<maxTrain)
+                maxTrain= batch.getNumberOfDataInstances();
+
+
+            int limit = (int) ((maxTrain*2.0)/3.0);
+
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
             train.addAll(batch.getList().subList(0,limit));
