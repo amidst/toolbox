@@ -498,7 +498,7 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
 
                 //double percentage = 100*(newelbo-oldelbo)/oldelbo;
                 //if (percentage>-1 || learningRate<0.2){
-                if (newelbo>= oldelbo || learningRate<0.2){
+                if (newelbo>= oldelbo){
                     oldPosterior = Serialization.deepCopy(currentPosterior);
                     updatedPosterior = newPosterior;
 

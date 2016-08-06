@@ -61,7 +61,7 @@ public class StochasticVIBCC {
         env.setParallelism(nParallelDegree);
         env.getConfig().disableSysoutLogging();
 
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env, fileName, false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
 
         DAG hiddenNB = null;
         if (model.compareTo("mixture")==0){
