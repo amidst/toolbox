@@ -96,7 +96,7 @@ public class dVMPv1GPS {
         if (model.compareTo("FA")==0) {
             parallelVB.setIdenitifableModelling(new IdentifiableFAModel(nStates));
         }else if (model.compareTo("LR")==0) {
-            parallelVB.setIdenitifableModelling(new IdentifiableLRModel(hiddenNB.getVariables().getNumberOfVars()-1));
+            parallelVB.setIdenitifableModelling(new IdentifiableLRModel(dataFlink.getAttributes().subList(0,dataFlink.getAttributes().getNumberOfAttributes()-1)));
         }
 
         parallelVB.setOutput(true);

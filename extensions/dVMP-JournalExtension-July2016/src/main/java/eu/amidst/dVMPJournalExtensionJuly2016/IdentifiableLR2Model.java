@@ -11,25 +11,17 @@
  */
 package eu.amidst.dVMPJournalExtensionJuly2016;
 
-import eu.amidst.core.datastream.Attribute;
-import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * Created by ana@cs.aau.dk <mailto:ana@cs.aau.dk> on 15/02/16.
  */
-public class IdentifiableLRModel implements IdenitifableModelling, Serializable {
+public class IdentifiableLR2Model implements IdenitifableModelling, Serializable {
 
-    private final List<Attribute> attributes;
-    private int numPredictors;
-
-    public IdentifiableLRModel(Attributes attributes2){
-        this.attributes = attributes2.getListOfNonSpecialAttributes();
-        this.numPredictors = attributes.size();
+    public IdentifiableLR2Model(){
     }
 
     /**
@@ -39,7 +31,7 @@ public class IdentifiableLRModel implements IdenitifableModelling, Serializable 
 
     @Override
     public int getNumberOfEpochs() {
-        return numPredictors+2;
+        return 2;
     }
 
 
@@ -51,16 +43,11 @@ public class IdentifiableLRModel implements IdenitifableModelling, Serializable 
 
         if (variable.getName().contains("_Gamma_"))
             return epoch%getNumberOfEpochs() ==0;
-        else if (variable.getName().contains("Beta0"))
-            return epoch%getNumberOfEpochs() ==1;
-        else if (variable.getName().contains("Beta_")) {
-            for (int i = 0; i < attributes.size(); i++) {
-                if (variable.getName().contains("Beta_"+attributes.get(i).getName()))
-                    return epoch % getNumberOfEpochs() == i+2;
-            }
-            return true;
+        else if (variable.getName().contains("Beta")) {
+            return epoch % getNumberOfEpochs() == 1;
         }else
             return true;
+
     }
 
 }

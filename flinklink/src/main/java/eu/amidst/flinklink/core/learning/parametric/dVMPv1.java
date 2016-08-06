@@ -18,10 +18,7 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
-import eu.amidst.core.learning.parametric.bayesian.utils.DataPosteriorAssignment;
-import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
-import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -31,7 +28,6 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
-import eu.amidst.flinklink.core.learning.parametric.utils.VMPParameterv1;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -156,8 +152,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     }
 
     public void initLearning() {
-        VMPParameterv1 vmpParameter = new VMPParameterv1(this.svb.getPlateuStructure());
-        vmpParameter.setMaxGlobaIter(1);
+        VMPLocalUpdates vmpParameter = new VMPLocalUpdates(this.svb.getPlateuStructure());
         this.svb.getPlateuStructure().setVmp(vmpParameter);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
