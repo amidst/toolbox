@@ -65,12 +65,13 @@ public class StochasticVIBCC {
 
         DAG hiddenNB = null;
         if (model.compareTo("mixture")==0){
-            hiddenNB = DAGsGeneration.getGPSMixtureDAG(dataFlink.getAttributes(), nStates);
+            hiddenNB = DAGsGeneration.getBCCMixtureDAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("FA")==0){
-            hiddenNB = DAGsGeneration.getGPSFADAG(dataFlink.getAttributes(), nStates);
+            hiddenNB = DAGsGeneration.getBCCFADAG(dataFlink.getAttributes(), nStates);
         }else if (model.compareTo("LR")==0) {
-            hiddenNB = DAGsGeneration.getGPSLRDAG(dataFlink.getAttributes());
+            hiddenNB = DAGsGeneration.getBCCLRDAG(dataFlink.getAttributes());
         }
+    
 
         long start = System.nanoTime();
 
