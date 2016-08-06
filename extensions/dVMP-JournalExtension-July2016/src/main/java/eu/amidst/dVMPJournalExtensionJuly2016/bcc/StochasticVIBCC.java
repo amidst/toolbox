@@ -71,7 +71,7 @@ public class StochasticVIBCC {
         }else if (model.compareTo("LR")==0) {
             hiddenNB = DAGsGeneration.getBCCLRDAG(dataFlink.getAttributes());
         }
-    
+
 
         long start = System.nanoTime();
 
@@ -94,7 +94,7 @@ public class StochasticVIBCC {
         parallelVB.updateModel(dataFlink);
 
 
-        return parallelVB.getSVB().getPlateuStructure().getPlateauMomentParameterPosterior();
+        return parallelVB.getSVB().getPlateuStructure().getPlateauNaturalParameterPosterior();
     }
 
     public static void main(String[] args) throws Exception {
