@@ -45,8 +45,8 @@ public class dVMPv1GPS {
 
         int globalIter = 100;
         double globalThreshold = 0.0000000001;
-        int localIter = 10;
-        double localThreshold = 0.1;
+        int localIter = 50;
+        double localThreshold = 0.001;
         int seed = 0;
         int nParallelDegree = 32;
 

@@ -461,7 +461,9 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
             if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
+                vmp.setMaxIter(10);
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
+                vmp.setThreshold(0.1);
                 vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
                 this.svb.getPlateuStructure().setVmp(vmp);
 
@@ -494,8 +496,9 @@ public class dVMPv3 implements BayesianParameterLearningAlgorithm, Serializable 
                 oldelbo = Double.NEGATIVE_INFINITY;
             }else{
 
-                double percentage = 100*(newelbo-oldelbo)/oldelbo;
-                if (percentage>-1 || learningRate<0.2){
+                //double percentage = 100*(newelbo-oldelbo)/oldelbo;
+                //if (percentage>-1 || learningRate<0.2){
+                if (newelbo>= oldelbo || learningRate<0.2){
                     oldPosterior = Serialization.deepCopy(currentPosterior);
                     updatedPosterior = newPosterior;
 

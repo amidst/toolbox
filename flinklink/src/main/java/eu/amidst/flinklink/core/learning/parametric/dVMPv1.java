@@ -440,7 +440,9 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
+                vmp.setMaxIter(10);
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
+                vmp.setThreshold(0.1);
                 vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
                 this.svb.getPlateuStructure().setVmp(vmp);
             }

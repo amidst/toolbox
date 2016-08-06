@@ -412,6 +412,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
+            System.out.println("BATCH:" + dataBatch.getBatchID() + ", " + dataBatch.getNumberOfDataInstances());
+
             if (dataBatch.getNumberOfDataInstances()==0){
                 elbo.aggregate(basedELBO);
                 System.out.println(basedELBO);
@@ -468,7 +470,9 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
+                vmp.setMaxIter(10);
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
+                vmp.setThreshold(0.1);
                 vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
                 this.svb.getPlateuStructure().setVmp(vmp);
 
