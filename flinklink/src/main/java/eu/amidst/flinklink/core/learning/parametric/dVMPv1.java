@@ -28,6 +28,7 @@ import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.learning.parametric.utils.VMPParameterv1;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -152,7 +153,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     }
 
     public void initLearning() {
-        VMPLocalUpdates vmpParameter = new VMPLocalUpdates(this.svb.getPlateuStructure());
+        VMPParameterv1 vmpParameter = new VMPParameterv1(this.svb.getPlateuStructure());
         this.svb.getPlateuStructure().setVmp(vmpParameter);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
