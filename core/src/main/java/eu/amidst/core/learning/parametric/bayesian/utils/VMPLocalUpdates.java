@@ -38,7 +38,7 @@ public class VMPLocalUpdates extends VMP {
 
     PlateuStructure plateuStructure;
 
-    boolean firstTime = true;
+    boolean firstTime = false;
     public VMPLocalUpdates(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }

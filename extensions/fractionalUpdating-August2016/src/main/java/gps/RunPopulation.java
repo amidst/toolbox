@@ -37,9 +37,9 @@ public class RunPopulation {
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 100;
-        int setSIZE = 1000;
-        double learningRate = 0.55;
+        int docsPerBatch = 10000;
+        int setSIZE = 20000;
+        double learningRate = 0.75;
 
         if (args.length>1){
             int cont = 0;
@@ -116,6 +116,8 @@ public class RunPopulation {
 
         Random random = new Random(0);
 
+        double totalLog = 0;
+
         String[] strings = new File(dataPath).list();
         Arrays.sort(strings);
         for (String string : strings) {
@@ -164,7 +166,10 @@ public class RunPopulation {
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+
+            totalLog+=log/inst;
         }
         fw.close();
+        System.out.println("TOTAL LOG: " + totalLog);
     }
 }

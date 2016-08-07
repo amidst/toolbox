@@ -33,13 +33,13 @@ public class RunSVI {
     public static void main(String[] args) throws Exception{
 
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 100;
-        int setSIZE = 165000;
-        double learningRate = 0.55;
+        int docsPerBatch = 10000;
+        int setSIZE = 1235000;
+        double learningRate = 0.75;
 
         if (args.length>1){
             int cont  = 0;
@@ -115,6 +115,7 @@ public class RunSVI {
 
         Random random = new Random(0);
 
+        double totalLog = 0;
         String[] strings = new File(dataPath).list();
         Arrays.sort(strings);
         for (String string : strings) {
@@ -164,7 +165,10 @@ public class RunSVI {
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+            totalLog+=log/inst;
         }
         fw.close();
+
+        System.out.println("TOTAL LOG: " + totalLog);
     }
 }
