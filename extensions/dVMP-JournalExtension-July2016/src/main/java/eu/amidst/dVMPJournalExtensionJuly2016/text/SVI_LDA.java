@@ -13,20 +13,88 @@ package eu.amidst.dVMPJournalExtensionJuly2016.text;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.io.BayesianNetworkWriter;
+import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
+import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import eu.amidst.lda.flink.PlateauLDAFlink;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 
 /**
  * Created by andresmasegosa on 12/5/16.
  */
 public class SVI_LDA {
+
+    public static CompoundVector initialize(String[] args) throws FileNotFoundException {
+
+        String dataPath = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_train.arff";
+        String dataTest = "/Users/ana/Dropbox/amidst_postdoc/abstracts/abstracts.all.shuffled_test.arff";
+        int ntopics = 5;
+        int niter = 100;
+        double threshold = 0.1;
+        int docsPerBatch = 10;
+        int timeLimit = -1;
+        int ncores = 4;
+        boolean amazon_cluster = false;
+
+
+        if (args.length>1){
+            dataPath = args[0];
+            dataTest = args[1];
+            ntopics = Integer.parseInt(args[2]);
+            niter = Integer.parseInt(args[3]);
+            threshold = Double.parseDouble(args[4]);
+            docsPerBatch = Integer.parseInt(args[5]);
+            timeLimit = Integer.parseInt(args[6]);
+            ncores = Integer.parseInt(args[7]);
+            amazon_cluster = Boolean.parseBoolean(args[8]);
+        }
+
+        final ExecutionEnvironment env;
+
+        if(amazon_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            conf.setInteger("taskmanager.numberOfTaskSlots",ncores);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(ncores);
+            env.getConfig().disableSysoutLogging();
+        }
+
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, dataPath, false);
+
+
+        dVMP svb = new dVMP();
+        PlateauLDAFlink plateauLDA = new PlateauLDAFlink(dataInstances.getAttributes(),"word","count");
+        plateauLDA.setNTopics(ntopics);
+        svb.setPlateuStructure(plateauLDA);
+
+        svb.setOutput(true);
+        svb.setMaximumGlobalIterations(1);
+        svb.setMaximumLocalIterations(niter);
+        svb.setLocalThreshold(threshold);
+        svb.setGlobalThreshold(threshold);
+        svb.setTimeLimit(timeLimit);
+        svb.setSeed(5);
+
+        svb.setBatchSize(docsPerBatch);
+        svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
+        svb.setDAG(plateauLDA.getDagLDA());
+        svb.initLearning();
+        svb.updateModel(dataInstances);
+
+        return svb.getSVB().getPlateuStructure().getPlateauNaturalParameterPosterior();
+    }
+
 
     public static void main(String[] args) throws Exception {
 
@@ -91,6 +159,14 @@ public class SVI_LDA {
         svb.setTimiLimit(timeLimit);
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.initLearning();
+
+
+        CompoundVector initialPosterior = initialize(new String[]{args[0],args[1],args[2],args[3],args[6]});
+
+        svb.getSVI().getSVB().updateNaturalParameterPosteriors(initialPosterior);
+        svb.getSVI().setVMPOnFirstBatch(false);
+
+
         svb.updateModel(dataInstances);
 
 
