@@ -29,9 +29,9 @@ public class RunDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
-        int ntopics = 10;
+        String model = "GPS1";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
@@ -84,6 +84,10 @@ public class RunDrift {
         svb.setOutput(true);
 
         svb.initLearning();
+
+        svb.randomInitialize();
+
+        System.out.println(svb.getLearntBayesianNetwork());
 
 
         FileWriter fw = new FileWriter(dataPath+"DriftSVB_Output_"+Arrays.toString(args)+"_.txt");

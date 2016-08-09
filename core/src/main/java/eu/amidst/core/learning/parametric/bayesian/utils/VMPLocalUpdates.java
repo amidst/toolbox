@@ -38,12 +38,12 @@ public class VMPLocalUpdates extends VMP {
 
     PlateuStructure plateuStructure;
 
-    boolean firstTime = false;
+    boolean firstTime = true;
     public VMPLocalUpdates(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }
 
-    private void init(){
+    public void init(){
         CompoundVector posteriorOLD = this.plateuStructure.getPlateauNaturalParameterPosterior();
         CompoundVector posteriorNew = this.plateuStructure.getPlateauNaturalParameterPosterior();
 
@@ -90,11 +90,6 @@ public class VMPLocalUpdates extends VMP {
     public void runInference() {
 
         nIter = 0;
-
-        if (firstTime){
-            init();
-            firstTime=false;
-        }
 
         boolean convergence = false;
         probOfEvidence = Double.NEGATIVE_INFINITY;

@@ -33,7 +33,7 @@ public class RunMultiDrift {
     public static void main(String[] args) throws Exception{
 
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
@@ -86,6 +86,9 @@ public class RunMultiDrift {
 
         svb.initLearning();
 
+        svb.randomInitialize();
+
+        System.out.println(svb.getLearntBayesianNetwork());
 
         FileWriter fw = new FileWriter(dataPath+"MultiDriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
@@ -99,6 +102,7 @@ public class RunMultiDrift {
         int count=0;
 
 
+        double totalLog = 0;
 
         Random random = new Random(0);
 
@@ -157,7 +161,12 @@ public class RunMultiDrift {
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+            totalLog+=log/inst;
+
         }
         fw.close();
+
+        System.out.println("TOTAL LOG: " + totalLog);
+
     }
 }

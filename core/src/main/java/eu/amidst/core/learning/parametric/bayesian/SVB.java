@@ -24,6 +24,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -263,6 +264,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
+
         double elboBatch = 0;
         if (!nonSequentialModel){
             if (this.randomRestart) this.getPlateuStructure().resetQs();
@@ -476,6 +478,30 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
         if (transitionMethod!=null)
            this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
+    }
+
+
+
+    public void randomInitialize(){
+        VMP original = this.getPlateuStructure().getVMP();
+
+        VMPLocalUpdates vmp = new VMPLocalUpdates(this.getPlateuStructure());
+        vmp.setMaxIter(this.getPlateuStructure().getVMP().getMaxIter());
+        vmp.setThreshold(this.getPlateuStructure().getVMP().getThreshold());
+        vmp.setTestELBO(this.getPlateuStructure().getVMP().isOutput());
+        this.getPlateuStructure().setVmp(vmp);
+
+        this.initLearning();
+
+        vmp.init();
+
+        CompoundVector posterior = this.getPlateuStructure().getPlateauNaturalParameterPosterior();
+
+        this.getPlateuStructure().setVmp(original);
+
+        this.initLearning();
+
+        this.plateuStructure.updateNaturalParameterPosteriors(posterior);
     }
 
     /**

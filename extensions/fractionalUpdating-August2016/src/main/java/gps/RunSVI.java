@@ -15,10 +15,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.StochasticVI;
-import eu.amidst.core.models.BayesianNetwork;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,14 +32,14 @@ public class RunSVI {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS2";
+        String model = "GPS0";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-        int ntopics = 0;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 100;
+        int docsPerBatch = 1000;
         int setSIZE = 1235000;
-        double learningRate = 1;
+        double learningRate = 0.5;
 
         if (args.length>1){
             int cont  = 0;
@@ -61,8 +59,6 @@ public class RunSVI {
 
 
         StochasticVI svb = new StochasticVI();
-
-        svb.setVMPOnFirstBatch(true);
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
@@ -103,6 +99,10 @@ public class RunSVI {
 
         svb.initLearning();
 
+
+        svb.getSVB().randomInitialize();
+
+        System.out.println(svb.getLearntBayesianNetwork());
 
         FileWriter fw = new FileWriter(dataPath+"SVI_Output_"+Arrays.toString(args)+"_.txt");
 
@@ -166,14 +166,17 @@ public class RunSVI {
 
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
-            //fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
-            BayesianNetwork bn = svb.getLearntBayesianNetwork();
-            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
+//            BayesianNetwork bn = svb.getLearntBayesianNetwork();
+//            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
+//            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
 
             totalLog+=log/inst;
+
+            System.out.println(svb.getLearntBayesianNetwork());
+
         }
         fw.close();
 

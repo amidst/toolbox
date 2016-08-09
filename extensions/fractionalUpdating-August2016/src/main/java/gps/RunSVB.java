@@ -15,10 +15,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.models.BayesianNetwork;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -34,12 +32,12 @@ public class RunSVB {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS2";
+        String model = "GPS0";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-        int ntopics = 0;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 10000;
+        int docsPerBatch = 1000;
 
         if (args.length>1){
             int cont = 0;
@@ -89,6 +87,10 @@ public class RunSVB {
 
         svb.initLearning();
 
+        svb.randomInitialize();
+
+        svb.setNonSequentialModel(true);
+        System.out.println(svb.getLearntBayesianNetwork());
 
         FileWriter fw = new FileWriter(dataPath+"SVB_Output_"+Arrays.toString(args)+"_.txt");
 
@@ -102,6 +104,8 @@ public class RunSVB {
         int count=0;
 
         Random random = new Random(0);
+
+        double totalLog = 0;
 
         String[] strings = new File(dataPath).list();
         Arrays.sort(strings);
@@ -151,14 +155,16 @@ public class RunSVB {
 
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
-            //fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
-            BayesianNetwork bn = svb.getLearntBayesianNetwork();
-            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
+            System.out.println(svb.getLearntBayesianNetwork());
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
+            totalLog+=log/inst;
 
         }
         fw.close();
+
+        System.out.println("TOTAL LOG: " + totalLog);
+
     }
 }
