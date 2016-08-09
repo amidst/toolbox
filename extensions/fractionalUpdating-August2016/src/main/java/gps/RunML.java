@@ -17,7 +17,7 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.StochasticVI;
+import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
 
 import java.io.File;
@@ -30,7 +30,7 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 4/5/16.
  */
-public class RunSVI {
+public class RunML {
 
     public static void main(String[] args) throws Exception{
 
@@ -41,7 +41,7 @@ public class RunSVI {
         double threshold = 0.1;
         int docsPerBatch = 100;
         int setSIZE = 1235000;
-        double learningRate = 1;
+        double learningRate = 0.75;
 
         if (args.length>1){
             int cont  = 0;
@@ -60,19 +60,12 @@ public class RunSVI {
 
 
 
-        StochasticVI svb = new StochasticVI();
-
-        svb.setVMPOnFirstBatch(true);
+        ParallelMaximumLikelihood svb = new ParallelMaximumLikelihood();
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
                 .stream()
                 .filter(string -> string.endsWith(".arff")).findFirst().get());
-
-        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(niter);
-        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(threshold);
 
 
         if (model.compareTo("GPS0")==0) {
@@ -94,17 +87,12 @@ public class RunSVI {
 
         svb.setOutput(true);
 
-        svb.setLocalThreshold(threshold);
         svb.setOutput(true);
-        svb.setMaximumLocalIterations(niter);
-        svb.setBatchSize(docsPerBatch);
-        svb.setDataSetSize(setSIZE);
-        svb.setLearningFactor(learningRate);
 
         svb.initLearning();
 
 
-        FileWriter fw = new FileWriter(dataPath+"SVI_Output_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"ML_Output_"+Arrays.toString(args)+"_.txt");
 
 
 //        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
@@ -152,15 +140,16 @@ public class RunSVI {
 
             Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
 
+            svb.initLearning();
+
+
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
-            while (iteratorInner.hasNext()) {
-                log+=svb.predictedLogLikelihood(iteratorInner.next());
-            }
+
 
             double inst =test.getNumberOfDataInstances();
 

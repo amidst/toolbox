@@ -32,7 +32,7 @@ public class RunML {
 
     public static void main(String[] args) throws Exception{
 
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/gps/Mixture_1_100.arff";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;

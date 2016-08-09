@@ -15,8 +15,10 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.models.BayesianNetwork;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,12 +34,12 @@ public class RunSVB {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_small/";
-        int ntopics = 10;
+        String model = "GPS2";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        int ntopics = 0;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 10000;
 
         if (args.length>1){
             int cont = 0;
@@ -149,7 +151,13 @@ public class RunSVB {
 
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+            //fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+
+            BayesianNetwork bn = svb.getLearntBayesianNetwork();
+            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
+
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
+
         }
         fw.close();
     }
