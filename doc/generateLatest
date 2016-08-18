@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-
-
-ver="0.5.2";
-
-./${ver}/scripts/generate
-
-
