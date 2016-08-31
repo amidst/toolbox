@@ -114,11 +114,11 @@
 
 
         //Set-up Flink session.
-        Configuration conf = new Configuration();
-        conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
-        env.setParallelism(Main.PARALLELISM);
+       // Configuration conf = new Configuration();
+      //  conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //env.getConfig().disableSysoutLogging();
+       // env.setParallelism(Main.PARALLELISM);
 
         //Load the datastream
         String filename = &quot;datasets/simulated/cajamarDistributed.arff&quot;;

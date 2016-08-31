@@ -302,8 +302,9 @@
 
     }
 }</code></pre>
-<p><a href="#sec:flinklink">[Back to Top]</a> In previous example,</p>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
 <h3 id="sec:flinklink:ext:conceptdrift">Concept drift detection</h3>
+<p>A salient aspect of streaming data is that the domain being modeled is often <em>non-stationary</em>. That is, the distribution governing the data changes over time. This situation is known as <em>concept drift</em> and if not carefully taken into account, the result can be a failure to capture and interpret intrinsic properties of the data during data exploration. The AMIDST toolbox can be used for detecting this situation as shown in the example below.</p>
 <pre><code>public class ConceptDriftDetector {
 
     //public int NSETS = 15;

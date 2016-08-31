@@ -115,10 +115,20 @@ The module \textit{latent-variable-models} contains a large set of classes that 
 
 \hyperref[sec:flinklink]{[Back to Top]}\newline 
 
-In previous example, 
+
 
 
 \subsubsection{Concept drift detection}\label{sec:flinklink:ext:conceptdrift}
+
+A salient aspect of streaming data is that the domain
+being modeled is often \emph{non-stationary}. That is, the distribution governing the data changes over time.
+This situation is known as \textit{concept drift} and if not carefully taken into account, the
+result can be a failure to capture and
+interpret intrinsic properties of the data during data exploration. The AMIDST toolbox can be used for detecting this situation as shown in the example below.\newline 
+
+
+
+
 
 \includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/reviewMeeting2015/ConceptDriftDetector.java}
 

@@ -20,6 +20,7 @@ package eu.amidst.dynamic.examples.datastream;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.utils.DataSetGenerator;
 
 /**
@@ -32,10 +33,8 @@ public class DataStreamsExample {
     public static void main(String[] args) throws Exception {
 
         //Open the data stream using the class DynamicDataStreamLoader
-        //DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasetsTests/data.arff");
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("datasets/simulated/exampleDS_d2_c3.arff");
 
-        //Generate the data stream using the class DataSetGenerator
-        DataStream<DynamicDataInstance> data = DataSetGenerator.generate(1,10,5,5);
 
         //Access the attributes defining the data stream
         System.out.println("Attributes defining the data set");
