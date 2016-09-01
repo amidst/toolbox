@@ -22,11 +22,11 @@ public class StaticModelFlink {
 
 
         //Set-up Flink session.
-        Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
-        env.setParallelism(Main.PARALLELISM);
+       // Configuration conf = new Configuration();
+      //  conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //env.getConfig().disableSysoutLogging();
+       // env.setParallelism(Main.PARALLELISM);
 
         //Load the datastream
         String filename = "datasets/simulated/cajamarDistributed.arff";

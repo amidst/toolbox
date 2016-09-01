@@ -1,0 +1,205 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+
+
+\section{Dynamic Bayesian Networks: Code Examples}\label{sec:dbns}
+
+
+\begin{itemize}
+	\item \hyperref[sec:dbns:datastreams]{Data Streams}
+	\item \hyperref[sec:dbns:variables]{Dynamic Random Variables}
+	\item \hyperref[sec:dbns:dbns]{Dynamic Bayesian networks}
+	\begin{itemize}
+		\item \hyperref[sec:dbns:dbns:creating]{Creating Dynamic Bayesian networks}
+		\item \hyperref[sec:dbns:dbns:creatingLatent]{Creating Dynamic Bayesian Networks with Latent Variables}
+		\item \hyperref[sec:dbns:dbns:modif]{Modifying Dynamic Bayesian Networks}
+	\end{itemize}
+	\item \hyperref[sec:dbns:sampling]{Sampling from Dynamic Bayesian Networks}
+	\item \hyperref[sec:dbns:inference]{Inference Algorithms for Dynamic Bayesian Networks}
+	\begin{itemize}
+		\item \hyperref[sec:dbns:inference:dmap]{The Dynamic MAP Inference}
+		\item \hyperref[sec:dbns:inference:dvmp]{The Dynamic Variational Message Passing}
+		\item \hyperref[sec:dbns:inference:dis]{The Dynamic Importance Sampling}
+	\end{itemize}
+	\item \hyperref[sec:dbns:learning]{Dynamic Learning Algorithms}
+	\begin{itemize}
+		\item \hyperref[sec:dbns:learning:ml]{Maximum Likelihood for DBNs}
+		\item \hyperref[sec:dbns:learning:sv]{Streaming Variational Bayes for DBNs}
+	\end{itemize}
+\end{itemize}
+%\subsubsection{Creating Dynamic Bayesian networks}\label{sec:dbns:dbns:creating}
+%\subsubsection{Creating Dynamic Bayesian Networks with Latent Variables}\label{sec:dbns:dbns:creatingLatent}
+%\subsubsection{Modifying Dynamic Bayesian Networks}\label{sec:dbns:dbns:modif}
+
+
+%\subsection{Sampling from Dynamic Bayesian Networks}\label{sec:dbns:sampling}
+%\subsection{Inference Algorithms for Dynamic Bayesian Networks}\label{sec:dbns:inference}
+%\subsubsection{The Dynamic MAP Inference}\label{sec:dbns:inference:dmap}
+%\subsubsection{The Dynamic Variational Message Passing}\label{sec:dbns:inference:dvmp}
+%\subsubsection{The Dynamic Importance Sampling}\label{sec:dbns:inference:dis}
+%\subsection{Dynamic Learning Algorithms}\label{sec:dbns:learning}
+%\subsubsection{Maximum Likelihood for DBNs}\label{sec:dbns:learning:ml}
+%\subsubsection{Streaming Variational Bayes for DBNs}\label{sec:dbns:learning:sv}
+
+
+%\begin{itemize}
+%\item \hyperref[sec:bns:datastreams]{Data Streams}
+%\item \hyperref[sec:bns:randomvars]{Data Streams}
+%\item \hyperref[sec:bns:models]{Models}
+%\begin{itemize}
+%\item \hyperref[sec:bns:models:creating]{Creating BNs}
+%\item \hyperref[sec:bns:models:creatinglatent]{Creating Bayesian networks with latent variables}
+%\item \hyperref[sec:bns:models:modif]{Modifiying Bayesian networks}
+%\end{itemize}
+%
+%	\item \hyperref[sec:bns:io]{Input/Output}
+%\begin{itemize}
+%	\item \hyperref[sec:bns:io:iods]{I/O of data streams}
+%	\item \hyperref[sec:bns:io:iobn]{I/O of BNs}
+%\end{itemize}
+%
+%
+%	\item \hyperref[sec:bns:inference]{Inference}
+%\begin{itemize}
+%
+%	\item \hyperref[sec:bns:inference:engine]{The inference engine}
+%	\item \hyperref[sec:bns:inference:vmp]{Variational Message Passing}
+%	\item \hyperref[sec:bns:inference:sampling]{Importance Sampling}
+%\end{itemize}
+%
+%\item \hyperref[sec:bns:learning]{Learning Algorithms}
+%\begin{itemize}
+%	\item \hyperref[sec:bns:learning:batchml]{Maximum Likelihood}
+%	\item \hyperref[sec:bns:learning:parallelml]{Parallel Maximum Likelihood}
+%	\item \hyperref[sec:bns:learning:svb]{Streaming Variational Bayes}
+%	\item \hyperref[sec:bns:learning:parallelsvb]{Parallel Streaming Variational Bayes}
+%\end{itemize}
+%
+%
+%
+%
+%\item \hyperref[sec:bns:conceptdrift]{Concept Drift Methods}
+%\begin{itemize}
+%	\item \hyperref[sec:bns:conceptdrift:nbayes]{Naive Bayes with Virtual Concept Drift Detection}
+%\end{itemize}
+%
+%\item \hyperref[sec:bns:huginlink]{HuginLink}
+%\begin{itemize}
+%	\item \hyperref[sec:bns:huginlink:conversion]{Models conversion between AMiDST and Hugin}
+%	\item \hyperref[sec:bns:huginlink:io]{I/O of Bayesian Networks with Hugin net format}
+%	\item \hyperref[sec:bns:huginlink:inference]{Invoking Hugin's inference engine}
+%	\item \hyperref[sec:bns:huginlink:huginTAN]{Invoking Hugin's Parallel TAN}
+%\end{itemize}
+%
+%
+%
+%\item \hyperref[sec:bns:moalink]{MoaLink}
+%\begin{itemize}
+%	\item \hyperref[sec:bns:moalink:moaclass]{AMIDST Classifiers from MOA}
+%	\item \hyperref[sec:bns:moalink:moareg]{AMIDST Classifiers from MOA}
+%\end{itemize}
+%
+%\end{itemize}
+
+
+\subsection{Data Streams}\label{sec:dbns:datastreams}
+
+In this example we show how to use the main features of a \textit{DataStream} object. More precisely, we show how to load a dynamic data stream and how to iterate over the \textit{DynamicDataInstance} objects.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/datastream/DataStreamsExample.java}
+
+\subsection{Dynamic Random Variables}\label{sec:dbns:variables}
+
+This example show the basic functionalities related to dynamic variables.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/variables/DynamicVariablesExample.java}
+
+\subsection{Dynamic Bayesian networks}\label{sec:dbns:dbns}
+\subsubsection{Creating Dynamic Bayesian networks}\label{sec:dbns:dbns:creating}
+This example creates a dynamic BN, from a dynamic data stream, with randomly generated probability distributions, then saves it to a file.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/models/CreatingDBNs.java}
+
+
+\subsubsection{Creating Dynamic Bayesian Networks with Latent Variables}\label{sec:dbns:dbns:creatingLatent}
+This example shows how to create a BN model with hidden variables. We simply create a BN for clustering, i.e., a naive Bayes like structure with a single hidden variable acting as parant of all the remaining observable variables.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/models/CreatingDBNsWithLatentVariables.java}
+
+
+
+\subsubsection{Modifying Dynamic Bayesian Networks}\label{sec:dbns:dbns:modif}
+This example shows how to create a BN model with hidden variables. We This example shows how to access and modify the conditional probabilities of a Dynamic Bayesian network model.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/models/ModifyingDBNs.java}
+
+
+\subsection{Sampling from Dynamic Bayesian Networks}\label{sec:dbns:sampling}
+This example shows how to use the \textit{DynamicBayesianNetworkSampler} class to randomly generate a dynamic data stream from a given Dynamic Bayesian network.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/utils/DynamicBayesianNetworkSamplerExample.java}
+
+
+\subsection{Inference Algorithms for Dynamic Bayesian Networks}\label{sec:dbns:inference}
+
+
+\subsubsection{The Dynamic MAP Inference}\label{sec:dbns:inference:dmap}
+
+This example shows how to use the Dynamic MAP Inference algorithm.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/inference/DynamicMAPInference.java}
+
+
+\subsubsection{The Dynamic Variational Message Passing}\label{sec:dbns:inference:dvmp}
+
+This example shows how to use the Factored Frontier algorithm with Variational Message Passing for running inference on dynamic Bayesian networks.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/inference/DynamicVMP_FactoredFrontier.java}
+
+
+
+\subsubsection{The Dynamic Importance Sampling}\label{sec:dbns:inference:dis}
+
+This example shows how to use the Factored Frontier algorithm with Importance Sampling for running inference in dynamic Bayesian networks.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/inference/DynamicIS_FactoredFrontier.java}
+
+
+\subsection{Dynamic Learning Algorithms}\label{sec:dbns:learning}
+\subsubsection{Maximum Likelihood for DBNs}\label{sec:dbns:learning:ml}
+
+This example shows how to learn the parameters of a dynamic Bayesian network using maximum likelihood from a randomly sampled data stream.
+
+
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/learning/MLforDBNsampling.java}
+
+
+
+\subsubsection{Streaming Variational Bayes for DBNs}\label{sec:dbns:learning:sv}
+
+This example shows how to learn the parameters of a dynamic Bayesian network using streaming variational Bayes from a randomly sampled data stream.
+
+
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/dynamic/examples/learning/SVBforDBN.java}
+
+
+
+
+\end{document}
