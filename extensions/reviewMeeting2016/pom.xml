@@ -16,7 +16,7 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.5.2</version> <!-- AmidstVersion -->
+        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -25,7 +25,7 @@
 
     <groupId>eu.amidst</groupId>
     <artifactId>reviewMeeting2016</artifactId>
-    <version>0.5.2</version> <!-- AmidstVersion -->
+    <version>0.6.0-alpha</version> <!-- AmidstVersion -->
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -111,22 +111,22 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.5.2</version> <!-- AmidstVersion -->
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core-dynamic</artifactId>
-            <version>0.5.2</version> <!-- AmidstVersion -->
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>0.5.2</version> <!-- AmidstVersion -->
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.5.2</version> <!-- AmidstVersion -->
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 
