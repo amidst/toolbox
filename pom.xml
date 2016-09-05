@@ -124,6 +124,7 @@
 
         <module>wekalink</module>
         <module>flinklink</module>
+        <module>sparklink</module>
         <module>extensions/tutorials</module>
 
         <module>extensions/lda</module>
