@@ -14,6 +14,8 @@ package eu.amidst.latentvariablemodels.dynamicmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.dynamic.learning.parametric.bayesian.SVB;
@@ -21,6 +23,8 @@ import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
+
+import java.util.Optional;
 
 /**
  *
@@ -122,5 +126,18 @@ public abstract class DynamicModel {
     @Override
     public String toString() {
         return this.getModel().toString();
+    }
+
+
+    public <E extends UnivariateDistribution> E getPosteriorlDistribution(String varName) {
+        if (learningAlgorithm !=null){
+             return (E) this.learningAlgorithm.getLearntDBN().getConditionalDistributionsTimeT()
+                     .stream()
+                     .filter(d -> d.getVariable().getName().equals(varName))
+                     .findFirst().get();
+        }
+
+        return null;
+
     }
 }

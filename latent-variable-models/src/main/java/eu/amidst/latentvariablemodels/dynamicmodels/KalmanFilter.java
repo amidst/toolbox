@@ -14,6 +14,7 @@ package eu.amidst.latentvariablemodels.dynamicmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -158,6 +159,8 @@ public class KalmanFilter extends DynamicModel {
             KF.updateModel(batch);
         }
         System.out.println(KF.getModel());
+
+
 
     }
 }

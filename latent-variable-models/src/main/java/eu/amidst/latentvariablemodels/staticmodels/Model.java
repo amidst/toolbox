@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
@@ -208,6 +209,18 @@ public abstract class Model {
     @Override
     public String toString() {
         return this.getModel().toString();
+    }
+
+
+    public <E extends UnivariateDistribution> E getPosteriorDistribution(String varName) {
+		if (learningAlgorithm !=null){
+			 return (E)this.learningAlgorithm.getLearntBayesianNetwork()
+					 .getConditionalDistribution(dag.getVariables().getVariableByName(varName));
+
+		}
+
+		return null;
+
     }
 
 }
