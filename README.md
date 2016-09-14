@@ -168,6 +168,18 @@ of [Apache Flink](http://flink.com). As detailed in this [paper](http://amidst.g
 <img src="https://amidst.github.io/toolbox/docs/web/figs/flink-scalability.png" width="800">
 </p>
 
+# Spark Link Module on AMIDST
+
+This module integrates the functionality of the AMIDST toolbox with the [Apache Spark](http://spark.apache.org) platform.
+
+The following functionality is already implemented on the **sparklink** module:
+
+* Data Sources integration: Reading and writing data from SparkSQL on AMIDST
+* Distributed Sampling of Bayesian Networks
+* Parametric learning from distributed data (Maximum Likelihood)
+
+More information [here](https://github.com/amidst/toolbox/tree/develop/sparklink)
+
 # Publications & Use-Cases
 
 The following repository [https://github.com/amidst/toolbox-usecases](https://github.com/amidst/toolbox-usecases)
