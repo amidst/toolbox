@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>eu.amidst</groupId>
+  <artifactId>sparklink</artifactId>
+  <versioning>
+    <release>0.6.0-alpha</release>
+    <versions>
+      <version>0.6.0-alpha</version>
+    </versions>
+    <lastUpdated>20160914135235</lastUpdated>
+  </versioning>
+</metadata>
