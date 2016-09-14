@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>huginlink</artifactId>
   <versioning>
-    <release>0.5.2</release>
+    <release>0.6.0-alpha</release>
     <versions>
-      <version>0.5.2</version>
+      <version>0.6.0-alpha</version>
     </versions>
-    <lastUpdated>20160905093357</lastUpdated>
+    <lastUpdated>20160914135122</lastUpdated>
   </versioning>
 </metadata>
