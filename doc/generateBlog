@@ -1,9 +1,0 @@
-#!/bin/bash
-#
-
-
-ver="blog";
-
-./${ver}/scripts/generate
-
-
