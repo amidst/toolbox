@@ -104,7 +104,7 @@ Note that the required functionality for learning the predefined model is provid
 \vspace{3mm}
 
 
-For learning any of the available static models, we create an object of any of the classes inheriting from the class \texttt{Model}. These classes encapsulates all the fuctionality for learning/updating a latent-variable model. For example, in the code above we create an object of the class \texttt{FactorAnalysis} which is actually stored as \texttt{Model} object. The flexibility of the toolbox is due to this hierarchical desing: if we aim to change the model learnt from our data, we simply have to change the constructor used (assuming that our data also fits the constraints of the new model). For example, if we aim to learn a mixture of factor analysers instead, we simply have to replace the line 
+For learning any of the available static models, we create an object of any of the classes inheriting from the class \textit{Model}. These classes encapsulates all the fuctionality for learning/updating a latent-variable model. For example, in the code above we create an object of the class \textit{FactorAnalysis} which is actually stored as \textit{Model} object. The flexibility of the toolbox is due to this hierarchical desing: if we aim to change the model learnt from our data, we simply have to change the constructor used (assuming that our data also fits the constraints of the new model). For example, if we aim to learn a mixture of factor analysers instead, we simply have to replace the line 
 
 \begin{verbatim}
 Model model = new FactorAnalysis(data.getAtributes());
@@ -116,15 +116,15 @@ Model model = new FactorAnalysis(data.getAtributes());
 Model model = new MixtureOfFactorAnalysers(data.getAtributes());
 \end{verbatim}
 
-\noindent Note that the method for learning the model, namely \texttt{Model::updateMode(DataStream<DataInstance>)} will always be the same regardless of the particular type of static model.\newline 
+\noindent Note that the method for learning the model, namely \textit{Model::updateMode(DataStream<DataInstance>)} will always be the same regardless of the particular type of static model.\newline 
 
-The actual learnt model is an object of the class \texttt{BayesianNetwork} which is stored as a member variable of \texttt{Model}. Thus, for using the network, we simply have to extract with the method \texttt{Model::getModel()}. One of the actions we can perform with it is saving it into the local file system. For saving it in \texttt{.bn} format:
+The actual learnt model is an object of the class \textit{BayesianNetwork} which is stored as a member variable of \textit{Model}. Thus, for using the network, we simply have to extract with the method \textit{Model::getModel()}. One of the actions we can perform with it is saving it into the local file system. For saving it in \textit{.bn} format:
 
 \begin{verbatim}
 BayesianNetworkWriter::save(BayesianNetwork bn, String path)
 \end{verbatim}
 
-\noindent Alternatively, and assuming that we have the hugin library available, we can also save it in \texttt{.net} format:
+\noindent Alternatively, and assuming that we have the hugin library available, we can also save it in \textit{.net} format:
 
 \begin{verbatim}
 BayesianNetworkWriteToHuginr::save(BayesianNetwork bn, String path)
@@ -147,7 +147,7 @@ In previous section we showed how the AMIDST toolbox can be used for learning a 
 	\label{fig:lvmodels:static:flinklearning:scheme}	
 \end{figure}
 
-A code example for learning from Flink is shown below. Note that it only differs from the one in previous section in lines 25 to 33. In these lines, the Flink session is configurated and the stream is loaded, which is managed with an object of the class \texttt{DataFlink} (instead of \texttt{DataStream}). 
+A code example for learning from Flink is shown below. Note that it only differs from the one in previous section in lines 25 to 33. In these lines, the Flink session is configurated and the stream is loaded, which is managed with an object of the class \textit{DataFlink} (instead of \textit{DataStream}). 
 
 \includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelFlink.java}
 \href{https://github.com/amidst/tutorial/blob/master/src/main/java/eu/amidst/tutorial/usingAmidst/examples/StaticModelFlink.java}{See on GitHub}
@@ -186,7 +186,7 @@ Making probabilistic inference in BNs (a.k.a \textit{belief updating}) consists 
 	\label{fig:lvmodels:static:inference:scheme}	
 \end{figure}
 
-The inference process is the same regardless of the way we have learnt our model: we simply have to obtain the BN learnt (stored as an object of the class \texttt{BayesianNetwork}), set the target variables and the evidence. As an example, let us consider the following code:
+The inference process is the same regardless of the way we have learnt our model: we simply have to obtain the BN learnt (stored as an object of the class \textit{BayesianNetwork}), set the target variables and the evidence. As an example, let us consider the following code:
 
 
 
@@ -209,7 +209,7 @@ InferenceAlgorithm infer = new HuginInference();
 
 \subsubsection{Custom static model}\label{sec:lvmodels:static:custom}
 
-It could happend that your model of interest is not predifined. In that case you can implement it yourself. For that purpose, create a new class inheriting the class \texttt{Model}. Then, add the code to the constructor with an object \texttt{Attributes} as input parameter, and the code of the method \texttt{void buildDAG()}. This last method is called before learning process and creates the object representing the DAG. As an example, the code below shows how to create a custom Gaussian Mixture.
+It could happend that your model of interest is not predifined. In that case you can implement it yourself. For that purpose, create a new class inheriting the class \textit{Model}. Then, add the code to the constructor with an object \textit{Attributes} as input parameter, and the code of the method \textit{void buildDAG()}. This last method is called before learning process and creates the object representing the DAG. As an example, the code below shows how to create a custom Gaussian Mixture.
 
 
 \includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/practice/CustomGaussianMixture.java}
@@ -219,7 +219,7 @@ It could happend that your model of interest is not predifined. In that case you
 \subsection{Dynamic Models}\label{sec:lvmodels:dynamic}
 \subsubsection{ Learning and saving to disk }\label{sec:lvmodels:dynamic:learning}
 
-When dealing with temporal data, it might be advisable to learn a dynamic model. The module \textit{latent-variable-models} in AMDIST also suports such kinds of models. For that the classes inheriting \texttt{DynamicModel} will be used. A synthesis of the learning process is shown below.\newline 
+When dealing with temporal data, it might be advisable to learn a dynamic model. The module \textit{latent-variable-models} in AMDIST also suports such kinds of models. For that the classes inheriting \textit{DynamicModel} will be used. A synthesis of the learning process is shown below.\newline 
 
 
 
@@ -231,7 +231,7 @@ When dealing with temporal data, it might be advisable to learn a dynamic model.
 \end{figure}
 
 
-A code-example is given below. Here, a \textit{Hidden Markov Model (HMM)} is learnt from a financial dataset with temporal information. Note the difference within the static learning is the way the dataset is loaded: now, it is handled with an object of the class \texttt{DataStream<DynamicDataInstance>}. Finally, the DBN learnt is saved to disk with the method \texttt{DynamicBayesianNetworkWriter::save(String pathFile)}.\newline 
+A code-example is given below. Here, a \textit{Hidden Markov Model (HMM)} is learnt from a financial dataset with temporal information. Note the difference within the static learning is the way the dataset is loaded: now, it is handled with an object of the class \textit{DataStream<DynamicDataInstance>}. Finally, the DBN learnt is saved to disk with the method \textit{DynamicBayesianNetworkWriter::save(String pathFile)}.\newline 
 
 
 \includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/examples/DynamicModelLearning.java}
@@ -254,7 +254,7 @@ InferenceAlgorithmForDBN = new FactoredFrontierForDBN(new VMP());
 
 \subsubsection{Custom dynamic model}\label{sec:lvmodels:dynamic:custom}
 
-Like for static models, we might be interested in creating our own dynamic models. In this case, you will have to create a class inheriting \texttt{DynamicModel}. Here below an example of a custom \textit{Kalman Filter} is given.
+Like for static models, we might be interested in creating our own dynamic models. In this case, you will have to create a class inheriting \textit{DynamicModel}. Here below an example of a custom \textit{Kalman Filter} is given.
 
 \includejavasource{../../../../extensions/tutorials/src/main/java/eu/amidst/tutorial/usingAmidst/practice/CustomKalmanFilter.java}
 \href{https://github.com/amidst/tutorial/blob/master/src/main/java/eu/amidst/tutorial/usingAmidst/practice/CustomKalmanFilter.java}{See on GitHub}
