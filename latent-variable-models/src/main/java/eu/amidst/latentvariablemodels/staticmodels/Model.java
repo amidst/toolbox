@@ -96,6 +96,9 @@ public abstract class Model {
         this.windowSize = windowSize;
     }
 
+    public int getWindowSize() {
+        return windowSize;
+    }
 
     protected void initLearningFlink() {
         if(learningAlgorithmFlink==null) {
@@ -171,7 +174,10 @@ public abstract class Model {
     }
 
     public void resetModel(){
+
         initialized=false;
+        learningAlgorithm=null;
+        this.dag=null;
     }
 
     public BayesianNetwork getModel(){
