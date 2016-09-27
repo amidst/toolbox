@@ -223,7 +223,10 @@ public abstract class Model {
 			 return (E)this.learningAlgorithm.getLearntBayesianNetwork()
 					 .getConditionalDistribution(dag.getVariables().getVariableByName(varName));
 
-		}
+		} else if (learningAlgorithmFlink != null ){
+            return (E)this.learningAlgorithmFlink.getLearntBayesianNetwork()
+                    .getConditionalDistribution(dag.getVariables().getVariableByName(varName));
+        }
 
 		return null;
 

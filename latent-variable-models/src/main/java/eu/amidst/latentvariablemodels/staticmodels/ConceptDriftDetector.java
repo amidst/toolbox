@@ -24,9 +24,16 @@ import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
+import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
+import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.io.DataFlinkLoader;
+import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
 import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,12 +153,54 @@ public class ConceptDriftDetector extends Model {
         else
             throw new IllegalArgumentException("Non provided dag");
 
-        learningAlgorithm.setOutput(true);
+        learningAlgorithm.setOutput(false);
         learningAlgorithm.initLearning();
         initialized=true;
     }
 
 
+	protected void initLearningFlink() {
+
+		if (this.getDAG()==null)
+			buildDAG();
+
+
+
+		if(learningAlgorithmFlink==null) {
+
+			ParallelVB svb = new ParallelVB();
+			svb.setSeed(this.seed);
+			svb.setPlateuStructure(new PlateuIIDReplication(hiddenVars));
+			GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars, 0, this.transitionVariance);
+			gaussianHiddenTransitionMethod.setFading(1.0);
+			svb.setTransitionMethod(gaussianHiddenTransitionMethod);
+			svb.setBatchSize(this.windowSize);
+			svb.setDAG(dag);
+			svb.setIdenitifableModelling(new IdentifiableIDAModel());
+
+			svb.setOutput(false);
+			svb.setMaximumGlobalIterations(100);
+			svb.setMaximumLocalIterations(100);
+			svb.setGlobalThreshold(0.001);
+			svb.setLocalThreshold(0.001);
+
+			learningAlgorithmFlink = svb;
+
+		}
+
+		learningAlgorithmFlink.setBatchSize(windowSize);
+
+		if (this.getDAG()!=null)
+			learningAlgorithmFlink.setDAG(this.getDAG());
+		else
+			throw new IllegalArgumentException("Non provided dag");
+
+
+		learningAlgorithmFlink.initLearning();
+		initialized=true;
+
+		System.out.println("Window Size = "+windowSize);
+	}
 
 
 
@@ -204,12 +253,14 @@ public class ConceptDriftDetector extends Model {
 
     //////////// example of use
 
-    public static void main(String[] args) throws WrongConfigurationException {
+    public static void main(String[] args) throws Exception {
 
+  /*
 
+  		//// Multi-core example
         int windowSize = 1000;
 
-       // DataStream<DataInstance> data = DataSetGenerator.generate(1234,100, 1, 3);
+    // DataStream<DataInstance> data = DataSetGenerator.generate(1234,100, 1, 3);
         //We can open the data stream using the static class DataStreamLoader
         DataStream<DataInstance> data = DataStreamLoader.open("./datasets/DriftSets/sea.arff");
 
@@ -230,6 +281,69 @@ public class ConceptDriftDetector extends Model {
         }
 
         System.out.println(model.getDAG());
+
+        */
+
+
+		////// Flink example
+		int windowSize = 500;
+		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		env.getConfig().disableSysoutLogging();
+
+		//Load the data stream
+		String filename = "./datasets/simulated/dataFlink_month0.arff";
+		DataFlink<DataInstance> data =
+				DataFlinkLoader.open(env, filename, false);
+
+		//Build the model
+		Model model = new ConceptDriftDetector(data.getAttributes());
+		model.setWindowSize(windowSize);
+		//((ConceptDriftDetector)model).setClassIndex(3);
+
+		model.updateModel(data);
+
+		for(int i=1; i<12;i++) {
+			filename = "./datasets/simulated/dataFlink_month"+i+".arff";
+			data = DataFlinkLoader.open(env, filename, false);
+			model.updateModel(data);
+			System.out.println(model.getPosteriorDistribution("GlobalHidden_0").
+					toString());
+
+
+		}
+
+
+		// Old flink example
+/*		String filename = "./datasets/simulated/dataFlink_month0.arff";
+		DataFlink<DataInstance> data =
+				DataFlinkLoader.open(env, filename, false);
+		System.out.println(data.getDataSet().count());
+
+
+		IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
+		learn.setBatchSize(windowSize);
+		learn.setClassIndex(data.getAttributes().getNumberOfAttributes()-1);
+		learn.setAttributes(data.getAttributes());
+		learn.setNumberOfGlobalVars(1);
+		learn.setTransitionVariance(0.1);
+		learn.setSeed(0);
+
+		learn.initLearning();
+
+
+		learn.updateModelWithNewTimeSlice(data);
+
+		for(int i=1; i<3;i++) {
+			filename = "./datasets/simulated/dataFlink_month"+i+".arff";
+			data = DataFlinkLoader.open(env, filename, false);
+			double[] out = learn.updateModelWithNewTimeSlice(data);
+			System.out.println(out[0]);
+
+
+		}
+
+
+*/
 
     }
 }

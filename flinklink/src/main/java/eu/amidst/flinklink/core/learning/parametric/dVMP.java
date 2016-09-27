@@ -124,6 +124,10 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         this.svb.setPlateuStructure(plateuStructure);
     }
 
+    public PlateuStructure getPlateuStructure(){
+        return this.svb.getPlateuStructure();
+    }
+
     public void setTransitionMethod(TransitionMethod transitionMethod){
         this.svb.setTransitionMethod(transitionMethod);
     }
