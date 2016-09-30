@@ -26,20 +26,21 @@ public class SamplingBN {
 
 		// Open a Bayesian network
 		String file = "networks/simulated/WasteIncinerator.bn";
-		BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(file);
 
+		BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(file);
+		System.out.println(bn);
 
 
 		// Sample from the BN
-		int nSamples = 1000;
+/*		int nSamples = 1000;
 		int parallelism = 4;
 		BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 		DataSpark data = sampler.sampleToDataSpark(jsc, nSamples, parallelism);
 
 
 		// Save it as a json file
-		data.getDataFrame(sqlContext).write().format("json").save("datasets/simulated/WasteIncinerator.json");
-
+		data.getDataFrame(sqlContext).write().format("json").save("datasets/simulated/WI_samples.json");
+*/
 	}
 
 

@@ -14,12 +14,12 @@ import eu.amidst.sparklink.core.io.DataSparkLoader;
  */
 public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
-        SparkConf conf = new SparkConf().setAppName("SparkLink!").setMaster("local");;
+        SparkConf conf = new SparkConf().setAppName("SparkLink!").setMaster("local");
         SparkContext sc = new SparkContext(conf);
         SQLContext sqlContext = new SQLContext(sc);
 
         //Paths to dataset
-        String path ="datasets/simulated/WasteIncinerator.json";
+        String path ="datasets/simulated/WI_samples.json";
 
 		//Load the data and store it into an object of class DataFrame
         DataFrame df = sqlContext.read().format("json").load(path);
