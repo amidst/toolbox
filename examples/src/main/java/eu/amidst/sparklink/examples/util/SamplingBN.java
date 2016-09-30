@@ -3,20 +3,18 @@ package eu.amidst.sparklink.examples.util;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.sparklink.core.data.DataSpark;
+import eu.amidst.sparklink.core.io.DataSparkWriter;
 import eu.amidst.sparklink.core.util.BayesianNetworkSampler;
 import org.apache.spark.SparkConf;
-import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SQLContext;
-
-import java.io.IOException;
 
 /**
  * Created by rcabanas on 27/09/16.
  */
 public class SamplingBN {
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
+	public static void main(String[] args) throws Exception {
 
 		//Setting up spark
 		SparkConf conf = new SparkConf().setAppName("SparkLink!").setMaster("local");
@@ -39,7 +37,8 @@ public class SamplingBN {
 
 
 		// Save it as a json file
-		data.getDataFrame(sqlContext).write().format("json").save("datasets/simulated/WI_samples.json");
+		DataSparkWriter.writeDataToFolder(data, "datasets/simulated/WI_samples.json", sqlContext);
+		//DataSparkWriter.writeDataToFolder(data, "datasets/simulated/WI_samples.parquet", sqlContext);
 
 	}
 

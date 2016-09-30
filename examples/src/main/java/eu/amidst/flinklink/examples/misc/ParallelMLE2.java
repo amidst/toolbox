@@ -39,7 +39,7 @@ public class ParallelMLE2 {
 
         //int sizeData = Integer.parseInt(args[1]);
         //DataStream<DataInstance> data = sampler.sampleToDataStream(sizeData);
-        //DataStreamWriter.writeDataToFile(data, "./tmp.arff");
+        //DataStreamWriter.writeDataToFolder(data, "./tmp.arff");
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
