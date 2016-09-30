@@ -20,15 +20,13 @@ public class MaximumLikelihoodLearningExample {
         SparkContext sc = new SparkContext(conf);
         SQLContext sqlContext = new SQLContext(sc);
 
-        //Paths to dataset
+        //Path to dataset
         String path ="datasets/simulated/WI_samples.json";
 
-		//Load the data and store it into an object of class DataFrame
-        DataFrame df = sqlContext.read().format("json").load(path);
+        //Create an AMIDST object for managing the data
+        DataSpark dataSpark = DataSparkLoader.open(sqlContext, path);
 
-		//Create an AMIDST object for managing the data
-        DataSpark dataSpark = DataSparkLoader.loadSparkDataFrame(df);
-
+        //Learning algorithm
         ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
 
 

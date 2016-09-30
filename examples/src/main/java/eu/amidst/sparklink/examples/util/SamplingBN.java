@@ -32,7 +32,7 @@ public class SamplingBN {
 
 
 		// Sample from the BN
-/*		int nSamples = 1000;
+		int nSamples = 1000;
 		int parallelism = 4;
 		BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 		DataSpark data = sampler.sampleToDataSpark(jsc, nSamples, parallelism);
@@ -40,7 +40,7 @@ public class SamplingBN {
 
 		// Save it as a json file
 		data.getDataFrame(sqlContext).write().format("json").save("datasets/simulated/WI_samples.json");
-*/
+
 	}
 
 
