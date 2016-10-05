@@ -131,7 +131,7 @@ public class DistributedImportanceSampling {
 
             localImportanceSampling.runInference();
 
-            return localImportanceSampling.getSSvariablesAPosteriori();
+            return localImportanceSampling.getSSMultinomialVariablesAPosteriori();
         }
     }
 
