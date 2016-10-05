@@ -4,7 +4,7 @@ import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
-import eu.amidst.core.inference.ImportanceSamplingRobust;
+import eu.amidst.core.inference.ImportanceSamplingCLG;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.*;
 import eu.amidst.core.variables.Assignment;
@@ -89,9 +89,9 @@ public class DistributedImportanceSampling {
                             result.add(result2);
 
 //                            if(i==0) {
-//                                System.out.println(Arrays.toString(ImportanceSamplingRobust.robustNormalizationOfLogProbabilitiesVector((ArrayVector)ssList1.get(0)).toArray()));
-//                                System.out.println(Arrays.toString(ImportanceSamplingRobust.robustNormalizationOfLogProbabilitiesVector((ArrayVector)ssList2.get(0)).toArray()));
-//                                System.out.println(Arrays.toString(ImportanceSamplingRobust.robustNormalizationOfLogProbabilitiesVector((ArrayVector)result.get(0)).toArray()));
+//                                System.out.println(Arrays.toString(ImportanceSamplingCLG.robustNormalizationOfLogProbabilitiesVector((ArrayVector)ssList1.get(0)).toArray()));
+//                                System.out.println(Arrays.toString(ImportanceSamplingCLG.robustNormalizationOfLogProbabilitiesVector((ArrayVector)ssList2.get(0)).toArray()));
+//                                System.out.println(Arrays.toString(ImportanceSamplingCLG.robustNormalizationOfLogProbabilitiesVector((ArrayVector)result.get(0)).toArray()));
 //                            }
                         }
 
@@ -121,7 +121,7 @@ public class DistributedImportanceSampling {
         @Override
         public List<SufficientStatistics> map(Long value) throws Exception {
 
-            ImportanceSamplingRobust localImportanceSampling = new ImportanceSamplingRobust();
+            ImportanceSamplingCLG localImportanceSampling = new ImportanceSamplingCLG();
             localImportanceSampling.setModel(model);
             localImportanceSampling.setSeed(seed + value.intValue());
             localImportanceSampling.setSampleSize(numberOfSamples);

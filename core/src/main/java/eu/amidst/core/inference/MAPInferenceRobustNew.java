@@ -68,7 +68,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
 //    private int numberOfDiscreteVariablesInEvidence = 0;
     private int numberOfDiscreteVariablesOfInterest = 0;
 
-    private  ImportanceSamplingRobust importanceSamplingRobust;
+    private ImportanceSamplingCLG importanceSamplingCLG;
 
     private boolean parallelMode = true;
 
@@ -173,8 +173,8 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
     public void setSampleSizeEstimatingProbabilities(int sampleSizeEstimatingProbability) {
         this.sampleSizeForEstimatingProbabilities = sampleSizeEstimatingProbability;
-        if(importanceSamplingRobust!=null) {
-            importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+        if(importanceSamplingCLG !=null) {
+            importanceSamplingCLG.setSampleSize(this.sampleSizeForEstimatingProbabilities);
         }
     }
 
@@ -212,11 +212,11 @@ public class MAPInferenceRobustNew implements PointEstimator {
     @Override
     public void runInference() {
 
-        this.importanceSamplingRobust = new ImportanceSamplingRobust();
-        importanceSamplingRobust.setModel(this.model);
-        importanceSamplingRobust.setParallelMode(this.parallelMode);
-        importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
-        importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+        this.importanceSamplingCLG = new ImportanceSamplingCLG();
+        importanceSamplingCLG.setModel(this.model);
+        importanceSamplingCLG.setParallelMode(this.parallelMode);
+        importanceSamplingCLG.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+        importanceSamplingCLG.setVariablesAPosteriori(new ArrayList<>(0));
 
         this.runInference(SearchAlgorithm.HC_LOCAL); // Uses Hill climbing with local search, by default
     }
@@ -231,11 +231,11 @@ public class MAPInferenceRobustNew implements PointEstimator {
     public void runInference(SearchAlgorithm searchAlgorithm) {
 
 
-        this.importanceSamplingRobust = new ImportanceSamplingRobust();
-        importanceSamplingRobust.setModel(this.model);
-        importanceSamplingRobust.setParallelMode(this.parallelMode);
-        importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
-        importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+        this.importanceSamplingCLG = new ImportanceSamplingCLG();
+        importanceSamplingCLG.setModel(this.model);
+        importanceSamplingCLG.setParallelMode(this.parallelMode);
+        importanceSamplingCLG.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+        importanceSamplingCLG.setVariablesAPosteriori(new ArrayList<>(0));
 
 
         int thisInferenceSampleSize = this.numberOfStartingPoints;
@@ -251,7 +251,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
         bayesianNetworkSampler.setSeed(this.seed);
         Stream<Assignment> samples = bayesianNetworkSampler.sampleWithEvidence(thisInferenceSampleSize,this.evidence);
 
-//        ImportanceSamplingRobust isSampler = new ImportanceSamplingRobust();
+//        ImportanceSamplingCLG isSampler = new ImportanceSamplingCLG();
 //        isSampler.setSeed(this.seed);
 //        this.seed = new Random(this.seed).nextInt();
 //        isSampler.setModel(this.model);
@@ -511,24 +511,24 @@ public class MAPInferenceRobustNew implements PointEstimator {
 
     public double estimateLogProbabilityOfPartialAssignment(Assignment MAPAssignment) {
 
-        if(this.importanceSamplingRobust == null) {
-            this.importanceSamplingRobust = new ImportanceSamplingRobust();
-            importanceSamplingRobust.setModel(this.model);
-            importanceSamplingRobust.setParallelMode(this.parallelMode);
-            importanceSamplingRobust.setSampleSize(this.sampleSizeForEstimatingProbabilities);
-            importanceSamplingRobust.setVariablesAPosteriori(new ArrayList<>(0));
+        if(this.importanceSamplingCLG == null) {
+            this.importanceSamplingCLG = new ImportanceSamplingCLG();
+            importanceSamplingCLG.setModel(this.model);
+            importanceSamplingCLG.setParallelMode(this.parallelMode);
+            importanceSamplingCLG.setSampleSize(this.sampleSizeForEstimatingProbabilities);
+            importanceSamplingCLG.setVariablesAPosteriori(new ArrayList<>(0));
         }
 
         Assignment MAPConfigurationPlusEvidence = new HashMapAssignment(MAPVariables.size() + this.varsEvidence.size());
         MAPAssignment.getVariables().forEach(variable -> MAPConfigurationPlusEvidence.setValue(variable,MAPAssignment.getValue(variable)));
         evidence.getVariables().forEach(variable -> MAPConfigurationPlusEvidence.setValue(variable,evidence.getValue(variable)));
 
-        importanceSamplingRobust.setEvidence(MAPConfigurationPlusEvidence);
+        importanceSamplingCLG.setEvidence(MAPConfigurationPlusEvidence);
 
-        importanceSamplingRobust.setSeed(this.MAPRandom.nextInt());
-        importanceSamplingRobust.runInference();
+        importanceSamplingCLG.setSeed(this.MAPRandom.nextInt());
+        importanceSamplingCLG.runInference();
 
-        return importanceSamplingRobust.getLogProbabilityOfEvidence();
+        return importanceSamplingCLG.getLogProbabilityOfEvidence();
     }
 
 
@@ -590,7 +590,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
                     currentLogProbability = nextLogProbability;
                 }
                 else if (optAlg < 0) {
-//                    double diff = Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
+//                    double diff = Math.exp(ImportanceSamplingCLG.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
                     double diff = Math.exp(currentLogProbability - nextLogProbability); // Not the difference in probabilities, but the ratio
 
                     double aux = random.nextDouble();

@@ -18,7 +18,7 @@
 package eu.amidst.dynamic.inference;
 
 import eu.amidst.core.distribution.*;
-import eu.amidst.core.inference.ImportanceSamplingRobust;
+import eu.amidst.core.inference.ImportanceSamplingCLG;
 import eu.amidst.core.inference.InferenceAlgorithm;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
@@ -567,14 +567,14 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
                 case IS:
                 default:
 
-                    currentModelInference = new ImportanceSamplingRobust();
+                    currentModelInference = new ImportanceSamplingCLG();
 
                     Random random = new Random((this.seed));
                     currentModelInference.setSeed(random.nextInt());
 
                     this.seed = random.nextInt();
 
-                    ((ImportanceSamplingRobust) currentModelInference).setSampleSize(sampleSize);
+                    ((ImportanceSamplingCLG) currentModelInference).setSampleSize(sampleSize);
 
                     break;
             }
@@ -582,7 +582,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
             currentModelInference.setModel(mergedClassVarModels.get(i));
 
             if(searchAlgorithm==SearchAlgorithm.IS) {
-                ((ImportanceSamplingRobust) currentModelInference).setVariablesAPosteriori(mergedClassVarModels.get(i).getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(groupedClassName)).collect(Collectors.toList()));
+                ((ImportanceSamplingCLG) currentModelInference).setVariablesAPosteriori(mergedClassVarModels.get(i).getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(groupedClassName)).collect(Collectors.toList()));
             }
 
             BayesianNetwork thisModel = mergedClassVarModels.get(i);
@@ -740,7 +740,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
 
             case IS:
             default:
-                ImportanceSamplingRobust importanceSampling =  new ImportanceSamplingRobust();
+                ImportanceSamplingCLG importanceSampling =  new ImportanceSamplingCLG();
                 importanceSampling.setSampleSize(this.sampleSize);
                 Random random = new Random((this.seed));
                 importanceSampling.setSeed(random.nextInt());
@@ -753,7 +753,7 @@ public class DynamicMAPInference implements InferenceAlgorithmForDBN {
         staticModelInference.setModel(unfoldedStaticModel);
 
         if (searchAlgorithm==SearchAlgorithm.IS) {
-            ((ImportanceSamplingRobust)staticModelInference).setVariablesAPosteriori(unfoldedStaticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPvarName)).collect(Collectors.toList()));
+            ((ImportanceSamplingCLG)staticModelInference).setVariablesAPosteriori(unfoldedStaticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPvarName)).collect(Collectors.toList()));
         }
         if (evidence != null) {
             staticModelInference.setEvidence(staticEvidence);

@@ -467,8 +467,8 @@ public class MAPFlink_PrecisionScalability {
             System.out.println("Relative error with " + sampleSizePreciseEstimation + " samples: " + relativeError);
 
 
-//            meanEstimatedProbability = ImportanceSamplingRobust.robustSumOfLogarithms(ImportanceSamplingRobust.robustSumOfLogarithms(estimatedLogProbability1,estimatedLogProbability2),estimatedLogProbability3) - Math.log(3);
-//            varianceEstimatedProbability = (Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability1,meanEstimatedProbability)),2) + Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability2,meanEstimatedProbability)),2)  + Math.pow(Math.exp(ImportanceSamplingRobust.robustDifferenceOfLogarithms(estimatedLogProbability3,meanEstimatedProbability)),2)) / 2;
+//            meanEstimatedProbability = ImportanceSamplingCLG.robustSumOfLogarithms(ImportanceSamplingCLG.robustSumOfLogarithms(estimatedLogProbability1,estimatedLogProbability2),estimatedLogProbability3) - Math.log(3);
+//            varianceEstimatedProbability = (Math.pow(Math.exp(ImportanceSamplingCLG.robustDifferenceOfLogarithms(estimatedLogProbability1,meanEstimatedProbability)),2) + Math.pow(Math.exp(ImportanceSamplingCLG.robustDifferenceOfLogarithms(estimatedLogProbability2,meanEstimatedProbability)),2)  + Math.pow(Math.exp(ImportanceSamplingCLG.robustDifferenceOfLogarithms(estimatedLogProbability3,meanEstimatedProbability)),2)) / 2;
 //            standardErrorEstimatedProbability = Math.sqrt(varianceEstimatedProbability)/Math.sqrt(3);
 //
 //            relativeError = standardErrorEstimatedProbability/Math.abs(meanEstimatedProbability);

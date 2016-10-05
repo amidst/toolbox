@@ -277,7 +277,7 @@ public class MAPInferenceRobust implements PointEstimator {
 
 //        BayesianNetworkSampler bnSampler = new BayesianNetworkSampler(this.model);
 //        Stream<Assignment > samples = bnSampler.sampleToDataStream(this.sampleSize).stream().map(sample -> (Assignment)sample);
-        ImportanceSamplingRobust isSampler = new ImportanceSamplingRobust();
+        ImportanceSamplingCLG isSampler = new ImportanceSamplingCLG();
         isSampler.setSeed(this.seed);
         this.seed = new Random(this.seed).nextInt();
         isSampler.setModel(this.model);
@@ -696,7 +696,7 @@ public class MAPInferenceRobust implements PointEstimator {
 //                System.out.println("Simulated Annealing");
 //                double diff = currentLogProbability - nextLogProbability;
                 double diff = Math.exp(RobustOperations.robustDifferenceOfLogarithms(currentLogProbability, nextLogProbability));
-//                System.out.println("Current: " + currentLogProbability + ", next: " + nextLogProbability + ", sum: " + ImportanceSamplingRobust.robustDiffereceOfLogarithms(currentLogProbability, -nextLogProbability) + ", diff: " + diff);
+//                System.out.println("Current: " + currentLogProbability + ", next: " + nextLogProbability + ", sum: " + ImportanceSamplingCLG.robustDiffereceOfLogarithms(currentLogProbability, -nextLogProbability) + ", diff: " + diff);
                 if(diff<0) {
                     System.out.println("Error in Simulated Annealing from MAPInferenceRobust");
                     System.exit(-50);

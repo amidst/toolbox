@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * <p> For an example of use follow this link
  * <a href="http://amidst.github.io/toolbox/CodeExamples.html#isexample"> http://amidst.github.io/toolbox/CodeExamples.html#isexample </a>  </p>
  */
-public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializable {
+public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
     private static final long serialVersionUID = 8587756877237341367L;
 
@@ -56,7 +56,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
     private int seed = 0;
     private int sampleSize = 1000;
 
-    private Stream<ImportanceSamplingRobust.WeightedAssignment> weightedSampleStream;
+    private Stream<ImportanceSamplingCLG.WeightedAssignment> weightedSampleStream;
 
     private List<Variable> variablesAPosteriori;
     private List<SufficientStatistics> SSvariablesAPosteriori;
@@ -318,7 +318,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //                    newSSposterior = robustSumOfNormalSufficientStatistics(SSposterior, AVsample);
 //                }
 //                else {
-                    throw new UnsupportedOperationException("ImportanceSamplingRobust.updatePosteriorDistributions() variable distribution not supported");
+                    throw new UnsupportedOperationException("ImportanceSamplingCLG.updatePosteriorDistributions() variable distribution not supported");
 //              }
             }
             SSvariablesAPosteriori.set(i,newSSposterior);
@@ -451,7 +451,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 
         // TODO Could we build this object in a general way for Multinomial and Normal?
         if (!variable.isMultinomial()) {
-            throw new UnsupportedOperationException("ImportanceSamplingRobust.getPosterior() not supported yet for non-multinomial distributions");
+            throw new UnsupportedOperationException("ImportanceSamplingCLG.getPosterior() not supported yet for non-multinomial distributions");
 
         }
 
@@ -480,7 +480,7 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
 //
 //        // TODO Could we build this object in a general way for Multinomial and Normal?
 //        if (!samplingVar.isMultinomial()) {
-//            throw new UnsupportedOperationException("ImportanceSamplingRobust.getPosterior() not supported yet for non-multinomial distributions");
+//            throw new UnsupportedOperationException("ImportanceSamplingCLG.getPosterior() not supported yet for non-multinomial distributions");
 //
 //        }
 //
@@ -603,35 +603,35 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         System.out.println(bn);
 
 
-        ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
-        importanceSamplingRobust.setModel(bn);
-        //importanceSamplingRobust.setSamplingModel(vmp.getSamplingModel());
+        ImportanceSamplingCLG importanceSamplingCLG = new ImportanceSamplingCLG();
+        importanceSamplingCLG.setModel(bn);
+        //importanceSamplingCLG.setSamplingModel(vmp.getSamplingModel());
 
-        importanceSamplingRobust.setParallelMode(true);
-        importanceSamplingRobust.setSampleSize(50000);
-        importanceSamplingRobust.setSeed(57457);
+        importanceSamplingCLG.setParallelMode(true);
+        importanceSamplingCLG.setSampleSize(50000);
+        importanceSamplingCLG.setSeed(57457);
 
-        List<Variable> causalOrder = importanceSamplingRobust.causalOrder;
+        List<Variable> causalOrder = importanceSamplingCLG.causalOrder;
         Variable varPosterior = causalOrder.get(0);
 
         List<Variable> variablesPosteriori = new ArrayList<>(1);
         variablesPosteriori.add(varPosterior);
-        importanceSamplingRobust.setVariablesAPosteriori( variablesPosteriori);
+        importanceSamplingCLG.setVariablesAPosteriori( variablesPosteriori);
 
 
 
-        importanceSamplingRobust.runInference();
+        importanceSamplingCLG.runInference();
 //
 
 //
 ////        for (Variable var: causalOrder) {
-////            System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSamplingRobust.getPosterior(var).toString());
+////            System.out.println("Posterior (IS) of " + var.getName() + ":" + importanceSamplingCLG.getPosterior(var).toString());
 ////        }
 //
 
-        System.out.println("Posterior (IS) of " + varPosterior.getName() + ":" + importanceSamplingRobust.getPosterior(varPosterior).toString());
+        System.out.println("Posterior (IS) of " + varPosterior.getName() + ":" + importanceSamplingCLG.getPosterior(varPosterior).toString());
         System.out.println(bn.getConditionalDistribution(varPosterior).toString());
-        System.out.println("Log-Prob. of Evidence: " + importanceSamplingRobust.getLogProbabilityOfEvidence());
+        System.out.println("Log-Prob. of Evidence: " + importanceSamplingCLG.getLogProbabilityOfEvidence());
 
 
 
@@ -648,21 +648,21 @@ public class ImportanceSamplingRobust implements InferenceAlgorithm, Serializabl
         assignment.setValue(variableEvidence,varEvidenceValue);
 
 
-        importanceSamplingRobust.setEvidence(assignment);
+        importanceSamplingCLG.setEvidence(assignment);
 
         long time_start = System.nanoTime();
-        importanceSamplingRobust.runInference();
+        importanceSamplingCLG.runInference();
         long time_end = System.nanoTime();
         double execution_time = (((double)time_end)-time_start)/1E9;
         System.out.println("Execution time: " + execution_time + " s");
 
-        System.out.println("Posterior of " + varPosterior.getName() + " (IS with Evidence) :" + importanceSamplingRobust.getPosterior(varPosterior).toString());
+        System.out.println("Posterior of " + varPosterior.getName() + " (IS with Evidence) :" + importanceSamplingCLG.getPosterior(varPosterior).toString());
 
 
-        System.out.println("Log-Prob. of Evidence: " + importanceSamplingRobust.getLogProbabilityOfEvidence());
-        System.out.println("Prob of Evidence: " + Math.exp(importanceSamplingRobust.getLogProbabilityOfEvidence()));
+        System.out.println("Log-Prob. of Evidence: " + importanceSamplingCLG.getLogProbabilityOfEvidence());
+        System.out.println("Prob of Evidence: " + Math.exp(importanceSamplingCLG.getLogProbabilityOfEvidence()));
 
-        double proportion = importanceSamplingRobust.getExpectedValue(varPosterior, double1 -> (Double.compare(double1,0.0)==0 ? (1.0) : (0.0)));
+        double proportion = importanceSamplingCLG.getExpectedValue(varPosterior, double1 -> (Double.compare(double1,0.0)==0 ? (1.0) : (0.0)));
         System.out.println(proportion);
     }
 

@@ -19,7 +19,7 @@ package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.inference.ImportanceSamplingRobust;
+import eu.amidst.core.inference.ImportanceSamplingCLG;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
@@ -583,16 +583,16 @@ public class TemperatureHumidityExperimentsNew {
                 List<Variable> MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
                 HashMapAssignment evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
 
-                ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
-                importanceSamplingRobust.setModel(staticModel);
-                importanceSamplingRobust.setVariablesAPosteriori(MAPvariableToAssign);
-                importanceSamplingRobust.setSampleSize(nSamplesForIS / 10);
+                ImportanceSamplingCLG importanceSamplingCLG = new ImportanceSamplingCLG();
+                importanceSamplingCLG.setModel(staticModel);
+                importanceSamplingCLG.setVariablesAPosteriori(MAPvariableToAssign);
+                importanceSamplingCLG.setSampleSize(nSamplesForIS / 10);
 
                 while (!MAPvariableToAssign.isEmpty()) {
 
 
-                    importanceSamplingRobust.setEvidence(evidencePlusMAPVariables);
-                    importanceSamplingRobust.runInference();
+                    importanceSamplingCLG.setEvidence(evidencePlusMAPVariables);
+                    importanceSamplingCLG.runInference();
 
                     Variable varMinEntropy = null;
                     double[] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
@@ -600,7 +600,7 @@ public class TemperatureHumidityExperimentsNew {
 
                     for (Variable thisVariable : MAPvariableToAssign) {
 
-                        Multinomial MAPVarPosteriorDistribution = importanceSamplingRobust.getPosterior(thisVariable);
+                        Multinomial MAPVarPosteriorDistribution = importanceSamplingCLG.getPosterior(thisVariable);
 
                         double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
 
@@ -2192,7 +2192,7 @@ public class TemperatureHumidityExperimentsNew {
 //        return vmp1.getLogProbabilityOfEvidence();
 
 
-//        ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+//        ImportanceSamplingCLG importanceSamplingRobust = new ImportanceSamplingCLG();
 //        importanceSamplingRobust.setModel(model);
 //        importanceSamplingRobust.setVariablesAPosteriori(MAPvariables);
 //        importanceSamplingRobust.setSampleSize(1000000);

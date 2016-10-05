@@ -17,15 +17,16 @@
 
 package eu.amidst.core.distribution;
 
-import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.variables.Variable;
-//import eu.amidst.corestatic.variables.StaticVariables;
 
-import javax.naming.OperationNotSupportedException;
-import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.DoubleStream;
+
+//import eu.amidst.corestatic.variables.StaticVariables;
 
 /**
  * This class extends the abstract class {@link UnivariateDistribution} and defines the Gaussian Mixture distribution.
@@ -34,7 +35,7 @@ import java.util.stream.DoubleStream;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample </a>  </p>
  *
  */
-public abstract class GaussianMixture extends UnivariateDistribution {
+public class GaussianMixture extends UnivariateDistribution {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 3362372347079403247L;
@@ -81,6 +82,26 @@ public abstract class GaussianMixture extends UnivariateDistribution {
 
         this.setParameters(params);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GaussianMixture deepCopy(Variable variable) {
+        GaussianMixture copy = new GaussianMixture(variable);
+        copy.setParameters(this.getParameters());
+        return copy;
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public EF_Normal toEFUnivariateDistribution() {
+        throw new UnsupportedOperationException("Method not supported for a GaussianMixture object");
+    }
+
 
     /**
      * {@inheritDoc}
@@ -242,11 +263,6 @@ public abstract class GaussianMixture extends UnivariateDistribution {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public abstract <E extends EF_UnivariateDistribution> E toEFUnivariateDistribution();
 
     /**
      * {@inheritDoc}
