@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -60,6 +61,9 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
     private Stream<ImportanceSamplingCLG.WeightedAssignment> weightedSampleStream;
 
     private List<Variable> variablesAPosteriori;
+    private List<Variable> variablesAPosteriori_multinomials;
+    private List<Variable> variablesAPosteriori_normals;
+
     private List<SufficientStatistics> SSMultinomialVariablesAPosteriori;
     private List<StreamingUpdateableGaussianMixture> SSNormalVariablesAPosteriori;
 
@@ -234,6 +238,11 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
     @Override
     public void setModel(BayesianNetwork model_) {
         this.model = Serialization.deepCopy(model_);
+
+        if(this.model.getVariables().getListOfVariables().stream().anyMatch(variable -> !(variable.isMultinomial() || variable.isNormal()))) {
+            throw new UnsupportedOperationException("All the Variable objects must be Multinomial or Normal in a CLG network");
+        }
+
         //setSamplingModel(model_);
         this.samplingModel = model;
         this.causalOrder = Utils.getTopologicalOrder(model.getDAG());
@@ -344,16 +353,31 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
     public void setVariablesAPosteriori(List<Variable> variablesAPosterior) {
 
-
         this.variablesAPosteriori = variablesAPosterior;
+        this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
+        this.variablesAPosteriori_normals = variablesAPosteriori.stream().filter(Variable::isNormal).collect(Collectors.toList());
+
+
+        // INITIALIZE SUFFICIENT STATISTICS FOR MULTINOMIAL VARIABLES
         this.SSMultinomialVariablesAPosteriori = new ArrayList<>();
 
-        variablesAPosterior.stream().forEachOrdered(variable -> {
+        variablesAPosterior.stream().filter(Variable::isMultinomial).forEachOrdered(variable -> {
 
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
             ArrayVector arrayVector = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
 
             SSMultinomialVariablesAPosteriori.add(arrayVector);
+        });
+
+        // INITIALIZE "SUFFICIENT STATISTICS" FOR NORMAL VARIABLES
+        this.SSNormalVariablesAPosteriori = new ArrayList<>();
+
+
+        variablesAPosterior.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+
+            StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
+
+            SSNormalVariablesAPosteriori.add(streamingPosteriorDistribution);
         });
     }
 
@@ -375,77 +399,92 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
     private void updatePosteriorDistributions(Assignment sample, double logWeight) {
 
-        int nVarsAPosteriori = variablesAPosteriori.size();
+        variablesAPosteriori_multinomials.stream().forEach(variable -> {
 
-        IntStream.range(0,nVarsAPosteriori).forEach(i -> {
+            int j = variablesAPosteriori_multinomials.indexOf(variable);
 
-            Variable variable = variablesAPosteriori.get(i);
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 
-//            SufficientStatistics SSposterior = SSMultinomialVariablesAPosteriori.get(i);
-//            SufficientStatistics SSsample = ef_univariateDistribution.getSufficientStatistics(sample);
-
             ArrayVector SSposterior = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-            SSposterior.copy(SSMultinomialVariablesAPosteriori.get(i));
+            SSposterior.copy(SSMultinomialVariablesAPosteriori.get(j));
 
             ArrayVector newSSposterior;
 
-            if(variable.isMultinomial()) {
+            ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
+            SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
 
-                ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-                SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
-
-                if(evidence!=null) {
-                    SSsample.multiplyBy(logWeight);
-                }
-
-//                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
-//                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
-
-//                System.out.println(Arrays.toString(SSposterior.toArray()));
-//                System.out.println(Arrays.toString(SSsample.toArray()));
-//                System.out.println(Arrays.toString(SS.toArray()));
-//                System.out.println();
-
-                newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
+            if(evidence!=null) {
+                SSsample.multiplyBy(logWeight);
             }
-            else {
-//                if (variable.isNormal() ) {
+
+
+            newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
+
+            SSMultinomialVariablesAPosteriori.set(j,newSSposterior);
+        });
+
+
+
+        variablesAPosteriori_normals.stream().forEach(variable -> {
+
+            int j = variablesAPosteriori_normals.indexOf(variable);
+
+
+            double dataPoint = sample.getValue(variable);
+            SSNormalVariablesAPosteriori.get(j).update(dataPoint, logWeight);
+
+        });
+
+
+//        int nVarsAPosteriori = variablesAPosteriori.size();
 //
-//                    double global_shift = SSposterior.get(2);
+//        IntStream.range(0,nVarsAPosteriori).forEach(i -> {
 //
-//                    //ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics()+1);
-//
-//                    SufficientStatistics SSsample = ef_univariateDistribution.getSufficientStatistics(sample);
-//
-//                    double coef1 = ef_univariateDistribution.getSufficientStatistics(sample).get(0);
-//                    double coef2 = Math.pow(coef1,2);
-//                    double shift = 0;
+//            Variable variable = variablesAPosteriori.get(i);
 //
 //
-//                    if(coef1<=global_shift) {
-//                        shift = coef1-1;
-//                    }
-//                    double log_aux = Math.log(coef1 - global_shift - shift);
+//            if(variable.isMultinomial()) {
 //
-//                    double[] SScoefs = new double[]{log_aux, 2*log_aux, shift};
+//                EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 //
-//                    ArrayVector AVsample = new ArrayVector(SScoefs);
-//                    //AVsample.multiplyBy(logWeight);
-//                    AVsample.sumConstant(logWeight);
+////            SufficientStatistics SSposterior = SSMultinomialVariablesAPosteriori.get(i);
+////            SufficientStatistics SSsample = ef_univariateDistribution.getSufficientStatistics(sample);
+//
+//                ArrayVector SSposterior = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
+//                SSposterior.copy(SSMultinomialVariablesAPosteriori.get(i));
+//
+//                ArrayVector newSSposterior;
+//
+//                ArrayVector SSsample = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
+//                SSsample.copy(ef_univariateDistribution.getSufficientStatistics(sample));
+//
+//                if(evidence!=null) {
+//                    SSsample.multiplyBy(logWeight);
+//                }
 //
 ////                ArrayVector SS = new ArrayVector(ef_univariateDistribution.getMomentParameters().size());
 ////                SS.copy(ef_univariateDistribution.getSufficientStatistics(sample));
 //
-//                    newSSposterior = robustSumOfNormalSufficientStatistics(SSposterior, AVsample);
-//                }
-//                else {
-                    throw new UnsupportedOperationException("ImportanceSamplingCLG.updatePosteriorDistributions() variable distribution not supported");
-//              }
-            }
-            SSMultinomialVariablesAPosteriori.set(i,newSSposterior);
+////                System.out.println(Arrays.toString(SSposterior.toArray()));
+////                System.out.println(Arrays.toString(SSsample.toArray()));
+////                System.out.println(Arrays.toString(SS.toArray()));
+////                System.out.println();
+//
+//                newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
+//
+//                SSMultinomialVariablesAPosteriori.set(i,newSSposterior);
+//            }
+//            else if(variable.isNormal()) {
+//
+//                double dataPoint = sample.getValue(variable);
+//                SSNormalVariablesAPosteriori.get(i).update(dataPoint, logWeight);
+//
+//            }
+//            else {
+//                throw new UnsupportedOperationException("ImportanceSamplingCLG.updatePosteriorDistributions() variable distribution not supported");
+//            }
 
-        });
+//        });
     }
 
     private WeightedAssignment generateSampleSameModel(Random random) {
@@ -715,8 +754,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
     }
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-
+    public void oldMain() {
         BayesianNetworkGenerator.setNumberOfGaussianVars(0);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(60,2);
         BayesianNetworkGenerator.setNumberOfLinks(100);
@@ -786,6 +824,30 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
         double proportion = importanceSamplingCLG.getExpectedValue(varPosterior, double1 -> (Double.compare(double1,0.0)==0 ? (1.0) : (0.0)));
         System.out.println(proportion);
+    }
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        // this.oldMain();
+
+        BayesianNetworkGenerator.setNumberOfGaussianVars(3);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(5,2);
+        BayesianNetworkGenerator.setNumberOfLinks(10);
+        BayesianNetworkGenerator.setSeed(1623);
+        BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+        System.out.println(bn);
+
+
+        ImportanceSamplingCLG importanceSamplingCLG = new ImportanceSamplingCLG();
+        importanceSamplingCLG.setModel(bn);
+        //importanceSamplingCLG.setSamplingModel(vmp.getSamplingModel());
+
+        importanceSamplingCLG.setParallelMode(true);
+        importanceSamplingCLG.setSampleSize(50000);
+        importanceSamplingCLG.setSeed(57457);
+
+        importanceSamplingCLG.runInference();
+
     }
 
 }
