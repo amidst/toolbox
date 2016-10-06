@@ -31,7 +31,7 @@ import java.util.List;
  *
  * Created by ana@cs.aau.dk on 08/03/16.
  */
-public class InputOutputHMM  extends DynamicModel {
+public class InputOutputHMM  extends DynamicModel<InputOutputHMM> {
 
     private boolean diagonal = true;
     private int numStates = 2;
@@ -43,16 +43,20 @@ public class InputOutputHMM  extends DynamicModel {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public InputOutputHMM setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public int getNumStates() {
         return numStates;
     }
 
-    public void setNumStates(int numStates) {
+    public InputOutputHMM setNumStates(int numStates) {
         this.numStates = numStates;
+        resetModel();
+        return this;
     }
 
     public InputOutputHMM(Attributes attributes, List<Attribute> inputs,List<Attribute> outputs ) {

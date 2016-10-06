@@ -1,3 +1,19 @@
+v0.6.0
+==================
+This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
+
+Changes:
+
+- Added sparklink module implementing the integration with Apache Spark. More information [here](https://github.com/amidst/toolbox/tree/develop/sparklink).
+- Fluent pattern in latent-variable-models
+- Fixed some bugs
+
+**Release Date**: ???
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0-alpha/index.html)
+
+
+
+
 v0.6.0-alpha
 ==================
 This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data. 

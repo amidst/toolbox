@@ -30,7 +30,7 @@ import java.util.stream.IntStream;
  *
  * Created by andresmasegosa on 4/3/16.
  */
-public class MixtureOfFactorAnalysers extends Model {
+public class MixtureOfFactorAnalysers extends Model<MixtureOfFactorAnalysers> {
 
 
     /**
@@ -112,16 +112,20 @@ public class MixtureOfFactorAnalysers extends Model {
      * Sets the number of latent variables
      * @param numberOfLatentVariables integer value
      */
-    public void setNumberOfLatentVariables(int numberOfLatentVariables) {
+    public MixtureOfFactorAnalysers setNumberOfLatentVariables(int numberOfLatentVariables) {
         this.numberOfLatentVariables = numberOfLatentVariables;
+        resetModel();
+        return this;
     }
 
     /**
      * Sets the number of states in the discrete latent variable
      * @param numberOfStatesLatentDiscreteVar integer value
      */
-    public void setNumberOfStatesLatentDiscreteVar(int numberOfStatesLatentDiscreteVar) {
+    public MixtureOfFactorAnalysers setNumberOfStatesLatentDiscreteVar(int numberOfStatesLatentDiscreteVar) {
         this.numberOfStatesLatentDiscreteVar = numberOfStatesLatentDiscreteVar;
+        resetModel();
+        return this;
     }
 
 

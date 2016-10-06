@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 82.
  */
-public class NaiveBayesClassifier extends Classifier{
+public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
 
 

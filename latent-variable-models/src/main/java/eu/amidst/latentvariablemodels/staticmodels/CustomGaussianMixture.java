@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * Created by rcabanas on 23/05/16.
  */
 
-public class CustomGaussianMixture extends Classifier{
+public class CustomGaussianMixture extends Classifier<CustomGaussianMixture>{
 
 	Attributes attributes;
 

@@ -28,7 +28,7 @@ import eu.amidst.lda.flink.PlateauLDAFlink;
  *
  * Created by andresmasegosa on 4/3/16.
  */
-public class LDA extends Model {
+public class LDA extends Model<LDA> {
 
     int ntopics=5;
     private PlateauLDA plateauLDA;
@@ -42,8 +42,9 @@ public class LDA extends Model {
         return ntopics;
     }
 
-    public void setNtopics(int ntopics) {
+    public LDA setNtopics(int ntopics) {
         this.ntopics = ntopics;
+        return this;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class LDA extends Model {
         initialized=true;
     }
 
-
+    @Override
     public double updateModel(DataStream<DataInstance> dataStream){
         if (!initialized)
             initLearning();

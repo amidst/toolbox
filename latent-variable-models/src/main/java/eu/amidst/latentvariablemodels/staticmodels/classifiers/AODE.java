@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class AODE extends Classifier {
+public class AODE extends Classifier<AODE> {
 
     private List<Variable> classVariables;
     /**
@@ -189,14 +189,22 @@ public class AODE extends Classifier {
         return  isValid;
     }
 
+
+
+
+
+
     public static void main(String[] args) {
 
         DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 1, 5);
 
         String classVarName = "DiscreteVar0";
 
-        AODE aode = new AODE(data.getAttributes());
-        aode.setClassName(classVarName);
+        AODE aode = new AODE(data.getAttributes())
+                .setWindowSize(100)
+                .setClassName(classVarName);
+
+        //aode.setClassName(classVarName);
 
         aode.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {

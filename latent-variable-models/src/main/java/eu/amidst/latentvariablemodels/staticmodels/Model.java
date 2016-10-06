@@ -33,7 +33,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  *
  * Created by andresmasegosa on 4/3/16.
  */
-public abstract class Model {
+public abstract class Model<T extends Model> {
 
     protected final Attributes atts;
 
@@ -92,8 +92,9 @@ public abstract class Model {
         this.learningAlgorithmFlink = learningAlgorithm;
     }
 
-    public void setWindowSize(int windowSize){
+    public  T setWindowSize(int windowSize){
         this.windowSize = windowSize;
+        return (T) this;
     }
 
     public int getWindowSize() {
@@ -174,9 +175,9 @@ public abstract class Model {
     }
 
     public void resetModel(){
-
         initialized=false;
         learningAlgorithm=null;
+        learningAlgorithmFlink = null;
         this.dag=null;
     }
 

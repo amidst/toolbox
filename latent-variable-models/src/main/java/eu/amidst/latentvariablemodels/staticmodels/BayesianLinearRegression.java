@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  *
  * Created by rcabanas on 08/03/16.
  */
-public class BayesianLinearRegression extends Model {
+public class BayesianLinearRegression extends Model<BayesianLinearRegression> {
 
 
     /* diagonal flag */
@@ -142,19 +142,21 @@ public class BayesianLinearRegression extends Model {
      * Method for setting the diagonal flag
      * @param diagonal boolean value
      */
-    public void setDiagonal(boolean diagonal) {
+    public BayesianLinearRegression setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
         dag = null;
+        return this;
     }
 
     /**
      * Method to set the class variable.
      * @param classVar object of the type {@link Variable} indicating which is the class variable
      */
-    public void setClassVar(Variable classVar){
+    public BayesianLinearRegression setClassVar(Variable classVar){
 
         this.classVar = classVar;
         dag = null;
+        return this;
 
     }
 
@@ -162,8 +164,9 @@ public class BayesianLinearRegression extends Model {
      * Method to set the class variable.
      * @param className String with the name of the class variable
      */
-    public void setClassName(String className){
+    public BayesianLinearRegression setClassName(String className){
         setClassVar(vars.getVariableByName(className));
+        return this;
     }
 
 
@@ -178,9 +181,11 @@ public class BayesianLinearRegression extends Model {
         String className = "GaussianVar0";
 
 
-        BayesianLinearRegression BLR = new BayesianLinearRegression(data.getAttributes());
-        BLR.setClassName(className);
-        BLR.setDiagonal(false);
+        BayesianLinearRegression BLR =
+                new BayesianLinearRegression(data.getAttributes())
+                        .setClassName(className)
+                        .setWindowSize(100)
+                        .setDiagonal(false);
 
         BLR.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {

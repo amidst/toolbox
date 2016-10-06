@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class AutoRegressiveHMM extends DynamicModel  {
+public class AutoRegressiveHMM extends DynamicModel<AutoRegressiveHMM>  {
 
     private int numStates = 2;
     private boolean diagonal = true;
@@ -38,20 +38,25 @@ public class AutoRegressiveHMM extends DynamicModel  {
         return numStates;
     }
 
-    public void setNumStates(int numStates) {
+    public AutoRegressiveHMM setNumStates(int numStates) {
         this.numStates = numStates;
+        resetModel();
+        return this;
     }
 
     public boolean isDiagonal() {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public AutoRegressiveHMM setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public AutoRegressiveHMM(Attributes attributes) {
         super(attributes);
+
     }
 
     @Override

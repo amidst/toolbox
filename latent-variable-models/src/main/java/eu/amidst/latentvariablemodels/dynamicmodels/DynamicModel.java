@@ -33,7 +33,7 @@ import java.util.Optional;
  *
  * Created by andresmasegosa, ana@cs.aau.dk on 04/03/16.
  */
-public abstract class DynamicModel {
+public abstract class DynamicModel<T extends DynamicModel> {
 
     ParameterLearningAlgorithm learningAlgorithm = null;
 
@@ -53,6 +53,8 @@ public abstract class DynamicModel {
             throw new WrongConfigurationException(getErrorMessage());
     }
 
+
+
     public DynamicDAG getDynamicDAG() {
         if (dynamicDAG==null){
             buildDAG();
@@ -60,12 +62,14 @@ public abstract class DynamicModel {
         return dynamicDAG;
     }
 
-    public void setLearningAlgorithm(ParameterLearningAlgorithm learningAlgorithm) {
+    public T setLearningAlgorithm(ParameterLearningAlgorithm learningAlgorithm) {
         this.learningAlgorithm = learningAlgorithm;
+        return (T)this;
     }
 
-    public void setWindowSize(int windowSize){
+    public T setWindowSize(int windowSize){
         this.windowSize = windowSize;
+        return (T) this;
     }
 
 
@@ -107,6 +111,8 @@ public abstract class DynamicModel {
 
     public void resetModel(){
         initialized=false;
+        learningAlgorithm=null;
+        this.dynamicDAG=null;
     }
 
     protected abstract void buildDAG();

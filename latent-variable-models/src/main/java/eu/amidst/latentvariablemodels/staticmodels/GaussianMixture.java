@@ -100,9 +100,10 @@ public class GaussianMixture extends Model {
      * Method to set the value of the diagonal flag.
      * @param diagonal boolean value, when true means that the attributes are independent.
      */
-    public void setDiagonal(boolean diagonal) {
+    public GaussianMixture setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
-        this.dag = null;
+        resetModel();
+        return this;
     }
 
     /**
@@ -119,9 +120,10 @@ public class GaussianMixture extends Model {
      * Method to obtain the number of states of the hidden (latent) variable
      * @param numStatesHiddenVar integer value
      */
-    public void setNumStatesHiddenVar(int numStatesHiddenVar) {
+    public GaussianMixture setNumStatesHiddenVar(int numStatesHiddenVar) {
         this.numStatesHiddenVar = numStatesHiddenVar;
-        this.dag = null;
+        resetModel();
+        return this;
     }
 
     /**
@@ -169,7 +171,7 @@ public class GaussianMixture extends Model {
         System.out.println(GMM.getDAG());
 
 		System.out.println("HiddenVar");
-		System.out.println(GMM.<Multinomial>getPosteriorDistribution("HiddenVar"));
+		System.out.println(GMM.getPosteriorDistribution("HiddenVar"));
 
 
     /*    try {

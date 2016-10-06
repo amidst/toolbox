@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Created by rcabanas on 10/03/16.
  *
  */
-public class LatentClassificationModel extends Classifier {
+public class LatentClassificationModel extends Classifier<LatentClassificationModel> {
 
 
     /** number of continuous hidden variables */
@@ -165,18 +165,20 @@ public class LatentClassificationModel extends Classifier {
      * sets the number of continuous hidden variables
      * @param numContinuousHidden integer value
      */
-    public void setNumContinuousHidden(int numContinuousHidden) {
+    public LatentClassificationModel setNumContinuousHidden(int numContinuousHidden) {
         this.numContinuousHidden = numContinuousHidden;
         dag = null;
+        return this;
     }
 
     /**
      * sets the number of states of the hidden multinomial variable
      * @param numStatesHidden integer value
      */
-    public void setNumStatesHidden(int numStatesHidden) {
+    public LatentClassificationModel setNumStatesHidden(int numStatesHidden) {
         this.numStatesHidden = numStatesHidden;
         dag = null;
+        return this;
     }
 
     /**
@@ -208,10 +210,11 @@ public class LatentClassificationModel extends Classifier {
         int numStatesHidden = 3;
 
         //Initializes the classifier
-        LatentClassificationModel lcm = new LatentClassificationModel(data.getAttributes());
-        lcm.setClassName(classVarName);
-        lcm.setNumContinuousHidden(numContinuousHidden);
-        lcm.setNumStatesHidden(numStatesHidden);
+        LatentClassificationModel lcm =
+                new LatentClassificationModel(data.getAttributes())
+                        .setClassName(classVarName)
+                        .setNumContinuousHidden(numContinuousHidden)
+                        .setNumStatesHidden(numStatesHidden);
 
 
         //Learning

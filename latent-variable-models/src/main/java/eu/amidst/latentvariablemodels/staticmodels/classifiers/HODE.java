@@ -50,8 +50,10 @@ public class HODE extends Classifier {
         return numStates;
     }
 
-    public void setNumStates(int numStates) {
+    public HODE setNumStates(int numStates) {
+
         this.numStates = numStates;
+        return this;
     }
 
     /**

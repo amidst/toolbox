@@ -11,37 +11,27 @@
 
 package eu.amidst.latentvariablemodels.staticmodels;
 
-import eu.amidst.core.conceptdrift.NaiveBayesVirtualConceptDriftDetector;
 import eu.amidst.core.conceptdrift.utils.GaussianHiddenTransitionMethod;
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuIIDReplication;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.DataSetGenerator;
-import eu.amidst.core.variables.StateSpaceTypeEnum;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
-import eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector;
 import eu.amidst.flinklink.core.conceptdrift.IdentifiableIDAModel;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.ParallelVB;
-import eu.amidst.flinklink.core.learning.parametric.dVMP;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 import org.apache.flink.api.java.ExecutionEnvironment;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
 
  */
-public class ConceptDriftDetector extends Model {
+public class ConceptDriftDetector extends Model<ConceptDriftDetector> {
 
     /** Represents the drift detection mode. Only the global mode is currently provided.*/
     public enum DriftDetector {GLOBAL};
@@ -210,52 +200,57 @@ public class ConceptDriftDetector extends Model {
         return transitionVariance;
     }
 
-    public void setTransitionVariance(double transitionVariance) {
+    public ConceptDriftDetector setTransitionVariance(double transitionVariance) {
         this.transitionVariance = transitionVariance;
         resetModel();
+		return this;
     }
 
     public int getClassIndex() {
         return classIndex;
     }
 
-    public void setClassIndex(int classIndex) {
+    public ConceptDriftDetector setClassIndex(int classIndex) {
         this.classIndex = classIndex;
         resetModel();
+		return this;
     }
 
     public int getSeed() {
         return seed;
     }
 
-    public void setSeed(int seed) {
+    public ConceptDriftDetector setSeed(int seed) {
         this.seed = seed;
         resetModel();
+		return this;
     }
 
     public double getFading() {
         return fading;
     }
 
-    public void setFading(double fading) {
+    public ConceptDriftDetector setFading(double fading) {
         this.fading = fading;
         resetModel();
+		return this;
     }
 
     public int getNumberOfGlobalVars() {
         return numberOfGlobalVars;
     }
 
-    public void setNumberOfGlobalVars(int numberOfGlobalVars) {
+    public ConceptDriftDetector setNumberOfGlobalVars(int numberOfGlobalVars) {
         this.numberOfGlobalVars = numberOfGlobalVars;
         resetModel();
+		return this;
     }
 
     //////////// example of use
 
     public static void main(String[] args) throws Exception {
 
-  /*
+
 
   		//// Multi-core example
         int windowSize = 1000;
@@ -268,8 +263,11 @@ public class ConceptDriftDetector extends Model {
 
 
         //Build the model
-        Model model = new ConceptDriftDetector(data.getAttributes());
-        model.setWindowSize(windowSize);
+        Model model =
+				new ConceptDriftDetector(data.getAttributes())
+						.setWindowSize(windowSize)
+						.setClassIndex(1)
+						.setTransitionVariance(0.1);
 
 
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(windowSize)){
@@ -282,11 +280,11 @@ public class ConceptDriftDetector extends Model {
 
         System.out.println(model.getDAG());
 
-        */
+
 
 
 		////// Flink example
-		int windowSize = 500;
+	/*	int windowSize = 500;
 		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 		env.getConfig().disableSysoutLogging();
 
@@ -312,7 +310,7 @@ public class ConceptDriftDetector extends Model {
 
 		}
 
-
+*/
 		// Old flink example
 /*		String filename = "./datasets/simulated/dataFlink_month0.arff";
 		DataFlink<DataInstance> data =

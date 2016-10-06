@@ -29,7 +29,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  *
  * Created by ana@cs.aau.dk on 11/03/16.
  */
-public abstract class DynamicClassifier extends DynamicModel{
+public abstract class DynamicClassifier<T extends DynamicClassifier> extends DynamicModel<DynamicClassifier>{
 
     /** Represents the static inference algorithm. */
     private InferenceAlgorithm inferenceAlgoPredict = new ImportanceSampling();
@@ -44,8 +44,9 @@ public abstract class DynamicClassifier extends DynamicModel{
         return inferenceAlgoPredict;
     }
 
-    public void setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
+    public T setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
         this.inferenceAlgoPredict = inferenceAlgoPredict;
+        return (T) this;
     }
 
     /**
@@ -61,14 +62,15 @@ public abstract class DynamicClassifier extends DynamicModel{
      * Method to set the class variable. Note that it should be multinomial
      * @param classVar object of the type {@link Variable} indicating which is the class variable
      */
-    public void setClassVar(Variable classVar){
+    public T setClassVar(Variable classVar){
 
         if(!classVar.isMultinomial()) {
             throw new UnsupportedOperationException("class variable is not a multinomial");
         }
 
         this.classVar = classVar;
-        dynamicDAG = null;
+        resetModel();
+        return (T)this;
 
     }
 
@@ -77,8 +79,10 @@ public abstract class DynamicClassifier extends DynamicModel{
      * @param className String with the name of the class variable
      * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
      */
-    public void setClassName(String className) throws WrongConfigurationException {
+    public T setClassName(String className) throws WrongConfigurationException {
         setClassVar(variables.getVariableByName(className));
+        return (T)this;
+
     }
 
     public DynamicClassifier(Attributes attributes) {

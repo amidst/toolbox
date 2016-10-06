@@ -40,16 +40,20 @@ public class FactorialHMM extends DynamicModel {
         return numHidden;
     }
 
-    public void setNumHidden(int numHidden) {
+    public FactorialHMM setNumHidden(int numHidden) {
         this.numHidden = numHidden;
+        resetModel();
+        return this;
     }
 
     public boolean isDiagonal() {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public FactorialHMM setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public FactorialHMM(Attributes attributes) {
