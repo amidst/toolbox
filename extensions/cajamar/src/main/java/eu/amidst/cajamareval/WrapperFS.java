@@ -317,6 +317,9 @@ public class WrapperFS {
 
     public static void main(String[] args) throws IOException {
 
+        //String [] args_new = {"/Users/dario/Desktop/CAJAMAR_ErrorFS/train.arff", "/Users/dario/Desktop/CAJAMAR_ErrorFS/test.arff", "Default"};
+
+        //args=args_new;
         WrapperFS wrapperFS = new WrapperFS();
         wrapperFS.runExperiments(args);
 

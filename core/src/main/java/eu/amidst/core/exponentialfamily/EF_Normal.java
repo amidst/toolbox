@@ -242,7 +242,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double variance = m1 - m0 * m0;
 
         if (variance < 0)
-            throw new IllegalStateException("Negative variance value");
+            System.out.println("Negative variance value: " + this.var.getName() + ", " + variance);
+            variance=0.001;
+            //throw new IllegalStateException("Negative variance value");
 
         if (variance < 1 / LIMIT)
             variance = 1 / LIMIT;
