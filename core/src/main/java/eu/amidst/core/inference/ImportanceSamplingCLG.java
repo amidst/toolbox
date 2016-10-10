@@ -18,6 +18,7 @@
 package eu.amidst.core.inference;
 
 import eu.amidst.core.distribution.ConditionalDistribution;
+import eu.amidst.core.distribution.GaussianMixture;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
@@ -110,22 +111,24 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
         org.apache.commons.math.distribution.NormalDistributionImpl normalDistribution;
 
-        public void update(double dataPoint, double weight) {
+        public void update(double dataPoint, double logWeight) {
 
+            System.out.println("NUEVO DATO: " + dataPoint + ", CON PESO: " + logWeight);
             // CREATE FIRST COMPONENT
             if (M==0) {
                 M=1;
-                logMean = new ArrayList<>(1);
-                logMeanPositiveSign = new ArrayList<>(1);
 
-                logVariance = new ArrayList<>(1);
-                componentWeight = new ArrayList<>(1);
-                sumProbs = new ArrayList<>(1);
+                logMean = new ArrayList<>();
+                logMeanPositiveSign = new ArrayList<>();
 
-                logMean.add(Math.abs(dataPoint));
+                logVariance = new ArrayList<>();
+                componentWeight = new ArrayList<>();
+                sumProbs = new ArrayList<>();
+
+                logMean.add(Math.log(Math.abs(dataPoint)));
                 logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
 
-                logVariance.add(Math.log(log_initial_variance));
+                logVariance.add(log_initial_variance);
 
                 componentWeight.add(1.0);
                 sumProbs.add(1.0);
@@ -156,11 +159,10 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                 if (Arrays.stream(condition).sum()==0) {
                     M=M+1;
 
-
-                    logMean.add(Math.abs(dataPoint));
+                    logMean.add(Math.log(Math.abs(dataPoint)));
                     logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
 
-                    logVariance.add(Math.log(log_initial_variance));
+                    logVariance.add(log_initial_variance);
                     sumProbs.add(1.0);
                     componentWeight.add(1.0);
 
@@ -180,39 +182,74 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
                         sumProbs.set(i,sumProbs.get(i) + p_jx);
 
-                        double w = p_jx/sumProbs.get(i);
+                        double w = p_jx / sumProbs.get(i);
 
-                        double diff_oldMean = Math.log((dataPoint - Math.exp(log_oldMean)));
+                        double oldMean = (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(log_oldMean);
+                        double diff_oldMean = dataPoint - oldMean;
 
-                        double aux = Math.log(w) + diff_oldMean;
-                        double log_newMean = RobustOperations.robustSumOfLogarithms(log_oldMean, aux);
+//                        double aux = Math.log(w) + diff_oldMean;
+//                        double log_newMean = RobustOperations.robustSumOfLogarithms(log_oldMean, aux);
 
-                        double diff_newMean = Math.log((dataPoint - Math.exp(log_newMean)));
+                        double aux = w * diff_oldMean;
+                        double newMean = oldMean + aux;
 
-                        double aux2_new = Math.log(w) + 2 * diff_newMean;
-                        double aux2_old = Math.log(w) + 2 * diff_oldMean;
+                        double diff_newMean = dataPoint - newMean;
 
-                        double log_newVar = RobustOperations.robustSumOfLogarithms( Math.log(1-w) + logVariance.get(i) , aux2_new );
+//                        double aux2_new = Math.log(w) + 2 * diff_newMean;
+//                        double aux2_old = Math.log(w) + 2 * diff_oldMean;
 
-                        if(log_newVar > aux2_old) {
-                            log_newVar = RobustOperations.robustDifferenceOfLogarithms(log_newVar, aux2_old);
+                        double aux2_new = w * Math.pow(diff_newMean,2);
+                        double aux2_old = w * Math.pow(diff_oldMean,2);
+
+//                        double log_newVar = RobustOperations.robustSumOfLogarithms( Math.log(1-w) + logVariance.get(i) , aux2_new );
+
+                        double newVar = (1-w) * Math.exp(logVariance.get(i)) + w * aux2_new;
+
+                        if(newVar > w * aux2_old) {
+//                            log_newVar = RobustOperations.robustDifferenceOfLogarithms(log_newVar, aux2_old);
+                            newVar = newVar - w * aux2_old;
                         }
                         else {
-                            log_newVar = 0.01;
+//                            log_newVar = Math.log(0.001);
+                            newVar = 0.001;
                         }
 
-                        logMean.set(i,log_newMean);
-                        logVariance.set(i,log_newVar);
+                        logMean.set(i,Math.log(Math.abs(newMean)));
+                        logMeanPositiveSign.set(i,Math.signum(newMean)>=0);
+                        logVariance.set(i,Math.log(newVar));
+
                     }
 
 
                     double sum_sumProbs = sumProbs.stream().mapToDouble(Double::doubleValue).sum();
 
                     for (int i = 0; i < M; i++) {
-                        componentWeight.set(i,sumProbs.get(i)/sum_sumProbs);
+                        componentWeight.set(i,sumProbs.get(i) / sum_sumProbs);
                     }
                 }
             }
+
+            System.out.println("COMPONENTES:");
+            for (int i = 0; i < M; i++) {
+                System.out.println("Comp. " + i + "; media: " + (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(logMean.get(i)) + "; var: " + Math.exp(logVariance.get(i)) +"; peso: " + componentWeight.get(i));
+            }
+            System.out.println();
+
+
+        }
+
+        public GaussianMixture getGaussianMixture() {
+
+            double [] parameters = new double[3*M];
+
+            for (int i = 0; i < M; i++) {
+                parameters[3 * i + 0] = componentWeight.get(i);
+                parameters[3 * i + 1] = (logMeanPositiveSign.get(i) ? 1 : -1 ) *  Math.exp(logMean.get(i));
+                parameters[3 * i + 2] = Math.exp(logVariance.get(i));
+            }
+            GaussianMixture result = new GaussianMixture(parameters);
+
+            return result;
         }
     }
 
@@ -260,6 +297,12 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
             ArrayVector arrayVector = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
             SSMultinomialVariablesAPosteriori.add(arrayVector);
         });
+
+        this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
+        this.variablesAPosteriori_normals = variablesAPosteriori.stream().filter(Variable::isNormal).collect(Collectors.toList());
+
+        this.initializeSufficientStatistics();
+
     }
 
     /**
@@ -357,27 +400,31 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
         this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
         this.variablesAPosteriori_normals = variablesAPosteriori.stream().filter(Variable::isNormal).collect(Collectors.toList());
 
+        this.initializeSufficientStatistics();
 
+    }
+
+    private void initializeSufficientStatistics() {
         // INITIALIZE SUFFICIENT STATISTICS FOR MULTINOMIAL VARIABLES
         this.SSMultinomialVariablesAPosteriori = new ArrayList<>();
 
-        variablesAPosterior.stream().filter(Variable::isMultinomial).forEachOrdered(variable -> {
+        this.variablesAPosteriori.stream().filter(Variable::isMultinomial).forEachOrdered(variable -> {
 
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
             ArrayVector arrayVector = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
 
-            SSMultinomialVariablesAPosteriori.add(arrayVector);
+            this.SSMultinomialVariablesAPosteriori.add(arrayVector);
         });
 
         // INITIALIZE "SUFFICIENT STATISTICS" FOR NORMAL VARIABLES
         this.SSNormalVariablesAPosteriori = new ArrayList<>();
 
 
-        variablesAPosterior.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+        this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
 
             StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
 
-            SSNormalVariablesAPosteriori.add(streamingPosteriorDistribution);
+            this.SSNormalVariablesAPosteriori.add(streamingPosteriorDistribution);
         });
     }
 
@@ -608,25 +655,34 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
     //TODO For continuous variables, instead of returning a Gaussian distributions, we should return a Mixture of Gaussians!!
     public <E extends UnivariateDistribution> E getPosterior(Variable variable) {
 
-        EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
+        if(variable.isMultinomial()) {
 
-        // TODO Could we build this object in a general way for Multinomial and Normal?
-        if (!variable.isMultinomial()) {
-            throw new UnsupportedOperationException("ImportanceSamplingCLG.getPosterior() not supported yet for non-multinomial distributions");
+            EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 
+            ArrayVector sumSS = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
+            sumSS.copy(SSMultinomialVariablesAPosteriori.get(variablesAPosteriori_multinomials.indexOf(variable)));
+            //System.out.println(Arrays.toString(sumSS.toArray()));
+
+            sumSS = RobustOperations.robustNormalizationOfLogProbabilitiesVector(sumSS);
+
+            ef_univariateDistribution.setMomentParameters((SufficientStatistics)sumSS);
+            Multinomial posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
+            posteriorDistribution.setProbabilities(Utils.normalize(posteriorDistribution.getParameters()));
+
+            return (E)posteriorDistribution;
         }
 
-        ArrayVector sumSS = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-        sumSS.copy(SSMultinomialVariablesAPosteriori.get(variablesAPosteriori.indexOf(variable)));
-        //System.out.println(Arrays.toString(sumSS.toArray()));
 
-        sumSS = RobustOperations.robustNormalizationOfLogProbabilitiesVector(sumSS);
+//         TODO Could we build this object in a general way for Multinomial and Normal?
+        else {
+            //(variable.isNormal())
 
-        ef_univariateDistribution.setMomentParameters((SufficientStatistics)sumSS);
-        Multinomial posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
-        posteriorDistribution.setProbabilities(Utils.normalize(posteriorDistribution.getParameters()));
+//            throw new UnsupportedOperationException("ImportanceSamplingCLG.getPosterior() not supported yet for non-multinomial distributions");
+            int j = variablesAPosteriori_normals.indexOf(variable);
+            return (E)SSNormalVariablesAPosteriori.get(j).getGaussianMixture();
+        }
 
-        return (E)posteriorDistribution;
+
     }
 
 //    /**
@@ -705,9 +761,9 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
         IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
 
-        if (!parallelMode) {
+//        if (!parallelMode) {
             weightedSampleStream = weightedSampleStream.sequential();
-        }
+//        }
 
 //            weightedSampleStream = IntStream.range(0, sampleSize).parallel()
 //                    .mapToObj(i -> generateSample(randomGenerator.current()));
@@ -830,7 +886,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
         // this.oldMain();
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(3);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(1);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(5,2);
         BayesianNetworkGenerator.setNumberOfLinks(10);
         BayesianNetworkGenerator.setSeed(1623);
@@ -843,10 +899,14 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
         //importanceSamplingCLG.setSamplingModel(vmp.getSamplingModel());
 
         importanceSamplingCLG.setParallelMode(true);
-        importanceSamplingCLG.setSampleSize(50000);
+        importanceSamplingCLG.setSampleSize(100);
         importanceSamplingCLG.setSeed(57457);
 
         importanceSamplingCLG.runInference();
+
+        System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar0")).toString());
+        //System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar1")).toString());
+        //System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar2")).toString());
 
     }
 
