@@ -15,6 +15,7 @@ import string
 def preprocessTex( file, fileFolder):
 
 
+
     initialPath=os.getcwd();
 
     pattern1 = re.compile('\includejavasource{(.*)}')

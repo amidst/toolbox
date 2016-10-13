@@ -11,7 +11,9 @@ root='..';
 src='tex';
 tag='html';
 version=`cat ../version.txt`;
-
+useTemplates=0;
+removeTitle=0;
+imgLinks=1;
 
 pandflag=`which pandoc | wc -l`; 
 
@@ -57,13 +59,15 @@ do
 
     ./preprocessTex.py ${origin} | cat > ${origin}.aux;
 
-	
-	cat templates/header.html > ${dest};
-    iconv -t utf-8 ${origin}.aux  | pandoc --to html --from latex -s --latexmathml  >> ${dest};
+	if [ $useTemplates -eq 1 ]; then
+	    cat templates/header.html > ${dest};
+	fi;
+    iconv -t utf-8 ${origin}.aux  | pandoc --to html --from latex  >> ${dest};
 
 
-
-	cat templates/footer.html >> ${dest};
+    if [ $useTemplates -eq 1 ]; then
+	    cat templates/footer.html >> ${dest};
+	fi;
 
 	sed -i '' 's/<p class="caption">/<p class="caption" style="text-align:center">/g' ${dest};
 	sed -i '' 's/class="figure"/class="figure" style="text-align:center"/g' ${dest};
@@ -71,9 +75,17 @@ do
 
 	sed -i '' "s/(\*\\\\amidstversion\*)/${version}/g" ${dest};	
 	
+    if [ $removeTitle -eq 1 ]; then
+	    sed -i '' '1d' ${dest};
+	fi;
 
-	
-	
+	if [ $imgLinks -eq 1 ]; then
+	    ./replaceImgPath.py ${dest} | cat > ${dest}.aux;
+	    rm ${dest};
+	    mv ${dest}.aux ${dest};
+	fi;
+
+
 	rm ${origin/'.tex'/'.pdf'};
 	rm ${origin}.aux;
 	rm $origin;

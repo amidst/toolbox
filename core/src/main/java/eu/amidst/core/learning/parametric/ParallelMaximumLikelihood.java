@@ -124,6 +124,8 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
         dataInstanceCount.addAndGet(batch.getNumberOfDataInstances());
 
+
+        System.out.println(this.sumSS.output());
         return Double.NaN;
     }
 

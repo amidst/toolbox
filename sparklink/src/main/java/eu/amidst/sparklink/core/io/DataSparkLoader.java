@@ -18,6 +18,13 @@ public class DataSparkLoader {
     }
 
 
+	/**
+	 *
+	 * @param sqlContext
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
     public static DataSpark open(SQLContext sqlContext, String path) throws Exception {
 
         String formatFile = "";

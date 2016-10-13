@@ -14,6 +14,7 @@ import string
 
 def preprocessHtml( file ):
 
+    print("changing paths to images...");
 
     domain="http://www.amidsttoolbox.com";
     pathimg="wp-content/uploads";
