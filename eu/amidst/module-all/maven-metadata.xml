@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>module-all</artifactId>
   <versioning>
-    <release>0.6.0-alpha</release>
+    <release>0.6.0</release>
     <versions>
-      <version>0.6.0-alpha</version>
+      <version>0.6.0</version>
     </versions>
-    <lastUpdated>20160914135346</lastUpdated>
+    <lastUpdated>20161014154402</lastUpdated>
   </versioning>
 </metadata>
