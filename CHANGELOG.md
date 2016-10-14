@@ -11,7 +11,7 @@ Changes:
 
 
 **Release Date**: 14/10/2016
-**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0-alpha2/index.html)
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0/index.html)
 
 
 
