@@ -25,7 +25,16 @@ public class DataStreamWriterExample {
 
 		//Generate random data
 		int seed = 1234;
-		DataSpark data = DataSetGenerator.generate(jsc, seed, 100, 3, 2);
+		int nInstances = 1000;
+		int nDiscreteAtts=3;
+		int nContinuousAttributes = 2;
+
+		DataSpark data = DataSetGenerator
+				.generate(	jsc,
+							seed,
+							nInstances,
+							nDiscreteAtts,
+							nContinuousAttributes );
 
 
 		// Save it as a json and parquet file

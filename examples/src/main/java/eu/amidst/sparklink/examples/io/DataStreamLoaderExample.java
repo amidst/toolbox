@@ -25,7 +25,10 @@ public class DataStreamLoaderExample {
         DataSpark dataSpark = DataSparkLoader.open(sqlContext, path);
 
 		//Print all the instances in the dataset
-        dataSpark.collectDataStream().forEach(dataInstance -> System.out.println(dataInstance) );
+        dataSpark.collectDataStream()
+                .forEach(
+                        dataInstance -> System.out.println(dataInstance)
+                );
 
 
     }
