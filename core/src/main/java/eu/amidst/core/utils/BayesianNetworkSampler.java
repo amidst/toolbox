@@ -64,9 +64,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
 
-    /**
-     * Respresents a {@code Map} containing the latent variables.
-     */
+    /** Represents a {@code Map} containing the latent variables. */
     private Map<Variable, Boolean> latentVars = new HashMap();
 
     /**
@@ -92,7 +90,8 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
 
     /**
-     * Sets a given {@link Variable} object as hidden.
+     * Sets a given {@link Variable} object as hidden. A hidden variable contains an attribute whose values may be missing
+     * (some or all of them). In this case, numeric values won't be assigned and they will be represented by an "?" symbol.
      * @param var a given {@link Variable} object.
      */
     public void setHiddenVar(Variable var) {
@@ -108,8 +107,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
     /**
      * Sets a given {@link Variable} object as latent. A latent variable doesn't contain an attribute and therefore
-	 doesnt generate a sampling value.
-     *
+	 * doesn't generate a sampling value.
      * @param var a given {@link Variable} object.
      */
     public void setLatentVar(Variable var){
