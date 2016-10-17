@@ -47,13 +47,13 @@ public class SVI_LDA {
         if (args.length>1){
             dataPath = args[0];
             dataTest = args[1];
-            ntopics = Integer.parseInt(args[2]);
-            niter = Integer.parseInt(args[3]);
-            threshold = Double.parseDouble(args[4]);
-            docsPerBatch = Integer.parseInt(args[5]);
-            timeLimit = Integer.parseInt(args[6]);
-            ncores = Integer.parseInt(args[7]);
-            amazon_cluster = Boolean.parseBoolean(args[8]);
+            ntopics = Integer.parseInt(args[3]);
+            niter = Integer.parseInt(args[4]);
+            threshold = Double.parseDouble(args[5]);
+            docsPerBatch = Integer.parseInt(args[6]);
+            timeLimit = Integer.parseInt(args[8]);
+            ncores = Integer.parseInt(args[9]);
+            amazon_cluster = Boolean.parseBoolean(args[10]);
         }
 
         final ExecutionEnvironment env;
@@ -83,7 +83,7 @@ public class SVI_LDA {
         svb.setMaximumLocalIterations(niter);
         svb.setLocalThreshold(threshold);
         svb.setGlobalThreshold(threshold);
-        svb.setTimeLimit(timeLimit);
+        svb.setTimeLimit(-1);
         svb.setSeed(5);
 
         svb.setBatchSize(docsPerBatch);
@@ -160,11 +160,16 @@ public class SVI_LDA {
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.initLearning();
 
+        CompoundVector initialPosterior;
+        if (args.length>1) {
+            //initialPosterior = initialize(new String[]{args[0], args[1], args[2], args[3], args[6]});
+            initialPosterior = initialize(args);
+        }else{
+            initialPosterior = initialize(new String[]{});
+        }
 
-        CompoundVector initialPosterior = initialize(new String[]{args[0],args[1],args[2],args[3],args[6]});
-
-        svb.getSVI().getSVB().updateNaturalParameterPosteriors(initialPosterior);
-        svb.getSVI().setVMPOnFirstBatch(false);
+        //svb.getSVI().getSVB().updateNaturalParameterPosteriors(initialPosterior);
+        svb.getSVI().setVMPOnFirstBatch(true);
 
 
         svb.updateModel(dataInstances);
