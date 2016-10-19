@@ -1,0 +1,25 @@
+package eu.amidst.sparklink.examples.learning;
+
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.DAGGenerator;
+import eu.amidst.sparklink.core.data.DataSpark;
+import eu.amidst.sparklink.core.io.DataSparkLoader;
+import eu.amidst.sparklink.core.learning.ParallelMaximumLikelihood;
+import eu.amidst.sparklink.examples.io.DataStreamWriterExample;
+import junit.framework.TestCase;
+import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
+import org.apache.spark.sql.SQLContext;
+import org.junit.Test;
+
+/**
+ * Created by rcabanas on 10/06/16.
+ */
+public class MaximumLikelihoodLearningExampleTest extends TestCase {
+    @Test
+    public void test() throws Exception {
+        MaximumLikelihoodLearningExample.main(null);
+    }
+}
+
