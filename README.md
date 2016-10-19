@@ -136,8 +136,6 @@ source code examples of functionalities related to the module that integrates Ap
 * [SparkLink](http://www.amidsttoolbox.com/documentation/0-6-0/examples-060/sparklink-060/): some source code examples of 
 functionalities related to the module that integrates Apache Spark with AMIDST.
 
-
-
 * [API JavaDoc](http://amidst.github.io/toolbox/javadoc/index.html) of the AMIDST toolbox. 
 
 
