@@ -32,8 +32,12 @@ public class RunSVB {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+
+        String model = "BCC0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
@@ -89,7 +93,7 @@ public class RunSVB {
 
         svb.randomInitialize();
 
-        svb.setNonSequentialModel(true);
+        //svb.setNonSequentialModel(true);
         System.out.println(svb.getLearntBayesianNetwork());
 
         FileWriter fw = new FileWriter(dataPath+"SVB_Output_"+Arrays.toString(args)+"_.txt");
@@ -143,12 +147,14 @@ public class RunSVB {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
+                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
+                break;
             }
 
             double inst =test.getNumberOfDataInstances();

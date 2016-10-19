@@ -32,15 +32,19 @@ public class RunMultiDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+
+        String model = "BCC0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
 
         if (args.length>1){
-            int cont = 0;
+            int cont=0;
             model = args[cont++];
             dataPath=args[cont++];
             ntopics= Integer.parseInt(args[cont++]);
@@ -66,6 +70,7 @@ public class RunMultiDrift {
         svb.getPlateuStructure().getVMP().setThreshold(threshold);
 
         svb.setWindowsSize(docsPerBatch);
+
         if (model.compareTo("GPS0")==0) {
             svb.setDAG(DAGsGeneration.getGPSMixtureDAGNoDay(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("GPS1")==0) {
@@ -90,6 +95,7 @@ public class RunMultiDrift {
 
         System.out.println(svb.getLearntBayesianNetwork());
 
+
         FileWriter fw = new FileWriter(dataPath+"MultiDriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
 
@@ -98,14 +104,13 @@ public class RunMultiDrift {
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
 
-
         int count=0;
 
 
-        double totalLog = 0;
 
         Random random = new Random(0);
 
+        double totalLog = 0;
         String[] strings = new File(dataPath).list();
         Arrays.sort(strings);
         for (String string : strings) {
@@ -147,6 +152,7 @@ public class RunMultiDrift {
                     lambda +=vals[i];
                     n++;
                 }
+                break;
             }
             lambda/=n;
 
@@ -154,6 +160,7 @@ public class RunMultiDrift {
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
+                break;
             }
 
             double inst =test.getNumberOfDataInstances();
@@ -163,6 +170,7 @@ public class RunMultiDrift {
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
             totalLog+=log/inst;
 
+            System.out.println(svb.getLearntBayesianNetwork());
         }
         fw.close();
 

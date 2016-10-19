@@ -31,15 +31,18 @@ import java.util.Random;
 public class RunSVI {
 
     public static void main(String[] args) throws Exception{
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        String model = "BCC0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
-        int setSIZE = 1235000;
-        double learningRate = 0.5;
+        int setSIZE = 84000;
+        double learningRate = 0.1;
+        boolean fixedLearningRate = true;
 
         if (args.length>1){
             int cont  = 0;
@@ -52,6 +55,7 @@ public class RunSVI {
             docsPerBatch = Integer.parseInt(args[cont++]);
             setSIZE = Integer.parseInt(args[cont++]);
             learningRate = Double.parseDouble(args[cont++]);
+            fixedLearningRate = Boolean.parseBoolean(args[cont++]);
 
             args[1]="";
         }
@@ -97,6 +101,7 @@ public class RunSVI {
         svb.setDataSetSize(setSIZE);
         svb.setLearningFactor(learningRate);
 
+        svb.setFixedStepSize(fixedLearningRate);
         svb.initLearning();
 
 
@@ -154,12 +159,14 @@ public class RunSVI {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
+                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
+                break;
             }
 
             double inst =test.getNumberOfDataInstances();

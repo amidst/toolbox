@@ -38,8 +38,9 @@ public class RunPopulation {
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
-        int setSIZE = 5000;
-        double learningRate = 0.5;
+        int setSIZE = 1000;
+        double learningRate = 1;
+        boolean fixedLearningRate = true;
 
         if (args.length>1){
             int cont = 0;
@@ -52,6 +53,7 @@ public class RunPopulation {
             docsPerBatch = Integer.parseInt(args[cont++]);
             setSIZE = Integer.parseInt(args[cont++]);
             learningRate = Double.parseDouble(args[cont++]);
+            fixedLearningRate = Boolean.parseBoolean(args[cont++]);
 
             args[1]="";
         }
@@ -98,6 +100,8 @@ public class RunPopulation {
         svb.setBatchSize(docsPerBatch);
         svb.setMemorySize(setSIZE);
         svb.setLearningFactor(learningRate);
+
+        svb.setFixedStepSize(fixedLearningRate);
 
         svb.initLearning();
 
@@ -155,12 +159,14 @@ public class RunPopulation {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
+                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
+                break;
             }
 
             double inst =test.getNumberOfDataInstances();

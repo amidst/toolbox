@@ -73,6 +73,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     private CompoundVector initialPosterior;
     private CompoundVector currentParam;
     private int iteration;
+    private boolean fixedStepSize =false;
+
+
+    public void setFixedStepSize(boolean fixedStepSize) {
+        this.fixedStepSize = fixedStepSize;
+    }
 
     public int getBatchSize() {
         return batchSize;
@@ -156,8 +162,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         newParam.multiplyBy(this.dataSetSize/(double)batch.getNumberOfDataInstances());
         newParam.sum(prior);
 
-        double stepSize = Math.pow(1+ iteration,-learningFactor);
-
+        double stepSize = 0;
+        if (this.fixedStepSize){
+            stepSize = learningFactor;
+        }else {
+            stepSize = Math.pow(1 + iteration, -learningFactor);
+        }
         newParam.multiplyBy(stepSize);
 
         currentParam.multiplyBy((1-stepSize));
