@@ -1,5 +1,5 @@
-
-# AMIDST Toolbox
+# AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
+v.0.6.0
 
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
 [![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=develop)](https://travis-ci.org/amidst/toolbox)
@@ -132,6 +132,11 @@ includes some source code examples of functionalities related to Dynamic Bayesia
 
 * [FlinkLink](http://amidst.github.io/toolbox/examples/flinklink.html): Code Examples includes some 
 source code examples of functionalities related to the module that integrates Apache Flink with AMIDST.
+
+* [SparkLink](http://www.amidsttoolbox.com/documentation/0-6-0/examples-060/sparklink-060/): some source code examples of 
+functionalities related to the module that integrates Apache Spark with AMIDST.
+
+
 
 * [API JavaDoc](http://amidst.github.io/toolbox/javadoc/index.html) of the AMIDST toolbox. 
 

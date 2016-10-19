@@ -114,10 +114,11 @@
     <modules>
         <module>module-all</module>
 
-        <module>huginlink</module>
+      
         <module>core</module>
         <module>core-dynamic</module>
-
+        
+        <!--module>huginlink</module>
         <module>examples</module>
         <module>moalink</module>
         <module>latent-variable-models</module>
@@ -127,7 +128,7 @@
         <module>sparklink</module>
         <module>extensions/tutorials</module>
 
-        <module>extensions/lda</module>
+        <module>extensions/lda</module-->
 
         <!-- Remove the following references to modules before publishing a new release -->
         <!--module>extensions/caepia2015</module>
@@ -190,9 +191,9 @@
                     </archive>
                 </configuration>
             </plugin>
-                     
-            
-            
+
+
+
             <!-- maven-deploy plugin -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
