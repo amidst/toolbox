@@ -99,21 +99,26 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
     private class StreamingUpdateableGaussianMixture {
 
-        private double log_initial_variance = Math.log(50);
-        private double tau_novelty = 0.005;
+        private double log_initial_variance = Math.log(100);
+        private double tau_novelty = 0.001;
 
         private int M = 0;
         private List<Double> logMean;
         private List<Boolean> logMeanPositiveSign;
         private List<Double> logVariance;
         private List<Double> componentWeight;
-        private List<Double> sumProbs;
+        private List<Double> log_sumProbs;
 
         org.apache.commons.math.distribution.NormalDistributionImpl normalDistribution;
 
+
         public void update(double dataPoint, double logWeight) {
 
-            System.out.println("NUEVO DATO: " + dataPoint + ", CON PESO: " + logWeight);
+            boolean output=true;
+
+            if(output) {
+                System.out.println("NUEVO DATO: " + dataPoint + ", CON PESO: " + logWeight);
+            }
             // CREATE FIRST COMPONENT
             if (M==0) {
                 M=1;
@@ -123,7 +128,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
                 logVariance = new ArrayList<>();
                 componentWeight = new ArrayList<>();
-                sumProbs = new ArrayList<>();
+                log_sumProbs = new ArrayList<>();
 
                 logMean.add(Math.log(Math.abs(dataPoint)));
                 logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
@@ -131,7 +136,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                 logVariance.add(log_initial_variance);
 
                 componentWeight.add(1.0);
-                sumProbs.add(1.0);
+                log_sumProbs.add(1.0);
             }
             // UPDATE EXISTING COMPONENTS
             else {
@@ -146,7 +151,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                     probs_xj[i] = p_xj;
                     condition[i] = ( p_xj >= tau_novelty / Math.sqrt(2*Math.PI*Math.exp(logVariance.get(i))) ) ? 1 : 0;
 
-                    probs_jx[i] = probs_xj[i] * componentWeight.get(i);
+                    probs_jx[i] = Math.exp(logWeight) * probs_xj[i] * componentWeight.get(i);
                 }
 
                 double sumProbsWeights = Arrays.stream(probs_jx).sum();
@@ -163,13 +168,13 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                     logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
 
                     logVariance.add(log_initial_variance);
-                    sumProbs.add(1.0);
+                    log_sumProbs.add(1.0);
                     componentWeight.add(1.0);
 
-                    double sum_sumProbs = sumProbs.stream().mapToDouble(Double::doubleValue).sum();
+                    double sum_sumProbs = log_sumProbs.stream().mapToDouble(Double::doubleValue).sum();
 
                     for (int i = 0; i < M; i++) {
-                        componentWeight.set(i,sumProbs.get(i)/sum_sumProbs);
+                        componentWeight.set(i, log_sumProbs.get(i)/sum_sumProbs);
                     }
                 }
                 // ELSE, UPDATE PARAMETERS OF THE COMPONENTS
@@ -180,9 +185,9 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                         double p_jx = probs_jx[i];
                         double log_oldMean = logMean.get(i);
 
-                        sumProbs.set(i,sumProbs.get(i) + p_jx);
+                        log_sumProbs.set(i, log_sumProbs.get(i) + p_jx);
 
-                        double w = p_jx / sumProbs.get(i);
+                        double w = p_jx / log_sumProbs.get(i);
 
                         double oldMean = (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(log_oldMean);
                         double diff_oldMean = dataPoint - oldMean;
@@ -199,19 +204,21 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 //                        double aux2_old = Math.log(w) + 2 * diff_oldMean;
 
                         double aux2_new = w * Math.pow(diff_newMean,2);
-                        double aux2_old = w * Math.pow(diff_oldMean,2);
+                        double aux2_old = Math.pow(w,2) * Math.pow(diff_oldMean,2);
 
 //                        double log_newVar = RobustOperations.robustSumOfLogarithms( Math.log(1-w) + logVariance.get(i) , aux2_new );
 
-                        double newVar = (1-w) * Math.exp(logVariance.get(i)) + w * aux2_new;
+                        double newVar = (1-w) * Math.exp(logVariance.get(i)) + aux2_new;
 
-                        if(newVar > w * aux2_old) {
+                        if(newVar > aux2_old) {
 //                            log_newVar = RobustOperations.robustDifferenceOfLogarithms(log_newVar, aux2_old);
-                            newVar = newVar - w * aux2_old;
+                            newVar = Math.abs(newVar - aux2_old);
                         }
                         else {
 //                            log_newVar = Math.log(0.001);
-                            newVar = 0.001;
+//                            newVar = 0.001;
+                            newVar = Math.abs(newVar - aux2_old);
+
                         }
 
                         logMean.set(i,Math.log(Math.abs(newMean)));
@@ -221,20 +228,247 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
                     }
 
 
-                    double sum_sumProbs = sumProbs.stream().mapToDouble(Double::doubleValue).sum();
+                    double sum_sumProbs = log_sumProbs.stream().mapToDouble(Double::doubleValue).sum();
 
                     for (int i = 0; i < M; i++) {
-                        componentWeight.set(i,sumProbs.get(i) / sum_sumProbs);
+                        componentWeight.set(i, log_sumProbs.get(i) / sum_sumProbs);
                     }
                 }
             }
 
-            System.out.println("COMPONENTES:");
-            for (int i = 0; i < M; i++) {
-                System.out.println("Comp. " + i + "; media: " + (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(logMean.get(i)) + "; var: " + Math.exp(logVariance.get(i)) +"; peso: " + componentWeight.get(i));
+            if(output) {
+                System.out.println("COMPONENTES:");
+                for (int i = 0; i < M; i++) {
+                    System.out.println("Comp. " + i + "; media: " + (logMeanPositiveSign.get(i) ? 1 : -1) * Math.exp(logMean.get(i)) + "; var: " + Math.exp(logVariance.get(i)) + "; peso: " + componentWeight.get(i));
+                }
+                System.out.println();
             }
-            System.out.println();
 
+        }
+
+
+        public void updateRobust(double dataPoint, double logWeight) {
+
+            boolean output=false;
+
+            if(output) {
+                System.out.println("NUEVO DATO: " + dataPoint + ", CON PESO: " + logWeight);
+            }
+            // CREATE FIRST COMPONENT
+            if (M==0) {
+                M=1;
+
+                logMean = new ArrayList<>();
+                logMeanPositiveSign = new ArrayList<>();
+
+                logVariance = new ArrayList<>();
+                componentWeight = new ArrayList<>();
+                log_sumProbs = new ArrayList<>();
+
+                logMean.add(Math.log(Math.abs(dataPoint)));
+                logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
+
+                logVariance.add(log_initial_variance);
+
+                componentWeight.add(1.0);
+                log_sumProbs.add(logWeight);
+            }
+            // UPDATE EXISTING COMPONENTS
+            else {
+
+                double [] condition = new double[M];
+                double [] probs_xj = new double[M];
+                double [] probs_jx = new double[M];
+
+                for (int i = 0; i < M; i++) {
+                    normalDistribution = new NormalDistributionImpl( (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(logMean.get(i)), Math.sqrt(Math.exp(logVariance.get(i))));
+                    double p_xj = normalDistribution.density(dataPoint);
+                    probs_xj[i] = p_xj;
+                    condition[i] = ( p_xj >= tau_novelty / Math.sqrt(2*Math.PI*Math.exp(logVariance.get(i))) ) ? 1 : 0;
+
+                    // probs_jx[i] = Math.exp(logWeight) * probs_xj[i] * componentWeight.get(i);
+                    probs_jx[i] = probs_xj[i] * componentWeight.get(i);
+                }
+
+//                double log_sumProbsWeights = Arrays.stream(probs_jx).reduce(RobustOperations::robustSumOfLogarithms).getAsDouble();
+                double sumProbsWeights = Arrays.stream(probs_jx).sum();
+
+                for (int i = 0; i < M; i++) {
+                    probs_jx[i] = probs_jx[i] / sumProbsWeights;
+                }
+
+                // IF DATAPOINT DOES NOT MATCH ANY EXISTING COMPONENT, CREATE A NEW ONE
+                if (Arrays.stream(condition).sum()==0) {
+                    M=M+1;
+
+                    logMean.add(Math.log(Math.abs(dataPoint)));
+                    logMeanPositiveSign.add(Math.signum(dataPoint)>=0);
+
+                    logVariance.add(log_initial_variance);
+                    log_sumProbs.add(logWeight);
+                    componentWeight.add(1.0);
+
+                }
+                // ELSE, UPDATE PARAMETERS OF THE COMPONENTS
+                else {
+
+                    //TODO: review operations and check robustness
+                    for (int i = 0; i < M; i++) {
+
+                        double p_jx = probs_jx[i];
+                        double log_oldMean = logMean.get(i);
+
+
+                        double log_p_jx_weighted = Math.log(p_jx) + logWeight;
+
+                        log_sumProbs.set(i, RobustOperations.robustSumOfLogarithms(log_sumProbs.get(i), log_p_jx_weighted));
+
+                        double w = Math.exp(log_p_jx_weighted - log_sumProbs.get(i));
+
+
+
+                        double oldMean = (logMeanPositiveSign.get(i) ? 1 : -1 ) * Math.exp(log_oldMean);
+
+                        double diff_oldMean = dataPoint - oldMean;
+//                        double aux = Math.log(w) + diff_oldMean;
+//                        double log_newMean = RobustOperations.robustSumOfLogarithms(log_oldMean, aux);
+
+                        double aux = w * diff_oldMean;
+                        double newMean = oldMean + aux;
+
+                        double diff_newMean = dataPoint - newMean;
+//                        double aux2_new = Math.log(w) + 2 * diff_newMean;
+//                        double aux2_old = Math.log(w) + 2 * diff_oldMean;
+
+
+                        if(output==true) {
+                            System.out.println("p_jx:" + p_jx);
+                            System.out.println("w: " + w);
+                            System.out.println("oldMean: " + oldMean);
+                            System.out.println("diff_oldMean: " + diff_oldMean);
+                            System.out.println("newMean: " + newMean);
+                            System.out.println("diff_newMean: " + diff_newMean);
+                        }
+
+
+                        double aux2_new = w * Math.pow(diff_newMean,2);
+                        double aux2_old = Math.pow(w,2) * Math.pow(diff_oldMean,2);
+
+//                        double log_newVar = RobustOperations.robustSumOfLogarithms( Math.log(1-w) + logVariance.get(i) , aux2_new );
+
+                        double newVar = (1-w) * Math.exp(logVariance.get(i)) + aux2_new;
+
+//                        newVar = Math.abs(newVar - aux2_old);
+
+                        if(newVar > aux2_old) {
+//                            log_newVar = RobustOperations.robustDifferenceOfLogarithms(log_newVar, aux2_old);
+                            newVar = newVar - aux2_old;
+                        }
+                        else {
+//                            log_newVar = Math.log(0.001);
+//                            System.out.println("Varianza negativa:" + (newVar - aux2_old) );
+//                            newVar = 0.01;
+                            newVar = Math.abs(newVar - aux2_old);
+
+                        }
+
+                        logMean.set(i,Math.log(Math.abs(newMean)));
+                        logMeanPositiveSign.set(i,Math.signum(newMean)>=0);
+                        logVariance.set(i,Math.log(newVar));
+
+                    }
+//
+//                    //double sum_sumProbs = log_sumProbs.stream().mapToDouble(Double::doubleValue).sum();
+//                    double logSum_log_sumProbs = log_sumProbs.stream().reduce(RobustOperations::robustSumOfLogarithms).get();
+//
+////                    if(logSum_log_sumProbs!=0.0) {
+//                        for (int i = 0; i < M; i++) {
+//                            componentWeight.set(i, Math.exp(log_sumProbs.get(i) - logSum_log_sumProbs));
+//                        }
+////                    }
+////                    else {
+////                        for (int i = 0; i < M; i++) {
+////                            componentWeight.set(i, 1.0/M);
+////                        }
+////                    }
+//
+//                    if(output==true) {
+//                        System.out.println(Arrays.toString(log_sumProbs.toArray()));
+//                        System.out.println(Arrays.toString(componentWeight.toArray()));
+//                    }
+
+
+
+//
+//                    for (int i = 0; i < M; i++) {
+//                        componentWeight.set(i, Math.exp(log_sumProbs.get(i) - logSum_log_sumProbs));
+//                    }
+                }
+
+
+                double logSum_log_sumProbs = log_sumProbs.stream().reduce(RobustOperations::robustSumOfLogarithms).get();
+
+                List<Integer> significantComponents = new ArrayList<>();
+
+                for (int i = 0; i < M; i++) {
+                    double newWeight = Math.exp(log_sumProbs.get(i) - logSum_log_sumProbs);
+                    componentWeight.set(i, newWeight);
+
+                    if(newWeight > 1E-10) {
+                        significantComponents.add(i);
+                    }
+                }
+
+                if(output==true) {
+                    System.out.println("M: " + M + " with " + componentWeight.stream().filter(a -> a < 1E-10).count() + " negligible");
+                }
+                int newM = significantComponents.size();
+
+                List<Double> newList_logMean = new ArrayList<>();
+                List<Boolean> newList_logMeanPositiveSign = new ArrayList<>();
+                List<Double> newList_logVariance = new ArrayList<>();
+                List<Double> newList_componentWeight = new ArrayList<>();
+                List<Double> newList_log_sumProbs = new ArrayList<>();
+
+                for (int i = 0; i < newM; i++) {
+                    newList_logMean.add(logMean.get(significantComponents.get(i)));
+                    newList_logMeanPositiveSign.add(logMeanPositiveSign.get(significantComponents.get(i)));
+                    newList_logVariance.add(logVariance.get(significantComponents.get(i)));
+                    newList_componentWeight.add(componentWeight.get(significantComponents.get(i)));
+                    newList_log_sumProbs.add(log_sumProbs.get(significantComponents.get(i)));
+                }
+
+                newList_componentWeight.sort(Double::compareTo);
+
+                M = newM;
+
+                logMean = newList_logMean;
+                logMeanPositiveSign = newList_logMeanPositiveSign;
+                logVariance = newList_logVariance;
+                componentWeight = newList_componentWeight;
+                log_sumProbs = newList_log_sumProbs;
+
+                logSum_log_sumProbs = log_sumProbs.stream().reduce(RobustOperations::robustSumOfLogarithms).get();
+
+                for (int i = 0; i < M; i++) {
+                    double newWeight = Math.exp(log_sumProbs.get(i) - logSum_log_sumProbs);
+                    componentWeight.set(i, newWeight);
+                }
+
+
+                if(output==true) {
+                    System.out.println(Arrays.toString(log_sumProbs.toArray()));
+                    System.out.println(Arrays.toString(componentWeight.toArray()));
+                }
+            }
+
+            if(output) {
+                System.out.println("COMPONENTES:");
+                for (int i = 0; i < M; i++) {
+                    System.out.println("Comp. " + i + "; media: " + (logMeanPositiveSign.get(i) ? 1 : -1) * Math.exp(logMean.get(i)) + "; var: " + Math.exp(logVariance.get(i)) + "; peso: " + componentWeight.get(i));
+                }
+                System.out.println();
+            }
 
         }
 
@@ -478,7 +712,7 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
 
             double dataPoint = sample.getValue(variable);
-            SSNormalVariablesAPosteriori.get(j).update(dataPoint, logWeight);
+            SSNormalVariablesAPosteriori.get(j).updateRobust(dataPoint, logWeight);
 
         });
 
@@ -775,6 +1009,8 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
         double logSumWeights = weightedSampleStream
                 .mapToDouble(i -> {
                     WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+                    //System.out.println(weightedSample.assignment.outputString());
+                    //System.out.println(weightedSample.logWeight);
                     updatePosteriorDistributions(weightedSample.assignment,weightedSample.logWeight);
                     //updateLogProbabilityOfEvidence(weightedSample.logWeight);
 
@@ -886,9 +1122,12 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
 
         // this.oldMain();
 
-        BayesianNetworkGenerator.setNumberOfGaussianVars(1);
-        BayesianNetworkGenerator.setNumberOfMultinomialVars(5,2);
-        BayesianNetworkGenerator.setNumberOfLinks(10);
+        int nMultinomialVars = 100;
+        int nGaussianVars = 50;
+
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(nMultinomialVars,2);
+        BayesianNetworkGenerator.setNumberOfGaussianVars(nGaussianVars);
+        BayesianNetworkGenerator.setNumberOfLinks((int)2*(nMultinomialVars+nGaussianVars));
         BayesianNetworkGenerator.setSeed(1623);
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
         System.out.println(bn);
@@ -898,13 +1137,28 @@ public class ImportanceSamplingCLG implements InferenceAlgorithm, Serializable {
         importanceSamplingCLG.setModel(bn);
         //importanceSamplingCLG.setSamplingModel(vmp.getSamplingModel());
 
+
+        Assignment evidence = new HashMapAssignment();
+        for (int i = 1; i < nGaussianVars; i++) {
+            evidence.setValue(bn.getVariables().getVariableByName("GaussianVar" + Integer.toString(i)),0);
+        }
+        importanceSamplingCLG.setEvidence(evidence);
+
+
         importanceSamplingCLG.setParallelMode(true);
-        importanceSamplingCLG.setSampleSize(100);
+        importanceSamplingCLG.setSampleSize(100000);
         importanceSamplingCLG.setSeed(57457);
+
+        Variable gaussianVar0 = bn.getVariables().getVariableByName("GaussianVar0");
+
+        List<Variable> varsPosteriori = new ArrayList<>();
+        varsPosteriori.add(gaussianVar0);
+        importanceSamplingCLG.setVariablesAPosteriori(varsPosteriori);
 
         importanceSamplingCLG.runInference();
 
-        System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar0")).toString());
+
+        System.out.println(importanceSamplingCLG.getPosterior(gaussianVar0).toString());
         //System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar1")).toString());
         //System.out.println(importanceSamplingCLG.getPosterior(bn.getVariables().getVariableByName("GaussianVar2")).toString());
 
