@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>AMIDST Toolbox 0.4.3 by amidst</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">AMIDST Toolbox 0.4.3</h1>
+      <h2 class="project-tagline">A Java Toolbox for Analysis of MassIve Data STreams using Probabilistic Graphical Models</h2>
+      <a href="https://github.com/amidst/toolbox" class="btn">View on GitHub</a>
+      <a href="https://github.com/amidst/toolbox/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/amidst/toolbox/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="getting-started-" class="anchor" href="#getting-started-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started! <a name="architecture"></a>
+</h1>
+
+<h2>
+<a id="installing-amidst-toolbox-" class="anchor" href="#installing-amidst-toolbox-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing AMIDST Toolbox <a name="installation"></a>
+</h2>
+
+<p>The first step is to install <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">Java 8</a>.  As second step, we strongly recommend to install <a href="http://www.jetbrains.com/idea/download/">IntelliJ</a> as IDE tool because it has direct support of Maven and Github. </p>
+
+
+
+<p>AMIDST toolbox is hosted on <a href="https://github.com/amidst/toolbox">GitHub</a>. To work with AMIDST code you should follow 
+the <a href="https://help.github.com/articles/using-pull-requests/">Fork &amp; Pull</a> collaboration model. Read this <a href="https://guides.github.com/activities/forking/">guide</a> for full details about how 
+to fork a project and make a pull request. Once you have forked the project, you can clone to you computer and open 
+it with Intellij by pointing at the pom.xml file, and everything will be ready to start. </p>
+
+<p>Further details about how to contribute to this project are given this <a href="http://amidst.github.io/toolbox/ContributingToAMIDST.html">link</a>. </p>
+
+<h2>
+<a id="installing-moalink" class="anchor" href="#installing-moalink" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing MOALink<a name="installmoa"></a>
+</h2>
+
+<p>To use AMIDST functionality within <a href="http://moa.cms.waikato.ac.nz">MOA</a> you just have to run the script 
+<em>compileWithDependencies.sh</em> in the <em>moalink</em> directory. A file <em>moalink-1.0-SNAPSHOT-jar-with-dependencies.jar</em> 
+will be generated in the <em>[project-root-folder]/moalink/target</em> directory. Please place this jar file on your library path for 
+<a href="http://moa.cms.waikato.ac.nz">MOA</a>. </p>
+
+<p>With this jar file we can make use of the different learning and inference algorithms in AMIDST to learn more 
+expressive Bayesian network models for classification, regression and clustering. AMIDST offers the possibility to 
+add latent Gaussian and/or Multinomial variables to a base naive Bayes structure. Normally, the addition of 
+these latent variables should provide classifiers with lower bias and higher variance, that is, more sophisticated 
+classifiers that are able to lean more complex interdependencies in the data, but also more prone to overfit. 
+The user should evaluate the complexity of his/her dataset and choose the number of latent Gaussian variables 
+and states of the multinomial latent variable accordingly.</p>
+
+<p>With the following command, <a href="http://moa.cms.waikato.ac.nz">MOA</a> gui can be invoked e.g 
+(remember to place <em>compileWithDependencies.sh</em> under the lib folder reference in the <em>-cp</em> option):</p>
+
+<pre><code>java -Xmx512m -cp "../lib/*" -javaagent:../lib/sizeofag-1.0.0.jar moa.gui.GUI
+</code></pre>
+
+<p>Note that the above example should be slightly adapted to run on a Windows machine: 
+e.g. use "^" instead of "\" to escape brackets.</p>
+
+<h2>
+<a id="installing-huginlink" class="anchor" href="#installing-huginlink" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installing HuginLink<a name="installhugin"></a>
+</h2>
+
+<p>HuginLink is present in the toolbox as a independent Maven module. To use this module and, in consequence, access some of the functionalities provided by <a href="http://www.hugin.com/">Hugin</a> commercial software, we need to perform the following steps:</p>
+
+<ol>
+<li><p><strong>Install Hugin software</strong>. Here we describe how to install <a href="http://www.hugin.com/productsservices/demo">Hugin Lite 8.2</a> which is a freely available demo version of <a href="http://www.hugin.com">Hugin</a> software. For those with a full license or who want to update HuginLink to link to a new version of <a href="http://www.hugin.com">Hugin</a> sofware, just follow the same steps.</p></li>
+<li>
+<p><strong>Install the binary file</strong>. Inside the installation folder you will find a folder called <em>Libraries</em> which contains the binary file needed for the installation. Choose the file that fits with your operating system and copy it to the folder [project-root-folder]/huginlink/huginlib/. For example, for a MAC OS X with 64 bits architecture the file needed is <em>libhapi82-64.jnilib</em>. </p>
+
+<p>Finally, rename this binary the file to match it with the Java jar file already provided by the toolbox, <em>[project-root-folder]/huginlink/huginlib/hapi82_amidst-64.jar</em>. The final name of the binary file should be <em>libhapi82_amidst-64.[extension]</em>. The extension should not be modify because it depends on the specific operating system.</p>
+</li>
+</ol>
+
+
+
+<p>Now, you can invoke the following example by using the script <em>run.sh</em> :</p>
+
+<pre><code>./run.sh eu.amidst.huginlink.examples.inference.HuginInferenceExample
+</code></pre>
+
+<p>We notice that ror running any code invoking the Hugin API, you have to provide the following option to the JVM  </p>
+
+<pre><code>-Djava.library.path="./huginlink/huginlib/" 
+</code></pre>
+
+<h2>
+<a id="compiling--running-from-the-command-line" class="anchor" href="#compiling--running-from-the-command-line" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compiling &amp; Running from the command line<a name="compilation"></a>
+</h2>
+
+<ol>
+<li><p>Install Maven: <a href="http://maven.apache.org/download.cgi">http://maven.apache.org/download.cgi</a>  (follow specific instructions for your OS).</p></li>
+<li><p>Modify the file maven_startup.sh (which you can find in the root project folder, and which is displayed below) 
+and fix the path of your Maven and Java installation.</p></li>
+</ol>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-c">#!/bin/bash</span>
+
+<span class="pl-c"># Example script for setting up Maven on Mac OS X. May need modifications.</span>
+
+<span class="pl-k">export</span> M2_HOME=/Applications/apache-maven/apache-maven-3.2.3
+<span class="pl-k">export</span> M2=<span class="pl-smi">$M2_HOME</span>/bin
+<span class="pl-k">export</span> MAVEN_OPTS=<span class="pl-s"><span class="pl-pds">"</span>-Xms256m -Xmx512m<span class="pl-pds">"</span></span>
+<span class="pl-k">export</span> PATH=<span class="pl-smi">$M2</span>:<span class="pl-smi">$PATH</span>
+<span class="pl-k">export</span> JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_20.jdk/Contents/Home
+<span class="pl-k">export</span> PATH=<span class="pl-smi">${JAVA_HOME}</span>/bin/:<span class="pl-smi">$PATH</span></pre></div>
+
+<ol>
+<li>
+<p>Create (or modify if already exists) a file ".profile" or ".bash_profile" in you home directory and add the following line,
+which points to file "maven_startup.sh"</p>
+
+<pre><code>source &lt;project-folder&gt;/maven_startup.sh
+</code></pre>
+
+<p>Now after restarting the terminal, <em>mvn</em> command should work.</p>
+</li>
+<li><p>The script "compile.sh" (which you can find in the root project folder) just compiles the whole project.</p></li>
+<li>
+<p>The script "run.sh" (which you can find in the root project folder) should be used to run some class. For example,</p>
+
+<pre><code>./run.sh eu.amidst.core.examples.learning.ParallelMaximumLikelihoodExample
+</code></pre>
+</li>
+</ol>
+
+<h2>
+<a id="java-8-integration-lambdas-streams-and-functional-sytle-programming" class="anchor" href="#java-8-integration-lambdas-streams-and-functional-sytle-programming" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Java 8 Integration: Lambdas, streams, and functional-sytle programming<a name="java8"></a>
+</h2>
+
+<p>This toolbox has been specifically designed for using the functional-style features provided by the Java 8 release. This design leverages these new features for developing easy-to-code parallel algorithms on mutli-core CPUs. As commented above, the main scalability properties of this toolbox rely on this functional-style approach introduced in Java 8. Our aim is that future developers can also exploit this specific design of the toolbox for easily developing new methods for dealing with massive data streams using PGMs.  </p>
+
+<p>The following paper provides a deep discussion over the different design issues we had to face and how they were solved using Java 8 functional-style features. </p>
+
+<blockquote>
+<p>Andres R. Masegosa, Ana M. Martinez, and Hanen Borchani. Probabilistic graphical models on multi-core CPUs using Java 8. IEEE Computational Intelligence Magazine, Special Issue on Computational Intelligence Software, Under review, 2015.</p>
+</blockquote>
+
+<h2>
+<a id="modules-based-architecture" class="anchor" href="#modules-based-architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Module's Based Architecture<a name="description"></a>
+</h2>
+
+<p>AMIDST toolbox is an open source project under <a href="http://www.apache.org/licenses/LICENSE-2.0">Apache Software License 2.0</a>. It is written in Java and is based on <a href="https://en.wikipedia.org/wiki/Apache_Maven">Apache Maven</a> for building and structuring the project. This toolbox is structured as <a href="http://books.sonatype.com/mvnex-book/reference/multimodule.html">multi-module Maven project</a>. Roughly speaking, a <strong>Maven module</strong> is an independent piece of software with explicit dependencies to other modules in the project and to other external libraries. Each module is placed in independent folders and contains an xml file describing its dependencies. In this current version, the toolbox is composed by the following four modules:</p>
+
+<ul>
+<li><p><strong>Core module</strong> contains all the main functionalities for <em>Static BNs</em>. It is placed in the <em>core</em> folder under the root project folder. </p></li>
+<li><p><strong>Core-dynamic module</strong> contains all the main functionalities for <em>Dynamic BNs</em>. It is placed in the <em>core-dynamic</em> folder under the root project folder. </p></li>
+<li><p><strong>Examples module</strong> contains basic code examples showing how to use the main functionalities of the toolbox. It is placed in the <em>examples</em> folder under the root project folder.</p></li>
+<li><p><strong>MoaLink module</strong> contains the code needed to use the AMIDST functionality within <a href="http://moa.cms.waikato.ac.nz/">MOA</a>. It is placed in the <em>moalink</em> folder  under the root project folder.</p></li>
+<li><p><strong>HuginLink module</strong> contains the code needed to use <a href="www.hugin.com">Hugin</a> software within AMIDST. It is placed in the <em>huginlink</em> folder under the root project folder. </p></li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/amidst/toolbox">AMIDST Toolbox 0.4.3</a> is maintained by <a href="https://github.com/amidst">amidst</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-66233470-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
