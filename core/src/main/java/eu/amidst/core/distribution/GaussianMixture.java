@@ -271,7 +271,7 @@ public class GaussianMixture extends UnivariateDistribution {
     public String toString() {
         String text = "";
         for(int k=0; k<coefficients.length; k++) {
-            text = text + String.format("%.3f", coefficients[k]) + " " + terms.get(k).toString();
+            text = text + String.format("%.10f", coefficients[k]) + " " + terms.get(k).toString();
             if (k<coefficients.length-1) {
                 text = text + " + ";
             }
