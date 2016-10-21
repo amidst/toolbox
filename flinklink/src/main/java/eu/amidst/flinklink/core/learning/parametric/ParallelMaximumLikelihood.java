@@ -18,6 +18,7 @@
 package eu.amidst.flinklink.core.learning.parametric;
 
 
+import com.google.common.util.concurrent.AtomicDouble;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_BayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
@@ -59,16 +60,28 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
     protected SufficientStatistics sumSS;
 
 
-    double numInstances;
+    /** Represents the data instance count. */
+    protected AtomicDouble numInstances;
 
     public static String EFBN_NAME = "EFBN";
 
     public static String COUNTER_NAME = "COUNTER";
 
 
+    /** Represents whether Laplace correction (i.e. MAP estimation) is used*/
+    protected boolean laplace = true;
+
+
+
     public void initLearning() {
         efBayesianNetwork = new EF_BayesianNetwork(dag);
-        sumSS = efBayesianNetwork.createInitSufficientStatistics();
+        if (laplace) {
+            sumSS = efBayesianNetwork.createInitSufficientStatistics();
+            numInstances = new AtomicDouble(1.0); //Initial counts
+        }else {
+            sumSS = efBayesianNetwork.createZeroSufficientStatistics();
+            numInstances = new AtomicDouble(0.0); //Initial counts
+        }
 
     }
 
@@ -97,18 +110,19 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
             config.setBytes(EFBN_NAME, Serialization.serializeObject(efBayesianNetwork));
 
             DataSet<DataInstance> dataset = dataUpdate.getDataSet();
-            this.sumSS = dataset.map(new SufficientSatisticsMAP())
+            sumSS.sum(dataset.map(new SufficientSatisticsMAP())
                     .withParameters(config)
                     .reduce(new SufficientSatisticsReduce())
-                    .collect().get(0);
-
-            //Add the prior
-            sumSS.sum(efBayesianNetwork.createInitSufficientStatistics());
+                    .collect().get(0));
 
             JobExecutionResult result = dataset.getExecutionEnvironment().getLastJobExecutionResult();
 
-            numInstances = result.getAccumulatorResult(ParallelMaximumLikelihood.COUNTER_NAME+"_"+this.dag.getName());
-            numInstances++;//Initial counts
+            numInstances.addAndGet(
+                    (double)result
+                            .getAccumulatorResult(
+                                    ParallelMaximumLikelihood.COUNTER_NAME+"_"+this.dag.getName()
+                            )
+            );
 
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
@@ -141,7 +155,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
         //Normalize the sufficient statistics
         SufficientStatistics normalizedSS = efBayesianNetwork.createZeroSufficientStatistics();
         normalizedSS.copy(sumSS);
-        normalizedSS.divideBy(numInstances);
+        normalizedSS.divideBy(numInstances.get());
 
         efBayesianNetwork.setMomentParameters(normalizedSS);
         return efBayesianNetwork.toBayesianNetwork(dag);
@@ -155,6 +169,14 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
 
     }
 
+
+    public void setLaplace(boolean laplace) {
+        this.laplace = laplace;
+    }
+
+    public boolean isLaplace() {
+        return laplace;
+    }
 
     static class SufficientSatisticsMAP extends RichMapFunction<DataInstance, SufficientStatistics> {
 
