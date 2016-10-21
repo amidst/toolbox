@@ -93,7 +93,7 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
      * @param windowsSize the batch size.
      */
     public void setWindowsSize(int windowsSize) {
-        windowsSize = windowsSize;
+        this.windowsSize = windowsSize;
     }
 
     /**
@@ -145,7 +145,6 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
         }else{
             stream = dataStream.streamOfBatches(windowsSize);
         }
-
 
         dataInstanceCount = new AtomicDouble(0); //Initial count
 
