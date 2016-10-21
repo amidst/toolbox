@@ -23,7 +23,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
@@ -72,9 +72,9 @@ public class NBIndicatorsClassifier extends Classifier {
         }
         //System.out.println("Class: " + classVar.getName());
 
-        this.setLearningAlgorithm(new ParallelMaximumLikelihood());
+        this.setLearningAlgorithm(new ParallelMLMissingData());
 
-        this.getLearningAlgorithm().setWindowsSize(20000);
+//        this.getLearningAlgorithm().setWindowsSize(20000);
         this.inferenceAlgoPredict = new ImportanceSampling();
 
     }
@@ -187,7 +187,7 @@ public class NBIndicatorsClassifier extends Classifier {
             double[] values = posteriorProb.getProbabilities();
             if (values[0]>values[1]) {
                 predValue = 0;
-            }else {
+            } else {
                 predValue = 1;
 
             }

@@ -29,9 +29,9 @@ public class NBIndicatorsEval {
             className = args[3];
         }
         else {
-            fileTrain = "/Users/dario/Desktop/CAJAMAR_DatosNB/train.arff";
-            fileTest = "/Users/dario/Desktop/CAJAMAR_DatosNB/test.arff";
-            fileOutput = "/Users/dario/Desktop/CAJAMAR_DatosNB/output.txt";
+            fileTrain = "/Users/dario/Desktop/Datos21-10-2016/train.arff";  //CAJAMAR_DatosNB
+            fileTest = "/Users/dario/Desktop/Datos21-10-2016/test.arff";
+            fileOutput = "/Users/dario/Desktop/Datos21-10-2016/output.txt";
             className = "Default";
         }
 
