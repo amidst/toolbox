@@ -152,13 +152,15 @@ public class NBIndicatorsClassifier extends Classifier {
 
 
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,20000, 2, 3);
 
         System.out.println(data.getAttributes().toString());
 
         String classVarName = "DiscreteVar0";
 
         NBIndicatorsClassifier nb = new NBIndicatorsClassifier(data.getAttributes());
+        nb.setWindowSize(5000);
+
         nb.setClassName(classVarName);
 
         nb.updateModel(data);
@@ -194,7 +196,7 @@ public class NBIndicatorsClassifier extends Classifier {
 
             if(realValue == predValue) hits++;
 
-            System.out.println("realValue = "+realValue+", predicted ="+predValue);
+            //System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
 
