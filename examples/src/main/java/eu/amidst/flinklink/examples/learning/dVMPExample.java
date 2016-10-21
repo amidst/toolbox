@@ -22,7 +22,7 @@ public class dVMPExample {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
+        //env.getConfig().disableSysoutLogging();
         env.setParallelism(Main.PARALLELISM);
 
         //generate a random dataset

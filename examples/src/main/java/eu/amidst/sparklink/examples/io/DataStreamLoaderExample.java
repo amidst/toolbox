@@ -14,7 +14,7 @@ import eu.amidst.sparklink.core.io.DataSparkLoader;
  */
 public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
-        SparkConf conf = new SparkConf().setAppName("SparkLink!").setMaster("local");
+        SparkConf conf = new SparkConf().setAppName("SLink!").setMaster("local");
         SparkContext sc = new SparkContext(conf);
         SQLContext sqlContext = new SQLContext(sc);
 
@@ -23,6 +23,7 @@ public class DataStreamLoaderExample {
 
 		//Create an AMIDST object for managing the data
         DataSpark dataSpark = DataSparkLoader.open(sqlContext, path);
+
 
 		//Print all the instances in the dataset
         dataSpark.collectDataStream()
