@@ -15,18 +15,22 @@
  *
  */
 
-package eu.amidst.latentvariablemodels.staticmodels.classifiers;
+package eu.amidst.cajamareval;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.ImportanceSampling;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
+import eu.amidst.latentvariablemodels.staticmodels.classifiers.Classifier;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
@@ -36,9 +40,7 @@ import java.util.stream.Collectors;
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 82.
  */
-public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
-
-
+public class NBIndicatorsClassifier extends Classifier {
 
     /**
      * Constructor of the classifier which is initialized with the default arguments:
@@ -48,10 +50,33 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
      * @throws WrongConfigurationException is thrown when the attributes passed are not suitable
      * for such classifier
      */
-    public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
+    public NBIndicatorsClassifier(Attributes attributes) throws WrongConfigurationException {
+
+        //super();
         super(attributes);
 
+        this.vars = new Variables(attributes);
+        // Add indicator variables
+        List<Variable> initialVariables = this.vars.getListOfVariables();
+        int numberOfInitialVariables = initialVariables.size();
+        for (int i = 0; i < numberOfInitialVariables; i++) {
+            Variable var = initialVariables.get(i);
+            if(var.isNormal()) {
+                vars.newIndicatorVariable(var,0);
+            }
+        }
+        //vars.getListOfVariables().forEach(var -> System.out.println(var.getName()));
+        this.classVar = vars.getListOfVariables().get(numberOfInitialVariables-1);
+        if (!this.classVar.isMultinomial()) {
+            this.classVar = vars.getListOfVariables().stream().filter(Variable::isMultinomial).findFirst().get();
+        }
+        //System.out.println("Class: " + classVar.getName());
+
         this.setLearningAlgorithm(new ParallelMLMissingData());
+
+//        this.getLearningAlgorithm().setWindowsSize(20000);
+        this.inferenceAlgoPredict = new ImportanceSampling();
+
     }
 
     /**
@@ -61,8 +86,33 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
     protected void buildDAG() {
 
         dag = new DAG(vars);
-        dag.getParentSets().stream().filter(w -> !w.getMainVar().equals(classVar)).forEach(w -> w.addParent(classVar));
 
+        // ADD THE CLASS VARIABLE AS A PARENT FOR EVERY VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> !w.getMainVar().isIndicator())
+                .forEach(w -> w.addParent(classVar));
+
+        // ADD INDICATOR VARIABLE AS PARENTS OF EVERY CONTINUOUS VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> w.getMainVar().isNormal())
+                .forEach(w -> w.addParent(vars.getVariableByName(w.getMainVar().getName() + "_INDICATOR")));
+
+        // ADD INDICATOR VARIABLE AS PARENTS OF EVERY CONTINUOUS VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> w.getMainVar().isNormal())
+                .forEach(w -> {
+                    Variable var = w.getMainVar();
+                    Variable var_aggregated;
+                    try {
+                        var_aggregated = vars.getVariableByName(var.getName() + "_AG");
+                        w.addParent(var_aggregated);
+                    } catch (UnsupportedOperationException e) {
+
+                    }
+                });
     }
 
 
@@ -82,7 +132,7 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
         if(numFinite == 0) {
             isValid = false;
-            String errorMsg = "It should contain at least 1 discrete variable and the rest shoud be real";
+            String errorMsg = "It should contain at least 1 discrete variable and the rest should be real";
             this.setErrorMessage(errorMsg);
 
         }
@@ -102,13 +152,15 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
 
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,20000, 2, 3);
 
         System.out.println(data.getAttributes().toString());
 
         String classVarName = "DiscreteVar0";
 
-        NaiveBayesClassifier nb = new NaiveBayesClassifier(data.getAttributes());
+        NBIndicatorsClassifier nb = new NBIndicatorsClassifier(data.getAttributes());
+        nb.setWindowSize(5000);
+
         nb.setClassName(classVarName);
 
         nb.updateModel(data);
@@ -137,14 +189,14 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
             double[] values = posteriorProb.getProbabilities();
             if (values[0]>values[1]) {
                 predValue = 0;
-            }else {
+            } else {
                 predValue = 1;
 
             }
 
             if(realValue == predValue) hits++;
 
-            System.out.println("realValue = "+realValue+", predicted ="+predValue);
+            //System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
 

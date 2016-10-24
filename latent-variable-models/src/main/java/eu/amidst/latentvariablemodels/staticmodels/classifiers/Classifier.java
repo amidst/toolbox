@@ -69,7 +69,7 @@ public abstract class Classifier<T extends Classifier> extends Model<T> {
         inferenceAlgoPredict.setModel(this.getModel());
         this.inferenceAlgoPredict.setEvidence(instance);
 
-        System.out.println(instance);
+        //System.out.println(instance);
 
         this.inferenceAlgoPredict.runInference();
 

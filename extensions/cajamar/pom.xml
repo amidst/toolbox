@@ -59,12 +59,7 @@
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
-            <version>0.6.0</version> <!-- AmidstVersion -->
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>latent-variable-models</artifactId>
             <version>0.6.0</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>

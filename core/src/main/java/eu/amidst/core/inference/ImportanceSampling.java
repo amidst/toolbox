@@ -35,10 +35,7 @@ import eu.amidst.core.variables.Variable;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -331,10 +328,13 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
             weightedSampleList = weightedSampleStream.collect(Collectors.toList());
         }
 
-        double maxLogWeight = weightedSampleList.stream()
-                .mapToDouble(weightetAssignment -> weightetAssignment.weight)
+        double maxLogWeight;
+
+        OptionalDouble optionalDouble = weightedSampleList.stream()
+                .mapToDouble(weightedAssignment -> weightedAssignment.weight)
                 .filter(Double::isFinite)
-                .max().getAsDouble();
+                .max();
+        maxLogWeight = (optionalDouble.isPresent() ? optionalDouble.getAsDouble() : 0);
 
         SufficientStatistics sumSS = weightedSampleStream
                 .peek(w -> {

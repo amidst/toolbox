@@ -66,7 +66,7 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
     protected EF_BayesianNetwork efBayesianNetwork;
 
     /** Represents if the class is in debug mode*/
-    protected boolean debug = false;
+    protected boolean debug = true;
 
     /** Represents whether Laplace correction (i.e. MAP estimation) is used*/
     protected boolean laplace = true;
@@ -145,7 +145,6 @@ public class ParallelMLMissingData implements ParameterLearningAlgorithm{
         }else{
             stream = dataStream.streamOfBatches(windowsSize);
         }
-
 
         dataInstanceCount = new AtomicDouble(0); //Initial count
 
