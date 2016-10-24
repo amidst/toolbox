@@ -107,11 +107,13 @@ public class CSVtoARFFHeader {
                 int lineNumber = 1;
 
                 newLine = reader.readLine(); // DISCARD FIRST ROW (HEADER)
+                lineNumber++;
                 newLine = reader.readLine();
                 while (newLine != null) {
 
                     String[] values = newLine.split(SEPARATOR);
 
+                    int finalLineNumber = lineNumber;
                     IntStream.range(0, values.length).forEach(k -> {
 
 //                        if (values[k].contains(".")) {
@@ -138,8 +140,14 @@ public class CSVtoARFFHeader {
                                 }
                             }
                             catch (NumberFormatException e) {
-                                isVariableCategorical[k] = true;
-                                varStates.get(k).add(values[k]);
+                                try {
+                                    isVariableCategorical[k] = true;
+                                    varStates.get(k).add(values[k]);
+                                }
+                                catch(ArrayIndexOutOfBoundsException e1) {
+                                    System.out.println("Excepcion: " + e1.getMessage());
+                                    System.out.println("Line number: " + finalLineNumber + " variable index " + k);
+                                }
                             }
 
                             if ( values[k].contains("s") || Double.isNaN(dd) ) {
