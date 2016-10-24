@@ -89,31 +89,33 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      * @return the new stream
      */
     default DataStream<E> filter(Predicate<? super E> predicate){
-        return new DataStream<E>() {
 
+        DataStream<E> initialStream = this;
+
+        return new DataStream<E>() {
             @Override
             public Attributes getAttributes() {
-                return this.getAttributes();
+                return initialStream.getAttributes();
             }
 
             @Override
             public void close() {
-                this.close();
+                initialStream.close();
             }
 
             @Override
             public boolean isRestartable() {
-                return this.isRestartable();
+                return initialStream.isRestartable();
             }
 
             @Override
             public void restart() {
-                this.restart();
+                initialStream.restart();
             }
 
             @Override
             public Stream<E> stream() {
-                return this.stream().filter(predicate);
+                return initialStream.stream().filter(predicate);
             }
         };
     }
@@ -132,30 +134,33 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      * @return the new data stream
      */
     default <R extends DataInstance> DataStream<R> map(Function<? super E, ? extends R> mapper){
+
+        DataStream<E> initialStream = this;
+
         return new DataStream<R>() {
             @Override
             public Attributes getAttributes() {
-                return this.getAttributes();
+                return initialStream.getAttributes();
             }
 
             @Override
             public void close() {
-                this.close();
+                initialStream.close();
             }
 
             @Override
             public boolean isRestartable() {
-                return this.isRestartable();
+                return initialStream.isRestartable();
             }
 
             @Override
             public void restart() {
-                this.restart();
+                initialStream.restart();
             }
 
             @Override
             public Stream<R> stream() {
-                return ((Stream<E>)this.stream()).map(mapper);
+                return ((Stream<E>)initialStream.stream()).map(mapper);
             }
         };
     }

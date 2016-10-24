@@ -30,6 +30,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
+import javax.sql.rowset.Predicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
 
 
 /**
- * This class implements the interface {@link eu.amidst.core.utils.AmidstOptionsHandler}.
+ * This class implements the interface {@link AmidstOptionsHandler}.
  * It defines a sampler of data from a {@link BayesianNetwork}.
  */
 public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializable {
@@ -55,7 +56,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     /** Represents the initial seed for random sampling. */
     private int seed = 0;
 
-    /** Represents a {@link java.util.Random} object. */
+    /** Represents a {@link Random} object. */
     private Random random = new Random(seed);
 
     /** Represents a {@code Map} containing the hidden variables. */
