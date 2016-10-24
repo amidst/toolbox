@@ -43,10 +43,10 @@ public class NBIndicatorsEval {
         NBIndicatorsClassifier nbIndicatorsClassifier = new NBIndicatorsClassifier(train.getAttributes());
 
         nbIndicatorsClassifier.setClassName(className);
-        nbIndicatorsClassifier.setWindowSize(20000);
+        nbIndicatorsClassifier.setWindowSize(10000);
         nbIndicatorsClassifier.updateModel(train);
 
-        BayesianNetworkWriter.save(nbIndicatorsClassifier.getModel(), fileOutput + "_NB_model.bn");
+        BayesianNetworkWriter.save(nbIndicatorsClassifier.getModel(), fileOutput + "_NBIndicators_model.bn");
 
         //Domain huginNetwork = BNConverterToHugin.convertToHugin(nbIndicatorsClassifier.getModel());
         //huginNetwork.saveAsNet(fileOutput + "_NB_model.net");
