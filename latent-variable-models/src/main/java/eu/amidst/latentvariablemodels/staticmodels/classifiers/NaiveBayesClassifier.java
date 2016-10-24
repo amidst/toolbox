@@ -22,7 +22,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
@@ -51,7 +51,7 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
     public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
 
-        this.setLearningAlgorithm(new ParallelMaximumLikelihood());
+        this.setLearningAlgorithm(new ParallelMLMissingData());
     }
 
     /**

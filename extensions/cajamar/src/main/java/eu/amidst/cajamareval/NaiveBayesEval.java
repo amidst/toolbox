@@ -33,11 +33,23 @@ public class NaiveBayesEval {
 
     public static void main(String[] args) throws Exception{
 
+        String fileTrain;
+        String fileTest;
+        String fileOutput;
+        String className;
 
-        String fileTrain = args[0];
-        String fileTest = args[1];
-        String fileOutput = args[2];
-        String className = args[3];
+        if(args.length == 4) {
+            fileTrain = args[0];
+            fileTest = args[1];
+            fileOutput = args[2];
+            className = args[3];
+        }
+        else {
+            fileTrain = "/Users/dario/Desktop/Datos21-10-2016/train.arff";  //CAJAMAR_DatosNB
+            fileTest = "/Users/dario/Desktop/Datos21-10-2016/test.arff";
+            fileOutput = "/Users/dario/Desktop/Datos21-10-2016/output.txt";
+            className = "Default";
+        }
 
 
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
