@@ -87,7 +87,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
      * @param windowsSize the batch size.
      */
     public void setWindowsSize(int windowsSize) {
-        windowsSize = windowsSize;
+        this.windowsSize = windowsSize;
     }
 
     /**
@@ -124,6 +124,8 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm{
 
         dataInstanceCount.addAndGet(batch.getNumberOfDataInstances());
 
+
+        System.out.println(this.sumSS.output());
         return Double.NaN;
     }
 

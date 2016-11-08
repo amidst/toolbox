@@ -35,7 +35,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
-import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.utils.Batch;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
@@ -95,13 +95,13 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     protected List<String> latentInterfaceVariablesNames;
     protected List<String> noLatentVariablesNames;
 
-    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
+    IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int currentTimeSlice=-1;
 
 
-    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+    public void setIdentifiableModelling(IdenitifableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
@@ -711,12 +711,12 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
         Map<Double,CompoundVector> partialVectors;
 
-        IdentifiableModelling identifiableModelling;
+        IdenitifableModelling identifiableModelling;
 
         boolean randomStart;
 
 
-        public ParallelVBMap(Attributes attributes, List<Variable> variables, boolean randomStart, IdentifiableModelling identifiableModelling) {
+        public ParallelVBMap(Attributes attributes, List<Variable> variables, boolean randomStart, IdenitifableModelling identifiableModelling) {
             this.attributes = attributes;
             this.variables = variables;
             this.randomStart = randomStart;

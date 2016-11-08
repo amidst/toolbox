@@ -90,7 +90,7 @@ extensions/nips2016/doc-Experiments/*.txt
 
 #generic ignored folder
 ignoredfolder/*
-
+ignored/*
 
 #ignore target folders
 */target/*

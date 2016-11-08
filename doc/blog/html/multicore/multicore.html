@@ -1,0 +1,174 @@
+changing paths to images...
+<h1 id="sec:blog:multicore">Probabilistic Graphical Models on Multi-Core CPUs Using Java 8</h1>
+<p>Herein we discuss software design issues related to the development of parallel computational intelligence algorithms on multi-core CPUs, using the new Java 8 functional programming features. In particular, we focus on probabilistic graphical models (PGMs) and present the parallelisation of a collection of algorithms that deal with inference and learning of PGMs from data. For a more details, you can check the following article:</p>
+<blockquote>
+<p>Masegosa, A. R., Martinez, A. M., &amp; Borchani, H. (2016). Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE Computational Intelligence Magazine, 11(2), 41-54.</p>
+</blockquote>
+<p>In the following sections, we will illustrate the use of Java 8 and PGMs with a set of code-examples. For that, you will have to download the AMIDST Toolbox from <a href="http://www.amidsttoolbox.com/documentation/0-5-2/first-steps-052/getting-started-052/">here</a>.</p>
+<h2 id="sec:blog:multicore:java8">Parallel programming in Java 8</h2>
+<p>The latest Java release (JDK 8.0, March 2014) is an attempt to bring a new API to code transparent and seamless parallel applications to the general public (that is, non-specialized programmers in parallel and concurrent methods). To handle this, Java 8 introduces a completely new approach to parallelism based on a functional programming style through the use of map-reduce operations.</p>
+<p>The <em>map</em> operation applies a stateless user-defined transformer function (mapper) to each element of the collection, whereas the <em>reduce</em> operation applies another stateless user-defined function (reducer) that combines the outputs of the mapper to produce a single output result. Both the mapper and the reducer can be concisely described using <em>lambda</em> expressions in Java 8.</p>
+<p>In the code below, an example of the map-reduce operations is given. In particular, this code counts the number of occurences of each word in a set of documents (i.e. list of strings).</p>
+<pre><code>public class wordCount {
+    public static void main(String[] args) {
+
+
+        //List of &#39;documents&#39;
+        List&lt;String&gt; docs = new ArrayList&lt;String&gt;();
+        docs.add(&quot;we discuss software design issues related to the development of parallel&quot;);
+        docs.add(&quot;computational intelligence algorithms on multi-core CPUs, using the new Java 8&quot;);
+        docs.add(&quot;functional programming features. In particular, we focus on probabilistic graphical &quot;);
+        docs.add(&quot;models (PGMs) and present the parallelization of a collection of algorithms that&quot;);
+        docs.add(&quot;deal with inference and learning of PGMs from data. Namely, maximum likelihood &quot;);
+        docs.add(&quot;estimation, importance sampling, and greedy search for solving combinatorial &quot;);
+        docs.add(&quot;optimization problems.Through these concrete examples, we tackle the problem of &quot;);
+
+
+        // Count the number of occurences
+        Map&lt;String, Integer&gt; wordcount =
+                docs.parallelStream()
+                .flatMap(doc -&gt; Stream.of(doc.split(&quot;\\s+&quot;)))
+                .collect(
+                        Collectors.toMap(s -&gt; s,            //key mapper
+                                s -&gt; 1,                     //value mapper
+                                (a, b) -&gt; Integer.sum(a, b) //merge function
+                        ));
+
+        // Prints the result
+        wordcount.forEach((w,n)-&gt;System.out.println(w+&quot;-&gt;&quot;+n));
+
+    }
+    
+
+
+}</code></pre>
+<p>In previous code, an object of class <em>Stream</em> is created using <em>Stream.of</em>. Each element of such stream, which is processed in parallel, is a document (i.e., a string) . Then, from each document in the flow, a stream of words is generated (map operation). The elements are finally collected (reduced) to an object of class <em>Map&lt;String, Integer&gt;</em>.</p>
+<p>Java 8 allows the definition of inline functions called <em>lambda expressions</em>. These can be used to each element in a collection. In the following example, a parallel stream is created from a list of integers. Then, we filter the stream by selecting even numbers. For that, the lambda expression <em><span class="math inline"><em>i</em> − &gt;<em>i</em>%2 = =0</span></em> is applied to each number.</p>
+<pre><code>public class NumberEvenOdd {
+
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; list = Arrays.asList(1,3,5,2,45,10,3,34);
+
+        //Count the number of even numbers
+        long countEven = list.parallelStream()
+                .filter(i -&gt; i % 2 == 0)
+                .count();
+
+        System.out.println(&quot;number of even numbers is &quot;+countEven);
+
+
+    }
+
+
+
+
+
+
+}</code></pre>
+<h2 id="sec:blog:multicore:pgms">Data structures for PGMs using Java 8</h2>
+<p>Based on previous ideas from Java 8, we might consider implement efficient operations over the data structures in a PGM. In the AMIDST toolbox, a DAG (i.e., a Directed Acyclic Graph) is represented as a list of <em>ParentSet</em> objects, one for each variable defining our PGM model. Two concrete examples are shown below, where we count the number of links in a DAG. We also collect all the children of a given variable.</p>
+<pre><code>public class OperationsOverDAG {
+
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+
+        //Load a network
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+        DAG dag = bn.getDAG();
+        System.out.println(dag);
+
+
+        //number of links in the DAG
+        long nLinks = dag.getParentSets()
+                .parallelStream()
+                .mapToInt(set -&gt; set.getParents().size())
+                .sum();
+
+
+        System.out.println(nLinks);
+
+        //all the children of a variable
+        Variable W = dag.getVariables().getVariableByName(&quot;W&quot;);
+        List&lt;Variable&gt; children = dag.getParentSets()
+                .parallelStream()
+                .filter(set -&gt; set.contains(W))
+                .map(set -&gt; set.getMainVar())
+                .collect(Collectors.toList());
+
+
+        children.forEach(ch -&gt; System.out.println(ch.getName()));
+
+
+    }
+
+
+
+
+
+
+}</code></pre>
+<h2 id="sec:blog:multicore:learning">Parallelization of learning algorithms</h2>
+<p>Streams in Java 8 allow us to parallelise tasks without having to explicitly deal with threads and their synchronisation. As a consequence, we are able to implement parallel versions of the learning algorithms.</p>
+<p>As an example, we will considet the learning algorithm <a href="http://docslide.us/documents/daphne-koller-parameter-estimation-maximum-likelihood-estimation-probabilistic.html">Maximum Likelihood Estimation (MLE)</a>. Given a particular data set of i.i.d. samples</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2016/10/samples.png" alt="image" width="170" /></p><p>and an underlying statistical model, which in our case is a BN whose probability distributions belong to the exponential family, the MLE method gives a unified approach for calculating the parameters of the model that maximize the logarithm of the likelihood function (log-likelihood function) as follows</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2016/10/mle.png" alt="image" width="377" /></p><p>where <strong>s(xi)</strong> is a deterministic function that returns, for each data sample, a vector of sufficient statistics. For illustrating the implementation of this algorithm, we will learn the parameters of naive Bayes from a random generated dataset with 4 discrete attributes:</p>
+<pre><code>    int batchSize = 100;
+    int seed = 1234;
+    int nSamples = 500;
+    int nDiscreteAtts = 4;
+    int nContAtts = 0;
+    
+    //Load a data stream
+    DataStream&lt;DataInstance&gt; data = DataSetGenerator.generate(seed, nSamples, nDiscreteAtts, nContAtts);
+    
+    //Generate a DAG with the naive bayes structure
+    DAG dag = DAGGenerator.getNaiveBayesStructure(data.getAttributes(), &quot;DiscreteVar0&quot;);
+    System.out.println(dag);
+    </code></pre>
+<p>For computing the sum of all the sufficient statistics (i.e., the numerator in previous equation) we invoke the following method.</p>
+<pre><code>//Computes the vector of sufficient statistics
+CompoundVector sumSS = computeSumSS(data, dag);</code></pre>
+<p>The implementation of the method <em>computeSumSS</em> is the following.</p>
+<pre><code>    public static CompoundVector computeSumSS(DataStream&lt;DataInstance&gt; data, DAG dag) {
+        Stream&lt;DataOnMemory&lt;DataInstance&gt;&gt; stream = data.parallelStreamOfBatches(100);
+        EF_BayesianNetwork efBayesianNetwork = new EF_BayesianNetwork(dag);
+        
+        Vector sumSS = stream
+            .map(batch -&gt; batch.stream()
+                .map(efBayesianNetwork::getSufficientStatistics)
+                .reduce(SufficientStatistics::sumVectorNonStateless)
+                .get())
+            .reduce(SufficientStatistics::sumVectorNonStateless).get();
+
+        return  (CompoundVector)sumSS;
+    
+    }</code></pre>
+<p>Note that the sum of the vectors of sufficient statistics is computed independent for each batch of data. This is made invoking the method <em>parallelStreamOfBatches</em> that returns a parallel stream, i.e., an object of class <em>Stream&lt;DataOnMemory&lt;DataInstance&gt;&gt;</em>. Afterwards, the method <em>map(efBayesianNetwork::getSufficientStatistics)</em> to each instance in the batch the sufficient statistics vector. The two consecutive calls to <em>reduce(SufficientStatistics::sumVectorNonStateless).get()</em> sums the vectors from each instance first, and for each batch later.</p>
+<p>If we aim to print the values of the sufficient statistics vector as follows. Note that for computing the estimated probabilities, the vectors must be normalized (i.e., divided by the number of instances).</p>
+<pre><code>
+        System.out.println(&quot;\nsufficient statistics vectors&quot;);
+        IntStream.range(0,sumSS.getNumberOfBaseVectors())
+            .forEach(
+                i -&gt; System.out.println(
+                    dag.getVariables().getVariableById(i).getName()
+                    +&quot;: &quot;+sumSS.getVectorByPosition(i).output()
+            )
+        );
+        
+        
+        //Divide by the number of instances
+        sumSS.divideBy(data.stream().count());
+        
+        System.out.println(&quot;\nEstimated probabilities:&quot;);
+        
+        //print the estimated probabilities
+        IntStream.range(0,sumSS.getNumberOfBaseVectors())
+            .forEach(
+                i -&gt; System.out.println(
+                    dag.getVariables().getVariableById(i).getName()
+                    +&quot;: &quot;+sumSS.getVectorByPosition(i).output()
+            )
+        );</code></pre>
+

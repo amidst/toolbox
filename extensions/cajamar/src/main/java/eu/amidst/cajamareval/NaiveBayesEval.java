@@ -16,14 +16,12 @@
  */
 package eu.amidst.cajamareval;
 
-import COM.hugin.HAPI.Domain;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
 
 import java.io.FileWriter;
@@ -33,12 +31,25 @@ import java.io.FileWriter;
  */
 public class NaiveBayesEval {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception{
 
-        String fileTrain = args[0];
-        String fileTest = args[1];
-        String fileOutput = args[2];
-        String className = args[3];
+        String fileTrain;
+        String fileTest;
+        String fileOutput;
+        String className;
+
+        if(args.length == 4) {
+            fileTrain = args[0];
+            fileTest = args[1];
+            fileOutput = args[2];
+            className = args[3];
+        }
+        else {
+            fileTrain = "/Users/dario/Desktop/Datos21-10-2016/train.arff";  //CAJAMAR_DatosNB
+            fileTest = "/Users/dario/Desktop/Datos21-10-2016/test.arff";
+            fileOutput = "/Users/dario/Desktop/Datos21-10-2016/output.txt";
+            className = "Default";
+        }
 
 
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
@@ -54,8 +65,9 @@ public class NaiveBayesEval {
 
         BayesianNetworkWriter.save(naiveBayesClassifier.getModel(), fileOutput + "_NB_model.bn");
 
-        Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getModel());
-        huginNetwork.saveAsNet(fileOutput + "_NB_model.net");
+
+//        Domain huginNetwork = BNConverterToHugin.convertToHugin(naiveBayesClassifier.getModel());
+//        huginNetwork.saveAsNet(fileOutput + "_NB_model.net");
 
         System.out.println(naiveBayesClassifier.getModel());
 

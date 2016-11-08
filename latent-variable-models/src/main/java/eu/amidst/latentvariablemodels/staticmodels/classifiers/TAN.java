@@ -37,7 +37,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  * Created by andresmasegosa on 4/3/16.
  */
 
-public class TAN extends Classifier {
+public class TAN extends Classifier<TAN> {
 
 
     /** This class provides a link to the <a href="https://www.hugin.com">Hugin</a>'s functionality to learn in parallel a TAN model.*/
@@ -109,8 +109,9 @@ public class TAN extends Classifier {
      * Sets the root variable in the TAN classifier
      * @param rootVarName String indicating the name of the root variable
      */
-    public void setRootVarName(String rootVarName) {
+    public TAN setRootVarName(String rootVarName) {
         this.rootVarName = rootVarName;
+        return this;
     }
 
 

@@ -894,7 +894,7 @@ public class dVMPv1Test extends TestCase {
         gaussianHiddenTransitionMethod.setFading(1.0);
         parallelVB.setTransitionMethod(gaussianHiddenTransitionMethod);
 
-        parallelVB.setIdenitifableModelling(new IdentifiableIDAModel());
+        parallelVB.setIdentifiableModelling(new IdentifiableIDAModel());
         parallelVB.setDAG(dag);
         parallelVB.initLearning();
         parallelVB.updateModel(dataFlink);

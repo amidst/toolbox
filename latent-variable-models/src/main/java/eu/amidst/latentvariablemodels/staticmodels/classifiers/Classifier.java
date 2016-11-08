@@ -31,7 +31,7 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
 /**
  * The Classifier abstract class is defined for Bayesian classification models.
  */
-public abstract class Classifier extends Model {
+public abstract class Classifier<T extends Classifier> extends Model<T> {
 
     /** Represents the inference algorithm. */
     protected InferenceAlgorithm inferenceAlgoPredict;
@@ -69,7 +69,7 @@ public abstract class Classifier extends Model {
         inferenceAlgoPredict.setModel(this.getModel());
         this.inferenceAlgoPredict.setEvidence(instance);
 
-        System.out.println(instance);
+        //System.out.println(instance);
 
         this.inferenceAlgoPredict.runInference();
 
@@ -99,7 +99,7 @@ public abstract class Classifier extends Model {
      * @param classVar object of the type {@link Variable} indicating which is the class variable
      * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
      */
-    public void setClassVar(Variable classVar) throws WrongConfigurationException {
+    public T setClassVar(Variable classVar) throws WrongConfigurationException {
 
         if(!classVar.isMultinomial()) {
             setErrorMessage("class variable is not a multinomial");
@@ -108,6 +108,7 @@ public abstract class Classifier extends Model {
 
         this.classVar = classVar;
         dag = null;
+        return ((T) this);
 
     }
 
@@ -116,8 +117,9 @@ public abstract class Classifier extends Model {
      * @param className String with the name of the class variable
      * @throws WrongConfigurationException is thrown when the variable is not a multinomial.
      */
-    public void setClassName(String className) throws WrongConfigurationException {
+    public T setClassName(String className) throws WrongConfigurationException {
         setClassVar(vars.getVariableByName(className));
+        return ((T) this);
     }
 
 
@@ -135,7 +137,8 @@ public abstract class Classifier extends Model {
      * importance sampling is used.
      * @param inferenceAlgoPredict, object of the class InferenceAlgorithm
      */
-    public void setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
+    public T setInferenceAlgoPredict(InferenceAlgorithm inferenceAlgoPredict) {
         this.inferenceAlgoPredict = inferenceAlgoPredict;
+        return ((T) this);
     }
 }

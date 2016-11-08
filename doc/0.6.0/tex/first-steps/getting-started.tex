@@ -1,0 +1,73 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\chapter{Getting Started! }\label{getting-started}
+
+
+
+\section{Quick start}
+
+For start using the AMIDST toolbox, add the following lines to the \textit{pom.xml} file of your maven project:
+
+
+\begin{lstlisting}
+<repositories>
+  <repositories>
+    <repository>
+  <id>amidstRepo</id>
+  <url>https://raw.github.com/amidst/toolbox/mvn-repo/</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>eu.amidst</groupId>
+    <artifactId>module-all</artifactId>
+    <version>(*\amidstversion*)</version>
+    <scope>compile</scope>
+  </dependency>
+</dependencies>	
+\end{lstlisting}
+
+
+\section{Getting started in detail}
+
+Before starting using the AMDIST, you might check that your system fits
+the \href{requirements.html}{requirements} of the toolbox.\newline 
+
+Toolbox users (i.e. those interested in simply using the functionality
+provided by AMIDST)~ might find useful the following tutorials:
+
+\begin{itemize}
+	\item
+	\href{remoteDeps.html}{Loading AMIDST dependencies from a remote maven
+		repository}.
+	\item \href{localDeps.html}{Installing a local AMIDST repository}
+	\item \href{copydep.html}{Generating the packages for each module and its
+		dependencies (command line).}
+\end{itemize}
+
+Additionally, for those developers interested in colaborating to AMIDST toolbox could read the following tutorials:
+
+\begin{itemize}
+	\item \href{amidst_team_modifications.html}{Basic steps for contributing}
+\end{itemize}
+
+
+
+\end{document}

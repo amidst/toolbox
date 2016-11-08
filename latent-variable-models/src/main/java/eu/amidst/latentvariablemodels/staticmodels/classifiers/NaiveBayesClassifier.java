@@ -22,7 +22,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * The NaiveBayesClassifier class implements the interface {@link Classifier} and defines a Naive Bayes Classifier.
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 82.
  */
-public class NaiveBayesClassifier extends Classifier{
+public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
 
 
@@ -51,7 +51,7 @@ public class NaiveBayesClassifier extends Classifier{
     public NaiveBayesClassifier(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
 
-        this.setLearningAlgorithm(new ParallelMaximumLikelihood());
+        this.setLearningAlgorithm(new ParallelMLMissingData());
     }
 
     /**

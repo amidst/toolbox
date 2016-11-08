@@ -92,7 +92,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
 
     protected double globalELBO = Double.NaN;
 
-    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
+    IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int nBatches;
@@ -111,7 +111,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         this.nBatches = nBatches;
     }
 
-    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+    public void setIdentifiableModelling(IdenitifableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
@@ -368,11 +368,11 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         String bnName;
 
 
-        IdentifiableModelling identifiableModelling;
+        IdenitifableModelling identifiableModelling;
 
         boolean randomStart;
 
-        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
+        public ParallelVBMap(boolean randomStart, IdenitifableModelling identifiableModelling) {
             this.randomStart = randomStart;
             this.identifiableModelling = identifiableModelling;
         }

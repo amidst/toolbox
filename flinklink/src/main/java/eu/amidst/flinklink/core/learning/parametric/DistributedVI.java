@@ -95,7 +95,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
 
     protected double globalELBO = Double.NaN;
 
-    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
+    IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
     private int nBatches;
@@ -114,7 +114,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.nBatches = nBatches;
     }
 
-    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+    public void setIdentifiableModelling(IdenitifableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
@@ -371,7 +371,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         String bnName;
 
 
-        IdentifiableModelling identifiableModelling;
+        IdenitifableModelling identifiableModelling;
 
         boolean randomStart;
 
@@ -379,7 +379,7 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         double learningRate = 0.7;
         double KL=0;
 
-        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
+        public ParallelVBMap(boolean randomStart, IdenitifableModelling identifiableModelling) {
             this.randomStart = randomStart;
             this.identifiableModelling = identifiableModelling;
         }

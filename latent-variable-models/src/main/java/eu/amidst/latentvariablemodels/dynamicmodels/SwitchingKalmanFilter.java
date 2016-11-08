@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  *
  * Created by ana@cs.aau.dk on 07/03/16.
  */
-public class SwitchingKalmanFilter  extends DynamicModel {
+public class SwitchingKalmanFilter  extends DynamicModel<SwitchingKalmanFilter> {
 
     private int numStates = 2;
     private boolean diagonal = true;
@@ -38,16 +38,20 @@ public class SwitchingKalmanFilter  extends DynamicModel {
         return numStates;
     }
 
-    public void setNumStates(int numStates) {
+    public SwitchingKalmanFilter setNumStates(int numStates) {
         this.numStates = numStates;
+        resetModel();
+        return this;
     }
 
     public boolean isDiagonal() {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public SwitchingKalmanFilter setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public SwitchingKalmanFilter(Attributes attributes) {

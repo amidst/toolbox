@@ -14,7 +14,6 @@ package eu.amidst.latentvariablemodels.dynamicmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -32,7 +31,7 @@ import java.util.stream.IntStream;
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class KalmanFilter extends DynamicModel {
+public class KalmanFilter extends DynamicModel<KalmanFilter> {
     private boolean diagonal = true;
     private int numHidden = 2;
 
@@ -40,16 +39,20 @@ public class KalmanFilter extends DynamicModel {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public KalmanFilter setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public int getNumHidden() {
         return numHidden;
     }
 
-    public void setNumHidden(int numHidden) {
+    public KalmanFilter setNumHidden(int numHidden) {
         this.numHidden = numHidden;
+        resetModel();
+        return this;
     }
 
     public KalmanFilter(Attributes attributes) {

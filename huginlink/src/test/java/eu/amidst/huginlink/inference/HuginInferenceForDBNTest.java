@@ -27,9 +27,9 @@ import eu.amidst.dynamic.inference.DynamicVMP;
 import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkLoader;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
+import eu.amidst.dynamic.learning.parametric.DynamicNaiveBayesClassifier;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DataSetGenerator;
-import eu.amidst.huginlink.examples.learning.OldDynamicNaiveBayesClassifier;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * This class implements the model of Gaussian Discriminant Analysis
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 101.
  */
-public class GaussianDiscriminantAnalysis extends Classifier {
+public class GaussianDiscriminantAnalysis extends Classifier<GaussianDiscriminantAnalysis> {
 
     /* diagonal flag:
     * If in the  model one assumes that the covariance matrices are diagonal,
@@ -140,9 +140,10 @@ public class GaussianDiscriminantAnalysis extends Classifier {
      * @param diagonal boolean value: when it is set to true, predictive variables are
      *                 independent and hence the model is equivalent to the naive bayes.
      */
-    public void setDiagonal(boolean diagonal) {
+    public GaussianDiscriminantAnalysis setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
         dag = null;
+        return this;
     }
 
 
@@ -154,9 +155,11 @@ public class GaussianDiscriminantAnalysis extends Classifier {
         DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 1, 3);
 
 
-        GaussianDiscriminantAnalysis gda = new GaussianDiscriminantAnalysis(data.getAttributes());
-        gda.setDiagonal(false);
-        gda.setClassName("DiscreteVar0");
+        GaussianDiscriminantAnalysis gda =
+                new GaussianDiscriminantAnalysis(data.getAttributes())
+                        .setDiagonal(false)
+                        .setClassName("DiscreteVar0")
+                        .setWindowSize(100);
 
         gda.updateModel(data);
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)) {

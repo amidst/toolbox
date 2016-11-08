@@ -173,13 +173,8 @@ public class DynamicParallelVBTest extends TestCase {
 
         DataFlink<DynamicDataInstance> dataPrev = data0;
         for (int i = 1; i < NSETS; i++) {
-<<<<<<< HEAD
-            System.out.println("--------------- DATA " + i + " --------------------------");
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);
-=======
             if (Main.VERBOSE) System.out.println("--------------- DATA " + i + " --------------------------");
             DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);
->>>>>>> develop
             DataFlinkWriter.writeDataToARFFFolder(dataNew, "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, "../datasets/simulated/cajaMarSynthetic/data" + i + ".arff", false);
 

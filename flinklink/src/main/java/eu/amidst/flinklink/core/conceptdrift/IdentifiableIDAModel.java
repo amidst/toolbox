@@ -18,14 +18,14 @@
 package eu.amidst.flinklink.core.conceptdrift;
 
 import eu.amidst.core.variables.Variable;
-import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 
 import java.io.Serializable;
 
 /**
  * Created by andresmasegosa on 21/1/16.
  */
-public class IdentifiableIDAModel implements IdentifiableModelling, Serializable {
+public class IdentifiableIDAModel implements IdenitifableModelling, Serializable {
 
     /**
      * Represents the serial version ID for serializing the object.

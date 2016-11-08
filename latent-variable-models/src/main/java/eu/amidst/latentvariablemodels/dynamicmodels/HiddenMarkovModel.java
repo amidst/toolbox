@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * Kevin P. Murphy. 2012. Machine Learning: A Probabilistic Perspective. The MIT Press. Page 603
  *
  */
-public class HiddenMarkovModel extends DynamicModel{
+public class HiddenMarkovModel extends DynamicModel<HiddenMarkovModel>{
 
     private int numStatesHiddenVar = 2;
     private boolean diagonal = true;
@@ -37,16 +37,20 @@ public class HiddenMarkovModel extends DynamicModel{
         return numStatesHiddenVar;
     }
 
-    public void setNumStatesHiddenVar(int numStates) {
+    public HiddenMarkovModel setNumStatesHiddenVar(int numStates) {
         this.numStatesHiddenVar = numStates;
+        resetModel();
+        return this;
     }
 
     public boolean isDiagonal() {
         return diagonal;
     }
 
-    public void setDiagonal(boolean diagonal) {
+    public HiddenMarkovModel setDiagonal(boolean diagonal) {
         this.diagonal = diagonal;
+        resetModel();
+        return this;
     }
 
     public HiddenMarkovModel(Attributes attributes) {

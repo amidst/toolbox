@@ -1,5 +1,5 @@
-
-# AMIDST Toolbox
+# AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
+v.0.6.0
 
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
 [![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=develop)](https://travis-ci.org/amidst/toolbox)
@@ -133,6 +133,9 @@ includes some source code examples of functionalities related to Dynamic Bayesia
 * [FlinkLink](http://amidst.github.io/toolbox/examples/flinklink.html): Code Examples includes some 
 source code examples of functionalities related to the module that integrates Apache Flink with AMIDST.
 
+* [SparkLink](http://www.amidsttoolbox.com/documentation/0-6-0/examples-060/sparklink-060/): some source code examples of 
+functionalities related to the module that integrates Apache Spark with AMIDST.
+
 * [API JavaDoc](http://amidst.github.io/toolbox/javadoc/index.html) of the AMIDST toolbox. 
 
 
@@ -167,6 +170,18 @@ of [Apache Flink](http://flink.com). As detailed in this [paper](http://amidst.g
 <p align="center">
 <img src="https://amidst.github.io/toolbox/docs/web/figs/flink-scalability.png" width="800">
 </p>
+
+# Spark Link Module on AMIDST
+
+This module integrates the functionality of the AMIDST toolbox with the [Apache Spark](http://spark.apache.org) platform.
+
+The following functionality is already implemented on the **sparklink** module:
+
+* Data Sources integration: Reading and writing data from SparkSQL on AMIDST
+* Distributed Sampling of Bayesian Networks
+* Parametric learning from distributed data (Maximum Likelihood)
+
+More information [here](https://github.com/amidst/toolbox/tree/develop/sparklink)
 
 # Publications & Use-Cases
 

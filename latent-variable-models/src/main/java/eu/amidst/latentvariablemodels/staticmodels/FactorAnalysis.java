@@ -14,8 +14,6 @@ package eu.amidst.latentvariablemodels.staticmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.Variable;
@@ -32,7 +30,7 @@ import java.util.stream.IntStream;
  *
  * Created by andresmasegosa on 4/3/16.
  */
-public class FactorAnalysis extends Model {
+public class FactorAnalysis extends Model<FactorAnalysis> {
 
 
     /**
@@ -56,8 +54,10 @@ public class FactorAnalysis extends Model {
      * Sets the number of latent (i.e. hidden) continuous variables in the model
      * @param numberOfLatentVariables positive integer value
      */
-    public void setNumberOfLatentVariables(int numberOfLatentVariables) {
+    public FactorAnalysis setNumberOfLatentVariables(int numberOfLatentVariables) {
         this.numberOfLatentVariables = numberOfLatentVariables;
+        resetModel();
+        return this;
     }
 
     /**

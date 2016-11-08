@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  *
  * Created by ana@cs.aau.dk on 05/03/16.
  */
-public class DynamicLatentClassificationModel extends DynamicClassifier{
+public class DynamicLatentClassificationModel extends DynamicClassifier<DynamicLatentClassificationModel>{
 
     /** number of continuous hidden variables */
     private int numContinuousHidden;
@@ -58,16 +58,20 @@ public class DynamicLatentClassificationModel extends DynamicClassifier{
         return numContinuousHidden;
     }
 
-    public void setNumContinuousHidden(int numContinuousHidden) {
+    public DynamicLatentClassificationModel setNumContinuousHidden(int numContinuousHidden) {
         this.numContinuousHidden = numContinuousHidden;
+        resetModel();
+        return this;
     }
 
     public int getNumStatesHidden() {
         return numStatesHidden;
     }
 
-    public void setNumStatesHidden(int numStatesHidden) {
+    public DynamicLatentClassificationModel setNumStatesHidden(int numStatesHidden) {
         this.numStatesHidden = numStatesHidden;
+        resetModel();
+        return this;
     }
 
     /**

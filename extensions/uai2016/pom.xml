@@ -6,7 +6,7 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+        <version>0.6.0</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -14,7 +14,7 @@
     <groupId>eu.amidst</groupId>
     <artifactId>uai2016</artifactId>
     <packaging>pom</packaging>
-    <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+    <version>0.6.0</version> <!-- AmidstVersion -->
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -35,12 +35,12 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+            <version>0.6.0</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+            <version>0.6.0</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>com.google.gdata</groupId>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+            <version>0.6.0</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>

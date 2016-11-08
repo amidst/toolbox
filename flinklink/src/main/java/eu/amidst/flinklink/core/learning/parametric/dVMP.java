@@ -97,7 +97,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     protected double globalELBO = Double.NaN;
 
-    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
+    IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
 
@@ -112,7 +112,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         this.batchConverter = batchConverter;
     }
 
-    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+    public void setIdentifiableModelling(IdenitifableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
@@ -122,6 +122,10 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
     @Override
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.svb.setPlateuStructure(plateuStructure);
+    }
+
+    public PlateuStructure getPlateuStructure(){
+        return this.svb.getPlateuStructure();
     }
 
     public void setTransitionMethod(TransitionMethod transitionMethod){
@@ -383,11 +387,11 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         String bnName;
 
 
-        IdentifiableModelling identifiableModelling;
+        IdenitifableModelling identifiableModelling;
 
         boolean randomStart;
 
-        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
+        public ParallelVBMap(boolean randomStart, IdenitifableModelling identifiableModelling) {
             this.randomStart = randomStart;
             this.identifiableModelling = identifiableModelling;
         }

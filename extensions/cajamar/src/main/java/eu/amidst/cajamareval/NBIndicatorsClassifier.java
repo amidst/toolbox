@@ -23,11 +23,12 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
+import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import eu.amidst.latentvariablemodels.staticmodels.classifiers.Classifier;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
@@ -56,14 +57,26 @@ public class NBIndicatorsClassifier extends Classifier {
 
         this.vars = new Variables(attributes);
         // Add indicator variables
-//        this.vars.getListOfVariables().stream().filter(Variable::isNormal).forEach(variable -> {
-//
-//        });
-        this.classVar = vars.getListOfVariables().get(vars.getNumberOfVars()-1);
 
-        this.setLearningAlgorithm(new ParallelMaximumLikelihood());
+        List<Variable> initialVariables = this.vars.getListOfVariables();
+        int numberOfInitialVariables = initialVariables.size();
+        for (int i = 0; i < numberOfInitialVariables; i++) {
+            Variable var = initialVariables.get(i);
+            if(var.isNormal()) {
+                vars.newIndicatorVariable(var,0);
+            }
+        }
+        //vars.getListOfVariables().forEach(var -> System.out.println(var.getName()));
+        this.classVar = vars.getListOfVariables().get(numberOfInitialVariables-1);
+        if (!this.classVar.isMultinomial()) {
+            this.classVar = vars.getListOfVariables().stream().filter(Variable::isMultinomial).findFirst().get();
+        }
+        //System.out.println("Class: " + classVar.getName());
+
+        this.setLearningAlgorithm(new ParallelMLMissingData());
+
+//        this.getLearningAlgorithm().setWindowsSize(20000);
         this.inferenceAlgoPredict = new ImportanceSampling();
-
 
     }
 
@@ -74,8 +87,34 @@ public class NBIndicatorsClassifier extends Classifier {
     protected void buildDAG() {
 
         dag = new DAG(vars);
-        dag.getParentSets().stream().filter(w -> !w.getMainVar().equals(classVar)).forEach(w -> w.addParent(classVar));
 
+
+        // ADD THE CLASS VARIABLE AS A PARENT FOR EVERY VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> !w.getMainVar().isIndicator())
+                .forEach(w -> w.addParent(classVar));
+
+        // ADD INDICATOR VARIABLE AS PARENTS OF EVERY CONTINUOUS VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> w.getMainVar().isNormal())
+                .forEach(w -> w.addParent(vars.getVariableByName(w.getMainVar().getName() + "_INDICATOR")));
+
+        // ADD INDICATOR VARIABLE AS PARENTS OF EVERY CONTINUOUS VARIABLE
+        dag.getParentSets().stream()
+                .filter(w -> !w.getMainVar().equals(classVar))
+                .filter(w -> w.getMainVar().isNormal())
+                .forEach(w -> {
+                    Variable var = w.getMainVar();
+                    Variable var_aggregated;
+                    try {
+                        var_aggregated = vars.getVariableByName(var.getName() + "_AG");
+                        w.addParent(var_aggregated);
+                    } catch (UnsupportedOperationException e) {
+
+                    }
+                });
     }
 
 
@@ -95,7 +134,7 @@ public class NBIndicatorsClassifier extends Classifier {
 
         if(numFinite == 0) {
             isValid = false;
-            String errorMsg = "It should contain at least 1 discrete variable and the rest shoud be real";
+            String errorMsg = "It should contain at least 1 discrete variable and the rest should be real";
             this.setErrorMessage(errorMsg);
 
         }
@@ -115,13 +154,14 @@ public class NBIndicatorsClassifier extends Classifier {
 
 
 
-        DataStream<DataInstance> data = DataSetGenerator.generate(1234,500, 2, 3);
+        DataStream<DataInstance> data = DataSetGenerator.generate(1234,20000, 2, 3);
 
         System.out.println(data.getAttributes().toString());
 
         String classVarName = "DiscreteVar0";
 
         NBIndicatorsClassifier nb = new NBIndicatorsClassifier(data.getAttributes());
+        nb.setWindowSize(5000);
         nb.setClassName(classVarName);
 
         nb.updateModel(data);
@@ -150,14 +190,14 @@ public class NBIndicatorsClassifier extends Classifier {
             double[] values = posteriorProb.getProbabilities();
             if (values[0]>values[1]) {
                 predValue = 0;
-            }else {
+            } else {
                 predValue = 1;
 
             }
 
             if(realValue == predValue) hits++;
 
-            System.out.println("realValue = "+realValue+", predicted ="+predValue);
+            //System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
 

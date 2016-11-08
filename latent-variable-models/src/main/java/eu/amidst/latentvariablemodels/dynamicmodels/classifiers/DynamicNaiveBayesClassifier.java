@@ -13,7 +13,7 @@ package eu.amidst.latentvariablemodels.dynamicmodels.classifiers;
 
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.learning.parametric.bayesian.DataPosteriorAssignment;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosteriorAssignment;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
@@ -39,6 +39,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
     private static final long serialVersionUID = 329639736967237932L;
 
     protected DynamicParallelVB learningAlgorithmFlink = null;
+
     private DataSet<DataPosteriorAssignment> previousPredictions = null;
 
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */

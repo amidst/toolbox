@@ -51,6 +51,8 @@ public class WrapperFS {
     Variable classVariable;
     Variables allVariables;
 
+    boolean fullOutput = false;
+
     public enum Model{
         NB, TAN
     }
@@ -164,9 +166,11 @@ public class WrapperFS {
         //iterate until there is no improvement in score
         while (nbrNSF > 0 && stop == false ){
 
-            System.out.print("Iteration: " + cont + ", Score: "+score +", Number of selected variables: "+ SF.size() + ", ");
-            SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
-            System.out.println();
+            if(fullOutput) {
+                System.out.print("Iteration: " + cont + ", Score: " + score + ", Number of selected variables: " + SF.size() + ", ");
+                SF.stream().forEach(v -> System.out.print(v.getName() + ", "));
+                System.out.println();
+            }
 
             Map<Variable, Double> scores = new ConcurrentHashMap<>(); //scores for each considered feature
 
@@ -298,12 +302,12 @@ public class WrapperFS {
         //Train the model with all training data and only the selected attributes
         BayesianNetwork bn = this.trainModel(allDataTrain,selectedAtts, true);
 
-        System.out.printf("Area under the ROC curve = "+this.testModel(dataTest, bn));
+//        System.out.printf("Area under the ROC curve = "+this.testModel(dataTest, bn));
 
     }
 
     private void printSelectedAtts(List<Variable> selectedAtts) {
-        System.out.printf("Selected attributes:\n");
+        //System.out.printf("Selected attributes:\n");
         Iterator<Variable> it = selectedAtts.iterator();
         if (it.hasNext()) {
             System.out.print(it.next().getName());

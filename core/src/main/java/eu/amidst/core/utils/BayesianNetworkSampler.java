@@ -30,6 +30,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
+import javax.sql.rowset.Predicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ import java.util.stream.Stream;
 
 
 /**
- * This class implements the interface {@link eu.amidst.core.utils.AmidstOptionsHandler}.
+ * This class implements the interface {@link AmidstOptionsHandler}.
  * It defines a sampler of data from a {@link BayesianNetwork}.
  */
 public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializable {
@@ -55,7 +56,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
     /** Represents the initial seed for random sampling. */
     private int seed = 0;
 
-    /** Represents a {@link java.util.Random} object. */
+    /** Represents a {@link Random} object. */
     private Random random = new Random(seed);
 
     /** Represents a {@code Map} containing the hidden variables. */
@@ -63,6 +64,9 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
     /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
+
+    /** Represents a {@code Map} containing the latent variables. */
+    private Map<Variable, Boolean> latentVars = new HashMap();
 
     /**
      * Creates a new BayesianNetworkSampler given an input {@link BayesianNetwork} object.
@@ -87,7 +91,8 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
 
 
     /**
-     * Sets a given {@link Variable} object as hidden.
+     * Sets a given {@link Variable} object as hidden. A hidden variable contains an attribute whose values may be missing
+     * (some or all of them). In this case, numeric values won't be assigned and they will be represented by an "?" symbol.
      * @param var a given {@link Variable} object.
      */
     public void setHiddenVar(Variable var) {
@@ -100,6 +105,15 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      * @param noiseProb a double that represents the noise probability.
      */
     public void setMARVar(Variable var, double noiseProb){ this.marNoise.put(var,noiseProb);}
+
+    /**
+     * Sets a given {@link Variable} object as latent. A latent variable doesn't contain an attribute and therefore
+	 * doesn't generate a sampling value.
+     * @param var a given {@link Variable} object.
+     */
+    public void setLatentVar(Variable var){
+        this.latentVars.put(var, true);
+    }
 
     /**
      * Filters a given {@link Assignment} object, i.e., sets the values assigned to either missing or noisy variables to Double.NaN.
@@ -166,6 +180,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
                 List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
+                        .filter(var -> !BayesianNetworkSampler.this.latentVars.containsKey(var))
                         .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
                 this.atts= new Attributes(list);
             }
@@ -270,12 +285,14 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      * @param random a {@link Random} object.
      * @return the sampled {@link Assignment}.
      */
-    private static Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
+    private Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
 
-        HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
+        HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars() - this.latentVars.size());
         for (Variable var : causalOrder) {
-            double sampledValue = network.getConditionalDistribution(var).getUnivariateDistribution(assignment).sample(random);
-            assignment.setValue(var, sampledValue);
+            if(!this.latentVars.containsKey(var)) {
+                double sampledValue = network.getConditionalDistribution(var).getUnivariateDistribution(assignment).sample(random);
+                assignment.setValue(var, sampledValue);
+            }
         }
         return assignment;
     }

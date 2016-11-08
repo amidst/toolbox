@@ -94,7 +94,7 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
 
     protected double globalELBO = Double.NaN;
 
-    IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
+    IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
 
@@ -106,7 +106,7 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
     }
 
 
-    public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
+    public void setIdentifiableModelling(IdenitifableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
@@ -369,11 +369,11 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
 
         Map<Double,CompoundVector> partialVectors;
 
-        IdentifiableModelling identifiableModelling;
+        IdenitifableModelling identifiableModelling;
 
         boolean randomStart;
 
-        public ParallelVBMap(boolean randomStart, IdentifiableModelling identifiableModelling) {
+        public ParallelVBMap(boolean randomStart, IdenitifableModelling identifiableModelling) {
             this.randomStart = randomStart;
             this.identifiableModelling = identifiableModelling;
         }

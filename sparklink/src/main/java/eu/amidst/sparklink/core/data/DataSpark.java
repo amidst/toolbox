@@ -2,6 +2,7 @@ package eu.amidst.sparklink.core.data;
 
 import eu.amidst.core.datastream.*;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
 import org.apache.spark.sql.SQLContext;
 
