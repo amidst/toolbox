@@ -265,6 +265,9 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
             naturalParameters.set(0, 0.5);
             naturalParameters.set(1, -0.5*(Xsquared + beta0Squared + dotProductBetaY*dotProductBetaY - sumSquaredMeanMoments + sumSquaredMoments  - 2*X*dotProductBetaY - 2*X*beta0 + 2*beta0*dotProductBetaY));
 
+            if (naturalParameters.get(1)>0)
+                throw new IllegalStateException("Numerical Instability: Positive Number");
+
         }else{
             throw new IllegalArgumentException("Error");
         }

@@ -14,6 +14,8 @@ package eu.amidst.latentvariablemodels.staticmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.Variable;
@@ -46,7 +48,7 @@ public class FactorAnalysis extends Model {
      */
     public FactorAnalysis(Attributes attributes) throws WrongConfigurationException {
         super(attributes);
-        numberOfLatentVariables = 5;
+        numberOfLatentVariables = 3;
     }
 
 
@@ -141,6 +143,9 @@ public class FactorAnalysis extends Model {
 //        }
 
         System.out.println(model.getModel());
+
+        System.out.println(model.getPosteriorDistribution("LatentVar0").toString());
+
 
     }
 

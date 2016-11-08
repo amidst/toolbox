@@ -64,7 +64,7 @@ public class EvaluateAUC {
 
                 dataFiles.forEach(dataFile -> {
                     System.out.println("DATA FILE: " + dataFile.getFileName().toString());
-                    DataStream<DataInstance> data = DataStreamLoader.openFromFile(dataFile.toString());
+                    DataStream<DataInstance> data = DataStreamLoader.open(dataFile.toString());
 
                     InferenceAlgorithm inferenceVMP = new VMP();
                     InferenceAlgorithm inferenceIS = new ImportanceSampling();

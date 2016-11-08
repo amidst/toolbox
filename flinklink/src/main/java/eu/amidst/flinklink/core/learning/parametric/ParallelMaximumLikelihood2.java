@@ -46,11 +46,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
 
     /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
-    /**
      * Represents the directed acyclic graph {@link DAG}.
      */
     protected DAG dag;
@@ -83,34 +78,14 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
     public void setBatchSize(int batchSize) {
     }
 
-    @Override
-    public int getBatchSize() {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public double getLogMarginalProbability() {
-        throw new UnsupportedOperationException("Method not implemented yet");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
+        //TODO: temporal solution, the logMarginalProbability should be actually calculated.
+        return Double.NaN;
+        //throw new UnsupportedOperationException("Method not implemented yet");
     }
 
     /**
@@ -127,7 +102,7 @@ public class ParallelMaximumLikelihood2 implements ParameterLearningAlgorithm {
             config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
             config.setBytes(EFBN_NAME, Serialization.serializeObject(efBayesianNetwork));
 
-            DataSet<DataInstance> dataset = this.dataFlink.getDataSet();
+            DataSet<DataInstance> dataset = dataUpdate.getDataSet();
 
             this.sumSS = dataset.mapPartition(new SufficientSatisticsMAP())
                     .withParameters(config)

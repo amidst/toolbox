@@ -54,7 +54,7 @@ public class SVBforDBN {
         svb.setSeed(0);
         //If desired, we also set some options for the VMP
         VMP vmp = svb.getPlateauStructure().getVMPTimeT();
-        vmp.setOutput(true);
+        vmp.setOutput(false);
         vmp.setTestELBO(true);
         vmp.setMaxIter(1000);
         vmp.setThreshold(0.0001);

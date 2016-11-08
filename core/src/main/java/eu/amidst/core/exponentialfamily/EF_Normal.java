@@ -138,13 +138,14 @@ public class EF_Normal extends EF_UnivariateDistribution {
      */
     @Override
     public SufficientStatistics createInitSufficientStatistics() {
-        ArrayVector vector = new ArrayVector(this.sizeOfSufficientStatistics());
+
+        SufficientStatistics vector = this.createZeroSufficientStatistics();
 
         double mean = 0;
-        double precision = 0.000001;
+        double meansquare = 0.1;
 
-        vector.set(0, mean*precision);
-        vector.set(1, -0.5*precision);
+        vector.set(0, mean);
+        vector.set(1, meansquare);
 
         return vector;
 
@@ -294,7 +295,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
- /*   public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
+    public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
         Variable varNormalGamma = variables.newNormalGamma(this.var.getName()+"_NormalGamma_Parameter_"+nameSuffix+"_"+variables.getNumberOfVars());
@@ -307,8 +308,8 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         return conditionalDistributions;
     }
-*/
 
+/*
     public List<EF_ConditionalDistribution> toExtendedLearningDistribution(ParameterVariables variables, String nameSuffix) {
         List<EF_ConditionalDistribution> conditionalDistributions = new ArrayList<>();
 
@@ -324,7 +325,7 @@ public class EF_Normal extends EF_UnivariateDistribution {
 
         return conditionalDistributions;
     }
-
+*/
 
     /**
      * {@inheritDoc}
@@ -495,6 +496,9 @@ public class EF_Normal extends EF_UnivariateDistribution {
         public void copy(Vector vector){
             if (this.size()!=vector.size())
                 throw new IllegalArgumentException("Vectors has different sizes");
+
+            if (!vector.getClass().isAssignableFrom(ArrayVectorParameter.class))
+                throw new IllegalArgumentException("Not compatible class");
 
             this.copy((ArrayVectorParameter)vector);
         }

@@ -41,8 +41,8 @@ public class NaiveBayesEval {
         String className = args[3];
 
 
-        DataStream<DataInstance> train = DataStreamLoader.openFromFile(fileTrain);
-        DataStream<DataInstance> test = DataStreamLoader.openFromFile(fileTest);
+        DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
+        DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
         FileWriter fw = new FileWriter(fileOutput);
 
 

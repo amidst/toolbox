@@ -15,8 +15,11 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variables;
@@ -32,6 +35,8 @@ import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfiguration
  */
 public abstract class Model {
 
+    protected final Attributes atts;
+
     protected ParameterLearningAlgorithm learningAlgorithm = null;
 
     protected eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm learningAlgorithmFlink = null;
@@ -46,7 +51,10 @@ public abstract class Model {
 
     protected boolean initialized = false;
 
+    protected PlateuStructure plateuStructure;
+
     public Model(Attributes attributes) {
+        this.atts = attributes;
         vars = new Variables(attributes);
 
         if(!this.isValidConfiguration()) {
@@ -59,6 +67,21 @@ public abstract class Model {
             buildDAG();
         }
         return dag;
+    }
+
+    public ParameterLearningAlgorithm getLearningAlgorithm() {
+        return learningAlgorithm;
+    }
+
+    public eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm getLearningAlgorithmFlink() {
+        return learningAlgorithmFlink;
+    }
+
+    public PlateuStructure getPlateuStructure() {
+        if (plateuStructure==null){
+            buildPlateuStructure();
+        }
+        return plateuStructure;
     }
 
     public void setLearningAlgorithm(ParameterLearningAlgorithm learningAlgorithm) {
@@ -74,22 +97,51 @@ public abstract class Model {
     }
 
 
-    private void initLearningFlink() {
-        if(learningAlgorithmFlink==null)
-            learningAlgorithmFlink = new dVMP();
+    protected void initLearningFlink() {
+        if(learningAlgorithmFlink==null) {
+            dVMP dvmp = new dVMP();
+            dvmp.setBatchSize(100);
+            dvmp.setMaximumGlobalIterations(10);
+            dvmp.setMaximumLocalIterations(100);
+            dvmp.setLocalThreshold(0.00001);
+            dvmp.setGlobalThreshold(0.01);
+            learningAlgorithmFlink = dvmp;
+        }
 
         learningAlgorithmFlink.setBatchSize(windowSize);
-        learningAlgorithmFlink.setDAG(this.getDAG());
+
+        if (this.getDAG()!=null)
+            learningAlgorithmFlink.setDAG(this.getDAG());
+        else if (this.getPlateuStructure()!=null)
+            ((BayesianParameterLearningAlgorithm)learningAlgorithmFlink).setPlateuStructure(this.getPlateuStructure());
+        else
+            throw new IllegalArgumentException("Non provided dag or PlateauStructure");
+
+
         learningAlgorithmFlink.initLearning();
         initialized=true;
     }
 
 
-    private  void initLearning() {
-        if(learningAlgorithm==null)
-            learningAlgorithm = new SVB();
+    protected  void initLearning() {
+        if(learningAlgorithm==null) {
+            SVB svb = new SVB();
+            svb.setWindowsSize(100);
+            svb.getPlateuStructure().getVMP().setTestELBO(false);
+            svb.getPlateuStructure().getVMP().setMaxIter(100);
+            svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+
+            learningAlgorithm = svb;
+        }
         learningAlgorithm.setWindowsSize(windowSize);
-        learningAlgorithm.setDAG(this.getDAG());
+        if (this.getDAG()!=null)
+            learningAlgorithm.setDAG(this.getDAG());
+        else if (this.getPlateuStructure()!=null)
+            ((BayesianParameterLearningAlgorithm)learningAlgorithm).setPlateuStructure(this.getPlateuStructure());
+        else
+            throw new IllegalArgumentException("Non provided dag or PlateauStructure");
+
+        learningAlgorithm.setOutput(true);
         learningAlgorithm.initLearning();
         initialized=true;
     }
@@ -141,7 +193,14 @@ public abstract class Model {
         this.errorMessage = errorMessage;
     }
 
-    protected abstract void buildDAG();
+    protected void buildDAG(){
+        this.dag=null;
+    }
+
+    public void buildPlateuStructure(){
+        this.plateuStructure=null;
+    }
+
 
     public boolean isValidConfiguration(){
         return true;
@@ -150,6 +209,18 @@ public abstract class Model {
     @Override
     public String toString() {
         return this.getModel().toString();
+    }
+
+
+    public <E extends UnivariateDistribution> E getPosteriorDistribution(String varName) {
+		if (learningAlgorithm !=null){
+			 return (E)this.learningAlgorithm.getLearntBayesianNetwork()
+					 .getConditionalDistribution(dag.getVariables().getVariableByName(varName));
+
+		}
+
+		return null;
+
     }
 
 }

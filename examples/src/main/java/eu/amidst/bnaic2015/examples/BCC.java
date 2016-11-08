@@ -24,7 +24,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.ParallelSVB;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuIIDReplication;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
@@ -61,7 +61,7 @@ public class BCC {
         for (int i = 0; i < MONTHS; i++) {
 
             //We load the data for the given month
-            DataStream<DataInstance> monthlyData = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month" + i + ".arff");
+            DataStream<DataInstance> monthlyData = DataStreamLoader.open("./datasets/bnaic2015/BCC/Month" + i + ".arff");
 
             //We update the model in parallel with the data from data month
             parallelSVB.updateModel(monthlyData);
@@ -96,7 +96,7 @@ public class BCC {
         parallelSVB.setDAG(dag);
 
         //We tell how the above DAG should be expanded.
-        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuStructure(Arrays.asList(hiddenGaussian)));
+        parallelSVB.getSVBEngine().setPlateuStructure(new PlateuIIDReplication(Arrays.asList(hiddenGaussian)));
 
         //We also tell how to evolve the hidden variable over time
         GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(Arrays.asList(hiddenGaussian), 0, 0.1);
@@ -130,7 +130,7 @@ public class BCC {
     public static DAG modelBuilding() throws Exception {
 
         //We load the data for one month
-        DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month0.arff");
+        DataStream<DataInstance> instances = DataStreamLoader.open("./datasets/bnaic2015/BCC/Month0.arff");
 
         //Define the variables. By default, a random variable is created for each attribute
         Variables variables  = new Variables(instances.getAttributes());
@@ -170,7 +170,7 @@ public class BCC {
         for (int i = 0; i < MONTHS; i++) {
 
             //We load the data for that month
-            DataStream<DataInstance> instances = DataStreamLoader.openFromFile("./datasets/bnaic2015/BCC/Month"+i+".arff");
+            DataStream<DataInstance> instances = DataStreamLoader.open("./datasets/bnaic2015/BCC/Month"+i+".arff");
 
             //We get the attribute credit
             Attribute credit = instances.getAttributes().getAttributeByName("credit");

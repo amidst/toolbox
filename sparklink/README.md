@@ -1,45 +1,114 @@
-core
-====
+# Spark Link Module on AMIDST
 
-This is the repository for the open source code in the amidst project. 
+This module integrates the functionality of the AMIDST toolbox with the [Apache Spark](http://spark.apache.org) platform.
 
-Install Java 8 and IntelliJ
+The following functionality is already implemented on the **sparklink** module:
 
-http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+* Data Sources integration: Reading and writing data from SparkSQL on AMIDST
+* Distributed Sampling of Bayesian Networks
+* Parametric learning from distributed data (Maximum Likelihood)
 
-http://www.jetbrains.com/idea/download/
+###### ROADMAP
 
-In IntelliJ open maven project and point to the pom file. Also you need to point to the Java 8 installation and you ready to rock.
-
-
-========================
-Compiling & Running from the command line
-========================
+* Support for VMP
 
 
-1- Install Maven: http://maven.apache.org/download.cgi
-(Download binaries and copy to Applications folder)
+## API
 
-2- Modify the file maven_startup.sh (which you find it in the root project folder) and fix the path of your maven (Line 5) and java installation (Line 9).
+This module is designed to interact with the [SparkSQL](http://spark.apache.org/docs/latest/sql-programming-guide.html) `DataFrame` API. It makes immediately available all the compatible data sources, namely, CSV, Parquet, JSON...
 
-3- Create (or modify if already exist) a file ".profile" or ".bash_profile" in you home directory and add the following line,
-which points to file "maven_startup.sh"
+the `DataSpark`class is the entry point for the **sparklink** API, by transforming a `DataFrame` object into am AMIDST distributed collection over the Spark cluster.
 
-        source <project-folder>/maven_startup.sh
+Notice that this API is interoperable between **Java** and **Scala**.
 
- Now after restarting the terminal, mvn should work.
+### Examples (Scala)
+
+###### Setting up Spark
+
+```scala
+import org.apache.spark.SparkContext
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SQLContext
+
+// Init Spark
+val conf = new SparkConf().setAppName("SparkLink!")
+val sc = new SparkContext(conf)
+val sqlContext = new org.apache.spark.sql.SQLContext(sc)
+```
+
+###### Reading Data
+
+```scala
+import eu.amidst.sparklink.core.data.DataSpark
+import eu.amidst.sparklink.core.io.DataSparkLoader
+
+// Path for your file:
+val path = "hdfs://..."
+// {format} can be any supported one: parquet, json, csv...
+val df = sqlContext.read.format("parquet").load(path);
+
+// Load data into AMIDST, the schema is automatically transformed
+val dataSpark : DataSpark = DataSparkLoader.loadSparkDataFrame(df)
+
+```
+
+###### Learning a BN
+```scala
+import eu.amidst.core.io.BayesianNetworkLoader
+
+// Asume a structure bn, provided from file or previously built
+import eu.amidst.sparklink.core.util.BayesianNetworkSampler
+import eu.amidst.sparklink.core.learning.ParallelMaximumLikelihood
+
+// Load a Bayesian Network
+val bn = BayesianNetworkLoader.loadFromFile("<path>")
+
+val parameterLearningAlgorithm = new ParallelMaximumLikelihood()
+//We fix the DAG structure
+parameterLearningAlgorithm.setDAG(bn.getDAG)
+//We set the batch size which will be employed to learn the model in parallel
+parameterLearningAlgorithm.setBatchSize(100)
+//We set the data which is going to be used for leaning the parameters
+parameterLearningAlgorithm.setDataSpark(dataSpark)
+//We perform the learning
+parameterLearningAlgorithm.runLearning()
+//And we get the model
+val result = parameterLearningAlgorithm.getLearntBayesianNetwork()
+
+```
+
+###### Sampling a BN
+```scala
+import eu.amidst.sparklink.core.util.BayesianNetworkSampler
+
+// Load a Bayesian Network
+val bn = BayesianNetworkLoader.loadFromFile("<path>")
+
+// Create a local sampler
+val sampler = new BayesianNetworkSampler(bn)
+
+// Sample data in parallel:
+val nSamples = 1000000 // Number of sampled examples (accross all nodes)
+val parallelism = 4 // Number of parallel partitions (cores)
+val sampledDataSpark : DataSpark = sampler.sampleToDataSpark(sc, nSamples, parallelism)
+
+// Use the data or write it to a file (any format):
+sampledDataSpark.getDataFrame().write.format("json").save("hdfs://...")
+```
 
 
-4- Put the hugin files ("hgapi82_amidst-64.jar" and "libhgapi82_amidst-64.jnilib") in a new folder in the project
-folder called "huginlib". I.e. we should have the two following files:
+### Examples (Java)
 
-        <project-folder>/huginlib/hgapi82_amidst-64.jar
-        <project-folder>/huginlib/libhgapi82_amidst-64.jnilib
+**TODO** very soon...
 
 
-5- The script "compile.sh" (which you find it in the root project folder) just compile the whole project and create a .jar file in the ./target folder.
 
+## Building and compatibility
 
-6- The script "run.sh" (which you find it in the root project folder) should be used to run some class. For example,
+**To be Tested!** The sparklink module should work with any version of Spark 1.x that includes the DataFrame API, namely 1.3.x or up.
 
-        ./run.sh eu.amidst.examples.ParallelTANDemo
+By default the pom file is configured to compile it against the latest stable version of Spark v1.x available.
+
+## Development and usage questions
+
+Ask @jacintoArias

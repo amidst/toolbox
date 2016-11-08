@@ -130,6 +130,8 @@ public class HiddenMarkovModel extends DynamicModel{
         }
         System.out.println(HMM.getModel());
 
+
+
     }
 
 

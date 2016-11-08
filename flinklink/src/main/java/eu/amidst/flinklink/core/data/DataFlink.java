@@ -20,7 +20,9 @@ package eu.amidst.flinklink.core.data;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
+import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
@@ -44,7 +46,6 @@ public interface DataFlink<T extends DataInstance> {
         return ConversionToBatches.toBatches(this,batchSize);
     }
 
-
     default DataFlink<T> filter(FilterFunction<T> filter){
         return new DataFlink<T>() {
             @Override
@@ -64,7 +65,7 @@ public interface DataFlink<T extends DataInstance> {
         };
     }
 
-    default <R extends DataInstance> DataFlink<R> map (MapFunction<T,R> mapper){
+    default <R extends DataInstance> DataFlink<R> map (MapFunction<T,R> mapper) {
         return new DataFlink<R>() {
             @Override
             public String getName() {
@@ -82,6 +83,11 @@ public interface DataFlink<T extends DataInstance> {
             }
         };
     }
+
+    default DataSet<DataOnMemory<T>> getBatchedDataSet(int batchSize, Function2<DataFlink<T>, Integer, DataSet<DataOnMemory<T>>> batchFunction){
+        return batchFunction.apply(this,batchSize);
+    }
+
 
     default DataOnMemory<T> subsample(long seed, int samples) {
 
@@ -134,4 +140,26 @@ public interface DataFlink<T extends DataInstance> {
             return null;
         }
     }
+
+
+    default DataOnMemory<T> subsample(long seed, int samples, Function2<DataFlink<T>,Integer,DataSet<DataOnMemory<T>>> batchFunction) {
+
+        try {
+            List<DataOnMemory<T>> subsample = DataSetUtils.sampleWithSize(this.getBatchedDataSet(1,batchFunction), true, samples, seed).collect();
+
+            DataOnMemoryListContainer<T> dataInstances = new DataOnMemoryListContainer(this.getAttributes());
+
+            for (DataOnMemory<T> ts : subsample) {
+                for (T t : ts) {
+                    dataInstances.add(t);
+                }
+            }
+            return dataInstances;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

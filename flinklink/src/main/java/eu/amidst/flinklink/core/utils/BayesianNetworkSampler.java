@@ -81,12 +81,9 @@ public class BayesianNetworkSampler {
         return localSampler;
     }
 
-    public DataFlink<DataInstance>  sampleToDataFlink(int nSamples) {
+    public DataFlink<DataInstance>  sampleToDataFlink(ExecutionEnvironment env, int nSamples) {
 
         try{
-
-            final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
             int nBatches = nSamples/this.batchSize;
 
             DataSet<DataInstance> data = env.generateSequence(0,nBatches-1)

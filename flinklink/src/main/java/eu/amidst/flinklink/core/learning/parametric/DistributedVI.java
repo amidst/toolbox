@@ -17,12 +17,18 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
+import eu.amidst.core.learning.parametric.bayesian.utils.DataPosteriorAssignment;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -146,10 +152,6 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.batchSize = batchSize;
     }
 
-    @Override
-    public int getBatchSize() {
-        return batchSize;
-    }
 
     public SVB getSVB() {
         return svb;
@@ -164,16 +166,6 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning(); //Init learning is peformed in each mapper.
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
     }
 
     /**
@@ -318,16 +310,6 @@ public class DistributedVI implements ParameterLearningAlgorithm, Serializable {
         this.randomStart=false;
 
         return this.getLogMarginalProbability();
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
     }
 
     /**

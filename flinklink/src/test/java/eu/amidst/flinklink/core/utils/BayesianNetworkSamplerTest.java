@@ -20,8 +20,11 @@ package eu.amidst.flinklink.core.utils;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
 import junit.framework.TestCase;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 import org.junit.Assert;
 
 /**
@@ -30,27 +33,39 @@ import org.junit.Assert;
 public class BayesianNetworkSamplerTest extends TestCase {
 
     public void test1() throws Exception {
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
+
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
         sampler.setBatchSize(2);
 
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(10);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,10);
 
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
         data.getDataSet().print();
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
         data.getDataSet().print();
-        System.out.println("--------");
+        if (Main.VERBOSE) System.out.println("--------");
 
     }
     public void testingAsia() throws Exception {
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         BayesianNetwork asianet = BayesianNetworkLoader.loadFromFile("../networks/dataWeka/asia.bn");
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(asianet);
 
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(10000);
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,10000);
 
         Assert.assertEquals(data.getAttributes().getNumberOfAttributes(),8);
 

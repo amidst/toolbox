@@ -43,31 +43,31 @@ public class DynamicBayesianNetworkLoaderTest {
 
         File folder = new File(folderName);
         for (final File fileEntry : folder.listFiles()) {
-            if (fileEntry.isDirectory()) {
-                loadAndTestFilesFromFolder(fileEntry.getName());
-            } else {
-                String fileName = fileEntry.getName();
-                String fullFileName = folderName + "/" + fileName;
+            if (fileEntry.isDirectory())
+                continue;
 
-                System.out.println("reading "+fileName);
+            String fileName = fileEntry.getName();
+            String fullFileName = folderName + "/" + fileName;
 
-                if (fileName.endsWith(".dbn")) { //Dynamic BN
+            System.out.println("reading "+fileName);
 
-                    try {
-                        DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
-                        DynamicBayesianNetworkWriter.save(amidstDBN, fullFileName);
+            if (fileName.endsWith(".dbn")) { //Dynamic BN
 
-                        DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                try {
+                    DynamicBayesianNetwork amidstDBN = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
+                    DynamicBayesianNetworkWriter.save(amidstDBN, fullFileName);
 
-                        if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
-                            throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
-                    }catch(java.lang.ClassCastException ex){
-                        System.out.println("WARNING: "+fileName+"");
+                    DynamicBayesianNetwork amidstDBN2 = DynamicBayesianNetworkLoader.loadFromFile(fullFileName);
 
-                    }
+                    if (!amidstDBN.equalDBNs(amidstDBN2, 0.0))
+                        throw new Exception("Dynamic Bayesian network loader for " + fileName + " failed. ");
+                }catch(java.lang.ClassCastException ex){
+                    System.out.println("WARNING: "+fileName+"");
 
                 }
+
             }
+
         }
     }
 }

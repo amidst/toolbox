@@ -19,8 +19,8 @@ package eu.amidst.ida2015;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
-import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
 import eu.amidst.core.variables.Variable;
 
 import java.util.List;

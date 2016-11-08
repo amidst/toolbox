@@ -18,6 +18,7 @@
 package eu.amidst.core.inference;
 
 
+import eu.amidst.core.Main;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.Utils;
@@ -53,14 +54,14 @@ public class MPEInferenceExperiments_Deliv1 {
 
         int[] indexesEvidence = new int[numVarEvidence];
         //indexesEvidence[0]=varInterest.getVarID();
-        //System.out.println(variable.getVarID());
+        //if (Main.VERBOSE) System.out.println(variable.getVarID());
 
-        System.out.println("Evidence:");
+        if (Main.VERBOSE) System.out.println("Evidence:");
         for( int k=0; k<numVarEvidence; k++ ) {
             int varIndex=-1;
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
-                //System.out.println(varIndex);
+                //if (Main.VERBOSE) System.out.println(varIndex);
                 aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
@@ -75,12 +76,12 @@ public class MPEInferenceExperiments_Deliv1 {
             } while (ArrayUtils.contains(indexesEvidence, varIndex) );
 
             indexesEvidence[k]=varIndex;
-            //System.out.println(Arrays.toString(indexesEvidence));
-            System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
+            //if (Main.VERBOSE) System.out.println(Arrays.toString(indexesEvidence));
+            if (Main.VERBOSE) System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
 
             assignment.setValue(aux,evidence[k]);
         }
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
         return assignment;
     }
 
@@ -105,7 +106,7 @@ public class MPEInferenceExperiments_Deliv1 {
         int numberOfIterations=200;
 
         if(args.length!=8) {
-            System.out.println("Invalid number of parameters. Using default values");
+            if (Main.VERBOSE) System.out.println("Invalid number of parameters. Using default values");
         }
         else {
             try {
@@ -123,9 +124,9 @@ public class MPEInferenceExperiments_Deliv1 {
                 numberOfIterations = Integer.parseInt(args[7]);
 
             } catch (NumberFormatException ex) {
-                System.out.println("Invalid parameters. Provide integers: seedNetwork numberGaussians numberDiscrete seedAlgorithms parallelSamples sampleSize repetitions");
-                System.out.println("Using default parameters");
-                System.out.println(ex.toString());
+                if (Main.VERBOSE) System.out.println("Invalid parameters. Provide integers: seedNetwork numberGaussians numberDiscrete seedAlgorithms parallelSamples sampleSize repetitions");
+                if (Main.VERBOSE) System.out.println("Using default parameters");
+                if (Main.VERBOSE) System.out.println(ex.toString());
                 System.exit(20);
             }
         }
@@ -141,8 +142,8 @@ public class MPEInferenceExperiments_Deliv1 {
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
 
 
-        //System.out.println(bn.getDAG());
-        //System.out.println(bn.toString());
+        //if (Main.VERBOSE) System.out.println(bn.getDAG());
+        //if (Main.VERBOSE) System.out.println(bn.toString());
 
 
         MPEInference mpeInference = new MPEInference();
@@ -150,9 +151,9 @@ public class MPEInferenceExperiments_Deliv1 {
         mpeInference.setParallelMode(true);
 
 
-        //System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
+        //if (Main.VERBOSE) System.out.println("CausalOrder: " + Arrays.toString(Utils.getCausalOrder(mpeInference.getOriginalModel().getDAG()).stream().map(Variable::getName).toArray()));
         List<Variable> modelVariables = Utils.getTopologicalOrder(bn.getDAG());
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
 
 
@@ -196,19 +197,19 @@ public class MPEInferenceExperiments_Deliv1 {
 
 
             // MPE INFERENCE WITH SIMULATED ANNEALING, ALL VARIABLES
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println();
             timeStart = System.nanoTime();
             mpeInference.runInference(MPEInference.SearchAlgorithm.SA_GLOBAL);
 
 
             //mpeEstimate = mpeInference.getEstimate();
-            //System.out.println("MPE estimate (SA.All): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-            //System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate (SA.All): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+            //if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+            //if (Main.VERBOSE) System.out.println();
             SA_All_prob[k] = mpeInference.getLogProbabilityOfEstimate();
             SA_All_time[k] = execTime;
 
@@ -220,13 +221,13 @@ public class MPEInferenceExperiments_Deliv1 {
 
 
             //mpeEstimate = mpeInference.getEstimate();
-            //System.out.println("MPE estimate  (SA.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-            //System.out.println("with probability: "+ Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate  (SA.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+            //if (Main.VERBOSE) System.out.println("with probability: "+ Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println(.toString(mapInference.getOriginalModel().getStaticVariables().iterator().));
+            //if (Main.VERBOSE) System.out.println();
             SA_Some_prob[k] = mpeInference.getLogProbabilityOfEstimate();
             SA_Some_time[k] = execTime;
 
@@ -241,12 +242,12 @@ public class MPEInferenceExperiments_Deliv1 {
 
             //mpeEstimate = mpeInference.getEstimate();
             //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-            //System.out.println("MPE estimate (HC.All): " + mpeEstimate.outputString(modelVariables));
-            //System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate (HC.All): " + mpeEstimate.outputString(modelVariables));
+            //if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println();
             HC_All_prob[k] = mpeInference.getLogProbabilityOfEstimate();
             HC_All_time[k] = execTime;
 
@@ -258,12 +259,12 @@ public class MPEInferenceExperiments_Deliv1 {
 
 
             //mpeEstimate = mpeInference.getEstimate();
-            //System.out.println("MPE estimate  (HC.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
-            //System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate  (HC.Some): " + mpeEstimate.outputString(modelVariables));   //toString(modelVariables)
+            //if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println();
             HC_Some_prob[k] = mpeInference.getLogProbabilityOfEstimate();
             HC_Some_time[k] = execTime;
 
@@ -281,12 +282,12 @@ public class MPEInferenceExperiments_Deliv1 {
 
             //mpeEstimate = mpeInference.getEstimate();
             //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-            //System.out.println("MPE estimate (SAMPLING): " + mpeEstimate.outputString(modelVariables));
-            //System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate (SAMPLING): " + mpeEstimate.outputString(modelVariables));
+            //if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println();
             sampling_prob[k] = mpeInference.getLogProbabilityOfEstimate();
             sampling_time[k] = execTime;
         }
@@ -302,12 +303,12 @@ public class MPEInferenceExperiments_Deliv1 {
 
             //mpeEstimate = mpeInference.getEstimate();
             //modelVariables = mpeInference.getOriginalModel().getVariables().getListOfVariables();
-            //System.out.println("MPE estimate (DETERM.): " + mpeEstimate.outputString(modelVariables));
-            //System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
+            //if (Main.VERBOSE) System.out.println("MPE estimate (DETERM.): " + mpeEstimate.outputString(modelVariables));
+            //if (Main.VERBOSE) System.out.println("with probability: " + Math.exp(mpeInference.getLogProbabilityOfEstimate()) + ", logProb: " + mpeInference.getLogProbabilityOfEstimate());
             timeStop = System.nanoTime();
             execTime = (double) (timeStop - timeStart) / 1000000000.0;
-            //System.out.println("computed in: " + Double.toString(execTime) + " seconds");
-            //System.out.println();
+            //if (Main.VERBOSE) System.out.println("computed in: " + Double.toString(execTime) + " seconds");
+            //if (Main.VERBOSE) System.out.println();
 
             determ_prob = mpeInference.getLogProbabilityOfEstimate();
             determ_time = execTime;
@@ -316,31 +317,31 @@ public class MPEInferenceExperiments_Deliv1 {
 
         }
         else {
-            System.out.println("Too many variables for deterministic method");
+            if (Main.VERBOSE) System.out.println("Too many variables for deterministic method");
         }
 
         /***********************************************
          *        DISPLAY OF RESULTS
          ************************************************/
 
-        System.out.println("*** RESULTS ***");
+        if (Main.VERBOSE) System.out.println("*** RESULTS ***");
 
-//        System.out.println("SA_All log-probabilities");
-//        System.out.println(Arrays.toString(SA_All_prob));
-//        System.out.println("SA_Some log-probabilities");
-//        System.out.println(Arrays.toString(SA_Some_prob));
-//        System.out.println("HC_All log-probabilities");
-//        System.out.println(Arrays.toString(HC_All_prob));
-//        System.out.println("HC_Some log-probabilities");
-//        System.out.println(Arrays.toString(HC_Some_prob));
-//        System.out.println("Sampling log-probabilities");
-//        System.out.println(Arrays.toString(sampling_prob));
+//        if (Main.VERBOSE) System.out.println("SA_All log-probabilities");
+//        if (Main.VERBOSE) System.out.println(Arrays.toString(SA_All_prob));
+//        if (Main.VERBOSE) System.out.println("SA_Some log-probabilities");
+//        if (Main.VERBOSE) System.out.println(Arrays.toString(SA_Some_prob));
+//        if (Main.VERBOSE) System.out.println("HC_All log-probabilities");
+//        if (Main.VERBOSE) System.out.println(Arrays.toString(HC_All_prob));
+//        if (Main.VERBOSE) System.out.println("HC_Some log-probabilities");
+//        if (Main.VERBOSE) System.out.println(Arrays.toString(HC_Some_prob));
+//        if (Main.VERBOSE) System.out.println("Sampling log-probabilities");
+//        if (Main.VERBOSE) System.out.println(Arrays.toString(sampling_prob));
 //
 //        if(bn.getNumberOfVars()<=50) {
-//            System.out.println("Deterministic log-probability");
-//            System.out.println(Double.toString(determ_prob));
+//            if (Main.VERBOSE) System.out.println("Deterministic log-probability");
+//            if (Main.VERBOSE) System.out.println(Double.toString(determ_prob));
 //        }
-//        System.out.println();
+//        if (Main.VERBOSE) System.out.println();
 
         final double determ_prob_FINAL = determ_prob;
 
@@ -350,52 +351,52 @@ public class MPEInferenceExperiments_Deliv1 {
 //        int HC_Some_success = (int) Arrays.stream(HC_Some_prob).filter(db -> (db <= determ_prob_FINAL+0.001 && db >=determ_prob_FINAL-0.001)).count();
 //        int sampling_success = (int) Arrays.stream(sampling_prob).filter(db -> (db <= determ_prob_FINAL+0.001 && db >=determ_prob_FINAL-0.001)).count();
 //
-//        System.out.println("SA_All % success");
-//        System.out.println(Double.toString( 100 * SA_All_success/repetitions ));
-//        System.out.println("SA_Some % success");
-//        System.out.println(Double.toString( 100 * SA_Some_success/repetitions ));
-//        System.out.println("HC_All % success");
-//        System.out.println(Double.toString( 100 * HC_All_success/repetitions ));
-//        System.out.println("HC_Some % success");
-//        System.out.println(Double.toString( 100 * HC_Some_success/repetitions ));
-//        System.out.println("Sampling % success");
-//        System.out.println(Double.toString( 100 * sampling_success/repetitions ));
-//        System.out.println();
+//        if (Main.VERBOSE) System.out.println("SA_All % success");
+//        if (Main.VERBOSE) System.out.println(Double.toString( 100 * SA_All_success/repetitions ));
+//        if (Main.VERBOSE) System.out.println("SA_Some % success");
+//        if (Main.VERBOSE) System.out.println(Double.toString( 100 * SA_Some_success/repetitions ));
+//        if (Main.VERBOSE) System.out.println("HC_All % success");
+//        if (Main.VERBOSE) System.out.println(Double.toString( 100 * HC_All_success/repetitions ));
+//        if (Main.VERBOSE) System.out.println("HC_Some % success");
+//        if (Main.VERBOSE) System.out.println(Double.toString( 100 * HC_Some_success/repetitions ));
+//        if (Main.VERBOSE) System.out.println("Sampling % success");
+//        if (Main.VERBOSE) System.out.println(Double.toString( 100 * sampling_success/repetitions ));
+//        if (Main.VERBOSE) System.out.println();
 
-        System.out.println("SA_All RMS probabilities");
-        System.out.println(Double.toString(Arrays.stream(SA_All_prob).map(value -> Math.pow(value - determ_prob_FINAL, 2)).average().getAsDouble()) );
-        System.out.println("SA_Some RMS probabilities");
-        System.out.println(Double.toString( Arrays.stream(SA_Some_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
-        System.out.println("HC_All RMS probabilities");
-        System.out.println(Double.toString( Arrays.stream(HC_All_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
-        System.out.println("HC_Some RMS probabilities");
-        System.out.println(Double.toString( Arrays.stream(HC_Some_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
-        System.out.println("Sampling RMS probabilities");
-        System.out.println(Double.toString( Arrays.stream(sampling_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
-        System.out.println();
+        if (Main.VERBOSE) System.out.println("SA_All RMS probabilities");
+        if (Main.VERBOSE) System.out.println(Double.toString(Arrays.stream(SA_All_prob).map(value -> Math.pow(value - determ_prob_FINAL, 2)).average().getAsDouble()) );
+        if (Main.VERBOSE) System.out.println("SA_Some RMS probabilities");
+        if (Main.VERBOSE) System.out.println(Double.toString( Arrays.stream(SA_Some_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
+        if (Main.VERBOSE) System.out.println("HC_All RMS probabilities");
+        if (Main.VERBOSE) System.out.println(Double.toString( Arrays.stream(HC_All_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
+        if (Main.VERBOSE) System.out.println("HC_Some RMS probabilities");
+        if (Main.VERBOSE) System.out.println(Double.toString( Arrays.stream(HC_Some_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
+        if (Main.VERBOSE) System.out.println("Sampling RMS probabilities");
+        if (Main.VERBOSE) System.out.println(Double.toString( Arrays.stream(sampling_prob).map(value -> Math.pow(value-determ_prob_FINAL,2)).average().getAsDouble()) );
+        if (Main.VERBOSE) System.out.println();
 
 
-        System.out.println("SA_All times");
-        //System.out.println(Arrays.toString(SA_All_time));
-        System.out.println("Mean time: " + Double.toString(Arrays.stream(SA_All_time).average().getAsDouble()));
-        System.out.println("SA_Some times");
-        //System.out.println(Arrays.toString(SA_Some_time));
-        System.out.println("Mean time: " + Double.toString(Arrays.stream(SA_Some_time).average().getAsDouble()));
-        System.out.println("HC_All times");
-        //System.out.println(Arrays.toString(HC_All_time));
-        System.out.println("Mean time: " + Double.toString(Arrays.stream(HC_All_time).average().getAsDouble()));
-        System.out.println("HC_Some times");
-        //System.out.println(Arrays.toString(HC_Some_time));
-        System.out.println("Mean time: " + Double.toString(Arrays.stream(HC_Some_time).average().getAsDouble()));
-        System.out.println("Sampling times");
-        //System.out.println(Arrays.toString(sampling_time));
-        System.out.println("Mean time: " + Double.toString(Arrays.stream(sampling_time).average().getAsDouble()));
+        if (Main.VERBOSE) System.out.println("SA_All times");
+        //if (Main.VERBOSE) System.out.println(Arrays.toString(SA_All_time));
+        if (Main.VERBOSE) System.out.println("Mean time: " + Double.toString(Arrays.stream(SA_All_time).average().getAsDouble()));
+        if (Main.VERBOSE) System.out.println("SA_Some times");
+        //if (Main.VERBOSE) System.out.println(Arrays.toString(SA_Some_time));
+        if (Main.VERBOSE) System.out.println("Mean time: " + Double.toString(Arrays.stream(SA_Some_time).average().getAsDouble()));
+        if (Main.VERBOSE) System.out.println("HC_All times");
+        //if (Main.VERBOSE) System.out.println(Arrays.toString(HC_All_time));
+        if (Main.VERBOSE) System.out.println("Mean time: " + Double.toString(Arrays.stream(HC_All_time).average().getAsDouble()));
+        if (Main.VERBOSE) System.out.println("HC_Some times");
+        //if (Main.VERBOSE) System.out.println(Arrays.toString(HC_Some_time));
+        if (Main.VERBOSE) System.out.println("Mean time: " + Double.toString(Arrays.stream(HC_Some_time).average().getAsDouble()));
+        if (Main.VERBOSE) System.out.println("Sampling times");
+        //if (Main.VERBOSE) System.out.println(Arrays.toString(sampling_time));
+        if (Main.VERBOSE) System.out.println("Mean time: " + Double.toString(Arrays.stream(sampling_time).average().getAsDouble()));
 
         if(bn.getNumberOfVars()<=50) {
-            System.out.println("Deterministic time");
-            System.out.println(Double.toString(determ_time));
-            System.out.println("and probability");
-            System.out.println(determ_prob);
+            if (Main.VERBOSE) System.out.println("Deterministic time");
+            if (Main.VERBOSE) System.out.println(Double.toString(determ_time));
+            if (Main.VERBOSE) System.out.println("and probability");
+            if (Main.VERBOSE) System.out.println(determ_prob);
         }
 
 

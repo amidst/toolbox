@@ -22,10 +22,8 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.utils.OptionParser;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.huginlink.inference.HuginInference;
 
@@ -45,7 +43,7 @@ public class ClientsEvaluation {
 
         String classVariableName = "Default";
 
-        DataStream<DataInstance> test = DataStreamLoader.openFromFile(fileTest);
+        DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
         FileWriter fw = new FileWriter(fileOutput);
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(fileModel);

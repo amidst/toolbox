@@ -39,7 +39,7 @@ public class ReservoirSampleExample {
     public static void main(String[] args) throws Exception {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("datasets/simulated/syntheticData.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("datasets/simulated/syntheticData.arff");
 
         //ReservoirSampling allows to create a DataOnMemory object containing a unfiorm subsample of the data stream
         DataOnMemory<DataInstance> dataOnMemory = ReservoirSampling.samplingNumberOfSamples(100, data);

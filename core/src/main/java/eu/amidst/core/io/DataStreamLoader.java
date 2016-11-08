@@ -18,8 +18,10 @@
 package eu.amidst.core.io;
 
 import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.datastream.filereaders.DataFileReader;
+import eu.amidst.core.datastream.filereaders.DataOnMemoryFromFile;
 import eu.amidst.core.datastream.filereaders.DataStreamFromFile;
 import eu.amidst.core.datastream.filereaders.arffFileReader.ARFFDataReader;
 
@@ -46,10 +48,22 @@ public final class DataStreamLoader {
      * @param path the path of the file from which the data stream will be loaded.
      * @return a {@link DataStream}.
      */
-    public static DataStream<DataInstance> openFromFile(String path){
+    public static DataStream<DataInstance> open(String path){
         dataFileReader = selectRightLoader(path);
         dataFileReader.loadFromFile(path);
         return new DataStreamFromFile(dataFileReader);
+    }
+
+
+    /**
+     * Loads a {@link DataOnMemory} from a file.
+     * @param path the path of the file from which the data stream will be loaded.
+     * @return a {@link DataOnMemory}.
+     */
+    public static DataOnMemory<DataInstance> loadDataOnMemoryFromFile(String path){
+        dataFileReader = selectRightLoader(path);
+        dataFileReader.loadFromFile(path);
+        return new DataOnMemoryFromFile(dataFileReader);
     }
 
     /**

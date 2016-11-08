@@ -16,15 +16,15 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.amidst</groupId>
     <artifactId>cajamar</artifactId>
-    <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
-    </properties>
+    <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -45,27 +45,27 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>${AMIDSTver}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>core-dynamic</artifactId>
-            <version>${AMIDSTver}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.amidst</groupId>
-            <artifactId>flinklink</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
-            <artifactId>latent-variable-models</artifactId>
-            <version>${AMIDSTver}</version>
+            <artifactId>flinklink</artifactId>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>nz.ac.waikato.cms.weka</groupId>

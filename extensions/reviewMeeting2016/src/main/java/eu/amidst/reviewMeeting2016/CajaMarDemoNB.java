@@ -18,7 +18,7 @@
 package eu.amidst.reviewMeeting2016;
 
 import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuIIDReplication;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.models.DynamicDAG;
@@ -51,7 +51,7 @@ public class CajaMarDemoNB {
 
         // The demo can be run on your local computer or a cluster with hadoop, (un)comment as appropriate
         String fileName = "hdfs:///tmp_conceptdrift_data";
-        //String fileName = "./datasets/dataFlink/conceptdrift/data";
+        //String fileName = "./datasets/dataStream/conceptdrift/data";
 
         // Load the first batch of data (first month) to get the model header (attributes) necessary to create
         // the dynamic DAG
@@ -104,7 +104,7 @@ public class CajaMarDemoNB {
         DynamicParallelVB parallelVB = new DynamicParallelVB();
 
         //
-        parallelVB.setPlateuStructure(new PlateuStructure());
+        parallelVB.setPlateuStructure(new PlateuIIDReplication());
         // Convergence parameters
         parallelVB.setGlobalThreshold(0.1);
         parallelVB.setMaximumGlobalIterations(100);

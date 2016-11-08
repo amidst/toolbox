@@ -39,7 +39,7 @@ public class GenerateData {
     public static int BATCHSIZE = 500;
     public static boolean connectDBN = true;
 
-    //public static String path = "./datasets/dataFlink/conceptdrift/data";
+    //public static String path = "./datasets/dataStream/conceptdrift/data";
     public static String path = "hdfs:///tmp_conceptdrift_data";
 
 
@@ -93,7 +93,7 @@ public class GenerateData {
         sampler.setBatchSize(BATCHSIZE);
         sampler.setSeed(0);
 
-        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(null);
+        DataFlink<DynamicDataInstance> data0 = sampler.cascadingSample(env,null);
 
 
         System.out.println("--------------- CREATING DATA 0 --------------------------");
@@ -136,7 +136,7 @@ public class GenerateData {
                 //System.out.println(dbn);
                 sampler.setDBN(dbn);
             }
-            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(dataPrev);//i%4==1);
+            DataFlink<DynamicDataInstance> dataNew = sampler.cascadingSample(env,dataPrev);//i%4==1);
             DataFlinkWriter.writeDataToARFFFolder(dataNew, path + i + ".arff");
             dataNew = DataFlinkLoader.loadDynamicDataFromFolder(env, path + i + ".arff", false);
             dataPrev = dataNew;

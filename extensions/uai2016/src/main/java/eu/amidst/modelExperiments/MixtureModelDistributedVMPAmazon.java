@@ -41,11 +41,11 @@ public class MixtureModelDistributedVMPAmazon {
 
         //args= new String[]{" " +
         //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-        //        "./datasets/dataFlink/data.arff",
+        //        "./datasets/dataStream/data.arff",
         //        "550", "1000", "0.00001", "100", "1", "200", "0", "1", "2"};
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
-        //String fileName = "./datasets/dataFlink/uai1K.arff";
+        //String fileName = "./datasets/dataStream/uai1K.arff";
         String fileName = args[0];
 
         int windowSize = Integer.parseInt(args[1]);
@@ -75,7 +75,7 @@ public class MixtureModelDistributedVMPAmazon {
             dataFlink = DataFlinkLoader.loadDataFromFolder(env, fileName, false);
         }
 
-        //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        //DAG hiddenNB = getIDALocalGlobalDAG(dataStream.getAttributes());
         DAG hiddenNB = getUAIMultiLocalGlobalDAG(dataFlink.getAttributes(), nStates);
 
         long start = System.nanoTime();
@@ -95,8 +95,8 @@ public class MixtureModelDistributedVMPAmazon {
 
         parallelVB.setOutput(true);
         parallelVB.setDAG(hiddenNB);
-        parallelVB.setDataFlink(dataFlink);
-        parallelVB.runLearning();
+        parallelVB.initLearning();
+        parallelVB.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = parallelVB.getLearntBayesianNetwork();
 
         System.out.println(LearnedBnet.toString());

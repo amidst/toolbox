@@ -35,7 +35,7 @@ public class KalmanFilterTest extends TestCase{
         if (setUpIsDone) {
             return;
         }
-        dataGaussians = DataSetGenerator.generate(1,1000,0,10);
+        dataGaussians = DataSetGenerator.generate(1,1000,0,3);
         setUpIsDone = true;
     }
 

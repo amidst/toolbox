@@ -425,15 +425,19 @@ public class EF_BaseDistribution_MultinomialParents<E extends EF_ConditionalDist
 
                     double localSum = 0;
                     if (this.isBaseConditionalDistribution) {
-                        paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentChildCoParents);
-                        localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
-                        localSum -= this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentChildCoParents);
+                        localSum = this.getBaseEFConditionalDistribution(i).computeLogProbability(momentChildCoParents);
+                        //paritalExpectedNatural = this.getBaseEFConditionalDistribution(i).getExpectedNaturalFromParents(momentChildCoParents);
+                        //localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
+                        //localSum -= this.getBaseEFConditionalDistribution(i).getExpectedLogNormalizer(momentChildCoParents);
                     } else {
                         paritalExpectedNatural = this.getBaseEFUnivariateDistribution(i).createZeroNaturalParameters();
                         paritalExpectedNatural.copy(this.getBaseEFUnivariateDistribution(i).getNaturalParameters());
                         localSum += paritalExpectedNatural.dotProduct(momentChildCoParents.get(this.getVariable()));
                         localSum -= this.getBaseEFUnivariateDistribution(i).computeLogNormalizer();
                     }
+
+                    if (Double.isNaN(momentValue) || Double.isNaN(localSum) || Double.isNaN(partialSum))
+                        throw new IllegalStateException("NAN VALUE!");
 
                     localSum*=momentValue;
 

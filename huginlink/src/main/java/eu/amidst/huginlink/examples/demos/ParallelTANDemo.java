@@ -102,7 +102,7 @@ public class ParallelTANDemo {
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
-        data = DataStreamLoader.openFromFile(dataFile);
+        data = DataStreamLoader.open(dataFile);
         nOfVars = numContVars + numDiscVars;
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, 1 core(s) ...");
 
@@ -121,7 +121,7 @@ public class ParallelTANDemo {
 
         System.out.println("Learning TAN: " + nOfVars + " variables, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
 
-        data = DataStreamLoader.openFromFile(dataFile);
+        data = DataStreamLoader.open(dataFile);
 
         tan = new ParallelTAN();
         tan.setParallelMode(true);
@@ -152,7 +152,7 @@ public class ParallelTANDemo {
         DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
         DataStreamWriter.writeDataToFile(dataStream, dataFile);
 
-        data = DataStreamLoader.openFromFile(dataFile);
+        data = DataStreamLoader.open(dataFile);
         nOfVars = numContVars + numDiscVars;
 
         // Get information about the model: Root and Target
@@ -200,11 +200,11 @@ public class ParallelTANDemo {
             DataStream<DataInstance> dataStream = sampler.sampleToDataStream(sampleSize);
             ARFFDataWriter.writeToARFFFile(dataStream, dataFile);
 
-            data = DataStreamLoader.openFromFile(dataFile);
+            data = DataStreamLoader.open(dataFile);
             nOfVars = numContVars + numDiscVars;
             System.out.println("Learning TAN: " + nOfVars + " variables, " + numStates + " states/var, " + sampleSize + " samples on disk, " + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");
         } else {
-            data = DataStreamLoader.openFromFile(dataFile);
+            data = DataStreamLoader.open(dataFile);
             numDiscVars = data.getAttributes().getNumberOfAttributes();
             nOfVars = numContVars + numDiscVars;
             System.out.println("Learning TAN: " + nOfVars + " variables, " + " samples on file " + dataFileInput + "," + samplesOnMemory + " samples on memory, " + numCores + " core(s) ...");

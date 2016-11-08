@@ -31,9 +31,9 @@ public class NaiveBayesCDDetectorIda2015 {
     public static void main(String[] args) {
 
         //We can open the data stream using the static class DataStreamLoader
-        DataStream<DataInstance> data = DataStreamLoader.openFromFile("/Users/ana/Documents/Amidst-MyFiles/CajaMar/datosWeka.arff");
+        DataStream<DataInstance> data = DataStreamLoader.open("/Users/ana/Documents/Amidst-MyFiles/CajaMar/datosWeka.arff");
 
-        //DataStream<DataInstance> data = DataStreamLoader.openFromFile("./datasets/DynamicDataContinuous.arff");
+        //DataStream<DataInstance> data = DataStreamLoader.open("./datasets/DynamicDataContinuous.arff");
 
 
         //We create a NaiveBayesVirtualConceptDriftDetector object

@@ -173,6 +173,15 @@ public interface Variable {
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.MULTINOMIAL)==0);
     }
 
+
+    /**
+     * Tests whether this Variable follows a sparse multinomial distribution.
+     * @return true if this Variable follows a multinomial distribution, false otherwise.
+     */
+    default boolean isSparseMultinomial(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.SPARSE_MULTINOMIAL)==0);
+    }
+
     /**
      * Tests whether this Variable follows a multinomial logistic distribution.
      * @return true if this Variable follows a multinomial logistic distribution, false otherwise.
@@ -214,10 +223,29 @@ public interface Variable {
     }
 
     /**
+     * Tests whether this Variable follows a Sparse Dirichlet parameter distribution.
+     * @return true if this Variable follows a Dirichlet parameter distribution, false otherwise.
+     */
+    default  boolean isSparseDirichletParameter(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.SPARSE_DIRICHLET_PARAMETER)==0);
+    }
+
+
+    /**
      * Tests whether this Variable follows a normal parameter distribution.
      * @return true if this Variable follows a normal parameter distribution, false otherwise.
      */
     default  boolean isNormalParameter(){
         return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.NORMAL_PARAMETER)==0);
     }
+
+    /**
+     * Tests whether this Variable follows a "indicator" distribution.
+     * @return true if this Variable follows a indicator distribution, false otherwise.
+     */
+    default  boolean isIndicator(){
+        return(this.getDistributionTypeEnum().compareTo(DistributionTypeEnum.INDICATOR)==0);
+    }
+
+
 }

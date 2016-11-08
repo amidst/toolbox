@@ -15,6 +15,7 @@ import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
@@ -166,6 +167,9 @@ public class GaussianMixture extends Model {
         }
         System.out.println(GMM.getModel());
         System.out.println(GMM.getDAG());
+
+		System.out.println("HiddenVar");
+		System.out.println(GMM.<Multinomial>getPosteriorDistribution("HiddenVar"));
 
 
     /*    try {

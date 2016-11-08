@@ -45,7 +45,8 @@ public class NormalType extends DistributionType{
     public boolean isParentCompatible(Variable parent) {
         if (parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL ||
                 parent.getDistributionTypeEnum()==DistributionTypeEnum.MULTINOMIAL_LOGISTIC ||
-                parent.getDistributionTypeEnum()==DistributionTypeEnum.NORMAL)
+                parent.getDistributionTypeEnum()==DistributionTypeEnum.NORMAL||
+                parent.getDistributionTypeEnum()==DistributionTypeEnum.INDICATOR)
             return true;
         else
             return false;

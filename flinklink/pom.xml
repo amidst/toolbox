@@ -16,18 +16,14 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>flinklink</artifactId>
     <groupId>eu.amidst</groupId>
-    <version>${AMIDSTver}</version>
+    <version>0.6.0-alpha</version> <!-- AmidstVersion -->
 
-
-    <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
-    </properties>
 
 
     <dependencies>
@@ -42,13 +38,13 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
@@ -65,12 +61,6 @@
 
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-examples-batch_2.10</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java_2.10</artifactId>
             <version>1.0.3</version>
         </dependency>
@@ -81,5 +71,49 @@
         </dependency>
 
     </dependencies>
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <extensions>
+            <!-- begin - needed for deploying to repository using webdav -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+            <!-- end - needed for deploying to repository using webdav -->
+        </extensions>
+    </build>
 
 </project>

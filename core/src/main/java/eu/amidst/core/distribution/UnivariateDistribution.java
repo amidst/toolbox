@@ -117,4 +117,6 @@ public abstract class UnivariateDistribution extends ConditionalDistribution {
      * @return a {@link UnivariateDistribution} object.
      */
     public abstract UnivariateDistribution deepCopy(Variable variable);
+
+
 }

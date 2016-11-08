@@ -1,0 +1,27 @@
+
+\usepackage{color}
+\lstset{%
+	escapeinside={(*}{*)},%
+}
+
+\newcommand{\amidstversion}{\input{../../version.txt}}
+
+\lstset{
+	frameround=fttt,
+%	language=java,
+	numbers=left,
+	breaklines=true,
+	mathescape, 
+	columns=fullflexible, 
+	basicstyle=\fontfamily{lmvtt}\selectfont,
+	keywordstyle=\color{blue}\fontfamily{lmvtt}\selectfont, 
+	numberstyle=\color{black}
+}
+\lstMakeShortInline[columns=fixed]|
+
+
+
+\newcommand{\includejavasource}[1]{\lstinputlisting[language=java]{#1}}
+\newcommand{\inlinejava}[1]{\lstinline[columns=fixed,language=java]{#1}}
+
+\newcommand{\lang}[1]{}

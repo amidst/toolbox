@@ -27,6 +27,7 @@ import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkWriter;
 import eu.amidst.flinklink.core.utils.BayesianNetworkSampler;
+import org.apache.flink.api.java.ExecutionEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -393,11 +394,14 @@ public class DAGsGeneration {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
         sampler.setBatchSize(batchsize);
 
-        DataFlink<DataInstance> data = sampler.sampleToDataFlink(nsamples);
+        //Set-up Flink session.
+        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+
+        DataFlink<DataInstance> data = sampler.sampleToDataFlink(env,nsamples);
 
         System.out.println(getUAIMultiLocalGlobalDAG(data.getAttributes(),2));
 
-        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/dataFlink/data.arff");
+        DataFlinkWriter.writeDataToARFFFolder(data, "./datasets/dataStream/data.arff");
 
     }
 

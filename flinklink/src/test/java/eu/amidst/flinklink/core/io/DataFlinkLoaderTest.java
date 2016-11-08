@@ -21,10 +21,13 @@ package eu.amidst.flinklink.core.io;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.flinklink.Main;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import junit.framework.TestCase;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.configuration.Configuration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +39,11 @@ import java.util.stream.Collectors;
 public class DataFlinkLoaderTest extends TestCase {
 
     public static void test1() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
@@ -52,7 +59,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
@@ -60,7 +67,11 @@ public class DataFlinkLoaderTest extends TestCase {
 
 
     public static void test2() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFile(env,
                 "../datasets/simulated/test_not_modify/SmallDataSet.arff", false);
@@ -72,7 +83,7 @@ public class DataFlinkLoaderTest extends TestCase {
 
         int size = 0;
         for (DataOnMemory<DataInstance> dataInstanceDataBatch : batchList) {
-            System.out.println("Batch :" + dataInstanceDataBatch.getList().size());
+            if (Main.VERBOSE) System.out.println("Batch :" + dataInstanceDataBatch.getList().size());
             size += dataInstanceDataBatch.getList().size();
         }
         assertEquals(16, size);
@@ -85,17 +96,21 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
     }
 
     public static void test3() throws Exception {
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
 
         DataFlinkWriterTest.test1();
-        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp.arff", false);
+        DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env, "../datasets/simulated/tmp_2.arff", false);
         DataSet<DataInstance> data = dataFlink.getDataSet();
 
         data.print();
@@ -108,11 +123,37 @@ public class DataFlinkLoaderTest extends TestCase {
 
         List<Attribute> atts = dataFlink.getAttributes().getListOfNonSpecialAttributes();
         for (int i = 0; i < names.size(); i++) {
-            System.out.println(names.get(i));
+            if (Main.VERBOSE) System.out.println(names.get(i));
             assertEquals(atts.get(i).getName(), names.get(i));
             assertEquals(atts.get(i).getNumberOfStates(), states.get(i).intValue());
         }
 
     }
 
+    public static void test4() throws Exception {
+
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
+
+        DataFlink<DataInstance> dataInstances = DataFlinkLoader.loadDataFromFile(env, "../datasets/text/docword.simulated.arff", false);
+
+
+        for (int i = 0; i < 3; i++) {
+            DataOnMemory<DataInstance> batch = dataInstances.subsample(0, 1, ConversionToBatches::toBatchesBySeqID);
+
+            int docId = -1;
+            for (DataInstance dataInstance : batch) {
+                if (docId == -1) {
+                    docId = (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id());
+                    if (Main.VERBOSE) System.out.println("DOC ID: " + docId);
+                }
+
+                assertEquals(docId, (int) dataInstance.getValue(dataInstance.getAttributes().getSeq_id()));
+            }
+        }
+
+    }
 }

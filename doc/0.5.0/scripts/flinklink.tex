@@ -1,0 +1,50 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+\usepackage{color}
+\lstset{%
+	escapeinside={(*}{*)},%
+}
+
+\newcommand{\amidstversion}{\input{../../version.txt}}
+
+\newcommand{\includejavasource}[1]{\lstinputlisting[language=java, mathescape, columns=fullflexible, basicstyle=\fontfamily{lmvtt}\selectfont,]{#1}}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\section{Flinklink}
+
+Here we explain how 
+
+
+\subsection{Input/output}
+
+
+%\begin{lstlisting}
+\includejavasource{../version.txt}
+
+
+
+\subsection{Parametric learning}
+\subsection{Inference}
+\subsection{Extensions and applications}
+\subsubsection{Latent variable models}
+\subsubsection{Concept drift detection}
+
+\begin{lstlisting}
+some code  
+\end{lstlisting}
+
+\includejavasource{../version.txt}
+
+
+
+\end{document}

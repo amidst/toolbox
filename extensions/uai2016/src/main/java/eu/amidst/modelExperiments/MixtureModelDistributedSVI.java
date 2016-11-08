@@ -41,12 +41,12 @@ public class MixtureModelDistributedSVI {
     public static void main(String[] args) throws Exception {
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
-        //String fileName = "./datasets/dataFlink/uai1K.arff";
+        //String fileName = "./datasets/dataStream/uai1K.arff";
         //args= new String[]{" " +
                 //"/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
-        //        "./datasets/dataFlink/data.arff",
+        //        "./datasets/dataStream/data.arff",
         //        "550", "100", "1", "100", "0", "55000", "0.75",
-        //        "./datasets/dataFlink/data.arff"
+        //        "./datasets/dataStream/data.arff"
         //        };
 
         String fileName = args[0];
@@ -101,8 +101,8 @@ public class MixtureModelDistributedSVI {
 
         stochasticVI.setOutput(true);
         stochasticVI.setDAG(hiddenNB);
-        stochasticVI.setDataFlink(dataFlink);
-        stochasticVI.runLearning();
+        stochasticVI.initLearning();
+        stochasticVI.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
 
         StringBuilder builder = new StringBuilder();
@@ -120,7 +120,7 @@ public class MixtureModelDistributedSVI {
 
         DataFlink<DataInstance>  dataTest = DataFlinkLoader.loadDataFromFolder(env,fileTest, false);
 
-        double elboTest = StochasticVI.computeELBO(dataTest,stochasticVI.getSVB());
+        double elboTest = StochasticVI.computeELBO(dataTest,stochasticVI.getSVI().getSVB());
 
         System.out.println("Test Marginal-Loglikelihood:" + elboTest);
 

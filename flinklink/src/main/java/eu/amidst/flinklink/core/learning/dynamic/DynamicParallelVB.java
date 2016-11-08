@@ -20,7 +20,8 @@ package eu.amidst.flinklink.core.learning.dynamic;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
@@ -35,7 +36,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.data.DataFlinkConverter;
 import eu.amidst.flinklink.core.learning.parametric.IdentifiableModelling;
-import eu.amidst.flinklink.core.learning.parametric.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.utils.Batch;
 import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
@@ -87,7 +88,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
 
     transient DataSet<DataPosteriorAssignment> dataPosteriorDataSet;
 
-    PlateuStructure plateuStructure = new PlateuStructure();
+    PlateuStructure plateuStructure = new PlateuIIDReplication();
     TransitionMethod transitionMethod;
 
     protected List<String> latentVariablesNames;
@@ -208,13 +209,12 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     private void updateTime0(DataFlink<DynamicDataInstance> data){
         DataFlink<DataInstance> newdata = DataFlinkConverter.convertToStatic(data);
         this.parallelVBTime0.updateModel(newdata);
-        this.parallelVBTime0.setDataFlink(newdata);
         List<Variable> vars = this.latentVariablesNames
                                         .stream()
                                         .map(name -> this.dagTime0.getVariables().getVariableByName(name))
                                         .collect(Collectors.toList());
 
-        this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(vars);
+        this.dataPosteriorDataSet = this.parallelVBTime0.computePosteriorAssignment(newdata, vars);
 
     }
 

@@ -23,13 +23,19 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.learning.parametric.bayesian.utils.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
+import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
+import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
+import eu.amidst.flinklink.core.utils.ConversionToBatches;
+import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.common.aggregators.ConvergenceCriterion;
 import org.apache.flink.api.common.aggregators.DoubleSumAggregator;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -59,7 +65,7 @@ import java.util.List;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class dVMP implements ParameterLearningAlgorithm, Serializable {
+public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -69,11 +75,6 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
-
-    /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
 
     /**
      * Represents the directed acyclic graph {@link DAG}.
@@ -86,11 +87,11 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
 
     protected int maximumGlobalIterations = 10;
 
-    protected int maximumLocalIterations = 100;
+    protected int maximumLocalIterations = 1000;
 
     protected double globalThreshold = 0.01;
 
-    protected double localThreshold = 0.1;
+    protected double localThreshold = 0.001;
 
     protected long timeLimit = -1;
 
@@ -99,26 +100,26 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
     IdentifiableModelling identifiableModelling = new ParameterIdentifiableModel();
 
     boolean randomStart = true;
-    private int nBatches;
 
+    Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter = ConversionToBatches::toBatches;
 
     public dVMP(){
         this.svb = new SVB();
     }
 
 
-    public int getnBatches() {
-        return nBatches;
-    }
-
-    public void setnBatches(int nBatches) {
-        this.nBatches = nBatches;
+    public void setBatchConverter(Function2<DataFlink<DataInstance>, Integer, DataSet<DataOnMemory<DataInstance>>> batchConverter) {
+        this.batchConverter = batchConverter;
     }
 
     public void setIdentifiableModelling(IdentifiableModelling identifiableModelling) {
         this.identifiableModelling = identifiableModelling;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.svb.setPlateuStructure(plateuStructure);
     }
@@ -153,34 +154,20 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         this.batchSize = batchSize;
     }
 
-    @Override
-    public int getBatchSize() {
-        return batchSize;
-    }
-
     public SVB getSVB() {
         return svb;
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
-        vmpParameter.setMaxGlobaIter(1);
-        this.svb.getPlateuStructure().setVmp(vmpParameter);
+        VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(this.svb.getPlateuStructure());
+        //VMPParameterv1 vmpLocalUpdates = new VMPParameterv1(this.svb.getPlateuStructure());
+
+        this.svb.getPlateuStructure().setVmp(vmpLocalUpdates);
         this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
         this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
         this.svb.setDAG(this.dag);
         this.svb.setWindowsSize(batchSize);
         this.svb.initLearning(); //Init learning is peformed in each mapper.
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
     }
 
     /**
@@ -191,20 +178,20 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         return this.globalELBO;
     }
 
-    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(List<Variable> latentVariables){
+    public DataSet<DataPosteriorAssignment> computePosteriorAssignment(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
         try{
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
-                    .getBatchedDataSet(this.batchSize)
+            return dataFlink
+                    .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInferenceAssignment())
                     .withParameters(config);
 
@@ -214,20 +201,20 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
 
     }
 
-    public DataSet<DataPosterior> computePosterior(List<Variable> latentVariables){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink, List<Variable> latentVariables){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
         try{
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return this.dataFlink
-                    .getBatchedDataSet(this.batchSize)
+            return dataFlink
+                    .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);
 
@@ -237,19 +224,19 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
 
     }
 
-    public DataSet<DataPosterior> computePosterior(){
+    public DataSet<DataPosterior> computePosterior(DataFlink<DataInstance> dataFlink){
 
-        Attribute seq_id = this.dataFlink.getAttributes().getSeq_id();
+        Attribute seq_id = dataFlink.getAttributes().getSeq_id();
         if (seq_id==null)
             throw new IllegalArgumentException("Functionality only available for data sets with a seq_id attribute");
 
         try{
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
 
-            return this.dataFlink
-                    .getBatchedDataSet(this.batchSize)
+            return dataFlink
+                    .getBatchedDataSet(this.batchSize,batchConverter)
                     .flatMap(new ParallelVBMapInference())
                     .withParameters(config);
 
@@ -257,11 +244,17 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             throw new UndeclaredThrowableException(ex);
         }
 
+    }
+
+    private String getName(){
+        if (dag!=null)
+            return dag.getName();
+        else
+            return "";
     }
 
     @Override
     public double updateModel(DataFlink<DataInstance> dataUpdate){
-
         try{
             final ExecutionEnvironment env = dataUpdate.getDataSet().getExecutionEnvironment();
 
@@ -280,10 +273,10 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             }
             // set number of bulk iterations for KMeans algorithm
             IterativeDataSet<CompoundVector> loop = paramSet.iterate(maximumGlobalIterations)
-                    .registerAggregationConvergenceCriterion("ELBO_" + this.dag.getName(), new DoubleSumAggregator(),convergenceELBO);
+                    .registerAggregationConvergenceCriterion("ELBO_" + this.getName(), new DoubleSumAggregator(),convergenceELBO);
 
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, this.dag.getName());
+            config.setString(ParameterLearningAlgorithm.BN_NAME, this.getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
 
             //We add an empty batched data set to emit the updated prior.
@@ -291,7 +284,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             DataSet<DataOnMemory<DataInstance>> unionData = null;
 
             unionData =
-                    dataUpdate.getBatchedDataSet(this.batchSize)
+                    dataUpdate.getBatchedDataSet(this.batchSize, batchConverter)
                             .union(env.fromCollection(Arrays.asList(emtpyBatch),
                                     TypeExtractor.getForClass((Class<DataOnMemory<DataInstance>>) Class.forName("eu.amidst.core.datastream.DataOnMemory"))));
 
@@ -299,7 +292,7 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
                     unionData
                     .map(new ParallelVBMap(randomStart, identifiableModelling))
                     .withParameters(config)
-                    .withBroadcastSet(loop, "VB_PARAMS_" + this.dag.getName())
+                    .withBroadcastSet(loop, "VB_PARAMS_" + this.getName())
                     .reduce(new ParallelVBReduce());
 
             // feed new centroids back into next iteration
@@ -327,22 +320,13 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         return this.getLogMarginalProbability();
     }
 
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
-    }
-
     /**
      * {@inheritDoc}
      */
     @Override
     public void setDAG(DAG dag_) {
         this.dag = dag_;
+        this.svb.setDAG(dag_);
     }
 
     /**
@@ -369,7 +353,10 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
         this.svb.setOutput(activateOutput);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
             return this.svb.getParameterPosterior(parameter);
     }
@@ -461,10 +448,24 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0)
-                this.svb.getPlateuStructure().setVmp(new VMP());
+            if (superstep==0) {
+                VMP vmp = new VMP();
+                vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
+                vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
+                vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
+                this.svb.getPlateuStructure().setVmp(vmp);
 
-            svb.initLearning();
+            }
+
+            if (superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(true);
+            }
+
+            if (superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
+            }
+
+        svb.initLearning();
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
 
@@ -617,12 +618,12 @@ public class dVMP implements ParameterLearningAlgorithm, Serializable {
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
-                //System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
-                // ", "+ (value.getValue() +">" + previousELBO));
-                //this.previousELBO=value.getValue();
-                //return false;
+                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+                System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
+                 ", "+ (value.getValue() +">" + previousELBO));
+                this.previousELBO=value.getValue();
+                return false;
             }else if (percentage>0 && percentage>threshold) {
                 logger.info("Global bound is monotonically increasing: {},{},{}>{},{} seconds",iteration,
                         df.format(percentage), df.format(value.getValue()), df.format(previousELBO),

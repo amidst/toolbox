@@ -1,0 +1,3 @@
+@attribute SEQUENCE_ID 0 real
+@attribute word 1 SparseMultinomial 12420
+@attribute count 2 real

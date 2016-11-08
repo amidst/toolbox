@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 package eu.amidst.flinklink.core.learning.parametric;
@@ -20,18 +14,19 @@ package eu.amidst.flinklink.core.learning.parametric;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
+import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
+import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.utils.Function2;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.java.DataSet;
 import org.apache.flink.configuration.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +41,7 @@ import java.text.DecimalFormat;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#pmlexample"> http://amidst.github.io/toolbox/CodeExamples.html#pmlexample </a>  </p>
  *
  */
-public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
+public class StochasticVI implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
@@ -56,31 +51,21 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     public static String SVB="SVB";
     public static String PRIOR="PRIOR";
 
-
-    /**
-     * Represents the {@link DataFlink} used for learning the parameters.
-     */
-    protected DataFlink<DataInstance> dataFlink;
-
     /**
      * Represents the directed acyclic graph {@link DAG}.
      */
-    protected DAG dag;
+    protected eu.amidst.core.learning.parametric.bayesian.StochasticVI svi;
 
-    protected SVB svb;
-
-    protected int batchSize = 100;
-
-    protected int maximumLocalIterations = 100;
-
-    protected double localThreshold = 0.1;
-
-    protected long dataSetSize;
     private long timiLimit;
-    private double learningFactor;
 
+    Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter=null;
+
+
+    public void setBatchConverter(Function2<DataFlink<DataInstance>, Integer, DataSet<DataOnMemory<DataInstance>>> batchConverter) {
+        this.batchConverter = batchConverter;
+    }
     public void setLearningFactor(double learningFactor) {
-        this.learningFactor = learningFactor;
+        this.svi.setLearningFactor(learningFactor);
     }
 
     public void setTimiLimit(long seconds) {
@@ -88,61 +73,40 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
     }
 
     public void setDataSetSize(long dataSetSize) {
-        this.dataSetSize = dataSetSize;
+        this.svi.setDataSetSize(dataSetSize);
     }
 
     public StochasticVI(){
-        this.svb = new SVB();
+        this.svi = new eu.amidst.core.learning.parametric.bayesian.StochasticVI();
     }
 
     public void setPlateuStructure(PlateuStructure plateuStructure){
-        this.svb.setPlateuStructure(plateuStructure);
+        this.svi.setPlateuStructure(plateuStructure);
     }
 
     public void setTransitionMethod(TransitionMethod transitionMethod){
-        this.svb.setTransitionMethod(transitionMethod);
+        this.svi.setTransitionMethod(transitionMethod);
     }
 
     public void setLocalThreshold(double localThreshold) {
-        this.localThreshold = localThreshold;
+         this.svi.setLocalThreshold(localThreshold);
     }
 
     public void setMaximumLocalIterations(int maximumLocalIterations) {
-        this.maximumLocalIterations = maximumLocalIterations;
+        this.svi.setMaximumLocalIterations(maximumLocalIterations);
     }
 
     @Override
     public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
+        this.svi.setBatchSize(batchSize);
     }
 
-    @Override
-    public int getBatchSize() {
-        return batchSize;
-    }
-
-    public SVB getSVB() {
-        return svb;
+    public eu.amidst.core.learning.parametric.bayesian.StochasticVI getSVI() {
+        return this.svi;
     }
 
     public void initLearning() {
-        VMPParameter vmpParameter = new VMPParameter(this.svb.getPlateuStructure());
-        this.svb.getPlateuStructure().setVmp(vmpParameter);
-        this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
-        this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
-        this.svb.setDAG(this.dag);
-        this.svb.setWindowsSize(batchSize);
-        this.svb.initLearning(); //Init learning is peformed in each mapper.
-    }
-
-
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setDataFlink(DataFlink<DataInstance> data) {
-        this.dataFlink = data;
+        this.svi.initLearning();
     }
 
     /**
@@ -157,29 +121,11 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
      * {@inheritDoc}
      */
     @Override
-    public void runLearning() {
-        this.initLearning();
-        this.updateModel(this.dataFlink);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public double updateModel(DataFlink<DataInstance> dataUpdate) {
 
         DecimalFormat df = new DecimalFormat("0.0000");
 
         boolean convergence=false;
-
-        CompoundVector prior = svb.getNaturalParameterPrior();
-
-        CompoundVector initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
-        initialPosterior.sum(prior);
-
-        this.svb.updateNaturalParameterPosteriors(initialPosterior);
-
-        CompoundVector currentParam =  svb.getNaturalParameterPrior();
 
         double totalTimeElbo=0;
 
@@ -189,44 +135,39 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
             long startBatch= System.nanoTime();
 
-            DataOnMemory<DataInstance> batch = this.dataFlink.subsample(this.svb.getSeed(), this.batchSize);
+            DataOnMemory<DataInstance> batch;
 
-            NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
+            if (batchConverter==null)
+                    batch= dataUpdate.subsample(this.svi.getSeed(), this.svi.getBatchSize());
+            else
+                    batch= dataUpdate.subsample(this.svi.getSeed(), this.svi.getBatchSize(), this.batchConverter);
 
-            newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
-            newParam.sum(prior);
-
-            double stepSize = Math.pow(1+t,-learningFactor);
-
-            newParam.multiplyBy(stepSize);
-
-            currentParam.multiplyBy((1-stepSize));
-            currentParam.sum(newParam);
-
-            this.svb.updateNaturalParameterPosteriors(currentParam);
-
-
-
-
-            long startBatchELBO= System.nanoTime();
-            //Compute ELBO
-            double elbo = this.computeELBO(this.dataFlink, svb);
+            this.svi.updateModel(batch);
 
             long endBatch= System.nanoTime();
 
-            totalTimeElbo += endBatch - startBatchELBO;
-
-            System.out.println("TIME ELBO:" + totalTimeElbo/1e9);
-
             totalTime+=endBatch-startBatch;
 
-            logger.info("SVI ELBO: {},{},{},{} seconds, {} seconds",t,0,
-                    df.format(elbo), df.format(totalTime/1e9), df.format(totalTimeElbo/1e9));
+            if (t%10==0) {
+                long startBatchELBO = System.nanoTime();
+                //Compute ELBO
 
-            System.out.println("SVI ELBO: "+t+", "+stepSize+", "+elbo+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
+                double elbo = this.computeELBO(dataUpdate, svi.getSVB(), this.batchConverter);
+
+                long endBatchELBO = System.nanoTime();
+
+                totalTimeElbo += endBatchELBO - startBatchELBO;
+
+                System.out.println("TIME ELBO:" + totalTimeElbo / 1e9);
 
 
-            if ((totalTime-totalTimeElbo)/1e9>timiLimit){
+                logger.info("SVI ELBO: {},{},{},{} seconds, {} seconds", t, 0,
+                        df.format(elbo), df.format(totalTime / 1e9), df.format(totalTimeElbo / 1e9));
+
+                System.out.println("SVI ELBO: " + t + ", " + 0.0 + ", " + elbo + ", " + totalTime / 1e9 + " seconds " + totalTimeElbo / 1e9 + " seconds " + (totalTime - totalTimeElbo) / 1e9 + " seconds");
+            }
+
+            if ((totalTime-totalTimeElbo)/1e9>timiLimit){// || t>this.maximumLocalIterations){
                 convergence=true;
             }
 
@@ -234,15 +175,14 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         }
 
-
-        this.svb.updateNaturalParameterPrior(currentParam);
-
         return this.getLogMarginalProbability();
 
     }
+    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb) {
+            return computeELBO(dataFlink,svb,null);
+    }
 
-
-    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb){
+    public static double computeELBO(DataFlink<DataInstance> dataFlink, SVB svb, Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter){
 
         svb.setOutput(false);
         double elbo =  svb.getPlateuStructure().getNonReplictedNodes().mapToDouble(node -> svb.getPlateuStructure().getVMP().computeELBO(node)).sum();
@@ -250,12 +190,16 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         try {
 
             Configuration config = new Configuration();
-            config.setString(ParameterLearningAlgorithm.BN_NAME, svb.getDAG().getName());
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(PRIOR, Serialization.serializeObject(svb.getPlateuStructure().getPlateauNaturalParameterPosterior()));
 
+            DataSet<DataOnMemory<DataInstance>> batches;
+            if (batchConverter!=null)
+                batches= dataFlink.getBatchedDataSet(svb.getWindowsSize(),batchConverter);
+            else
+                batches= dataFlink.getBatchedDataSet(svb.getWindowsSize());
 
-            elbo += dataFlink.getBatchedDataSet(svb.getWindowsSize()).map(new ParallelVBMapELBO())
+            elbo += batches.map(new ParallelVBMapELBO())
                     .withParameters(config)
                     .reduce(new ReduceFunction<Double>() {
                         @Override
@@ -278,7 +222,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setDAG(DAG dag_) {
-        this.dag = dag_;
+        this.svi.setDAG(dag_);
     }
 
     /**
@@ -286,7 +230,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setSeed(int seed) {
-        this.svb.setSeed(seed);
+        this.svi.setSeed(seed);
     }
 
     /**
@@ -294,7 +238,7 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        return this.svb.getLearntBayesianNetwork();
+        return this.svi.getLearntBayesianNetwork();
     }
 
     /**
@@ -302,12 +246,12 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setOutput(boolean activateOutput) {
-        this.svb.setOutput(activateOutput);
+        this.svi.setOutput(activateOutput);
     }
 
 
     public <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
-        return this.svb.getParameterPosterior(parameter);
+        return this.svi.getParameterPosterior(parameter);
     }
 
 
@@ -315,7 +259,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
 
         SVB svb;
         CompoundVector prior;
-        String bnName;
 
         @Override
         public Double map(DataOnMemory<DataInstance> dataBatch) throws Exception {
@@ -333,7 +276,6 @@ public class StochasticVI implements ParameterLearningAlgorithm, Serializable {
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
-            bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             this.prior = Serialization.deserializeObject(parameters.getBytes(PRIOR, null));
 

@@ -40,7 +40,7 @@ public class IDAmodelDistributedSVI {
     public static void main(String[] args) throws Exception {
 
         //String fileName = "hdfs:///tmp_uai100K.arff";
-        //String fileName = "./datasets/dataFlink/uai1K.arff";
+        //String fileName = "./datasets/dataStream/uai1K.arff";
         //args= new String[]{" " +
         //        "/Users/andresmasegosa/Desktop/cajamardata/ALL-AGGREGATED/totalWeka-ContinuousReducedFolder.arff",
         //        "1000", "100", "1", "1000", "0", "55000", "0.75", "1"};
@@ -72,7 +72,7 @@ public class IDAmodelDistributedSVI {
 
         DataFlink<DataInstance> dataFlink = DataFlinkLoader.loadDataFromFolder(env,fileName, false);
 
-        //DAG hiddenNB = getIDALocalGlobalDAG(dataFlink.getAttributes());
+        //DAG hiddenNB = getIDALocalGlobalDAG(dataStream.getAttributes());
         DAG hiddenNB = getIDAMultiLocalGaussianDAG(dataFlink.getAttributes(),nHidden);
         long start = System.nanoTime();
 
@@ -98,8 +98,8 @@ public class IDAmodelDistributedSVI {
 
         stochasticVI.setOutput(true);
         stochasticVI.setDAG(hiddenNB);
-        stochasticVI.setDataFlink(dataFlink);
-        stochasticVI.runLearning();
+        stochasticVI.initLearning();
+        stochasticVI.updateModel(dataFlink);
         BayesianNetwork LearnedBnet = stochasticVI.getLearntBayesianNetwork();
         System.out.println(LearnedBnet.toString());
 

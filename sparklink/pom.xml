@@ -13,17 +13,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>sparklink</artifactId>
 
-
-    <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
-    </properties>
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -44,23 +40,19 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-            <version>1.2.1</version>
-        </dependency>
-        <dependency>
+        <dependency> <!-- Spark dependency -->
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.10</artifactId>
-            <version>1.1.1</version>
+            <version>1.6.1</version>
         </dependency>
-        <dependency>
+
+        <dependency> <!-- Spark dependency -->
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-mllib_2.10</artifactId>
-            <version>1.0.0</version>
+            <artifactId>spark-sql_2.10</artifactId>
+            <version>1.6.1</version>
         </dependency>
     </dependencies>
 </project>

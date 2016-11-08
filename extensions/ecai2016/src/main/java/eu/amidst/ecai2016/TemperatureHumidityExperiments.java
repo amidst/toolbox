@@ -18,9 +18,12 @@
 package eu.amidst.ecai2016;
 
 import COM.hugin.HAPI.*;
+import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.ImportanceSamplingRobust;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
+import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -31,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -59,8 +63,8 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nIncorrect number of parameters (4 are needed: nTimeSteps, nEvidences, nSamplesIS, seed)");
             System.out.println("Using default values for parameters\n\n");
 
-            nTimeSteps=10;
-            numberOfEvidencesPerModel = 50;
+            nTimeSteps=200;
+            numberOfEvidencesPerModel = 50; // PREVIOUSLY: 50;
             nSamplesForIS=10000;
             seedEvidence=816935;
         }
@@ -80,6 +84,11 @@ public class TemperatureHumidityExperiments {
         int [] sequenceAllZeros = new int[nTimeSteps];
         int [] sequenceAllOnes = Arrays.stream(sequenceAllZeros).map(k-> k+1).toArray();
 
+        int[] sequence_HuginIterativeAssignment = new int[nTimeSteps];
+        int[] sequence_VMP_IterativeAssignment = new int[nTimeSteps];
+        int[] sequence_IS_IterativeAssignment = new int[nTimeSteps];
+
+
         double[] precision_UngroupedIS = new double[numberOfEvidencesPerModel];
         double[] precision_2GroupedIS = new double[numberOfEvidencesPerModel];
         double[] precision_3GroupedIS = new double[numberOfEvidencesPerModel];
@@ -94,6 +103,12 @@ public class TemperatureHumidityExperiments {
         double[] precision_allOnes = new double[numberOfEvidencesPerModel];
 
         double[] precision_Hugin = new double[numberOfEvidencesPerModel];
+
+        double[] precision_HuginIterativeAssignment = new double[numberOfEvidencesPerModel];
+
+        double[] precision_VMP_IterativeAssignment = new double[numberOfEvidencesPerModel];
+        double[] precision_IS_IterativeAssignment = new double[numberOfEvidencesPerModel];
+
 
 
         double[] times_UngroupedIS = new double[numberOfEvidencesPerModel];
@@ -144,7 +159,7 @@ public class TemperatureHumidityExperiments {
 //                    }
 //                });
             List<DynamicAssignment> fullEvidence = model.getFullEvidence();
-            fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
+            //fullEvidence.forEach(dynamicAssignment -> System.out.println(dynamicAssignment.outputString(DBNmodel.getDynamicVariables().getListOfDynamicVariables())));
             System.out.println("\n");
 
 
@@ -168,6 +183,112 @@ public class TemperatureHumidityExperiments {
                     timeStart = System.nanoTime();
 
                     Domain huginBN = BNConverterToHugin.convertToHugin(staticModel);
+                    Domain huginBN2 = BNConverterToHugin.convertToHugin(staticModel);
+
+                    huginBN2.compile();
+                    System.out.println("HUGIN Iterative search: Domain compiled");
+
+                    staticEvidence.getVariables().forEach(variable -> {
+                        if (variable.isMultinomial()) {
+                            try {
+                                ((DiscreteNode) huginBN2.getNodeByName(variable.getName())).selectState((int) staticEvidence.getValue(variable));
+                            } catch (ExceptionHugin e) {
+                                System.out.println(e.getMessage());
+                            }
+                        } else if (variable.isNormal()) {
+                            try {
+                                ((ContinuousChanceNode) huginBN2.getNodeByName(variable.getName())).enterValue(staticEvidence.getValue(variable));
+                            } catch (ExceptionHugin e) {
+                                System.out.println(e.getMessage());
+                            }
+                        } else {
+                            throw new IllegalArgumentException("Variable type not allowed.");
+                        }
+                    });
+
+                    System.out.println("HUGIN Iterative search: Evidence set");
+
+                    huginBN2.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+
+                    System.out.println("HUGIN Iterative search: Propagation done");
+                    NodeList variablesToAssign = new NodeList();
+
+                    //System.out.println(huginBN.getNodes().toString());
+                    huginBN2.getNodes().stream().filter(node -> {
+                        try {
+                            return node.getName().contains(MAPVariable.getName());
+                        } catch (ExceptionHugin e) {
+                            System.out.println(e.getMessage());
+                            return false;
+                        }
+                    }).forEach(node -> {
+                        variablesToAssign.add(node);
+                    });
+
+
+
+
+                    System.out.println("HUGIN Iterative search: Iterative assignments");
+
+                    while(! variablesToAssign.isEmpty()) {
+
+                        Node nodeMinEntropy = null;
+                        Table nodeMinEntropyDistribution = null;
+                        double minEntropy = Double.POSITIVE_INFINITY;
+
+//                        System.out.println("HUGIN Iterative MAP assignment");
+                        for (Node thisNode : variablesToAssign) {
+
+                            NodeList thisNodeList = new NodeList();
+                            thisNodeList.add(thisNode);
+                            Table posteriorThisNode = huginBN2.getMarginal(thisNodeList);
+
+
+                            double p0 = posteriorThisNode.getData()[0];
+                            double p1 = posteriorThisNode.getData()[1];
+                            double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                            if (nodeMinEntropy == null || thisEntropy < minEntropy) {
+                                nodeMinEntropy = thisNode;
+                                nodeMinEntropyDistribution = posteriorThisNode;
+                                minEntropy = thisEntropy;
+                            }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                        }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                        double nodeMinEntropy_p0 = nodeMinEntropyDistribution.getData()[0];
+                        double nodeMinEntropy_p1 = nodeMinEntropyDistribution.getData()[1];
+
+                        int thisNodeValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                        ((DiscreteNode)huginBN2.getNodeByName(nodeMinEntropy.getName())).selectState(thisNodeValue);
+
+                        String nodeNumberString = nodeMinEntropy.getName().substring(nodeMinEntropy.getName().lastIndexOf("_t")+2);
+                        int nodeNumber = Integer.parseInt(nodeNumberString);
+                        sequence_HuginIterativeAssignment[nodeNumber] = thisNodeValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                        variablesToAssign.remove(nodeMinEntropy);
+                        huginBN2.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
+
+                    }
+
+//                    System.out.println(Arrays.toString(sequence_HuginIterativeAssignment));
+
+
+                    System.out.println("HUGIN Iterative search: Complete");
+                    huginBN2.delete();
+
+
+
+//                System.out.println("HUGIN Prob. evidence: " + huginBN.getLogLikelihood());
+
+
+//                System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
+
                     huginBN.compile();
                     System.out.println("HUGIN Domain compiled");
 
@@ -192,11 +313,10 @@ public class TemperatureHumidityExperiments {
                     System.out.println("HUGIN Evidence set");
 
                     huginBN.propagate(Domain.H_EQUILIBRIUM_SUM, Domain.H_EVIDENCE_MODE_NORMAL);
-
                     System.out.println("HUGIN Propagation done");
+
                     NodeList classVarReplications = new NodeList();
 
-                    //System.out.println(huginBN.getNodes().toString());
                     huginBN.getNodes().stream().filter(node -> {
                         try {
                             return node.getName().contains(MAPVariable.getName());
@@ -204,12 +324,10 @@ public class TemperatureHumidityExperiments {
                             System.out.println(e.getMessage());
                             return false;
                         }
-                    }).forEach(classVarReplications::add);
-
-//                System.out.println("HUGIN Prob. evidence: " + huginBN.getLogLikelihood());
-
-
-//                System.out.println("HUGIN MAP Variables:" + classVarReplications.toString());
+                    }).forEach(node -> {
+                        classVarReplications.add(node);
+                        variablesToAssign.add(node);
+                    });
 
                     huginBN.findMAPConfigurations(classVarReplications, 0.05);
                     System.out.println("HUGIN MAP configuration found");
@@ -243,6 +361,126 @@ public class TemperatureHumidityExperiments {
 //                    System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
 //                }
 
+
+            /////////////////////////////////////////////////////////////////////////////////////////
+            //   ITERATIVE ASSIGNMENT OF VARIABLE WITH LESS ENTROPY, WITH IS AND VMP
+            /////////////////////////////////////////////////////////////////////////////////////////
+
+            System.out.println("IS Iterative MAP assignment");
+
+            List<Variable> MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+            HashMapAssignment evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+
+            ImportanceSamplingRobust importanceSamplingRobust = new ImportanceSamplingRobust();
+            importanceSamplingRobust.setModel(staticModel);
+            importanceSamplingRobust.setVariablesAPosteriori(MAPvariableToAssign);
+            importanceSamplingRobust.setSampleSize(nSamplesForIS);
+
+            while(! MAPvariableToAssign.isEmpty()) {
+
+
+                importanceSamplingRobust.setEvidence(evidencePlusMAPVariables);
+                importanceSamplingRobust.runInference();
+
+                Variable varMinEntropy = null;
+                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                double minEntropy = Double.POSITIVE_INFINITY;
+
+                for (Variable thisVariable : MAPvariableToAssign) {
+
+                    Multinomial MAPVarPosteriorDistribution = importanceSamplingRobust.getPosterior(thisVariable);
+
+                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+
+
+                    double p0 = MAPVarPosteriorProbabilities[0];
+                    double p1 = MAPVarPosteriorProbabilities[1];
+                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                    if (varMinEntropy == null || thisEntropy < minEntropy) {
+                        varMinEntropy = thisVariable;
+                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                        minEntropy = thisEntropy;
+                    }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+
+                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
+
+                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
+                int nodeNumber = Integer.parseInt(nodeNumberString);
+                sequence_IS_IterativeAssignment[nodeNumber] = thisVarValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                MAPvariableToAssign.remove(varMinEntropy);
+
+            }
+
+            System.out.println("VMP Iterative MAP assignment");
+
+
+            MAPvariableToAssign = staticModel.getVariables().getListOfVariables().stream().filter(variable -> variable.getName().contains(MAPVariable.getName())).collect(Collectors.toList());
+            evidencePlusMAPVariables = new HashMapAssignment(staticEvidence);
+
+            VMP vmp = new VMP();
+            vmp.setModel(staticModel);
+
+
+            while(! MAPvariableToAssign.isEmpty()) {
+
+
+                vmp.setEvidence(evidencePlusMAPVariables);
+                vmp.runInference();
+
+                Variable varMinEntropy = null;
+                double [] varMinEntropyProbabilities = new double[MAPVariable.getNumberOfStates()];
+                double minEntropy = Double.POSITIVE_INFINITY;
+
+                for (Variable thisVariable : MAPvariableToAssign) {
+
+                    Multinomial MAPVarPosteriorDistribution = vmp.getPosterior(thisVariable);
+
+                    double[] MAPVarPosteriorProbabilities = MAPVarPosteriorDistribution.getParameters();
+
+
+                    double p0 = MAPVarPosteriorProbabilities[0];
+                    double p1 = MAPVarPosteriorProbabilities[1];
+                    double thisEntropy = - (p0 * Math.log(p0) + p1 * Math.log(p1));
+
+                    if (varMinEntropy == null || thisEntropy < minEntropy) {
+                        varMinEntropy = thisVariable;
+                        varMinEntropyProbabilities = MAPVarPosteriorProbabilities;
+                        minEntropy = thisEntropy;
+                    }
+
+//                            System.out.println("Marginal of " + thisNode.getName() + ": " + Arrays.toString(posteriorThisNode.getData()) + " with entropy: " + thisEntropy);
+
+                }
+
+//                        System.out.println("\nNode with min entropy: " + nodeMinEntropy.getName() + " with :" + minEntropy);
+//                        System.out.println("with distribution: " + Arrays.toString(nodeMinEntropyDistribution.getData()));
+                double nodeMinEntropy_p0 = varMinEntropyProbabilities[0];
+                double nodeMinEntropy_p1 = varMinEntropyProbabilities[1];
+
+                int thisVarValue = (nodeMinEntropy_p0 > nodeMinEntropy_p1) ? 0 : 1;
+                evidencePlusMAPVariables.setValue(varMinEntropy,thisVarValue);
+
+                String nodeNumberString = varMinEntropy.getName().substring(varMinEntropy.getName().lastIndexOf("_t")+2);
+                int nodeNumber = Integer.parseInt(nodeNumberString);
+                sequence_VMP_IterativeAssignment[nodeNumber] = thisVarValue;
+//                        System.out.println("Assigned value " + thisNodeValue + " to node " + nodeNumber);
+
+                MAPvariableToAssign.remove(varMinEntropy);
+
+            }
 
 
             /////////////////////////////////////////////////
@@ -279,6 +517,9 @@ public class TemperatureHumidityExperiments {
 
 //                System.out.println("Ungrouped IS finished");
 //                System.out.println("\n\n");
+
+
+
 
 
             /////////////////////////////////////////////////
@@ -555,7 +796,15 @@ public class TemperatureHumidityExperiments {
 
             if (nTimeSteps<=maxTimeStepsHugin) {
                 System.out.println("HUGIN MAP Sequence:              " + Arrays.toString(sequence_Hugin));
+                System.out.println();
+                System.out.println("HUGIN Iterative Sequence:        " + Arrays.toString(sequence_HuginIterativeAssignment));
+
             }
+
+            System.out.println("IS Iterative Sequence:           " + Arrays.toString(sequence_IS_IterativeAssignment));
+            System.out.println("VMP Iterative Sequence:          " + Arrays.toString(sequence_VMP_IterativeAssignment));
+
+            System.out.println();
 
             System.out.println("DynMAP (Ungrouped-IS) Sequence:  " + Arrays.toString(sequence_UngroupedIS));
             System.out.println();
@@ -651,6 +900,17 @@ public class TemperatureHumidityExperiments {
             double current_precision_allZeros=compareIntArrays(sequence_original,sequenceAllZeros);
             double current_precision_allOnes=compareIntArrays(sequence_original,sequenceAllOnes);
 
+
+            double current_precision_HuginIterative=compareIntArrays(sequence_original,sequence_HuginIterativeAssignment);
+            double current_precision_IS_Iterative=compareIntArrays(sequence_original,sequence_IS_IterativeAssignment);
+            double current_precision_VMP_Iterative=compareIntArrays(sequence_original,sequence_VMP_IterativeAssignment);
+
+
+            precision_HuginIterativeAssignment[experimentNumber] = current_precision_HuginIterative;
+            precision_IS_IterativeAssignment[experimentNumber] = current_precision_IS_Iterative;
+            precision_VMP_IterativeAssignment[experimentNumber] = current_precision_VMP_Iterative;
+
+
             precision_UngroupedIS[experimentNumber]=current_precision_UngroupedIS;
             precision_2GroupedIS[experimentNumber]=current_precision_2GroupedIS;
             precision_3GroupedIS[experimentNumber]=current_precision_3GroupedIS;
@@ -725,6 +985,9 @@ public class TemperatureHumidityExperiments {
             System.out.println("\nGLOBAL MEAN PRECISIONS:");
             System.out.println("         HUGIN:    Not computed");
         }
+        System.out.println("HUGIN iterative:" + Arrays.stream(precision_HuginIterativeAssignment).average().getAsDouble());
+        System.out.println("  IS iterative: " + Arrays.stream(precision_IS_IterativeAssignment).average().getAsDouble());
+        System.out.println(" VMP iterative: " + Arrays.stream(precision_VMP_IterativeAssignment).average().getAsDouble());
 
         System.out.println("  IS Ungrouped: " + Arrays.stream(precision_UngroupedIS).average().getAsDouble());
         System.out.println("  IS 2-Grouped: " + Arrays.stream(precision_2GroupedIS).average().getAsDouble());

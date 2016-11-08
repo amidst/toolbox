@@ -99,11 +99,34 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public void sum(Vector vector) {
+        if (vector.getClass().isAssignableFrom(ArrayVector.class))
+            sum((ArrayVector)vector);
+        else if (vector.getClass().isAssignableFrom(SparseVectorDefaultValue.class))
+            sum((SparseVectorDefaultValue)vector);
+        else
+            throw new UnsupportedOperationException("Non supported operation");    }
+
+
+    public void sum(SparseVectorDefaultValue vector) {
+
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors has different sizes");
+
+        if (vector.getDefaultValue()!=0)
+            throw new UnsupportedOperationException("Non supported operation");
+
+        for (Integer i : vector.getNonZeroEntries()) {
+            this.array[i]+=vector.get(i);
+        }
+
+    }
+
+    public void sum(ArrayVector vector) {
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors has different sizes");
 
         for (int i = 0; i < vector.size(); i++) {
-            this.array[i]+=vector.get(i);
+            this.array[i]+=vector.array[i];
         }
     }
 
@@ -112,14 +135,18 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public void substract(Vector vector) {
+        substract((ArrayVector)vector);
+    }
+
+
+    public void substract(ArrayVector vector) {
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors has different sizes");
 
         for (int i = 0; i < vector.size(); i++) {
-            this.array[i]-=vector.get(i);
+            this.array[i]-=vector.array[i];
         }
     }
-
     /**
      * {@inheritDoc}
      */
@@ -154,14 +181,39 @@ public class ArrayVector implements MomentParameters, NaturalParameters, Suffici
      */
     @Override
     public double dotProduct(Vector vector) {
+        if (vector.getClass().isAssignableFrom(ArrayVector.class))
+            return dotProduct((ArrayVector)vector);
+        else if (vector.getClass().isAssignableFrom(SparseVectorDefaultValue.class))
+            return dotProduct((SparseVectorDefaultValue)vector);
+        else
+            throw new UnsupportedOperationException("Non supported operation");
+    }
+
+
+    public double dotProduct(SparseVectorDefaultValue vector) {
+
+        if (this.size()!=vector.size())
+            throw new IllegalArgumentException("Vectors has different sizes");
+
+        if (vector.getDefaultValue()!=0)
+            throw new UnsupportedOperationException("Non supported operation");
+
+        double sum=0;
+        for (Integer i : vector.getNonZeroEntries()) {
+            sum+=this.array[i]*vector.get(i);
+        }
+
+        return sum;
+    }
+
+    public double dotProduct(ArrayVector vector) {
         if (this.size()!=vector.size())
             throw new IllegalArgumentException("Vectors has different sizes");
 
         double sum=0;
         for (int i = 0; i < vector.size(); i++) {
-            sum+=this.array[i]*vector.get(i);
+            sum+=this.array[i]*vector.array[i];
         }
         return sum;
     }
-
 }

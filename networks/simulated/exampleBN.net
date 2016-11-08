@@ -1,0 +1,67 @@
+net
+{
+    node_size = (0 0);
+}
+
+continuous node Income
+{
+}
+
+continuous node Expenses
+{
+}
+
+continuous node Balance
+{
+}
+
+continuous node TotalCredit
+{
+}
+
+continuous node LatentVar0
+{
+}
+
+continuous node LatentVar1
+{
+}
+
+continuous node LatentVar2
+{
+}
+
+potential (Income | LatentVar0 LatentVar1 LatentVar2)
+{
+    data = normal ( 1.01651 + 0.907116 * LatentVar0 - 0.277777 * LatentVar1 + 0.120152 * LatentVar2, 1.02927 );
+}
+
+potential (Expenses | LatentVar0 LatentVar1 LatentVar2)
+{
+    data = normal ( 0.697131 - 0.978416 * LatentVar0 - 0.70049 * LatentVar1 + 0.191987 * LatentVar2, 1.19483 );
+}
+
+potential (Balance | LatentVar0 LatentVar1 LatentVar2)
+{
+    data = normal ( -1.56339 - 6.69304 * LatentVar0 - 0.20533 * LatentVar1 + 0.127293 * LatentVar2, 2.95411 );
+}
+
+potential (TotalCredit | LatentVar0 LatentVar1 LatentVar2)
+{
+    data = normal ( 1.73829 + 8.02304 * LatentVar0 - 1.98976 * LatentVar1 + 0.276787 * LatentVar2, 12.4125 );
+}
+
+potential (LatentVar0)
+{
+    data = normal ( -0.00694043, 0.265038 );
+}
+
+potential (LatentVar1 | LatentVar0)
+{
+    data = normal ( -2.9438E-05 - 0.0510064 * LatentVar0, 0.477893 );
+}
+
+potential (LatentVar2 | LatentVar0 LatentVar1)
+{
+    data = normal ( 0.0143708 - 2.13962 * LatentVar0 - 2.87517 * LatentVar1, 14.8981 );
+}

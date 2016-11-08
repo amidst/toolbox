@@ -71,10 +71,10 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected int seed=0;
 
     /** Represents the maximum number of iterations. */
-    protected int maxIter = 100;
+    protected int maxIter = 1000;
 
     /** Represents a threshold. */
-    protected double threshold = 1;
+    protected double threshold = 0.000001;
 
     /** Represents the output. */
     protected boolean output = false;
@@ -94,6 +94,14 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
      */
     public void setOutput(boolean output) {
         this.output = output;
+    }
+
+    /**
+     * Gets whether output for this MessagePassingAlgorithm.
+     * @return
+     */
+    public boolean isOutput() {
+        return output;
     }
 
     /**
@@ -159,6 +167,8 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
             boolean done = true;
             for (Node node : nodes) {
+
+
                 if (!node.isActive() || node.isObserved())
                     continue;
 
@@ -179,13 +189,15 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
                 updateCombinedMessage(node, selfMessage);
                 done &= node.isDone();
+
             }
 
-            convergence = this.testConvergence();
+              convergence = this.testConvergence();
 
             if (done) {
                 convergence = true;
             }
+
 
         }
 

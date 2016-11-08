@@ -1,9 +1,0 @@
-sparklink
-extensions/cajamar
-extensions/caepia2015
-extensions/ida2015
-extensions/ida2016
-extensions/scai2015
-extensions/ecai2016
-extensions/uai2016
-extensions/reviewMeeting2016

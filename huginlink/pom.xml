@@ -5,13 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>${AMIDSTver}</version>
+        <version>0.6.0-alpha</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>huginlink</artifactId>
-    <version>${AMIDSTver}</version>
+    <version>0.6.0-alpha</version> <!-- AmidstVersion -->
 
 
     <url>http://amidst.github.io/toolbox/</url>
@@ -30,10 +30,6 @@
         <developerConnection>scm:git:git@github.com:amidst/toolbox.git</developerConnection>
         <url>git@github.com:amidst/toolbox.git</url>
     </scm>
-
-    <properties>
-        <AMIDSTver>0.4.3-alpha</AMIDSTver>
-    </properties>
 
     <developers>
         <developer>
@@ -98,12 +94,12 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>${AMIDSTver}</version>
+            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>com.hugin</groupId>
@@ -166,6 +162,7 @@
             <version>2.9</version>
             <configuration>
                 <argLine>-Djava.library.path=${project.basedir}/huginlib/</argLine>
+                <skipTests>true</skipTests>
             </configuration>
         </plugin>
     </plugins>

@@ -18,6 +18,7 @@
 package eu.amidst.core.inference;
 
 
+import eu.amidst.core.Main;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.models.BayesianNetwork;
@@ -51,14 +52,14 @@ public class ImportanceSamplingExperiments {
 
         int[] indexesEvidence = new int[numVarEvidence+1];
         indexesEvidence[0]=varInterest.getVarID();
-        //System.out.println(variable.getVarID());
+        //if (Main.VERBOSE) System.out.println(variable.getVarID());
 
-        System.out.println("Evidence:");
+        if (Main.VERBOSE) System.out.println("Evidence:");
         for( int k=0; k<numVarEvidence; k++ ) {
             int varIndex=-1;
             do {
                 varIndex = random.nextInt( bn.getNumberOfVars() );
-                //System.out.println(varIndex);
+                //if (Main.VERBOSE) System.out.println(varIndex);
                 aux = bn.getVariables().getVariableById(varIndex);
 
                 double thisEvidence;
@@ -73,12 +74,12 @@ public class ImportanceSamplingExperiments {
             } while ( ArrayUtils.contains(indexesEvidence, varIndex) );
 
             indexesEvidence[k+1]=varIndex;
-            //System.out.println(Arrays.toString(indexesEvidence));
-            System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
+            //if (Main.VERBOSE) System.out.println(Arrays.toString(indexesEvidence));
+            if (Main.VERBOSE) System.out.println("Variable " + aux.getName() + " = " + evidence[k]);
 
             assignment.setValue(aux,evidence[k]);
         }
-        System.out.println();
+        if (Main.VERBOSE) System.out.println();
 
         return assignment;
     }
@@ -91,7 +92,7 @@ public class ImportanceSamplingExperiments {
      */
     public static void main(String[] args) throws Exception {
 
-        //System.out.println("CONTINUOUS VARIABLE");
+        //if (Main.VERBOSE) System.out.println("CONTINUOUS VARIABLE");
         boolean discrete=false;
 
         String filename=""; //Filename with the Bayesian Network
@@ -121,15 +122,15 @@ public class ImportanceSamplingExperiments {
                 useVMP = Boolean.parseBoolean(useVMParg);
             }
             catch (NumberFormatException e) {
-                System.out.println(e.toString());
+                if (Main.VERBOSE) System.out.println(e.toString());
             }
 
         }
         // FOR A DISCRETE VARIABLE OF INTEREST
         else if (args.length==5) {
-            //System.out.println("DISCRETE VARIABLE");
+            //if (Main.VERBOSE) System.out.println("DISCRETE VARIABLE");
             discrete=true;
-            System.out.println("Not available yet");
+            if (Main.VERBOSE) System.out.println("Not available yet");
             System.exit(1);
         }
         else if (args.length==0) {
@@ -142,7 +143,7 @@ public class ImportanceSamplingExperiments {
             useVMP = false; // Boolean indicating whether use VMP or not
         }
         else {
-            System.out.println("Invalid number of arguments. See comments in main");
+            if (Main.VERBOSE) System.out.println("Invalid number of arguments. See comments in main");
             System.exit(1);
         }
 
@@ -157,7 +158,7 @@ public class ImportanceSamplingExperiments {
         try {
 
             bn = BayesianNetworkLoader.loadFromFile(filename);
-            System.out.println(bn.toString());
+            if (Main.VERBOSE) System.out.println(bn.toString());
             Variable varInterest = bn.getVariables().getVariableByName(varname);
 
 
@@ -180,21 +181,21 @@ public class ImportanceSamplingExperiments {
 
             //importanceSampling.setSamplingModel(vmp.getSamplingModel());
             //importanceSampling.runInference(vmp);
-            //System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence VMP) :" + importanceSampling.getPosterior(varInterest).toString());
+            //if (Main.VERBOSE) System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence VMP) :" + importanceSampling.getPosterior(varInterest).toString());
 
 
 
             //importanceSampling.setSamplingModel(bn);
             importanceSampling.runInference();
-            System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence) :" + importanceSampling.getPosterior(varInterest).toString());
+            if (Main.VERBOSE) System.out.println("Posterior of " + varInterest.getName() + "  (IS w. Evidence) :" + importanceSampling.getPosterior(varInterest).toString());
 
-            System.out.println("Posterior of " + varInterest.getName() + " (VMP) :" + vmp.getPosterior(varInterest).toString());
+            if (Main.VERBOSE) System.out.println("Posterior of " + varInterest.getName() + " (VMP) :" + vmp.getPosterior(varInterest).toString());
 
-            System.out.println();
+            if (Main.VERBOSE) System.out.println();
 
 
-            System.out.println("Variable of interest: " + varInterest.getName());
-            System.out.println();
+            if (Main.VERBOSE) System.out.println("Variable of interest: " + varInterest.getName());
+            if (Main.VERBOSE) System.out.println();
 
             a = 1.5; // Lower endpoint of the interval
             b = 10000; // Upper endpoint of the interval
@@ -203,30 +204,30 @@ public class ImportanceSamplingExperiments {
             final double finalB=b;
 
             double result = importanceSampling.getExpectedValue(varInterest, v -> (finalA < v && v < finalB) ? 1.0 : 0.0);
-            System.out.println("Query: P(" + Double.toString(a) + " < " + varInterest.getName() + " < " + Double.toString(b) + ")");
-            System.out.println("Probability result: " + result);
+            if (Main.VERBOSE) System.out.println("Query: P(" + Double.toString(a) + " < " + varInterest.getName() + " < " + Double.toString(b) + ")");
+            if (Main.VERBOSE) System.out.println("Probability result: " + result);
 
             /*
-            System.out.println();
+            if (Main.VERBOSE) System.out.println();
 
 
             varname = "DiscreteVar2";
-            System.out.println();
+            if (Main.VERBOSE) System.out.println();
             Variable discreteVarInterest = bn.getVariables().getVariableByName(varname);
-            System.out.println("Variable of interest: " + discreteVarInterest.getName());
+            if (Main.VERBOSE) System.out.println("Variable of interest: " + discreteVarInterest.getName());
 
             importanceSampling.runInference();
 
             int w=1; // Value of interest
             double result2 = importanceSampling.runQuery(discreteVarInterest, w);
-            System.out.println("Query: P(" + discreteVarInterest.getName() + " = " + Integer.toString(w) + ")");
-            System.out.println("Probability result: " + result2);*/
+            if (Main.VERBOSE) System.out.println("Query: P(" + discreteVarInterest.getName() + " = " + Integer.toString(w) + ")");
+            if (Main.VERBOSE) System.out.println("Probability result: " + result2);*/
 
 
         }
         catch (Exception e) {
-            System.out.println("Error loading Bayesian Network from file");
-            System.out.println(e.toString());
+            if (Main.VERBOSE) System.out.println("Error loading Bayesian Network from file");
+            if (Main.VERBOSE) System.out.println(e.toString());
         }
 
     }

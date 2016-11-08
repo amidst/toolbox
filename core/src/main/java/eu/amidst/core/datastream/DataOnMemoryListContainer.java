@@ -18,6 +18,7 @@
 package eu.amidst.core.datastream;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -69,6 +70,13 @@ public class DataOnMemoryListContainer <E extends DataInstance> implements DataO
      * @param data the data instance to be added.
      */
     public void add(E data){ this.instanceList.add(data); }
+
+
+    /**
+     * Adds a list of DataInstances.
+     * @param data the data instance to be added.
+     */
+    public void addAll(Collection<E> data){ this.instanceList.addAll(data); }
 
     /**
      * Adds a new DataInstance at a given position.
