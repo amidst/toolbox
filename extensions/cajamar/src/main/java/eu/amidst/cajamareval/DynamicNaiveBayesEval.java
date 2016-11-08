@@ -37,9 +37,9 @@ public class DynamicNaiveBayesEval {
             System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_bug/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_bug/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november/output/";
 
             nGlobalIterations = 5;
         }
