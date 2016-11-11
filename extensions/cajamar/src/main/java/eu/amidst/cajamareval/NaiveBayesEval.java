@@ -45,9 +45,12 @@ public class NaiveBayesEval {
             className = args[3];
         }
         else {
-            fileTrain = "/Users/dario/Desktop/Datos21-10-2016/train.arff";  //CAJAMAR_DatosNB
-            fileTest = "/Users/dario/Desktop/Datos21-10-2016/test.arff";
-            fileOutput = "/Users/dario/Desktop/Datos21-10-2016/output.txt";
+
+            String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_reales/";
+
+            fileTrain = folder + "train.arff";  //CAJAMAR_DatosNB
+            fileTest = folder + "test.arff";
+            fileOutput = folder + "output_NB.txt";
             className = "Default";
         }
 
@@ -74,8 +77,9 @@ public class NaiveBayesEval {
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(className);
         for (DataInstance dataInstance : test) {
+            double actualClass = dataInstance.getValue(classAtt);
             dataInstance.setValue(classAtt, Utils.missingValue());
-            fw.write(dataInstance.getValue(seq_id) + "\t" + naiveBayesClassifier.predict(dataInstance).getParameters()[1] + "\n");
+            fw.write((long)dataInstance.getValue(seq_id) + "\t" + naiveBayesClassifier.predict(dataInstance).getParameters()[1] + "\t" + (long)actualClass + "\n");
         }
 
         fw.close();

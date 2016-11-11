@@ -22,6 +22,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
@@ -52,6 +53,12 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
         super(attributes);
 
         this.setLearningAlgorithm(new ParallelMLMissingData());
+
+//        ImportanceSampling importanceSampling = new ImportanceSampling();
+//        //importanceSampling.setKeepDataOnMemory(false);
+//        importanceSampling.setSampleSize(20000);
+
+        this.inferenceAlgoPredict = new VMP();
     }
 
     /**
@@ -82,7 +89,7 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
         if(numFinite == 0) {
             isValid = false;
-            String errorMsg = "It should contain at least 1 discrete variable and the rest shoud be real";
+            String errorMsg = "It should contain at least 1 discrete variable";
             this.setErrorMessage(errorMsg);
 
         }

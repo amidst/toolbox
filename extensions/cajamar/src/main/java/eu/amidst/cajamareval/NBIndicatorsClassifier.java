@@ -22,7 +22,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.inference.ImportanceSampling;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
@@ -76,7 +76,16 @@ public class NBIndicatorsClassifier extends Classifier {
         this.setLearningAlgorithm(new ParallelMLMissingData());
 
 //        this.getLearningAlgorithm().setWindowsSize(20000);
-        this.inferenceAlgoPredict = new ImportanceSampling();
+
+//        ImportanceSamplingRobust samplingRobust = new ImportanceSamplingRobust();
+//        samplingRobust.setSampleSize(20000);
+//
+//        List<Variable> varsPosteriori = new ArrayList<>();
+//        varsPosteriori.add(this.classVar);
+//        samplingRobust.setVariablesAPosteriori(varsPosteriori);
+//        this.inferenceAlgoPredict = samplingRobust;
+
+        this.inferenceAlgoPredict = new VMP();
 
     }
 
@@ -101,7 +110,7 @@ public class NBIndicatorsClassifier extends Classifier {
                 .filter(w -> w.getMainVar().isNormal())
                 .forEach(w -> w.addParent(vars.getVariableByName(w.getMainVar().getName() + "_INDICATOR")));
 
-        // ADD INDICATOR VARIABLE AS PARENTS OF EVERY CONTINUOUS VARIABLE
+        // ADD AGGREGATED VARIABLE AS PARENTS OF NON-AGGREGATED VARS
         dag.getParentSets().stream()
                 .filter(w -> !w.getMainVar().equals(classVar))
                 .filter(w -> w.getMainVar().isNormal())
@@ -134,7 +143,7 @@ public class NBIndicatorsClassifier extends Classifier {
 
         if(numFinite == 0) {
             isValid = false;
-            String errorMsg = "It should contain at least 1 discrete variable and the rest should be real";
+            String errorMsg = "It should contain at least 1 discrete variable";
             this.setErrorMessage(errorMsg);
 
         }
@@ -151,8 +160,6 @@ public class NBIndicatorsClassifier extends Classifier {
     //////////// example of use
 
     public static void main(String[] args) throws WrongConfigurationException {
-
-
 
         DataStream<DataInstance> data = DataSetGenerator.generate(1234,20000, 2, 3);
 
@@ -196,15 +203,10 @@ public class NBIndicatorsClassifier extends Classifier {
             }
 
             if(realValue == predValue) hits++;
-
             //System.out.println("realValue = "+realValue+", predicted ="+predValue);
 
         }
-
         System.out.println("hits="+hits);
-
-
-
     }
 }
 
