@@ -1,0 +1,251 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.amidst</groupId>
+    <artifactId>AmidstToolbox</artifactId>
+    <version>0.6.0-alpha2</version> <!-- AmidstVersion -->
+
+    <name>AmidstToolbox</name>
+
+    <packaging>pom</packaging>
+
+    <url>http://amidst.github.io/toolbox/</url>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
+    
+
+
+
+    <scm>
+        <connection>scm:git:git@github.com:amidst/toolbox.git</connection>
+        <developerConnection>scm:git:git@github.com:amidst/toolbox.git</developerConnection>
+        <url>git@github.com:amidst/toolbox.git</url>
+    </scm>
+    
+    
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Temporary Staging Repository</name>
+            <url>file://${project.build.directory}/mvn-repo</url>
+        </repository>
+    </distributionManagement>
+
+
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <slf4j.version>1.7.6</slf4j.version>
+        <junit.version>4.11</junit.version>
+         <!-- github server corresponds to entry in ~/.m2/settings.xml -->
+        <github.global.server>github</github.global.server>
+        <additionalparam>-Xdoclint:none</additionalparam>
+    </properties>
+
+
+    <developers>
+        <developer>
+            <name>Andres R. Masegosa</name>
+            <email>andres.masegosa@idi.ntnu.no</email>
+            <organization>NTNU, Norway</organization>
+            <organizationUrl>https://github.com/andresmasegosa</organizationUrl>
+        </developer>
+        <developer>
+            <name>Hanen Borchani</name>
+            <email>hanen@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/HanenBorchani</organizationUrl>
+        </developer>
+        <developer>
+            <name>Ana M. Martinez</name>
+            <email>ana@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/anamf</organizationUrl>
+        </developer>
+        <developer>
+            <name>Dario Ramos Lopez</name>
+            <email>drl012@ual.es</email>
+            <organization>University of Almeria, Spain</organization>
+            <organizationUrl>https://github.com/dariorlual</organizationUrl>
+        </developer>
+        <developer>
+            <name>Antonio Fernandez Alvarez</name>
+            <email>afalvarez@bcc.es</email>
+            <organization>Banco Cooperativo de Credito, Spain</organization>
+            <organizationUrl>https://github.com/afalvarez</organizationUrl>
+        </developer>
+        <developer>
+            <name>Thomas Dyhre Nielsen</name>
+            <email>tdn@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/thomasdnielsen</organizationUrl>
+        </developer>
+        <developer>
+            <name>Helge Langseth</name>
+            <email>helgel@idi.ntnu.no</email>
+            <organization>NTNU, Norway</organization>
+            <organizationUrl>https://github.com/HelgeLangseth</organizationUrl>
+        </developer>
+        <developer>
+            <name>Antonio Salmeron</name>
+            <email>antonio.salmeron@ual.es</email>
+            <organization>University of Almeria, Spain</organization>
+            <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
+        </developer>
+        <developer>
+            <name>Rafael Cabañas</name>
+            <email>rcabanas@cs.aau.dk</email>
+            <organization>Aalborg University, Denmark</organization>
+            <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
+        </developer>
+    </developers>
+
+
+    <modules>
+        <module>module-all</module>
+
+        <module>huginlink</module>
+        <module>core</module>
+        <module>core-dynamic</module>
+
+        <module>examples</module>
+        <module>moalink</module>
+        <module>latent-variable-models</module>
+
+        <module>wekalink</module>
+        <module>flinklink</module>
+        <module>sparklink</module>
+        <module>extensions/tutorials</module>
+
+        <module>extensions/lda</module>
+
+        <!-- Remove the following references to modules before publishing a new release -->
+        <!--module>extensions/caepia2015</module>
+        
+        
+        
+        
+        
+        
+        
+        
+        <module>extensions/uai2016</module-->
+
+
+    </modules>
+
+
+
+
+
+
+
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            
+            
+            <!-- Uncomment this text to build without running unit tests.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>pertest</forkMode>
+                    <argLine>-Xms1g -Xmx2g</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- this plugin builds an executable jar with dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.2</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>eu.amidst.examples.ParallelTANDemo</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+                     
+            
+            
+            <!-- maven-deploy plugin -->
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.1</version>
+                <configuration>
+                    <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+                </configuration>
+            </plugin>
+
+            
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.11</version>
+                <configuration>
+                    <message>Maven artifacts for ${artifactId}-${version}</message>  
+                    <noJekyll>true</noJekyll>                                  
+                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> 
+                    <branch>refs/heads/mvn-repo</branch>                       
+                    <includes><include>**/*</include></includes>
+                    <repositoryName>toolbox</repositoryName>      
+                    <repositoryOwner>amidst</repositoryOwner>    
+                    <merge>true</merge>
+                </configuration>
+                <executions>
+
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>deploy</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <configuration>
+              <keyname>1D3E048C</keyname>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+            
+        </plugins>
+    </build>
+</project>
