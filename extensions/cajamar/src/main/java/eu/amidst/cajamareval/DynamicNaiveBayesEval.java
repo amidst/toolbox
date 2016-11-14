@@ -9,6 +9,7 @@ import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 
 import java.io.File;
@@ -31,17 +32,17 @@ public class DynamicNaiveBayesEval {
         if (args.length == 2) {
             dataFolderPath = args[0];
             folderOutput = args[1];
-            nGlobalIterations = Integer.parseInt(args[2]);
+            //nGlobalIterations = Integer.parseInt(args[2]);
         }
         else {
             System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november2/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november2/output/";
 
-            nGlobalIterations = 5;
+            //nGlobalIterations = 5;
         }
 
         File dataFolder = new File(dataFolderPath);
@@ -54,7 +55,16 @@ public class DynamicNaiveBayesEval {
 
         foldersAllDays.forEach(file -> System.out.println(file.getName()));
 
-        ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        int parallelism1 = 16;
+
+        Configuration conf = new Configuration();
+        conf.setInteger("taskmanager.network.numberOfBuffers", 512*parallelism1);
+        conf.setInteger("taskmanager.numberOfTaskSlots",parallelism1);
+
+        //StreamExecutionEnvironment env = LocalStreamEnvironment.createLocalEnvironment(parallelism, conf);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.setParallelism(parallelism1);
+
         DynamicNaiveBayesClassifier dynamicNaiveBayesClassifier = null;
 
         boolean firstFile = true;
