@@ -46,7 +46,7 @@ public class NaiveBayesEval {
         }
         else {
 
-            String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_reales/";
+            String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_discretas/";
 
             fileTrain = folder + "train.arff";  //CAJAMAR_DatosNB
             fileTest = folder + "test.arff";
@@ -63,7 +63,7 @@ public class NaiveBayesEval {
         NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier(train.getAttributes());
 
         naiveBayesClassifier.setClassName(className);
-        naiveBayesClassifier.setWindowSize(10000);
+        naiveBayesClassifier.setWindowSize(5000);
         naiveBayesClassifier.updateModel(train);
 
         BayesianNetworkWriter.save(naiveBayesClassifier.getModel(), fileOutput + "_NB_model.bn");

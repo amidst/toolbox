@@ -55,7 +55,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.6.0-alpha</version> <!-- AmidstVersion -->
+            <version>0.6.0</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>

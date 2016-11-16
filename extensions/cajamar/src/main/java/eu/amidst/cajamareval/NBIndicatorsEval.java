@@ -31,7 +31,8 @@ public class NBIndicatorsEval {
         }
         else {
 
-            String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_reales/";
+            //String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_reales/";
+            String folder = "/Users/dario/Desktop/CAJAMAR_Indicators/";
             fileTrain  =  folder + "train.arff";  //CAJAMAR_DatosNB
             fileTest   =  folder + "test.arff";
             fileOutput =  folder + "output_NBIndicators.txt";

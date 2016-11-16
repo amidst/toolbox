@@ -22,14 +22,17 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.inference.ImportanceSamplingCLG;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,7 +61,15 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 //        //importanceSampling.setKeepDataOnMemory(false);
 //        importanceSampling.setSampleSize(20000);
 
-        this.inferenceAlgoPredict = new VMP();
+        ImportanceSamplingCLG inferenceAlgorithm = new ImportanceSamplingCLG();
+
+        List<Variable> varsAPosteriori = new ArrayList<>();
+        varsAPosteriori.add(this.classVar);
+        inferenceAlgorithm.setVariablesAPosteriori(varsAPosteriori);
+        inferenceAlgorithm.setSampleSize(10000);
+
+        VMP vmp = new VMP();
+        this.inferenceAlgoPredict = vmp;
     }
 
     /**
