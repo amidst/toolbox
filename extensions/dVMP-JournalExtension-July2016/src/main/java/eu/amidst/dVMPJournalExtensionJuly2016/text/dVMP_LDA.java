@@ -12,7 +12,6 @@
 package eu.amidst.dVMPJournalExtensionJuly2016.text;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.flinklink.core.learning.parametric.StochasticVI;
@@ -21,8 +20,6 @@ import eu.amidst.flinklink.core.utils.ConversionToBatches;
 import eu.amidst.lda.flink.PlateauLDAFlink;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
-
-import java.util.Arrays;
 
 /**
  * Created by andresmasegosa on 12/5/16.
@@ -90,6 +87,7 @@ public class dVMP_LDA {
         svb.initLearning();
         svb.updateModel(dataInstances);
 
+        System.out.println("Model update completed");
 
         DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);
 
@@ -97,7 +95,9 @@ public class dVMP_LDA {
 
         System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
 
+        //System.out.println(svb.getLearntBayesianNetwork().toString());
 
+        /*
         if (args.length>0) {
             args[0] = "";
             args[1] = "";
@@ -105,9 +105,10 @@ public class dVMP_LDA {
         String pathNetwork = "dVMP_"+ Arrays.toString(args)+"_.bn";
 
         svb.getSVB().setDAG(((PlateauLDAFlink)svb.getSVB().getPlateuStructure()).getDagLDA());
-        System.out.println(svb.getLearntBayesianNetwork().toString());
+
 
         BayesianNetworkWriter.save(svb.getLearntBayesianNetwork(),pathNetwork);
+        */
 
     }
 

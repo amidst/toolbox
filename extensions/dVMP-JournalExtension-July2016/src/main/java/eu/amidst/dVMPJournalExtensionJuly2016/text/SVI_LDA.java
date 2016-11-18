@@ -12,7 +12,6 @@
 package eu.amidst.dVMPJournalExtensionJuly2016.text;
 
 import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
@@ -24,7 +23,6 @@ import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.configuration.Configuration;
 
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 
 /**
  * Created by andresmasegosa on 12/5/16.
@@ -160,6 +158,7 @@ public class SVI_LDA {
         svb.setBatchConverter(ConversionToBatches::toBatchesBySeqID);
         svb.initLearning();
 
+
         CompoundVector initialPosterior;
         if (args.length>1) {
             //initialPosterior = initialize(new String[]{args[0], args[1], args[2], args[3], args[6]});
@@ -168,12 +167,15 @@ public class SVI_LDA {
             initialPosterior = initialize(new String[]{});
         }
 
-        //svb.getSVI().getSVB().updateNaturalParameterPosteriors(initialPosterior);
-        svb.getSVI().setVMPOnFirstBatch(true);
+        System.out.println("Initialization finished");
+
+        svb.getSVI().getSVB().updateNaturalParameterPosteriors(initialPosterior);
+        svb.getSVI().setVMPOnFirstBatch(false);
 
 
         svb.updateModel(dataInstances);
 
+        System.out.println("Model update completed");
 
         DataFlink<DataInstance> instancesTest = DataFlinkLoader.loadDataFromFile(env, dataTest, false);
 
@@ -182,6 +184,7 @@ public class SVI_LDA {
         System.out.println("TEST LOG_LIKE: " + test_log_likelihood);
 
 
+        /*
         if(args.length>0) {
             args[0] = "";
             args[1] = "";
@@ -192,6 +195,7 @@ public class SVI_LDA {
         System.out.println(svb.getLearntBayesianNetwork().toString());
 
         BayesianNetworkWriter.save(svb.getLearntBayesianNetwork(),pathNetwork);
+        */
 
 
     }
