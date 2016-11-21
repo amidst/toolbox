@@ -136,4 +136,9 @@ public class SVBFading implements BayesianParameterLearningAlgorithm, FadingLear
     public void setPlateuStructure(PlateuStructure plateuStructure) {
         this.svb.setPlateuStructure(plateuStructure);
     }
+
+    @Override
+    public void randomInitialize() {
+        this.svb.randomInitialize();
+    }
 }

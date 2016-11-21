@@ -90,7 +90,7 @@ public class DriftSVB extends SVB{
 
     public double updateModelWithConceptDrift(DataOnMemory<DataInstance> batch) {
 
-        System.out.println("SAMPLE:" + this.plateuStructure.getPosteriorSampleSize());
+        //System.out.println("SAMPLE:" + this.plateuStructure.getPosteriorSampleSize());
 
         this.plateuStructure.setEvidence(batch.getList());
 
@@ -182,7 +182,7 @@ public class DriftSVB extends SVB{
         }
 
 
-        System.out.println("end");
+        //System.out.println("end");
 
 
         posteriorT_1 = this.plateuStructure.getPlateauNaturalParameterPosterior();

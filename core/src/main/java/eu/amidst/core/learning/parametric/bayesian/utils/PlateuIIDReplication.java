@@ -120,11 +120,12 @@ public class PlateuIIDReplication extends PlateuStructure{
 
         List<Node> allNodes = new ArrayList();
 
-        allNodes.addAll(this.nonReplictedNodes);
 
         for (int i = 0; i < nReplications; i++) {
             allNodes.addAll(this.replicatedNodes.get(i));
         }
+
+        allNodes.addAll(this.nonReplictedNodes);
 
         this.vmp.setNodes(allNodes);
     }

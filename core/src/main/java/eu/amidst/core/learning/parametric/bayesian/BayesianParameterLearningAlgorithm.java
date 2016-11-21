@@ -34,6 +34,7 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
     /**
      * Compute the posterior over all the latent variables for a given set of data instances
+     *
      * @param batch, a batch of data instances.
      * @return A list of {@link DataPosterior} objects.
      */
@@ -41,7 +42,8 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
     /**
      * Compute the posterior over a given set of latent variables for a given set of data instances
-     * @param batch, a batch of data instances.
+     *
+     * @param batch,           a batch of data instances.
      * @param latentVariables, a list of Variable objects.
      * @return A list of {@link DataPosterior} objects.
      */
@@ -49,11 +51,12 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
     /**
      * Returns the parameter posterior.
+     *
      * @param parameter a {@link Variable} object.
-     * @param <E> a subtype of {@link UnivariateDistribution}.
+     * @param <E>       a subtype of {@link UnivariateDistribution}.
      * @return the parameter posterior.
      */
-    default <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter){
+    default <E extends UnivariateDistribution> E getParameterPosterior(Variable parameter) {
         if (!parameter.isParameterVariable())
             throw new IllegalArgumentException("Non a parameter variable");
 
@@ -62,6 +65,7 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
     /**
      * Computes the predictive log-likelihood of the data.
+     *
      * @param batch a {@link DataOnMemory} object.
      * @return the predictive log-probability of the data instances of the
      * batch. Or Double.NaN if this log-probability can not be estimated.
@@ -71,7 +75,15 @@ public interface BayesianParameterLearningAlgorithm extends ParameterLearningAlg
 
     /**
      * Sets the plateu structure of this SVB.
+     *
      * @param plateuStructure a valid {@link PlateuStructure} object.
      */
     void setPlateuStructure(PlateuStructure plateuStructure);
+
+
+    /**
+     * Randomly initializes the global parameters of the model.
+     */
+    void randomInitialize();
+
 }

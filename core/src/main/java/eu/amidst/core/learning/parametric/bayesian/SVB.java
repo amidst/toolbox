@@ -480,8 +480,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
            this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
     }
 
-
-
+    @Override
     public void randomInitialize(){
         VMP original = this.getPlateuStructure().getVMP();
 
@@ -492,6 +491,30 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.getPlateuStructure().setVmp(vmp);
 
         this.initLearning();
+
+        vmp.init();
+
+        CompoundVector posterior = this.getPlateuStructure().getPlateauNaturalParameterPosterior();
+
+        this.getPlateuStructure().setVmp(original);
+
+        this.initLearning();
+
+        this.plateuStructure.updateNaturalParameterPosteriors(posterior);
+    }
+
+    public void randomInitialize(DataOnMemory<DataInstance> data){
+        VMP original = this.getPlateuStructure().getVMP();
+
+        VMPLocalUpdates vmp = new VMPLocalUpdates(this.getPlateuStructure());
+        vmp.setMaxIter(this.getPlateuStructure().getVMP().getMaxIter());
+        vmp.setThreshold(this.getPlateuStructure().getVMP().getThreshold());
+        vmp.setTestELBO(this.getPlateuStructure().getVMP().isOutput());
+        this.getPlateuStructure().setVmp(vmp);
+
+        this.initLearning();
+
+        this.getPlateuStructure().setEvidence(data.getList());
 
         vmp.init();
 
@@ -535,9 +558,9 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public BayesianNetwork getLearntBayesianNetwork() {
-        if(!nonSequentialModel)
-            return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
-        else{
+//        if(!nonSequentialModel)
+//            return new BayesianNetwork(this.dag, ef_extendedBN.toConditionalDistribution());
+//        else{
 
             CompoundVector prior = this.plateuStructure.getPlateauNaturalParameterPrior();
 
@@ -548,7 +571,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
             this.updateNaturalParameterPrior(prior);
 
             return learntBN;
-        }
+//        }
     }
 
     /**

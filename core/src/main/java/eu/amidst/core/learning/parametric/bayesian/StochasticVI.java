@@ -109,6 +109,14 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.svb.setPlateuStructure(plateuStructure);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void randomInitialize() {
+        this.svb.randomInitialize();
+    }
+
     public void setTransitionMethod(TransitionMethod transitionMethod){
         this.svb.setTransitionMethod(transitionMethod);
     }
