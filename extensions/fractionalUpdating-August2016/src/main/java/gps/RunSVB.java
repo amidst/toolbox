@@ -35,13 +35,13 @@ public class RunSVB {
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC0";
+        String model = "BCC4";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
 
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 10000;
 
         if (args.length>1){
             int cont = 0;
@@ -85,6 +85,8 @@ public class RunSVB {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC3")==0) {
             svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC4")==0) {
+            svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
         }
 
         svb.setOutput(true);

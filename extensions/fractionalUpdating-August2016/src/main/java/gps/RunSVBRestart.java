@@ -32,14 +32,16 @@ public class RunSVBRestart {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "BCC1";
-//        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_small/";
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
+        String model = "BCC4";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
-        int ntopics = 2;
+
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 50000;
+        int docsPerBatch = 10000;
 
         if (args.length>1){
             int cont = 0;
@@ -83,13 +85,18 @@ public class RunSVBRestart {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC3")==0) {
             svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC4")==0) {
+            svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
         }
-
 
         svb.setOutput(true);
 
         svb.initLearning();
 
+        svb.randomInitialize();
+
+        //svb.setNonSequentialModel(true);
+        System.out.println(svb.getLearntBayesianNetwork());
 
         FileWriter fw = new FileWriter(dataPath+"SVBRestart_Output_"+Arrays.toString(args)+"_.txt");
 
@@ -99,11 +106,13 @@ public class RunSVBRestart {
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
 
+
         int count=0;
 
-
-
         Random random = new Random(0);
+
+        double totalLog = 0;
+
         String[] strings = new File(dataPath).list();
         Arrays.sort(strings);
         for (String string : strings) {
@@ -111,11 +120,10 @@ public class RunSVBRestart {
             if (!string.endsWith(".arff"))
                 continue;
 
-            System.out.println("EPOCH: " + count);
+            System.out.println("EPOCH: " + count +", "+ string);
 
             DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
-
-            if (batch.getNumberOfDataInstances()<Main.MIN)
+                        if (batch.getNumberOfDataInstances()<Main.MIN)
                 continue;
 
             Collections.shuffle(batch.getList(),random);
@@ -126,6 +134,7 @@ public class RunSVBRestart {
 
 
             int limit = (int) ((maxTrain*2.0)/3.0);
+
 
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
@@ -140,12 +149,14 @@ public class RunSVBRestart {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
+                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
+                break;
             }
 
             double inst =test.getNumberOfDataInstances();
@@ -154,8 +165,28 @@ public class RunSVBRestart {
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
+            System.out.println(svb.getLearntBayesianNetwork());
+
+            totalLog+=log/inst;
+
             svb.initLearning();
+
+
+            iteratorInner =  test.streamOfBatches(finalDocsPerBatch).iterator();
+
+            while (iteratorInner.hasNext()){
+                svb.updateModel(iteratorInner.next());
+                break;
+            }
+
+            System.out.println(svb.getLearntBayesianNetwork());
+
+            svb.initLearning();
+
         }
         fw.close();
+
+        System.out.println("TOTAL LOG: " + totalLog);
+
     }
 }

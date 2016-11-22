@@ -14,8 +14,13 @@ package gps;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.stream.IntStream;
 
 /**
@@ -24,7 +29,7 @@ import java.util.stream.IntStream;
 public class BCCDataProcessing {
     final static int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
-    public static void main(String[] args) throws IOException {
+    public static void removePeakMonths(String[] args) throws IOException {
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         String dataPathOut = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
 
@@ -33,14 +38,51 @@ public class BCCDataProcessing {
         for (String string : strings) {
             if (!string.endsWith(".arff"))
                 continue;
-            int currentMonth = Integer.parseInt(string.substring(8,8+2));
+            int currentMonth = Integer.parseInt(string.substring(8, 8 + 2));
 
             if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                 continue;
 
-            FileUtils.copyFile(new File(dataPath+string),new File(dataPathOut+string));
+            FileUtils.copyFile(new File(dataPath + string), new File(dataPathOut + string));
 
         }
+
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/datosWeka.arff";
+
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/daaWekaNoOutliers/";
+
+
+
+        for (int i = 0; i < 84; i++) {
+            String path;
+            if (i<10){
+                path = dataOutput+"dataWeka0"+i+".arff";
+            }else{
+                path = dataOutput+"dataWeka"+i+".arff";
+            }
+            FileWriter fileWriter = new FileWriter(path);
+
+            Path pathFile = Paths.get(dataPath);
+
+            Iterator<String> iter = Files.lines(pathFile).iterator();
+
+            while(iter.hasNext()){
+                String line = iter.next();
+                if (line.startsWith("@")){
+                    fileWriter.write(line+"\n");
+                }else if (!line.isEmpty() && line.split(",")[0].compareTo(i+"")==0){
+                    fileWriter.write(line+"\n");
+                }
+            }
+
+            fileWriter.close();
+
+        }
+
 
     }
 }

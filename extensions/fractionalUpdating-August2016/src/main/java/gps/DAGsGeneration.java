@@ -57,7 +57,29 @@ public class DAGsGeneration {
         return dag;
     }
 
+    public static DAG getBCCNB(Attributes attributes) {
+
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+        Variable classVar = variables.getVariableByName("DEFAULTING");
+
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+        // Link the class as parent of all attributes
+        /*dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .forEach(w -> w.addParent(classVar));
+*/
+
+        return dag;
+    }
+
     public static DAG getBCCMixtureDAG(Attributes attributes, int nstates) {
+
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes);
 
@@ -113,11 +135,6 @@ public class DAGsGeneration {
 
     public static DAG getBCCLocalMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
-        List<Attribute> atts = attributes.getFullListOfAttributes().subList(2,8);
-        atts.add(attributes.getAttributeByName("DEFAULTING"));
-
-        attributes = new Attributes(atts);
-
         Variables variables = new Variables(attributes);
 
         // Define the class variable.

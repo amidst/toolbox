@@ -63,6 +63,8 @@ public class SingleMultinomialManyStates {
 
         System.out.println(bn);
 
+        System.out.println("LogLikelihood\t RealParameter \t Learnt Parameter \t [Lambda(s)]");
+
         for (int i = 0; i < totalITER; i++) {
             sampler.setSeed(i);
 

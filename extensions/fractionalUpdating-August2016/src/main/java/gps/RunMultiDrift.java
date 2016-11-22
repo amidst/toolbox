@@ -35,13 +35,13 @@ public class RunMultiDrift {
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC0";
+        String model = "BCC4";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
 
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
+        int docsPerBatch = 10000;
 
         if (args.length>1){
             int cont=0;
@@ -85,8 +85,9 @@ public class RunMultiDrift {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC3")==0) {
             svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("BCC4")==0) {
+            svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
         }
-
         svb.setOutput(true);
 
         svb.initLearning();
@@ -121,6 +122,7 @@ public class RunMultiDrift {
             System.out.println("EPOCH: " + count +", "+ string);
 
             DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
+
             if (batch.getNumberOfDataInstances()<Main.MIN)
                 continue;
 
@@ -145,9 +147,10 @@ public class RunMultiDrift {
 
             double lambda = 0;
             int n = 0;
+            double[] vals = null;
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
-                double[] vals =  svb.getLambdaValues();
+                vals =  svb.getLambdaValues();
                 for (int i = 0; i < vals.length; i++) {
                     lambda +=vals[i];
                     n++;
@@ -167,7 +170,12 @@ public class RunMultiDrift {
 
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda);
+            for (int i = 0; i < vals.length; i++) {
+                fw.write("\t"+vals[i]);
+            }
+            fw.write("\n");
+
             totalLog+=log/inst;
 
             System.out.println(svb.getLearntBayesianNetwork());
