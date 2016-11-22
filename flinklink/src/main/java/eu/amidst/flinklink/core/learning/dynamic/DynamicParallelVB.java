@@ -74,7 +74,7 @@ public class DynamicParallelVB implements ParameterLearningAlgorithm, Serializab
     DAG dagTimeT;
     DAG dagTime0;
     int seed = 5;
-    int batchSize;
+    int batchSize = 500;
     boolean output = false;
     boolean testELBO = true;
     protected int maximumGlobalIterations = 10;

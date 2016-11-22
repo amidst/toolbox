@@ -8,7 +8,7 @@ import eu.amidst.latentvariablemodels.dynamicmodels.classifiers.DynamicNaiveBaye
 import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 
@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +26,9 @@ public class DynamicNaiveBayesEval {
 
     public static void main(String[] args) throws Exception {
 
+        String className = "Default";
+
+        Locale.setDefault(Locale.GERMANY);
         String dataFolderPath;
         String folderOutput;
         int nGlobalIterations;
@@ -38,12 +42,14 @@ public class DynamicNaiveBayesEval {
             System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november2/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november3/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november2/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november3/output/";
 
             //nGlobalIterations = 5;
         }
+
+        System.out.println("Number of JVM processors: " + Runtime.getRuntime().availableProcessors());
 
         File dataFolder = new File(dataFolderPath);
         List<File> foldersAllDays = Arrays.stream(dataFolder.listFiles()).collect(Collectors.toList());
@@ -55,10 +61,10 @@ public class DynamicNaiveBayesEval {
 
         foldersAllDays.forEach(file -> System.out.println(file.getName()));
 
-        int parallelism1 = 16;
+        int parallelism1 = 1;
 
         Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 512*parallelism1);
+        conf.setInteger("taskmanager.network.numberOfBuffers", 128*parallelism1);
         conf.setInteger("taskmanager.numberOfTaskSlots",parallelism1);
 
         //StreamExecutionEnvironment env = LocalStreamEnvironment.createLocalEnvironment(parallelism, conf);
@@ -73,18 +79,18 @@ public class DynamicNaiveBayesEval {
         for (File currentDayFolder: foldersAllDays) {
 
             String fileTrain = currentDayFolder.getAbsolutePath() + "/train.arff";
-            String fileTest = currentDayFolder.getAbsolutePath() + "/test.arff";
+            String fileTest = currentDayFolder.getAbsolutePath()  + "/test.arff";
 
-            String output = folderOutput + currentDayFolder.getName() + "_predictions.csv";
-            String output_Flink = folderOutput + currentDayFolder.getName() + "_predictionsFlink.csv";
-            String modelOutput = folderOutput + currentDayFolder.getName() + "_model.txt";
-            String networkOutput = folderOutput + currentDayFolder.getName() + "_dynNaiveBayes.dbn";
+            String output = folderOutput        + "DNB_" + currentDayFolder.getName() + "_predictions.csv";
+            String output_Flink = folderOutput  + "DNB_" + currentDayFolder.getName() + "_predictionsFlink.csv";
+            String modelOutput = folderOutput   + "DNB_" + currentDayFolder.getName() + "_model.txt";
+            String networkOutput = folderOutput + "DNB_" + currentDayFolder.getName() + "_model.dbn";
 
             DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, true);
 
             if(firstFile) {
                 dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dataTrain.getAttributes());
-                dynamicNaiveBayesClassifier.setClassName("Default");
+                dynamicNaiveBayesClassifier.setClassName(className);
                 dynamicNaiveBayesClassifier.setConnectChildrenTemporally(true);
 
                 System.out.println(dynamicNaiveBayesClassifier.getDynamicDAG());
@@ -99,7 +105,8 @@ public class DynamicNaiveBayesEval {
             DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, true);
 
             System.out.println("DAY " + timeID + " TESTING...");
-            DataSet<Tuple2<Long,Double>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
+            DataSet<Tuple3<Long,Double,Integer>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
+            System.out.println("DAY " + timeID + " TESTING FINISHED");
             //predictions.print();
 
 //            List<DynamicDataInstance> result = predictions.collect();
@@ -107,7 +114,6 @@ public class DynamicNaiveBayesEval {
 ////            List<DynamicDataInstance> result =
 //            result.stream().forEach(prediction -> System.out.println("SEQ_ID:" + prediction.getSequenceID() + "p(Def)=" + prediction.outputString()));
 
-            System.out.println("DAY " + timeID + " TESTING FINISHED");
 
             predictions.writeAsCsv(output_Flink,FileSystem.WriteMode.OVERWRITE);
             env.execute();
@@ -115,7 +121,8 @@ public class DynamicNaiveBayesEval {
 
             int parallelism = env.getParallelism();
             env.setParallelism(1);
-            DataSet<Tuple2<Long, Double>> csvInput = env.readCsvFile(output_Flink).types(Long.class,Double.class);
+            DataSet<Tuple3<Long, Double,Integer>> csvInput = env.readCsvFile(output_Flink).types(Long.class,Double.class,Integer.class);
+
             csvInput.sortPartition(0, Order.ASCENDING).writeAsCsv(output,FileSystem.WriteMode.OVERWRITE);
             env.execute();
             env.setParallelism(parallelism);
@@ -169,6 +176,8 @@ public class DynamicNaiveBayesEval {
 
 
             DynamicBayesianNetworkWriter.save(dynamicNaiveBayesClassifier.getModel(),networkOutput);
+
+            System.out.println(dynamicNaiveBayesClassifier.getModel().toString());
 
             timeID++;
 

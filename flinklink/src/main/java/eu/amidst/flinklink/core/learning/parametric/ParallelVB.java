@@ -80,7 +80,7 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
 
     protected SVB svb;
 
-    protected int batchSize = 100;
+    protected int batchSize = 500;
 
     protected int maximumGlobalIterations = 10;
 
@@ -96,7 +96,7 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
 
     IdenitifableModelling identifiableModelling = new ParameterIdentifiableModel();
 
-    boolean randomStart = true;
+    boolean randomStart = false;
 
     protected static boolean activateOutput = false;
     protected boolean testElbo = true;

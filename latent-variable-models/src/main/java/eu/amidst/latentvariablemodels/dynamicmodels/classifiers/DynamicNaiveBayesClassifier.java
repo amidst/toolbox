@@ -25,6 +25,7 @@ import eu.amidst.flinklink.core.learning.dynamic.DynamicParallelVB;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,7 +35,7 @@ import java.io.Serializable;
  */
 public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Serializable {
 
-    private int nGlobalIterations = 10;
+    private int nGlobalIterations = 20;
 
     private static final long serialVersionUID = 329639736967237932L;
 
@@ -98,14 +99,14 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
     private void initLearningFlink() {
         if(learningAlgorithmFlink==null) {
             learningAlgorithmFlink = new DynamicParallelVB();
-            learningAlgorithmFlink.setBatchSize(windowSize);
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
             learningAlgorithmFlink.setOutput(false);
             learningAlgorithmFlink.setTestELBO(false);
-            learningAlgorithmFlink.setMaximumGlobalIterations(this.nGlobalIterations);
-            learningAlgorithmFlink.setMaximumLocalIterations(10*this.nGlobalIterations);
-            learningAlgorithmFlink.setGlobalThreshold(0.1);
-            learningAlgorithmFlink.setLocalThreshold(0.1);
+//            learningAlgorithmFlink.setBatchSize(500);
+//            learningAlgorithmFlink.setMaximumGlobalIterations(this.nGlobalIterations);
+//            learningAlgorithmFlink.setMaximumLocalIterations(10*this.nGlobalIterations);
+//            learningAlgorithmFlink.setGlobalThreshold(0.05);
+//            learningAlgorithmFlink.setLocalThreshold(0.01);
             learningAlgorithmFlink.initLearning();
         }
         initialized=true;
@@ -120,7 +121,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
         }
     }
 
-    public DataSet<Tuple2<Long, Double>> predict(int timeSlice, DataFlink<DynamicDataInstance> data) throws Exception {
+    public DataSet<Tuple3<Long, Double, Integer>> predict(int timeSlice, DataFlink<DynamicDataInstance> data) throws Exception {
 
 //        System.out.println(data.getDataSet().count());
 
@@ -133,8 +134,25 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
 //        this.previousPredictions.print();
 
         DataSet<Tuple2<Long, Double>> dataPredictions = this.previousPredictions
-                                                .map(new BuildResults(classVar));
+                                                .map(new BuildPredictions(classVar));
 
+        DataSet<Tuple2<Long, Integer>> dataActualClassValues = data.getDataSet().map(new BuildActualClassValues(classVar));
+
+
+
+        DataSet<Tuple3<Long, Double, Integer>> results = dataPredictions.join(dataActualClassValues)
+                .where(0)
+                .equalTo(0)
+                .projectFirst(0,1)
+                .projectSecond(1);
+                //.types(Long.class, Double.class, Integer.class);
+
+
+        return results;
+
+//        DataSet<Tuple2<Long, Double>> dataPredictionsWithClass =
+//                dataPredictions..join(data.getDataSet())
+//                .where(0).equalTo("SEQUENCE_ID").proj
 
 //        dataPredictions
 //
@@ -147,7 +165,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
 //            });
 //            return result;
 //        });
-        return dataPredictions;
+
 
 //        DataSet<DynamicDataInstance> dataPlusPredictions = data.getDataSet()
 //                .join(dataPredictions)
@@ -179,11 +197,11 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
         }
     }
 
-    static class BuildResults implements MapFunction<DataPosteriorAssignment, Tuple2<Long,Double>> {
+    static class BuildPredictions implements MapFunction<DataPosteriorAssignment, Tuple2<Long,Double>> {
 
         final Variable classVar;
 
-        public BuildResults(Variable classVar) {
+        public BuildPredictions(Variable classVar) {
             this.classVar = classVar;
         }
 
@@ -199,6 +217,28 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
             return result;
         }
     }
+
+    static class BuildActualClassValues implements MapFunction<DynamicDataInstance, Tuple2<Long,Integer>> {
+
+        final Variable classVar;
+
+        public BuildActualClassValues(Variable classVar) {
+            this.classVar = classVar;
+        }
+
+        @Override
+        public Tuple2<Long,Integer> map(DynamicDataInstance dynamicDataInstance) throws Exception {
+
+            long sequence_id = dynamicDataInstance.getSequenceID();
+            int classValue = (int)dynamicDataInstance.getValue(classVar);
+
+            Tuple2<Long,Integer> result = new Tuple2<>();
+            result.setFields(sequence_id, classValue);
+
+            return result;
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
 
