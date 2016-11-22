@@ -42,9 +42,9 @@ public class DynamicNaiveBayesEval {
             System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_dynamic_november3/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_ultimos2/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_dynamic_november3/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_ultimos2/output/";
 
             //nGlobalIterations = 5;
         }
@@ -61,7 +61,7 @@ public class DynamicNaiveBayesEval {
 
         foldersAllDays.forEach(file -> System.out.println(file.getName()));
 
-        int parallelism1 = 1;
+        int parallelism1 = 16;
 
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 128*parallelism1);
