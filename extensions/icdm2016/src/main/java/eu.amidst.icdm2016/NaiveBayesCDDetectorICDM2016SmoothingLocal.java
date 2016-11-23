@@ -90,8 +90,7 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
         virtualDriftDetector.getSvb()
                 .getPlateuStructure()
                 .getNonReplictedNodes()
-                .filter(node -> !node.getName().contains("Hiddden"))
-                .filter(node -> !node.getName().contains("Gamma"))
+                .filter(node -> node.getName().contains("Beta"))
                 .forEach(node -> node.setActive(false));
 
         virtualDriftDetector.getSvb()
@@ -137,7 +136,7 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
                 .filter(var -> var.getName().contains("Beta"))
                 .forEach(var -> {((Normal)virtualDriftDetector.getSvb().getParameterPosterior(var)).setMean(1);
                     virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(var).setActive(false);});
-*/
+
 
 
 
@@ -165,6 +164,7 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
 
 
         }
+        */
 
     }
 }

@@ -123,11 +123,11 @@ public class NaiveBayesCDDetectorICDM2016SmoothingGlobal {
                 .filter(var -> var.getName().contains("Beta"))
                 .forEach(var -> virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(var).setActive(false));
 */
+
         virtualDriftDetector.getSvb()
                 .getPlateuStructure()
                 .getNonReplictedNodes()
-                .filter(node -> !node.getName().contains("Hiddden"))
-                .filter(node -> !node.getName().contains("Gamma"))
+                .filter(node -> node.getName().contains("Beta"))
                 .forEach(node -> node.setActive(false));
 
 
