@@ -109,7 +109,7 @@ public class MixtureOfGaussian {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaValue());
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
                 total+=log;
 
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
@@ -121,7 +121,7 @@ public class MixtureOfGaussian {
 
                 System.out.print(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t");
 
-                double[] labmdaValues = ((MultiDriftSVB)svb).getLambdaValues();
+                double[] labmdaValues = ((MultiDriftSVB)svb).getLambdaMomentParameters();
                 for (int j = 0; j < labmdaValues.length; j++) {
                     System.out.print(labmdaValues[j]+"\t");
                 }

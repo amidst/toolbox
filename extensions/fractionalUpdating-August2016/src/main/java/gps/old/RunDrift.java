@@ -110,7 +110,7 @@ public class RunDrift {
                 log+=svb.predictedLogLikelihood(list.get(i));
                 inst+=list.get(i).getNumberOfDataInstances();
             }
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+svb.getLambdaValue()+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+svb.getLambdaMomentParameter()+"\n");
             fw.flush();
 
             svb.updateModelWithConceptDrift(list.remove(0));

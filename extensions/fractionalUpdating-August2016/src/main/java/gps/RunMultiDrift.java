@@ -150,7 +150,7 @@ public class RunMultiDrift {
             double[] vals = null;
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
-                vals =  svb.getLambdaValues();
+                vals =  svb.getLambdaMomentParameters();
                 for (int i = 0; i < vals.length; i++) {
                     lambda +=vals[i];
                     n++;

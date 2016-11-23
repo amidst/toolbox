@@ -145,7 +145,7 @@ public class RunDrift {
             int n = 0;
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
-                lambda += svb.getLambdaValue();
+                lambda += svb.getLambdaMomentParameter();
                 n++;
                 break;
             }

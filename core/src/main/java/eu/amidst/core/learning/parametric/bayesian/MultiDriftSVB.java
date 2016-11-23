@@ -207,7 +207,7 @@ public class MultiDriftSVB extends SVB{
     }
 
 
-    public double[] getLambdaValues(){
+    public double[] getLambdaMomentParameters(){
 
         double[] out = new double[this.prior.getNumberOfBaseVectors()];
         for (int i = 0; i < out.length; i++) {
@@ -217,6 +217,15 @@ public class MultiDriftSVB extends SVB{
         return out;
     }
 
+    public double[] getLambdaNaturalParameters(){
+
+        double[] out = new double[this.prior.getNumberOfBaseVectors()];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = this.ef_TExpQ[i].getNaturalParameters().get(0);
+        }
+
+        return out;
+    }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 

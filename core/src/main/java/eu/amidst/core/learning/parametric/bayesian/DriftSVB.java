@@ -194,11 +194,14 @@ public class DriftSVB extends SVB{
     }
 
 
-    public double getLambdaValue(){
+    public double getLambdaMomentParameter(){
         return this.ef_TExpQ.getMomentParameters().get(0);
     }
 
-
+    public double getLambdaNaturalParameter(){
+        return this.ef_TExpQ.getNaturalParameters().get(0);
+    }
+    
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");

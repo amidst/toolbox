@@ -24,7 +24,7 @@ import static simulatedData.StaticMethods.*;
 /**
  * Created by andresmasegosa on 10/11/16.
  */
-public class SingleNormalChangeMean {
+public class NormalChangeMean {
 
     public static void main(String[] args) {
 
@@ -47,10 +47,6 @@ public class SingleNormalChangeMean {
         svb.initLearning();
 
         svb.randomInitialize();
-
-        //svb.setNonSequentialModel(true);
-        //System.out.println(svb.getLearntBayesianNetwork());
-
 
         double total = 0;
 
@@ -78,7 +74,7 @@ public class SingleNormalChangeMean {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+normalDist.getMean()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaValue());
+                System.out.println(log+"\t"+normalDist.getMean()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
                 total+=log;
 
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
@@ -90,7 +86,7 @@ public class SingleNormalChangeMean {
 
                 System.out.print(log+"\t"+normalDist.getMean()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[0] +"\t");
 
-                double[] labmdaValues = ((MultiDriftSVB)svb).getLambdaValues();
+                double[] labmdaValues = ((MultiDriftSVB)svb).getLambdaMomentParameters();
                 for (int j = 0; j < labmdaValues.length; j++) {
                     System.out.print(labmdaValues[j]+"\t");
                 }

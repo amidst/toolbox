@@ -153,7 +153,7 @@ public class RunDrift {
 
             svb.updateModelWithConceptDrift(batch);
 
-            fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaValue()+"\n");
+            fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaMomentParameter()+"\n");
             fw.flush();
         }
 */
@@ -177,7 +177,7 @@ public class RunDrift {
 
             svb.updateModelWithConceptDrift(batches.get(i));
 
-            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaValue()+"\t"+svb.getPlateuStructure().getPosteriorSampleSize()+"\n");
+            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaMomentParameter()+"\t"+svb.getPlateuStructure().getPosteriorSampleSize()+"\n");
             fw.flush();
 
 
@@ -189,7 +189,7 @@ public class RunDrift {
             System.out.println();
             System.out.println();
 
-            System.out.println("ALPHA:" + svb.getLambdaValue());
+            System.out.println("ALPHA:" + svb.getLambdaMomentParameter());
 
             System.out.println("Sample Size:" + svb.getPlateuStructure().getPosteriorSampleSize());
 

@@ -11,7 +11,7 @@
 
 package simulatedData;
 
-import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -24,16 +24,15 @@ import static simulatedData.StaticMethods.*;
 /**
  * Created by andresmasegosa on 10/11/16.
  */
-public class SingleMultinomialManyStates {
+public class NormalChangeVariance {
 
 
     public static void main(String[] args) {
 
-        int nStates = 100;
 
         Variables variables = new Variables();
 
-        Variable multinomialVar = variables.newMultinomialVariable("N",nStates);
+        Variable normal = variables.newGaussianVariable("N");
 
         BayesianNetwork bn = new BayesianNetwork(new DAG(variables));
 
@@ -50,16 +49,11 @@ public class SingleMultinomialManyStates {
 
         svb.randomInitialize();
 
-        //svb.setNonSequentialModel(true);
-        //System.out.println(svb.getLearntBayesianNetwork());
-
-
         double total = 0;
 
-        Multinomial multinomialDist = bn.getConditionalDistribution(multinomialVar);
-        for (int i = 0; i < nStates; i++) {
-            multinomialDist.setProbabilityOfState(i,1.0/nStates);
-        }
+        Normal normalDist = bn.getConditionalDistribution(normal);
+        normalDist.setMean(0);
+        normalDist.setVariance(10);
 
         System.out.println(bn);
 
@@ -68,14 +62,10 @@ public class SingleMultinomialManyStates {
         for (int i = 0; i < totalITER; i++) {
             sampler.setSeed(i);
 
-            multinomialDist = bn.getConditionalDistribution(multinomialVar);
+            normalDist = bn.getConditionalDistribution(normal);
 
             if (i%3==1) {
-                double m = i*10+1;
-                multinomialDist.setProbabilityOfState(0,m/(m+nStates));
-                for (int j = 1; j < nStates; j++) {
-                    multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
-                }
+                normalDist.setVariance(normalDist.getVariance() + i);
             }
 
             if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.DriftSVB")==0){
@@ -85,7 +75,7 @@ public class SingleMultinomialManyStates {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaValue());
+                System.out.println(log+"\t"+normalDist.getVariance()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[1] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
                 total+=log;
 
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
@@ -95,7 +85,14 @@ public class SingleMultinomialManyStates {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((MultiDriftSVB)svb).getLambdaValues()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaValues()[1]);
+                System.out.print(log+"\t"+normalDist.getVariance()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[1] +"\t");
+
+                double[] labmdaValues = ((MultiDriftSVB)svb).getLambdaMomentParameters();
+                for (int j = 0; j < labmdaValues.length; j++) {
+                    System.out.print(labmdaValues[j]+"\t");
+                }
+
+                System.out.println();
                 total+=log;
 
             }else{
@@ -105,7 +102,7 @@ public class SingleMultinomialManyStates {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0]);
+                System.out.println(log+"\t"+normalDist.getVariance()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[1]);
                 total+=log;
             }
 
