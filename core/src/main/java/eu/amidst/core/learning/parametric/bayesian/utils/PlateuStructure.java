@@ -47,7 +47,7 @@ public abstract class PlateuStructure implements Serializable {
     /**
      * Represents the list of non replicated {@link Node}s.
      */
-    transient protected List<Node> nonReplictedNodes = new ArrayList();
+    protected List<Node> nonReplictedNodes = new ArrayList();
 
     /**
      * Represents the list of replicated nodes {@link Node}s.
@@ -72,7 +72,7 @@ public abstract class PlateuStructure implements Serializable {
     /**
      * Represents a {@code Map} object that maps {@link Variable} parameters to the corresponding {@link Node}s.
      */
-    transient protected Map<Variable, Node> nonReplicatedVarsToNode = new ConcurrentHashMap<>();
+    protected Map<Variable, Node> nonReplicatedVarsToNode = new ConcurrentHashMap<>();
 
     /**
      * Represents the list of {@code Map} objects that map {@link Variable}s to the corresponding {@link Node}s.

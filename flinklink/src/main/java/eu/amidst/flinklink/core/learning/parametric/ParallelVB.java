@@ -179,10 +179,12 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
             config.setBytes(SVB, Serialization.serializeObject(svb));
             config.setBytes(LATENT_VARS, Serialization.serializeObject(latentVariables));
 
-            return dataFlink
+            DataSet<DataPosteriorAssignment> results = dataFlink
                     .getBatchedDataSet(this.batchSize)
                     .flatMap(new ParallelVBMapInferenceAssignment())
                     .withParameters(config);
+
+            return results;
 
         }catch(Exception ex){
             throw new UndeclaredThrowableException(ex);
@@ -507,7 +509,9 @@ public class ParallelVB implements BayesianParameterLearningAlgorithm, Serializa
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
+            CompoundVector posterior = this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior();
             svb.initLearning();
+            svb.getPlateuStructure().updateNaturalParameterPosteriors(posterior);
             latentVariables = Serialization.deserializeObject(parameters.getBytes(LATENT_VARS, null));
         }
     }
