@@ -14,7 +14,6 @@ package eu.amidst.latentvariablemodels.dynamicmodels;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm;
@@ -24,7 +23,7 @@ import eu.amidst.dynamic.models.DynamicDAG;
 import eu.amidst.dynamic.variables.DynamicVariables;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
-import java.util.Optional;
+import java.io.Serializable;
 
 /**
  *
@@ -33,7 +32,7 @@ import java.util.Optional;
  *
  * Created by andresmasegosa, ana@cs.aau.dk on 04/03/16.
  */
-public abstract class DynamicModel<T extends DynamicModel> {
+public abstract class DynamicModel<T extends DynamicModel> implements Serializable {
 
     ParameterLearningAlgorithm learningAlgorithm = null;
 

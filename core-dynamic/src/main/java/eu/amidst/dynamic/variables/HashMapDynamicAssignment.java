@@ -20,6 +20,7 @@ package eu.amidst.dynamic.variables;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * This class implements the interface {@link DynamicAssignment} and handles the dynamic assignments using a HashMap.
  */
-public class HashMapDynamicAssignment implements DynamicAssignment {
+public class HashMapDynamicAssignment implements DynamicAssignment, Serializable {
 
     /** Represents an assignment as a {@link java.util.Map} object that maps variables to values. */
     private Map<Variable,Double> assignment;

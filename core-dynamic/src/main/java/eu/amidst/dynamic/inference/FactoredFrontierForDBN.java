@@ -36,6 +36,7 @@ import eu.amidst.dynamic.variables.DynamicAssignment;
 import eu.amidst.dynamic.variables.HashMapDynamicAssignment;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
  * This class implements the interfaces {@link InferenceAlgorithmForDBN}.
  * It handles and implements the Factored Frontier (FF) algorithm to perform inference on {@link DynamicBayesianNetwork} models.
  */
-public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN {
+public class FactoredFrontierForDBN  implements InferenceAlgorithmForDBN, Serializable {
 
     /** Represents the {@link InferenceAlgorithm} at time 0. */
     private InferenceAlgorithm infAlgTime0;

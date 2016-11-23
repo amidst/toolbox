@@ -41,7 +41,7 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
 
     protected DynamicParallelVB learningAlgorithmFlink = null;
 
-    private DataSet<DataPosteriorAssignment> previousPredictions = null;
+    transient private DataSet<DataPosteriorAssignment> previousPredictions = null;
 
     /** Represents whether the children will be connected temporally or not, which is initialized as false. */
     boolean connectChildrenTemporally = false;

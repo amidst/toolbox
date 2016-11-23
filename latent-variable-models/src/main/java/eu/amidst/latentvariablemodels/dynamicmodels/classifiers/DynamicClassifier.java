@@ -24,12 +24,14 @@ import eu.amidst.dynamic.inference.InferenceEngineForDBN;
 import eu.amidst.latentvariablemodels.dynamicmodels.DynamicModel;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
+import java.io.Serializable;
+
 /**
  * The DynamicClassifier abstract class is defined for dynamic Bayesian classification models.
  *
  * Created by ana@cs.aau.dk on 11/03/16.
  */
-public abstract class DynamicClassifier<T extends DynamicClassifier> extends DynamicModel<DynamicClassifier>{
+public abstract class DynamicClassifier<T extends DynamicClassifier> extends DynamicModel<DynamicClassifier> implements Serializable {
 
     /** Represents the static inference algorithm. */
     private InferenceAlgorithm inferenceAlgoPredict = new ImportanceSampling();

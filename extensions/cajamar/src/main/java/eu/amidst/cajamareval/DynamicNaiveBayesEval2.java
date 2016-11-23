@@ -1,8 +1,14 @@
 package eu.amidst.cajamareval;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.inference.InferenceAlgorithm;
+import eu.amidst.core.inference.messagepassing.VMP;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.datastream.DynamicDataInstance;
 import eu.amidst.dynamic.io.DynamicBayesianNetworkWriter;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.data.DataFlinkConverter;
 import eu.amidst.flinklink.core.io.DataFlinkLoader;
 import eu.amidst.latentvariablemodels.dynamicmodels.classifiers.DynamicNaiveBayesClassifier;
 import org.apache.flink.api.common.operators.Order;
@@ -12,8 +18,7 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Created by dario on 6/6/16.
  */
-public class DynamicNaiveBayesEval {
+public class DynamicNaiveBayesEval2 {
 
     public static void main(String[] args) throws Exception {
 
@@ -76,6 +81,7 @@ public class DynamicNaiveBayesEval {
         boolean firstFile = true;
         int timeID = 0;
 
+        boolean useNormalization = false;
         for (File currentDayFolder: foldersAllDays) {
 
             String fileTrain = currentDayFolder.getAbsolutePath() + "/train.arff";
@@ -86,23 +92,62 @@ public class DynamicNaiveBayesEval {
             String modelOutput = folderOutput   + "DNB_" + currentDayFolder.getName() + "_model.txt";
             String networkOutput = folderOutput + "DNB_" + currentDayFolder.getName() + "_model.dbn";
 
-            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, false);
+//            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, useNormalization);
+//
+//            if(firstFile) {
+//                dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dataTrain.getAttributes());
+//                dynamicNaiveBayesClassifier.setClassName(className);
+//                dynamicNaiveBayesClassifier.setConnectChildrenTemporally(true);
+//
+//                System.out.println(dynamicNaiveBayesClassifier.getDynamicDAG());
+//
+//                firstFile = false;
+//            }
+//
+//            System.out.println("DAY " + timeID + " TRAINING...");
+//            dynamicNaiveBayesClassifier.updateModel(timeID,dataTrain);
+//            System.out.println("DAY " + timeID + " TRAINING FINISHED");
 
-            if(firstFile) {
-                dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dataTrain.getAttributes());
-                dynamicNaiveBayesClassifier.setClassName(className);
-                dynamicNaiveBayesClassifier.setConnectChildrenTemporally(true);
 
-                System.out.println(dynamicNaiveBayesClassifier.getDynamicDAG());
+            String fileName = folderOutput + "dynNBClassifier.obj";
 
-                firstFile = false;
+//            ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(fileName));
+//            outputStream.writeObject(dynamicNaiveBayesClassifier);
+//            outputStream.close();
+
+
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
+            dynamicNaiveBayesClassifier = (DynamicNaiveBayesClassifier) ois.readObject();
+            ois.close();
+
+
+
+            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, useNormalization);
+
+
+            DataFlink<DataInstance> testStatic = DataFlinkConverter.convertToStatic(dataTest);
+
+            BayesianNetwork bayesianNetworkTime0 = dynamicNaiveBayesClassifier.getModel().toBayesianNetworkTime0();
+
+            System.out.println(bayesianNetworkTime0.toString());
+
+            InferenceAlgorithm inferenceAlgorithm = new VMP();
+
+            Variable classVariable = bayesianNetworkTime0.getVariables().getVariableByName(className);
+
+            inferenceAlgorithm.setModel(bayesianNetworkTime0);
+
+
+
+            for (DataInstance dataInstance :  testStatic.getDataSet().collect()) {
+                dataInstance.setValue(classVariable,Double.NaN);
+                inferenceAlgorithm.setEvidence(dataInstance);
+                inferenceAlgorithm.runInference();
+                System.out.println(inferenceAlgorithm.getPosterior(classVariable));
             }
 
-            System.out.println("DAY " + timeID + " TRAINING...");
-            dynamicNaiveBayesClassifier.updateModel(timeID,dataTrain);
-            System.out.println("DAY " + timeID + " TRAINING FINISHED");
 
-            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, false);
+
 
             System.out.println("DAY " + timeID + " TESTING...");
             DataSet<Tuple3<Long,Double,Integer>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
@@ -126,7 +171,7 @@ public class DynamicNaiveBayesEval {
             csvInput.sortPartition(0, Order.ASCENDING).writeAsCsv(output,FileSystem.WriteMode.OVERWRITE);
             env.execute();
             env.setParallelism(parallelism);
-            DynamicNaiveBayesEval.deleteFolder(new File(output_Flink));
+            DynamicNaiveBayesEval2.deleteFolder(new File(output_Flink));
 
 
 //            List<DynamicDataInstance> dataTestInstances = dataTest.getDataSet().collect();
