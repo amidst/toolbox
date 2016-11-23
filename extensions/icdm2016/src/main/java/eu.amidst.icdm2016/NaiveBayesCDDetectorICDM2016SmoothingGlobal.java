@@ -4,9 +4,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.io.DataStreamLoader;
-import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
@@ -111,7 +109,7 @@ public class NaiveBayesCDDetectorICDM2016SmoothingGlobal {
 
 
         }
-
+/*
         virtualDriftDetector.initLearning();
 
         // 1) Set the parameters (betas) as the final parameters of the process.
@@ -124,6 +122,14 @@ public class NaiveBayesCDDetectorICDM2016SmoothingGlobal {
         ef_bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream()
                 .filter(var -> var.getName().contains("Beta"))
                 .forEach(var -> virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(var).setActive(false));
+*/
+        virtualDriftDetector.getSvb()
+                .getPlateuStructure()
+                .getNonReplictedNodes()
+                .filter(node -> !node.getName().contains("Hiddden"))
+                .filter(node -> !node.getName().contains("Gamma"))
+                .forEach(node -> node.setActive(false));
+
 
         for (int i = 0; i < NSETS; i++) {
 
