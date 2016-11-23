@@ -36,7 +36,7 @@ public class RunSVBRestart {
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
         String model = "BCC4";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/daaWekaNoOutliers/";
 
         int ntopics = 10;
         int niter = 100;

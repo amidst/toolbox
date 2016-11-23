@@ -51,7 +51,7 @@ public class BCCDataProcessing {
 
     public static void main(String[] args) throws IOException {
 
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/datosWeka.arff";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/datosWekaRemoveOutliersExtreme.arff";
 
         String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/daaWekaNoOutliers/";
 

@@ -69,11 +69,11 @@ public class DAGsGeneration {
         DAG dag = new DAG(variables);
 
         // Link the class as parent of all attributes
-        /*dag.getParentSets()
+        dag.getParentSets()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
-*/
+
 
         return dag;
     }
