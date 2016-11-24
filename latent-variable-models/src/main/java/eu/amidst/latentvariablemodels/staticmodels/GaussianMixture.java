@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This class implements a Gaussian Mixture Model
+ * This class implements a (Multivariate) Gaussian Mixture Model
  * See Murphy, K. P. (2012). Machine learning: a probabilistic perspective. MIT press, page 339.
  * Created by rcabanas on 07/03/16.
  */
-public class GaussianMixture extends Model {
+public class GaussianMixture extends Model<GaussianMixture> {
 
     /* diagonal flag*/
     private boolean diagonal;
@@ -171,7 +171,7 @@ public class GaussianMixture extends Model {
         System.out.println(GMM.getDAG());
 
 		System.out.println("HiddenVar");
-		System.out.println(GMM.getPosteriorDistribution("HiddenVar"));
+		System.out.println(GMM.getPosteriorDistribution("HiddenVar").toString());
 
 
     /*    try {
