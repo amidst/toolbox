@@ -4,7 +4,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.exponentialfamily.EF_NormalParameter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
@@ -71,9 +71,6 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
-        //If UR is to be included
-        //virtualDriftDetector.initLearningWithUR();
-
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
         //Some prints
@@ -90,55 +87,17 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
         virtualDriftDetector.getSvb()
                 .getPlateuStructure()
                 .getNonReplictedNodes()
-                .filter(node -> node.getName().contains("Beta"))
+                .filter(node -> node.getName().contains("Beta_"))
                 .forEach(node -> node.setActive(false));
 
         virtualDriftDetector.getSvb()
                 .getPlateuStructure()
                 .getNonReplictedNodes()
-                .filter(node -> !node.getName().contains("Beta"))
+                .filter(node -> node.getName().contains("Beta_"))
                 .forEach(node -> {
-                    EF_Normal normal = (EF_Normal) node.getQDist();
+                    EF_NormalParameter normal = (EF_NormalParameter) node.getQDist();
                     normal.setNaturalWithMeanPrecision(1,100000);
                 });
-
-
-        for (int i = 0; i < NSETS; i++) {
-
-            int currentMonth = i;
-
-            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                continue;
-
-            DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
-
-            virtualDriftDetector.setTransitionVariance(0);
-
-            meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
-
-            virtualDriftDetector.setTransitionVariance(0.1);
-            virtualDriftDetector.getSvb().applyTransition();
-
-            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
-
-            //We print the output
-            //printOutput(meanHiddenVars, currentMonth);
-
-
-        }
-/*
-        virtualDriftDetector.initLearning();
-
-        // 1 & 2) Set the parameters (betas) means to 1 and deactivate nodes for the parameters.
-        EF_LearningBayesianNetwork ef_bayesianNetwork = virtualDriftDetector.getSvb().getPlateuStructure().getEFLearningBN();
-
-        ef_bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream()
-                .filter(var -> var.getName().contains("Beta"))
-                .forEach(var -> {((Normal)virtualDriftDetector.getSvb().getParameterPosterior(var)).setMean(1);
-                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(var).setActive(false);});
-
-
-
 
 
         for (int i = 0; i < NSETS; i++) {
@@ -164,7 +123,5 @@ public class NaiveBayesCDDetectorICDM2016SmoothingLocal {
 
 
         }
-        */
-
     }
 }

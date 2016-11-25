@@ -69,8 +69,6 @@ public class NaiveBayesCDDetectorICDM2016SmoothingGlobal {
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
-        //If UR is to be included
-        //virtualDriftDetector.initLearningWithUR();
 
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
@@ -102,32 +100,20 @@ public class NaiveBayesCDDetectorICDM2016SmoothingGlobal {
             virtualDriftDetector.setTransitionVariance(0.1);
             virtualDriftDetector.getSvb().applyTransition();
 
-            //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             //We print the output
             //printOutput(meanHiddenVars, currentMonth);
 
 
         }
-/*
-        virtualDriftDetector.initLearning();
 
-        // 1) Set the parameters (betas) as the final parameters of the process.
-        CompoundVector paramPosteriors = virtualDriftDetector.getSvb().getPlateuStructure().getPlateauNaturalParameterPosterior();
-        virtualDriftDetector.getSvb().updateNaturalParameterPrior(paramPosteriors);
+        System.out.println("");
 
-        // 2) Deactivate nodes for the parameters.
-
-        EF_LearningBayesianNetwork ef_bayesianNetwork = virtualDriftDetector.getSvb().getPlateuStructure().getEFLearningBN();
-        ef_bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream()
-                .filter(var -> var.getName().contains("Beta"))
-                .forEach(var -> virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(var).setActive(false));
-*/
 
         virtualDriftDetector.getSvb()
                 .getPlateuStructure()
                 .getNonReplictedNodes()
-                .filter(node -> node.getName().contains("Beta"))
+                .filter(node -> node.getName().contains("Beta") || node.getName().contains("Gamma"))
                 .forEach(node -> node.setActive(false));
 
 
