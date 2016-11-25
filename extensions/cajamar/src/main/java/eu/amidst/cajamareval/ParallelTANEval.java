@@ -17,7 +17,6 @@
 
 package eu.amidst.cajamareval;
 
-import COM.hugin.HAPI.Domain;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
@@ -25,36 +24,70 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.huginlink.converters.BNConverterToHugin;
 import eu.amidst.huginlink.learning.ParallelTAN;
 
+import java.io.File;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 
 /**
  * Created by andresmasegosa on 14/10/15.
  */
 public class ParallelTANEval {
     public static void main(String[] args) throws Exception {
-        String fileTrain = args[0];
-        String fileTest = args[1];
-        String fileOutput = args[2];
 
+        String fileTrain;
+        String fileTest;
+        String outputFolder;
+        String dataSetName;
+
+//        if(args.length == 4) { // Args:  train.arff test.arff outputFolder
+
+            fileTrain = args[0];
+            fileTest = args[1];
+            outputFolder = args[2];
+            dataSetName = args[3];
+//        }
+//        else {
+//            System.out.println("Incorrect number of arguments, use: \"ParallelTANEval fileTrain fileTest outputFolder dataSetName \"");
+//
+//            String folder = "/Users/dario/Desktop/CAJAMAR_ultimos/20131231/";
+//
+//            fileTrain = folder + "train.arff";  //CAJAMAR_DatosNB
+//            fileTest = folder + "test.arff";
+//            outputFolder = folder;
+//            dataSetName = "";
+//        }
 
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
         DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
-        FileWriter fw = new FileWriter(fileOutput);
+
+        String fileOutput   =   outputFolder + "TAN_" + dataSetName + "_predictions.csv";
+        String modelOutput  =   outputFolder + "TAN_" + dataSetName + "_model.bn";
+        String modelOutputTxt = outputFolder + "TAN_" + dataSetName + "_model.txt";
+
 
         ParallelTAN tan = new ParallelTAN();
         tan.setOptions(args);
+        //tan.setNameTarget("Default");
         tan.setParallelMode(true);
         BayesianNetwork bn = tan.learn(train,10000);
 
-        BayesianNetworkWriter.save(bn, fileOutput + "_TAN_model.bn");
+        BayesianNetworkWriter.save(bn, modelOutput);
 
-        Domain huginNetwork = BNConverterToHugin.convertToHugin(bn);
-        huginNetwork.saveAsNet(fileOutput + "_TAN_model.net");
+        File modelOutputFile = new File(modelOutputTxt);
+        PrintWriter modelWriter = new PrintWriter(modelOutputFile, "UTF-8");
+        modelWriter.print(bn.toString());
+        modelWriter.close();
 
-        System.out.println(bn);
+//        Domain huginNetwork = BNConverterToHugin.convertToHugin(bn);
+//        huginNetwork.saveAsNet(fileOutput + "_TAN_model.net");
+
+//        System.out.println(bn);
+
+
+        FileWriter fw = new FileWriter(fileOutput);
+
 
         Attribute seq_id = train.getAttributes().getSeq_id();
         Attribute classAtt  = train.getAttributes().getAttributeByName(tan.getNameTarget());
