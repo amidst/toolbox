@@ -262,7 +262,7 @@ public class DataFlinkLoader implements Serializable{
                                         double a = (dataInstance.getValue(att));
                                         DataInstance aux = dataInstance;
                                         //throw new IllegalStateException("Non proper normalization " + Nvalue);
-                                        System.out.println("WARNING: DataFlinkLoader -  Non proper normalization " + Nvalue);
+                                        //System.out.println("WARNING: DataFlinkLoader -  Non proper normalization " + Nvalue);
                                     }
                                     dataInstance.setValue(att, Nvalue);
                                 }
