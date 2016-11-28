@@ -64,7 +64,6 @@ public class NaiveBayesEval {
         String modelOutput  =   outputFolder + "NB_" + dataSetName + "_model.bn";
         String modelOutputTxt = outputFolder + "NB_" + dataSetName + "_model.txt";
 
-
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
         DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
         FileWriter fw = new FileWriter(fileOutput);

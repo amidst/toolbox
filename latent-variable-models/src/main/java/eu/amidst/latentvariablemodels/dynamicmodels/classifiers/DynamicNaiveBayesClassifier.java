@@ -35,7 +35,7 @@ import java.io.Serializable;
  */
 public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Serializable {
 
-    private int nGlobalIterations = 20;
+    private int nGlobalIterations = 3;
 
     private static final long serialVersionUID = 329639736967237932L;
 
@@ -102,11 +102,11 @@ public class DynamicNaiveBayesClassifier extends DynamicClassifier implements Se
             learningAlgorithmFlink.setDAG(this.getDynamicDAG());
             learningAlgorithmFlink.setOutput(false);
             learningAlgorithmFlink.setTestELBO(false);
-//            learningAlgorithmFlink.setBatchSize(500);
-//            learningAlgorithmFlink.setMaximumGlobalIterations(this.nGlobalIterations);
-//            learningAlgorithmFlink.setMaximumLocalIterations(10*this.nGlobalIterations);
-//            learningAlgorithmFlink.setGlobalThreshold(0.05);
-//            learningAlgorithmFlink.setLocalThreshold(0.01);
+            learningAlgorithmFlink.setBatchSize(500);
+            learningAlgorithmFlink.setMaximumGlobalIterations(this.nGlobalIterations);
+            learningAlgorithmFlink.setMaximumLocalIterations(10*this.nGlobalIterations);
+            learningAlgorithmFlink.setGlobalThreshold(0.05);
+            learningAlgorithmFlink.setLocalThreshold(0.01);
             learningAlgorithmFlink.initLearning();
         }
         initialized=true;

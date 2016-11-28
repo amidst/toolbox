@@ -42,7 +42,6 @@ public class NBIndicatorsEval {
             fileTest   =  folder + "test.arff";
             outputFolder =  folder;
             dataSetName = "";
-
         }
 
         String fileOutput   =   outputFolder + "NBIndicators_" + dataSetName + "_predictions.csv";

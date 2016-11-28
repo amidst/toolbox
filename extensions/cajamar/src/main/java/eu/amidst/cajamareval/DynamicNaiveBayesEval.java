@@ -31,22 +31,23 @@ public class DynamicNaiveBayesEval {
         Locale.setDefault(Locale.GERMANY);
         String dataFolderPath;
         String folderOutput;
-        int nGlobalIterations;
 
-        if (args.length == 2) {
+        int factorNetworkBuffers;
+
+        if (args.length == 3) {
             dataFolderPath = args[0];
             folderOutput = args[1];
-            //nGlobalIterations = Integer.parseInt(args[2]);
+            factorNetworkBuffers = Integer.parseInt(args[2]);
         }
         else {
-            System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder\"");
+            System.out.println("Incorrect number of arguments, use: \"DynamicNaiveBayesEval dataFolder outputFolder factorNetworkBuffers\"");
 //            System.exit(-10);
 
-            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_ultimos3/";
+            dataFolderPath = "/Users/dario/Desktop/CAJAMAR_corta/";
 //        String folderTest = "/Users/dario/Desktop/CAJAMAR_dynamic/ACTIVOS_test/";
-            folderOutput = "/Users/dario/Desktop/CAJAMAR_ultimos3/output/";
+            folderOutput = "/Users/dario/Desktop/CAJAMAR_corta/output3/";
 
-            //nGlobalIterations = 5;
+            factorNetworkBuffers = 128;
         }
 
         System.out.println("Number of JVM processors: " + Runtime.getRuntime().availableProcessors());
@@ -61,10 +62,10 @@ public class DynamicNaiveBayesEval {
 
         foldersAllDays.forEach(file -> System.out.println(file.getName()));
 
-        int parallelism1 = 1;
+        int parallelism1 = Runtime.getRuntime().availableProcessors();
 
         Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 128*parallelism1);
+        conf.setInteger("taskmanager.network.numberOfBuffers", factorNetworkBuffers*parallelism1);
         conf.setInteger("taskmanager.numberOfTaskSlots",parallelism1);
 
         //StreamExecutionEnvironment env = LocalStreamEnvironment.createLocalEnvironment(parallelism, conf);
@@ -75,6 +76,8 @@ public class DynamicNaiveBayesEval {
 
         boolean firstFile = true;
         int timeID = 0;
+        boolean useNormalization = true;
+
 
         for (File currentDayFolder: foldersAllDays) {
 
@@ -86,7 +89,7 @@ public class DynamicNaiveBayesEval {
             String modelOutput = folderOutput   + "DNB_" + currentDayFolder.getName() + "_model.txt";
             String networkOutput = folderOutput + "DNB_" + currentDayFolder.getName() + "_model.dbn";
 
-            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, false);
+            DataFlink<DynamicDataInstance> dataTrain = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTrain, useNormalization);
 
             if(firstFile) {
                 dynamicNaiveBayesClassifier = new DynamicNaiveBayesClassifier(dataTrain.getAttributes());
@@ -102,7 +105,7 @@ public class DynamicNaiveBayesEval {
             dynamicNaiveBayesClassifier.updateModel(timeID,dataTrain);
             System.out.println("DAY " + timeID + " TRAINING FINISHED");
 
-            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, false);
+            DataFlink<DynamicDataInstance> dataTest = DataFlinkLoader.loadDynamicDataFromFolder(env, fileTest, useNormalization);
 
             System.out.println("DAY " + timeID + " TESTING...");
             DataSet<Tuple3<Long,Double,Integer>> predictions = dynamicNaiveBayesClassifier.predict(timeID,dataTest);
@@ -176,9 +179,7 @@ public class DynamicNaiveBayesEval {
 
 
             DynamicBayesianNetworkWriter.save(dynamicNaiveBayesClassifier.getModel(),networkOutput);
-
             System.out.println(dynamicNaiveBayesClassifier.getModel().toString());
-
             timeID++;
 
         }
