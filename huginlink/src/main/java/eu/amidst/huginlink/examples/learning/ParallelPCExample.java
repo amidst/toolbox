@@ -60,7 +60,7 @@ public class ParallelPCExample {
         int samplesOnMemory = 5000;
 
         //We make different trials with different number of cores
-        ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(1, 2, 3, 4));
+        ArrayList<Integer> vNumCores = new ArrayList(Arrays.asList(4));
 
         for (Integer numCores : vNumCores) {
             System.out.println("Learning PC: " + samplesOnMemory + " samples on memory, " + numCores + " core/s ...");
@@ -83,6 +83,7 @@ public class ParallelPCExample {
             //We just invoke this mode to learn a BN model for the data stream
             BayesianNetwork model = parallelPC.learn(data);
 
+            System.out.println(model.toString());
             System.out.println(watch.stop());
         }
     }

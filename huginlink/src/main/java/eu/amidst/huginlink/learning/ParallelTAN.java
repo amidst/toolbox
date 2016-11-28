@@ -172,6 +172,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
     public String getNameTarget() {
         return this.nameTarget;
     }
+
     /**
      * Predicts the class membership probabilities for a given instance.
      * @param instance the data instance to be classified.

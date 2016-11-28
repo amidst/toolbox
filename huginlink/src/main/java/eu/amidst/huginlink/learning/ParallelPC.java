@@ -22,6 +22,7 @@ import com.google.common.base.Stopwatch;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
 import eu.amidst.core.learning.parametric.ParallelMaximumLikelihood;
 import eu.amidst.core.models.BayesianNetwork;
@@ -137,6 +138,23 @@ public class ParallelPC implements AmidstOptionsHandler {
         this.numCores = numCores_;
     }
 
+    public BayesianNetwork getLearnedBN() {
+        return learnedBN;
+    }
+
+    public double[] predict(DataInstance instance, Variable variable) {
+
+        if(!variable.isMultinomial()) {
+            System.out.println("Target variable should be multinomial.");
+        }
+
+        this.inference.setEvidence(instance);
+        this.inference.runInference();
+        Multinomial dist = this.inference.getPosterior(variable);
+
+        return dist.getParameters();
+    }
+
     /**
      * Learns a TAN structure from data using the Chow-Liu algorithm included in the Hugin API.
      * Parallel learning is performed only if the parallel mode was set to true.
@@ -185,9 +203,8 @@ public class ParallelPC implements AmidstOptionsHandler {
 
             //Structural learning
             Stopwatch watch = Stopwatch.createStarted();
-            huginNetwork.learnStructureNPC();
+            huginNetwork.learnStructure();   /////////////////////////////////////////////////// ************************************************************
             System.out.println("Structural Learning in Hugin: " + watch.stop());
-
             DAG dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
             dagLearned.getVariables().setAttributes(dataStream.getAttributes());
             return dagLearned;

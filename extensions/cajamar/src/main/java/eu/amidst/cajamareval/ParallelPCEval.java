@@ -24,7 +24,6 @@ import eu.amidst.core.io.BayesianNetworkWriter;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.Utils;
-import eu.amidst.huginlink.learning.ParallelTAN;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -33,7 +32,7 @@ import java.io.PrintWriter;
 /**
  * Created by andresmasegosa on 14/10/15.
  */
-public class ParallelTANEval {
+public class ParallelPCEval {
     public static void main(String[] args) throws Exception {
 
         String fileTrain;
@@ -49,12 +48,12 @@ public class ParallelTANEval {
             dataSetName = args[3];
         }
         else {
-            System.out.println("Incorrect number of arguments, use: \"ParallelTANEval fileTrain fileTest outputFolder dataSetName \"");
+            System.out.println("Incorrect number of arguments, use: \"ParallelPCEval fileTrain fileTest outputFolder dataSetName \"");
 
-            String folder = "/Users/dario/Desktop/CAJAMAR_ultimos/20131231/";
+            String folder = "/Users/dario/Desktop/";
 
-            fileTrain = folder + "train.arff";  //CAJAMAR_DatosNB
-            fileTest = folder + "test.arff";
+            fileTrain = folder + "datosPrueba.arff";  //CAJAMAR_DatosNB
+            fileTest = folder + "datosPrueba.arff";
             outputFolder = folder;
             dataSetName = "";
 
@@ -65,17 +64,22 @@ public class ParallelTANEval {
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
         DataStream<DataInstance> test = DataStreamLoader.open(fileTest);
 
-        String fileOutput   =   outputFolder + "TAN_" + dataSetName + "_predictions.csv";
-        String modelOutput  =   outputFolder + "TAN_" + dataSetName + "_model.bn";
-        String modelOutputTxt = outputFolder + "TAN_" + dataSetName + "_model.txt";
+        String fileOutput   =   outputFolder + "PC_" + dataSetName + "_predictions.csv";
+        String modelOutput  =   outputFolder + "PC_" + dataSetName + "_model.bn";
+        String modelOutputTxt = outputFolder + "PC_" + dataSetName + "_model.txt";
 
 
-        ParallelTAN tan = new ParallelTAN();
-        tan.setOptions(args);
-        //tan.setNameTarget("Default");
-        tan.setParallelMode(true);
-        BayesianNetwork bn = tan.learn(train,10000);
+        ParallelPCCajamar modelPC = new ParallelPCCajamar();
+        modelPC.setOptions(args);
+        //modelPC.setNameTarget("Default");
+        modelPC.setParallelMode(true);
+        modelPC.setNumCores(Runtime.getRuntime().availableProcessors());
+        modelPC.setNumSamplesOnMemory(1000);
+        //modelPC.setBatchSize(5000);
 
+        BayesianNetwork bn = modelPC.learn(train,40000);
+
+        System.out.println(bn.toString());
         BayesianNetworkWriter.save(bn, modelOutput);
 
         File modelOutputFile = new File(modelOutputTxt);
@@ -93,7 +97,7 @@ public class ParallelTANEval {
 
 
         Attribute seq_id = train.getAttributes().getSeq_id();
-        Attribute classAtt  = train.getAttributes().getAttributeByName(tan.getNameTarget());
+        Attribute classAtt  = train.getAttributes().getAttributeByName("Default");
         double nNontest = 0;
         for (DataInstance dataInstance : test) {
             double actualClassValue = dataInstance.getValue(classAtt);
@@ -101,7 +105,7 @@ public class ParallelTANEval {
             dataInstance.setValue(classAtt, Utils.missingValue());
             double pred = Double.NaN;
             try {
-                pred = tan.predict(dataInstance)[1];
+                pred = modelPC.predict(dataInstance)[1];
                 //fw.write(dataInstance.getValue(seq_id) +"\t" + pred+"\n");
 
             } catch (Exception ex) {
