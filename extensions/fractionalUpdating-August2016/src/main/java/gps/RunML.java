@@ -121,12 +121,11 @@ public class RunML {
 
             Collections.shuffle(batch.getList(),random);
 
-            int maxTrain = 10000;
-            if (batch.getNumberOfDataInstances()<maxTrain)
-                maxTrain= batch.getNumberOfDataInstances();
+            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
+                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
 
 
-            int limit = (int) ((maxTrain*2.0)/3.0);
+            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
 
 
             DataOnMemoryListContainer<DataInstance> train= new

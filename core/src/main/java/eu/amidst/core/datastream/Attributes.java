@@ -79,6 +79,15 @@ public class Attributes implements Serializable, Iterable<Attribute> {
         return new Attributes(this.getFullListOfAttributes().subList(init,end));
     }
 
+
+    /** Returns a subset of Attributes**/
+    public Attributes subSet(int... a){
+        List<Attribute> list = new ArrayList<>();
+        for (int i : a) {
+            list.add(this.getFullListOfAttributes().get(i));
+        }
+        return new Attributes(list);
+    }
     /**
      * Returns the attribute sequence_id.
      * @return an Attribute object or null if attribute sequence_id is not present.

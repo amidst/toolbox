@@ -57,6 +57,13 @@ public class MultiDriftSVB extends SVB{
         this.delta = delta;
     }
 
+    public void setUpperInterval(double val) {
+        this.ef_TExpP.setUpperInterval(val);
+    }
+    public void setLowerInterval(double val) {
+        this.ef_TExpP.setLowerInterval(val);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -117,6 +124,9 @@ public class MultiDriftSVB extends SVB{
         //Restart Truncated-Exp
         for (int i = 0; i < prior.getNumberOfBaseVectors(); i++) {
             this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+            this.ef_TExpQ[i].setUpperInterval(this.ef_TExpP.getUpperInterval());
+            this.ef_TExpQ[i].setLowerInterval(this.ef_TExpP.getLowerInterval());
+
         }
 
         boolean convergence = false;

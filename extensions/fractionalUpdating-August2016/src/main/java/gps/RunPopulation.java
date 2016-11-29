@@ -80,7 +80,7 @@ public class RunPopulation {
         }else if (model.compareTo("GPS2")==0) {
             svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC0")==0) {
-            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC1")==0) {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
@@ -139,12 +139,12 @@ public class RunPopulation {
 
             Collections.shuffle(batch.getList(),random);
 
-            int maxTrain = 10000;
-            if (batch.getNumberOfDataInstances()<maxTrain)
-                maxTrain= batch.getNumberOfDataInstances();
+
+            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
+                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
 
 
-            int limit = (int) ((maxTrain*2.0)/3.0);
+            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
 
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());

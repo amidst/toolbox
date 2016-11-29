@@ -35,13 +35,13 @@ public class RunMultiDrift {
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC4";
+        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
 
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 10000;
+        int docsPerBatch = 30000;
 
         if (args.length>1){
             int cont=0;
@@ -58,6 +58,9 @@ public class RunMultiDrift {
 
 
         MultiDriftSVB svb = new MultiDriftSVB();
+
+
+
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
                 Arrays.asList(new File(dataPath).list())
@@ -78,7 +81,7 @@ public class RunMultiDrift {
         }else if (model.compareTo("GPS2")==0) {
             svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC0")==0) {
-            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC1")==0) {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
@@ -87,8 +90,9 @@ public class RunMultiDrift {
             svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC4")==0) {
             svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
-        }
-        svb.setOutput(true);
+        }else if (model.compareTo("BCC5")==0) {
+            svb.setDAG(DAGsGeneration.getBCCNBNoClass(dataInstances.getAttributes()));
+        }        svb.setOutput(true);
 
         svb.initLearning();
 
@@ -96,6 +100,8 @@ public class RunMultiDrift {
 
         System.out.println(svb.getLearntBayesianNetwork());
 
+
+        //svb.setLowerInterval(0.5);
 
         FileWriter fw = new FileWriter(dataPath+"MultiDriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
@@ -128,12 +134,12 @@ public class RunMultiDrift {
 
             Collections.shuffle(batch.getList(),random);
 
-            int maxTrain = 10000;
-            if (batch.getNumberOfDataInstances()<maxTrain)
-                maxTrain= batch.getNumberOfDataInstances();
+
+            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
+                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
 
 
-            int limit = (int) ((maxTrain*2.0)/3.0);
+            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
 
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
@@ -176,9 +182,12 @@ public class RunMultiDrift {
             }
             fw.write("\n");
 
+            fw.flush();
+
             totalLog+=log/inst;
 
             System.out.println(svb.getLearntBayesianNetwork());
+
         }
         fw.close();
 

@@ -25,9 +25,11 @@ import java.util.List;
  */
 public class DAGsGeneration {
 
+    static public double maxTrain = 50000;
+
     public static DAG getBCCFullMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
-        Variables variables = new Variables(attributes);
+        Variables variables = new Variables(attributes.subSet(2,3,4,13));
 
         // Define the class variable.
         Variable classVar = variables.getVariableByName("DEFAULTING");
@@ -43,6 +45,7 @@ public class DAGsGeneration {
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
                 .forEach(w -> w.addParent(classVar));
+
 
         // Link the global hidden as parent of all predictive attributes
         dag.getParentSets()
@@ -65,6 +68,17 @@ public class DAGsGeneration {
         // Define the class variable.
         Variable classVar = variables.getVariableByName("DEFAULTING");
 
+
+
+        for (Attribute att : attributes) {
+            if (att.isSpecialAttribute() || att.getName().compareTo(classVar.getName())==0)
+                continue;
+
+            Variable variable = variables.getVariableByName(att.getName());
+            if (variable!=classVar){
+                variables.newIndicatorVariable(variable,0);
+            }
+        }
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
@@ -72,8 +86,46 @@ public class DAGsGeneration {
         dag.getParentSets()
                 .stream()
                 .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> !w.getMainVar().getName().endsWith("_INDICATOR"))
                 .forEach(w -> w.addParent(classVar));
 
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> w.getMainVar() != classVar)
+                .filter(w -> !w.getMainVar().getName().endsWith("_INDICATOR"))
+                .forEach(w -> w.addParent(variables.getVariableByName(w.getMainVar().getName()+"_INDICATOR")));
+
+        return dag;
+    }
+
+    public static DAG getBCCNBNoClass(Attributes attributes) {
+
+        attributes = attributes.subList(3,4);
+
+        // Create a Variables object from the attributes of the input data stream.
+        Variables variables = new Variables(attributes);
+
+        // Define the class variable.
+
+
+        for (Attribute att : attributes) {
+            if (att.isSpecialAttribute())
+                continue;
+
+            Variable variable = variables.getVariableByName(att.getName());
+            variables.newIndicatorVariable(variable,0);
+        }
+        // Create an empty DAG object with the defined variables.
+        DAG dag = new DAG(variables);
+
+
+        // Link the class as parent of all attributes
+        dag.getParentSets()
+                .stream()
+                .filter(w -> !w.getMainVar().getName().endsWith("_INDICATOR"))
+                .forEach(w -> w.addParent(variables.getVariableByName(w.getMainVar().getName()+"_INDICATOR")));
 
         return dag;
     }
@@ -96,7 +148,7 @@ public class DAGsGeneration {
         }
 
         // Define the global hidden variable.
-        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
+        Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",1);
 
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
@@ -134,11 +186,14 @@ public class DAGsGeneration {
 
 
     public static DAG getBCCLocalMixtureDAG(Attributes attributes, int nstates) {
+
+        attributes = attributes.subList(3,4);
+
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes);
 
         // Define the class variable.
-        Variable classVar = variables.getVariableByName("DEFAULTING");
+        Variable classVar = null;//variables.getVariableByName("DEFAULTING");
 
         // Define a local hidden variable.
         List<Variable> localHiddenVars = new ArrayList<>();
@@ -153,10 +208,10 @@ public class DAGsGeneration {
         DAG dag = new DAG(variables);
 
         // Link the class as parent of all attributes
-        dag.getParentSets()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .forEach(w -> w.addParent(classVar));
+        //dag.getParentSets()
+        //        .stream()
+        //        .filter(w -> w.getMainVar() != classVar)
+        //        .forEach(w -> w.addParent(classVar));
 
         // Link the local hidden as parent of all predictive attributes
         for (Attribute attribute : attributesList) {

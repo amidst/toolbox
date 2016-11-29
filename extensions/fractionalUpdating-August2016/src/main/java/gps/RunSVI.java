@@ -34,7 +34,7 @@ public class RunSVI {
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC0";
+        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int ntopics = 10;
         int niter = 100;
@@ -82,7 +82,7 @@ public class RunSVI {
         }else if (model.compareTo("GPS2")==0) {
             svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC0")==0) {
-            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC1")==0) {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
@@ -138,12 +138,12 @@ public class RunSVI {
 
             Collections.shuffle(batch.getList(),random);
 
-            int maxTrain = 10000;
-            if (batch.getNumberOfDataInstances()<maxTrain)
-                maxTrain= batch.getNumberOfDataInstances();
+
+            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
+                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
 
 
-            int limit = (int) ((maxTrain*2.0)/3.0);
+            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
 
 
             DataOnMemoryListContainer<DataInstance> train= new
@@ -159,14 +159,12 @@ public class RunSVI {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
-                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
-                break;
             }
 
             double inst =test.getNumberOfDataInstances();
@@ -175,6 +173,7 @@ public class RunSVI {
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
+            fw.flush();
 //            BayesianNetwork bn = svb.getLearntBayesianNetwork();
 //            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
 

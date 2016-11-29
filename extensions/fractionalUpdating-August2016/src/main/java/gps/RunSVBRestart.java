@@ -35,10 +35,10 @@ public class RunSVBRestart {
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC4";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/daaWekaNoOutliers/";
+        String model = "BCC2";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoOutliers/";
 
-        int ntopics = 10;
+        int ntopics = 1;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 10000;
@@ -78,7 +78,7 @@ public class RunSVBRestart {
         }else if (model.compareTo("GPS2")==0) {
             svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC0")==0) {
-            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), 2));
+            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC1")==0) {
             svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC2")==0) {
@@ -128,12 +128,12 @@ public class RunSVBRestart {
 
             Collections.shuffle(batch.getList(),random);
 
-            int maxTrain = 10000;
-            if (batch.getNumberOfDataInstances()<maxTrain)
-                maxTrain= batch.getNumberOfDataInstances();
+
+            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
+                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
 
 
-            int limit = (int) ((maxTrain*2.0)/3.0);
+            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
 
 
             DataOnMemoryListContainer<DataInstance> train= new
@@ -164,6 +164,8 @@ public class RunSVBRestart {
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\n");
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
+
+            fw.flush();
 
             System.out.println(svb.getLearntBayesianNetwork());
 

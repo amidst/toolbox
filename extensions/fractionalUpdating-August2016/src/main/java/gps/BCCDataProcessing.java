@@ -11,6 +11,15 @@
 
 package gps;
 
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Normal;
+import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
+import eu.amidst.core.models.BayesianNetwork;
+import eu.amidst.core.models.DAG;
+import eu.amidst.core.variables.Variable;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -49,11 +58,11 @@ public class BCCDataProcessing {
 
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void createMonths(String[] args) throws IOException {
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/datosWekaRemoveOutliersExtreme.arff";
 
-        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/daaWekaNoOutliers/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoOutliers/";
 
 
 
@@ -85,4 +94,81 @@ public class BCCDataProcessing {
 
 
     }
+
+    public static void printMeanAndVariance(String[] args) {
+
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
+
+
+
+        for (int i = 0; i < 84; i++) {
+            String path;
+            if (i<10){
+                path = dataOutput+"dataWeka0"+i+".arff";
+            }else{
+                path = dataOutput+"dataWeka"+i+".arff";
+            }
+
+            try {
+                DataStream<DataInstance> batch = DataStreamLoader.loadDataOnMemoryFromFile(path);
+
+
+            DAG dag = DAGsGeneration.getBCCNB(batch.getAttributes());
+
+            SVB svb = new SVB();
+
+            svb.setDAG(dag);
+
+            svb.initLearning();
+
+            svb.updateModel(batch);
+
+
+            BayesianNetwork net = svb.getLearntBayesianNetwork();
+
+            for (Variable variable : dag.getVariables()) {
+                if (!variable.isNormal())
+                    continue;
+
+                Normal dist = net.getConditionalDistribution(variable);
+
+                System.out.print(dist.getMean()+"\t");
+            }
+
+            System.out.println();
+
+            }catch(Exception ex){
+                continue;
+            }
+
+        }
+    }
+
+    public static void computSize(String[] args) {
+
+        //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+
+
+
+        double totalLog = 0;
+        String[] strings = new File(dataOutput).list();
+        Arrays.sort(strings);
+        for (String string : strings) {
+
+                if (!string.endsWith(".arff"))
+                    continue;
+
+                DataOnMemory<DataInstance> batch = DataStreamLoader.loadDataOnMemoryFromFile(dataOutput+string);
+
+                System.out.println(batch.getNumberOfDataInstances());
+
+
+        }
+    }
+
+    public static void main(String[] args) {
+        BCCDataProcessing.computSize(args);
+    }
+
 }

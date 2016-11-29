@@ -24,6 +24,12 @@ import java.util.Random;
  */
 public class EF_TruncatedExponential extends EF_UnivariateDistribution {
 
+    //It defines the upper interval of the distribution
+    double upperInterval = 1;
+
+    //It defines the lower interval of the distribution
+    double lowerInterval = 0;
+
     /**
      * Creates a new EF_TruncatedExponential distribution, for a given {@link Variable} object.
      * @param var1 a {@link Variable} object with a Gamma distribution type.
@@ -53,6 +59,31 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
         this.momentParameters = this.createZeroMomentParameters();
         this.naturalParameters.set(0, initialDelta);
         this.setNaturalParameters(naturalParameters);
+    }
+
+
+    public double getUpperInterval() {
+        return upperInterval;
+    }
+
+    public double getLowerInterval() {
+        return lowerInterval;
+    }
+
+    /**
+     * Set the upper interval of the truncated.
+     * @param upperInterval
+     */
+    public void setUpperInterval(double upperInterval) {
+        this.upperInterval = upperInterval;
+    }
+
+    /**
+     * Set the lower interval interval of the truncated.
+     * @param lowerInterval
+     */
+    public void setLowerInterval(double lowerInterval) {
+        this.lowerInterval = lowerInterval;
     }
 
     @Override
@@ -115,7 +146,15 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
         if (Math.exp(delta)>Double.MAX_VALUE){
             this.momentParameters.set(0, 1.0 - 1/delta);
         }else {
-            this.momentParameters.set(0, Math.exp(delta) / (Math.exp(delta) - 1) - 1 / delta);
+
+            double width = (this.upperInterval - this.lowerInterval);
+            double val = this.upperInterval -
+                    width/(1 - Math.exp(delta*width))
+                    - 1/delta;
+
+            this.momentParameters.set(0, val);
+
+//            this.momentParameters.set(0, Math.exp(delta) / (Math.exp(delta) - 1) - 1 / delta);
         }
     }
 
@@ -127,7 +166,17 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
     @Override
     public double computeLogNormalizer() {
         double delta =this.getNaturalParameters().get(0);
-        return Math.log((Math.exp(delta)-1)/delta);
+
+        //return Mt(Math.exp(delta*this.upperInterval)/this.upperInterval - Math.exp(delta*this.lowerInterval)/this.lowerInterval)
+
+        if (delta>100){
+            return this.upperInterval*delta - Math.log(delta);
+        }else {
+            return Math.log((Math.exp(delta * this.upperInterval) - Math.exp(delta * this.lowerInterval)) / delta);
+        }
+
+//        return Math.log((Math.exp(delta)-1)/delta);
+
     }
 
     @Override
