@@ -12,8 +12,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -25,11 +24,13 @@ public class MAPInferenceEval {
         String modelPath;
         String fileOutput;
         String attributesFile;
+        String variableNamesList;
 
-        if (args.length == 3) {
+        if (args.length == 4) {
             modelPath = args[0];
             fileOutput = args[1];
             attributesFile = args[2];
+            variableNamesList = args[3];
         }
         else {
             System.out.println("Incorrect number of arguments, use: \"MAPInferenceEval bnFilePath outputFile\"");
@@ -46,6 +47,7 @@ public class MAPInferenceEval {
             modelPath =  "/Users/dario/Desktop/PC__model.bn";
             fileOutput = "/Users/dario/Desktop/PC__model_MAP_output.txt";
             attributesFile = "/Users/dario/Desktop/datosPrueba.arff/attributes.txt";
+            variableNamesList = "VAR2,VAR3";
         }
 
 
@@ -55,9 +57,20 @@ public class MAPInferenceEval {
 
         System.out.println(model.toString());
 
-        List<Variable> mapVariables = Serialization.deepCopy(model.getVariables().getListOfVariables());
-        mapVariables.remove(mapVariables.lastIndexOf(model.getVariables().getVariableByName("Default")));
-        mapVariables.sort((var1, var2) -> var1.getName().compareTo(var2.getName()));
+        List<Variable> mapVariables;
+        if(variableNamesList.equals("")) {
+            mapVariables = Serialization.deepCopy(model.getVariables().getListOfVariables());
+            mapVariables.remove(mapVariables.lastIndexOf(model.getVariables().getVariableByName("Default")));
+            mapVariables.sort((var1, var2) -> var1.getName().compareTo(var2.getName()));
+        }
+        else {
+            StringTokenizer stringTokenizer = new StringTokenizer(variableNamesList," \",");
+            mapVariables = new ArrayList<>(stringTokenizer.countTokens());
+            while(stringTokenizer.hasMoreElements()) {
+                mapVariables.add(model.getVariables().getVariableByName(stringTokenizer.nextToken()));
+            }
+            mapVariables.forEach(variable -> System.out.println(variable.getName()));
+        }
 
         MAPInference mapInference = new MAPInference();
 
@@ -109,10 +122,10 @@ public class MAPInferenceEval {
 //        resultsWriter.println(MAPforDefaulters.outputString(model.getVariables().getListOfVariables()));
 //        resultsWriter.println();
 
+
+
         List<Variable> nonClassVariables = Serialization.deepCopy(model.getVariables().getListOfVariables());
         nonClassVariables.remove(classVar);
-
-
 
         List<String> attLines = Files.lines(Paths.get(attributesFile))
                 .map(String::trim)
@@ -128,13 +141,29 @@ public class MAPInferenceEval {
             System.out.println("ERROR: Amount of Variable objects does not match amount of Attribute lines");
         }
 
+        Map<String,List<String>> variablesStates = new HashMap<>();
+
         for (int i = 0; i < nonClassVariables.size(); i++) {
             Variable variable = nonClassVariables.get(i);
-            String [] varStates = getAttributeStateNames(attLines.get(i));
+            List<String> varStatesList = Arrays.stream(getAttributeStateNames(attLines.get(i))).collect(Collectors.toList());
+            variablesStates.put(variable.getName(),varStatesList);
+
+        }
+
+
+
+
+        for (int i = 0; i < mapVariables.size(); i++) {
+            Variable variable = mapVariables.get(i);
+            List<String> varStates = variablesStates.get(variable.getName());
 
 //            System.out.println(variable.getName() + " with states " + Arrays.toString(varStates));
 
-            String outputLine = variable.getName() + "," + varStates[(int)MAPforNonDefaulters.getValue(variable)] + "," + varStates[(int)MAPforDefaulters.getValue(variable)];
+            String valueNonDefaulters = varStates.get( (int)MAPforNonDefaulters.getValue(variable) );
+            String valueDefaulters = varStates.get( (int)MAPforDefaulters.getValue(variable) );
+
+
+            String outputLine = variable.getName() + "," + valueNonDefaulters + "," + valueDefaulters;
             resultsWriter.println(outputLine);
         }
         //attLines.forEach(attLine -> System.out.println(Arrays.toString(getAttributeStateNames(attLine))));
