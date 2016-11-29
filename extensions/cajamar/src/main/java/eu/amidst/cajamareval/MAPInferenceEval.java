@@ -69,7 +69,7 @@ public class MAPInferenceEval {
             while(stringTokenizer.hasMoreElements()) {
                 mapVariables.add(model.getVariables().getVariableByName(stringTokenizer.nextToken()));
             }
-            mapVariables.forEach(variable -> System.out.println(variable.getName()));
+//            mapVariables.forEach(variable -> System.out.println(variable.getName()));
         }
 
         MAPInference mapInference = new MAPInference();
