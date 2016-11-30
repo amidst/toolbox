@@ -47,7 +47,7 @@ public class MAPInferenceEval {
             modelPath =  "/Users/dario/Desktop/PC__model.bn";
             fileOutput = "/Users/dario/Desktop/PC__model_MAP_output.txt";
             attributesFile = "/Users/dario/Desktop/datosPrueba.arff/attributes.txt";
-            variableNamesList = "VAR2,VAR3";
+            variableNamesList = "*";
         }
 
 
@@ -58,7 +58,7 @@ public class MAPInferenceEval {
         System.out.println(model.toString());
 
         List<Variable> mapVariables;
-        if(variableNamesList.equals("")) {
+        if(variableNamesList.equals("") || variableNamesList.equals("*") ) {
             mapVariables = Serialization.deepCopy(model.getVariables().getListOfVariables());
             mapVariables.remove(mapVariables.lastIndexOf(model.getVariables().getVariableByName("Default")));
             mapVariables.sort((var1, var2) -> var1.getName().compareTo(var2.getName()));
