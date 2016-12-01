@@ -657,7 +657,8 @@ public class dVMPv1Test extends TestCase {
         Configuration conf = new Configuration();
         conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
         final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-                env.getConfig().disableSysoutLogging();         env.setParallelism(Main.PARALLELISM);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
 
         /*
          * Logging
