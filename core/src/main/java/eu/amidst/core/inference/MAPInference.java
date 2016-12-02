@@ -571,7 +571,7 @@ public class MAPInference implements PointEstimator {
     private double estimateProbabilityOfPartialAssignment(Assignment MAPassignment, boolean useConditionalDistributions) {
 
         double probabilityEstimate;
-        final int numSamplesAverage = 150;
+        final int numSamplesAverage = 1000;
 
         Assignment evidenceAugmented=new HashMapAssignment(evidence);
         MAPvariables.forEach(voi -> evidenceAugmented.setValue(voi, MAPassignment.getValue(voi)));
@@ -802,10 +802,11 @@ public class MAPInference implements PointEstimator {
         System.out.println();
 
 
-        int parallelSamples=20;
-        int samplingMethodSize=1000;
+        int numberOfIterations=300;
+        int parallelSamples=200;
+        int samplingMethodSize=100000;
         mapInference.setNumberOfStartingPoints(parallelSamples);
-
+        mapInference.setNumberOfIterations(numberOfIterations);
 
         /***********************************************
          *        INCLUDING EVIDENCE
