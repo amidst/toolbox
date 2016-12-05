@@ -130,4 +130,12 @@ class DynamicDataInstanceImpl implements DynamicDataInstance, Serializable {
         return timeID;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString(){
+        return this.outputString();
+    }
+
 }

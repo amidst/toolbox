@@ -95,6 +95,14 @@ public class DataFlinkLoader implements Serializable{
         return new DataFlinkFile(env,loader);
     }
 
+
+    public static DataFlink<DynamicDataInstance> openDynamic(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException {
+        if(isArffFolder(pathFileData))
+            return loadDynamicDataFromFolder(env,pathFileData,normalize);
+        return loadDynamicDataFromFile(env,pathFileData,normalize);
+    }
+
+
     public static DataFlink<DynamicDataInstance> loadDynamicDataFromFile(ExecutionEnvironment env, String pathFileData, boolean normalize)
             throws FileNotFoundException{
         return DataFlinkConverter.convertToDynamic(loadDataFromFile(env, pathFileData, normalize));

@@ -35,10 +35,17 @@ public class DynamicDataStreamLoader {
      * Loads a {@link DataStream} of {@link DynamicDataInstance} from a given file.
      * @param path the path of the file from which the dynamic data stream will be loaded.
      * @return a {@link DataStream} of {@link DynamicDataInstance}.
+     *
      */
+    @Deprecated
     public static DataStream<DynamicDataInstance> loadFromFile(String path){
+        return open(path);
+    }
+
+    public static DataStream<DynamicDataInstance> open(String path){
         dataFileReader.loadFromFile(path);
         return new DynamicDataStreamFromFile(dataFileReader);
     }
+
 
 }

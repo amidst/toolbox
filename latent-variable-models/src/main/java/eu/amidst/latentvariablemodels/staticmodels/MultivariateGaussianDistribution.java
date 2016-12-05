@@ -68,9 +68,6 @@ public class MultivariateGaussianDistribution extends Model<MultivariateGaussian
 
 
 
-    /////// Getters and setters
-
-
     /**
      * tests if the attributes passed as an argument in the constructor are suitable for this classifier
      * @return boolean value with the result of the test.

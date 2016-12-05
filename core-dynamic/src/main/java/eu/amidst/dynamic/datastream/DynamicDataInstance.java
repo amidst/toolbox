@@ -106,4 +106,16 @@ public interface DynamicDataInstance extends DataInstance, DynamicAssignment{
             this.setValue(var.getAttribute(), val, true);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default String outputString(){
+        StringBuilder builder = new StringBuilder(this.getAttributes().getFullListOfAttributes().size()*2);
+        builder.append("{");
+        this.getAttributes().getFullListOfAttributes().stream().forEach(att -> builder.append(att.getName()+ " = "+ att.stringValue(this.getValue(att))+", "));
+        builder.append("}");
+        return builder.toString();
+    }
 }
