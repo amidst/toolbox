@@ -24,10 +24,13 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.ParallelMLMissingData;
+import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.DataSetGenerator;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.StateSpaceTypeEnum;
+import eu.amidst.core.variables.Variable;
 import eu.amidst.latentvariablemodels.staticmodels.exceptions.WrongConfigurationException;
 
 import java.util.List;
@@ -43,8 +46,8 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
     /**
      * Constructor of the classifier which is initialized with the default arguments:
-     * the last variable in attributes is the class variable and importance sampling
-     * is the inference algorithm for making the predictions.
+     * the last variable in attributes is the class variable and VMP as the inference
+     * algorithm for making the predictions.
      * @param attributes list of attributes of the classifier (i.e. its variables)
      * @throws WrongConfigurationException is thrown when the attributes passed are not suitable
      * for such classifier
@@ -69,6 +72,59 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
 
         VMP vmp = new VMP();
         this.inferenceAlgoPredict = vmp;
+    }
+
+    /**
+     * Constructor of the classifier from a previously learnt BayesianNetwork object:
+     * @param attributes list of attributes of the classifier (i.e. its variables)
+     * @param bayesianNetwork a {@link BayesianNetwork} object with a Naive Bayes structure
+     * @throws WrongConfigurationException is thrown when the model passed is not suitable
+     * for such classifier
+     */
+    public NaiveBayesClassifier(Attributes attributes, BayesianNetwork bayesianNetwork) throws WrongConfigurationException {
+
+        super(attributes);
+        this.setLearningAlgorithm(new ParallelMLMissingData());
+        //this.setLearningAlgorithm(new SVB());
+
+
+//        ImportanceSampling importanceSampling = new ImportanceSampling();
+//        //importanceSampling.setKeepDataOnMemory(false);
+//        importanceSampling.setSampleSize(20000);
+
+
+//        ImportanceSamplingCLG inferenceAlgorithm = new ImportanceSamplingCLG();
+//        List<Variable> varsAPosteriori = new ArrayList<>();
+//        varsAPosteriori.add(this.classVar);
+//        inferenceAlgorithm.setVariablesAPosteriori(varsAPosteriori);
+//        inferenceAlgorithm.setSampleSize(10000);
+
+        VMP vmp = new VMP();
+        this.inferenceAlgoPredict = vmp;
+
+        DAG modelDag = bayesianNetwork.getDAG();
+        List<Variable> modelVariables = bayesianNetwork.getVariables().getListOfVariables();
+
+        // CHECK THAT THERE IS A CLASS VARIABLE (NO PARENTS)
+        if (modelVariables.stream().filter(variable -> modelDag.getParentSet(variable).getNumberOfParents()==0).count() != 1) {
+            throw new WrongConfigurationException("Invalid DAG structure in the BayesianNetwork object");
+        }
+        // CHECK THAT THE CLASS VARIABLE IS DISCRETE
+        Variable classVar = modelVariables.stream().filter(variable -> modelDag.getParentSet(variable).getNumberOfParents()==0).findFirst().get();
+        if (!classVar.isMultinomial()) {
+            throw new WrongConfigurationException("The class variable is not discrete");
+        }
+        // CHECK THAT THE OTHER VARIABLES ARE CHILDREN OF THE CLASS VARIABLE
+        boolean correctDAGstructure = modelVariables.stream()
+                .filter(variable -> !variable.equals(classVar))
+                .allMatch(variable -> {
+                     ParentSet parentSet = modelDag.getParentSet(variable);
+                     return parentSet.getNumberOfParents()==1 && parentSet.getParents().get(0).equals(classVar);
+                });
+        if (!correctDAGstructure) {
+            throw new WrongConfigurationException("Invalid DAG structure in the BayesianNetwork object");
+        }
+        this.setClassName(classVar.getName());
     }
 
     /**
