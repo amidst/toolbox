@@ -53,6 +53,8 @@ public abstract class Model<T extends Model> {
 
     protected PlateuStructure plateuStructure;
 
+    protected BayesianNetwork model;
+
     public Model(Attributes attributes) {
         this.atts = attributes;
         vars = new Variables(attributes);
@@ -163,15 +165,18 @@ public abstract class Model<T extends Model> {
         if (!initialized)
             initLearning();
 
-
-        return this.learningAlgorithm.updateModel(dataStream);
+        double result = this.learningAlgorithm.updateModel(dataStream);
+        this.model = this.learningAlgorithm.getLearntBayesianNetwork();
+        return result;
     }
 
     public double updateModel(DataOnMemory<DataInstance> datBatch){
         if (!initialized)
             initLearning();
 
-        return learningAlgorithm.updateModel(datBatch);
+        double result = learningAlgorithm.updateModel(datBatch);
+        this.model = this.learningAlgorithm.getLearntBayesianNetwork();
+        return result;
     }
 
     public void resetModel(){
@@ -179,17 +184,24 @@ public abstract class Model<T extends Model> {
         learningAlgorithm=null;
         learningAlgorithmFlink = null;
         this.dag=null;
+        this.model=null;
     }
 
     public BayesianNetwork getModel(){
-        if (learningAlgorithm !=null){
-            return this.learningAlgorithm.getLearntBayesianNetwork();
-        }
+//        if (learningAlgorithm !=null){
+//            return this.learningAlgorithm.getLearntBayesianNetwork();
+//        }
+//
+//        if (learningAlgorithmFlink!=null)
+//            return this.learningAlgorithmFlink.getLearntBayesianNetwork();
+//
+//        return null;
+        return this.model;
+    }
 
-        if (learningAlgorithmFlink!=null)
-            return this.learningAlgorithmFlink.getLearntBayesianNetwork();
-
-        return null;
+    public void setModel(BayesianNetwork model) {
+        this.model = model;
+        this.dag = model.getDAG();
     }
 
     protected String getErrorMessage() {

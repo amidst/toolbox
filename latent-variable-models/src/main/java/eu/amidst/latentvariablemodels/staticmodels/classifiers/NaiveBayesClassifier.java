@@ -125,6 +125,7 @@ public class NaiveBayesClassifier extends Classifier<NaiveBayesClassifier>{
             throw new WrongConfigurationException("Invalid DAG structure in the BayesianNetwork object");
         }
         this.setClassName(classVar.getName());
+        this.setModel(bayesianNetwork);
     }
 
     /**
