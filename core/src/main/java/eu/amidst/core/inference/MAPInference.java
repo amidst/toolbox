@@ -91,7 +91,7 @@ public class MAPInference implements PointEstimator {
 
         this.evidence = new HashMapAssignment(0);
         this.sampleSize = 10;
-        MAPrandom = new Random();
+        MAPrandom = new Random(this.seed);
     }
 
     /**
