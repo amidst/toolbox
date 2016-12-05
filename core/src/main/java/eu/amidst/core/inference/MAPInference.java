@@ -24,6 +24,7 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.models.ParentSet;
 import eu.amidst.core.utils.BayesianNetworkSampler;
+import eu.amidst.core.utils.RobustOperations;
 import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -565,7 +566,7 @@ public class MAPInference implements PointEstimator {
     }
 
     protected double estimateProbabilityOfPartialAssignment(Assignment MAPassignment) {
-        return estimateProbabilityOfPartialAssignment(MAPassignment,true);
+        return estimateProbabilityOfPartialAssignment(MAPassignment,false);
     }
 
     private double estimateProbabilityOfPartialAssignment(Assignment MAPassignment, boolean useConditionalDistributions) {
@@ -587,8 +588,13 @@ public class MAPInference implements PointEstimator {
                 else
                     return obtainValuesRandomly(finalAssignment, evidenceAugmented, new Random(MAPrandom.nextInt()));
                 })
-                .mapToDouble(as -> Math.exp(this.model.getLogProbabiltyOf(as)))
-                .filter(Double::isFinite).average().getAsDouble();
+                .mapToDouble(as -> this.model.getLogProbabiltyOf(as))
+                .filter(Double::isFinite)
+                .reduce(RobustOperations::robustSumOfLogarithms).getAsDouble();
+
+            //System.out.println(probabilityEstimate);
+            probabilityEstimate = Math.exp(probabilityEstimate)/numSamplesAverage;
+            //.average().getAsDouble();
         }
         catch(Exception e) {
             probabilityEstimate=0;
@@ -601,7 +607,7 @@ public class MAPInference implements PointEstimator {
 
     private WeightedAssignment runOptimizationAlgorithm(Assignment initialGuess, SearchAlgorithm optAlgorithm) {
 
-        final int movingVariablesLocalSearch = 3;
+        final int movingVariablesLocalSearch = 1;
         int optAlg;
         switch(optAlgorithm) {
             case SA_GLOBAL:
@@ -633,7 +639,7 @@ public class MAPInference implements PointEstimator {
 
 
         Assignment currentAssignment=new HashMapAssignment(initialGuess);
-        double currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment, true);
+        double currentProbability=estimateProbabilityOfPartialAssignment(currentAssignment, false);
 
         Assignment nextAssignment;
         double nextProbability;
@@ -650,7 +656,7 @@ public class MAPInference implements PointEstimator {
                 nextAssignment = assignContinuousVariables(nextAssignment);
             }
 
-            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment, true);
+            nextProbability=estimateProbabilityOfPartialAssignment(nextAssignment, false);
 
             if (nextProbability > currentProbability) {
                 currentAssignment = nextAssignment;
@@ -802,8 +808,8 @@ public class MAPInference implements PointEstimator {
         System.out.println();
 
 
-        int numberOfIterations=300;
-        int parallelSamples=200;
+        int numberOfIterations=100;
+        int parallelSamples=50;
         int samplingMethodSize=100000;
         mapInference.setNumberOfStartingPoints(parallelSamples);
         mapInference.setNumberOfIterations(numberOfIterations);
@@ -964,9 +970,12 @@ public class MAPInference implements PointEstimator {
         Variable varB=bn.getVariables().getVariableByName("B");
         Variable varD=bn.getVariables().getVariableByName("D");
 
+        mapEstimate.setValue(varB, 0);
+        mapEstimate.setValue(varD, 0);
         double s1 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
         System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s1);
 
+        mapEstimate.setValue(varB, 0);
         mapEstimate.setValue(varD, 1);
         double s2 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
         System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s2);
@@ -976,6 +985,7 @@ public class MAPInference implements PointEstimator {
         double s3 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
         System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s3);
 
+        mapEstimate.setValue(varB, 1);
         mapEstimate.setValue(varD, 1);
         double s4 = mapInference.estimateProbabilityOfPartialAssignment(mapEstimate);
         System.out.println(mapEstimate.outputString(varsInterest) + " with prob. " + s4);
@@ -985,6 +995,15 @@ public class MAPInference implements PointEstimator {
         System.out.println();
         System.out.println("Sum = " + sum + "; Normalized probs: [B=0,D=0]=" + s1/sum + ", [B=0,D=1]=" + s2/sum + ", [B=1,D=0]=" + s3/sum + ", [B=1,D=1]=" + s4/sum );
         System.out.println("Exact probs: 0.48, 0.12, 0.04, 0.36");
+
+        System.out.println("logProbEvidence: " + mapInference.getLogProbabilityOfEstimate());
+
+//        Joint Distribution p( D,B | S=0, L=1, E=1 )
+//                State,State,Values
+//                False,False,0.47999998477789063,
+//                False,True,0.03999999614862304,
+//                True,False,0.1200000190734869,
+//                True,True,0.36000001430511475,
 
 
     }
