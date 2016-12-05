@@ -347,7 +347,7 @@ public class MAPInferenceExperiments {
         MAPInference mapInference = new MAPInference();
         mapInference.setModel(bn);
         mapInference.setParallelMode(true);
-        mapInference.setSampleSize(1);
+        mapInference.setNumberOfStartingPoints(1);
 
         List<Variable> causalOrder = Utils.getTopologicalOrder(mapInference.getOriginalModel().getDAG());
 
@@ -358,7 +358,7 @@ public class MAPInferenceExperiments {
 
         int parallelSamples=20;
         int samplingMethodSize=100000;
-        mapInference.setSampleSize(parallelSamples);
+        mapInference.setNumberOfStartingPoints(parallelSamples);
 
 
 
@@ -469,7 +469,7 @@ public class MAPInferenceExperiments {
          ************************************************/
 
         // MAP INFERENCE WITH SIMULATION AND PICKING MAX
-        mapInference.setSampleSize(samplingMethodSize);
+        mapInference.setNumberOfStartingPoints(samplingMethodSize);
         timeStart = System.nanoTime();
         mapInference.runInference(MAPInference.SearchAlgorithm.SAMPLING);
 
