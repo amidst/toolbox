@@ -57,30 +57,38 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
 
     private static final long serialVersionUID = 8587756877237341367L;
 
-    private BayesianNetwork model;
-    private BayesianNetwork samplingModel;
-    private boolean sameSamplingModel;
+    protected BayesianNetwork model;
+    protected BayesianNetwork samplingModel;
+    protected boolean sameSamplingModel;
 
-    private List<Variable> causalOrder;
+    protected List<Variable> causalOrder;
 
-    private int seed = 0;
-    private int sampleSize = 1000;
+    protected int seed = 0;
+    protected int sampleSize = 1000;
 
-    private boolean keepDataOnMemory = true;
-    private List<ImportanceSampling.WeightedAssignment> weightedSampleList;
-    private Stream<ImportanceSampling.WeightedAssignment> weightedSampleStream;
+    protected boolean keepDataOnMemory = true;
+    protected List<ImportanceSampling.WeightedAssignment> weightedSampleList;
+    protected Stream<ImportanceSampling.WeightedAssignment> weightedSampleStream;
 
-    private Assignment evidence;
-    private boolean parallelMode = true;
+    protected Assignment evidence;
+    protected boolean parallelMode = true;
+    protected boolean updatedPosteriors = false;
 
-
-    private class WeightedAssignment {
+    protected class WeightedAssignment {
         private HashMapAssignment assignment;
         private double weight;
 
         public WeightedAssignment(HashMapAssignment assignment_, double weight_){
             this.assignment = assignment_;
             this.weight = weight_;
+        }
+
+        public double getWeight() {
+            return weight;
+        }
+
+        public HashMapAssignment getAssignment() {
+            return assignment;
         }
 
         public String toString() {
@@ -124,9 +132,9 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         this.causalOrder = Utils.getTopologicalOrder(model.getDAG());
         this.sameSamplingModel=true;
 
-        evidence=null;
-        weightedSampleList=null;
-        weightedSampleStream=null;
+        this.evidence=null;
+        this.weightedSampleList=null;
+        this.weightedSampleStream=null;
     }
 
     /**
@@ -135,8 +143,9 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     @Override
     public void setEvidence(Assignment evidence_) {
         this.evidence = evidence_;
-        weightedSampleList=null;
-        weightedSampleStream=null;
+        this.weightedSampleList=null;
+        this.weightedSampleStream=null;
+        this.updatedPosteriors = false;
     }
 
     /**
@@ -154,6 +163,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         else {
             this.sameSamplingModel=false;
         }
+        this.updatedPosteriors = false;
     }
 
     /**
@@ -162,6 +172,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
      */
     public void setSampleSize(int sampleSize) {
         this.sampleSize = sampleSize;
+        this.updatedPosteriors = false;
     }
 
     public void setKeepDataOnMemory(boolean keepDataOnMemory) {
@@ -214,7 +225,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return weightedSampleStream.map(wsl -> wsl.assignment);
     }
 
-    private WeightedAssignment getWeightedAssignmentSameModel(Random random) {
+    protected WeightedAssignment getWeightedAssignmentSameModel(Random random) {
 
         HashMapAssignment sample = new HashMapAssignment(this.model.getNumberOfVars());;
 
@@ -240,7 +251,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return new WeightedAssignment(sample,logWeight);
     }
 
-    private WeightedAssignment getWeightedAssignment(Random random) {
+    protected WeightedAssignment getWeightedAssignment(Random random) {
 
         if(this.sameSamplingModel) {
             return getWeightedAssignmentSameModel(random);
@@ -370,7 +381,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return (E)posteriorDistribution;
     }
 
-    private void computeWeightedSampleStream(boolean saveDataOnMemory_) {
+    protected void computeWeightedSampleStream(boolean saveDataOnMemory_) {
 
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         if (parallelMode) {
@@ -393,6 +404,8 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     public void runInference() {
         if(keepDataOnMemory) computeWeightedSampleStream(true);
         //computeWeightedSampleStream(keepDataOnMemory);
+
+        this.updatedPosteriors = true;
     }
 
 
@@ -412,7 +425,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         //importanceSampling.setSamplingModel(vmp.getSamplingModel());
 
         importanceSampling.setParallelMode(true);
-        importanceSampling.setSampleSize(100);
+        importanceSampling.setSampleSize(1000);
         importanceSampling.setSeed(57457);
         importanceSampling.setKeepDataOnMemory(true);
         importanceSampling.runInference();
