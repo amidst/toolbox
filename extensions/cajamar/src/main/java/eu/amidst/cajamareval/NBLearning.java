@@ -23,7 +23,6 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.PrintWriter;
 
 /**
@@ -39,7 +38,7 @@ public class NBLearning {
         String outputFolder;
         String dataSetName;
 
-        if(args.length == 3) { // Args:  train.arff test.arff outputFolder
+        if(args.length == 3) { // Args:  train.arff  outputFolder dataSetName
             fileTrain = args[0];
             outputFolder = args[1];
             dataSetName = args[2];
@@ -54,12 +53,10 @@ public class NBLearning {
             dataSetName = "";
         }
 
-        String fileOutput   =   outputFolder + "NB_" + dataSetName + "_predictions.csv";
         String modelOutput  =   outputFolder + "NB_" + dataSetName + "_model.bn";
         String modelOutputTxt = outputFolder + "NB_" + dataSetName + "_model.txt";
 
         DataStream<DataInstance> train = DataStreamLoader.open(fileTrain);
-        FileWriter fw = new FileWriter(fileOutput);
 
 
         NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier(train.getAttributes());

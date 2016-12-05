@@ -41,7 +41,7 @@ public class NBEvaluation {
         String outputFolder;
         String dataSetName;
 
-        if(args.length == 4) { // Args:  train.arff test.arff outputFolder
+        if(args.length == 4) { // Args:  model.bn test.arff outputFolder dataSetName
             fileModel = args[0];
             fileTest = args[1];
             outputFolder = args[2];
@@ -53,7 +53,7 @@ public class NBEvaluation {
 
             String folder = "/Users/dario/Desktop/CAJAMAR_Estaticos/10-11-2016_discretas/";
 
-            fileModel = folder + "NB_model.bn";  //CAJAMAR_DatosNB
+            fileModel = folder + "NB__model.bn";  //CAJAMAR_DatosNB
             fileTest = folder + "test.arff";
             outputFolder = folder;
             dataSetName = "";
@@ -65,6 +65,7 @@ public class NBEvaluation {
         FileWriter fw = new FileWriter(fileOutput);
 
         BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(fileModel);
+        System.out.println(bn.toString());
         NaiveBayesClassifier naiveBayesClassifier = new NaiveBayesClassifier(test.getAttributes(),bn);
 
         naiveBayesClassifier.setClassName(className);
