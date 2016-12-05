@@ -80,7 +80,8 @@ public class MAPInferenceEval {
         int nCores=4;
         int nSamplesPerCore=50;
 
-        mapInference.setSampleSize(nCores*nSamplesPerCore);
+        mapInference.setSeed(621369);
+        mapInference.setNumberOfStartingPoints(nCores*nSamplesPerCore);
         mapInference.setNumberOfIterations(300);
         mapInference.setMAPVariables(mapVariables);
 
