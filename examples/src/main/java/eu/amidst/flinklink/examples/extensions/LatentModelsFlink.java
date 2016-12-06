@@ -17,13 +17,26 @@ import java.io.FileNotFoundException;
  */
 public class LatentModelsFlink {
     public static void main(String[] args) throws FileNotFoundException {
-        //Set-up Flink session.
-        Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
-        env.setParallelism(Main.PARALLELISM);
+        boolean hadoop_cluster = false;
 
+        if (args.length>1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            conf.setInteger("taskmanager.numberOfTaskSlots",Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
         //Load the datastream
         String filename = "datasets/simulated/exampleDS_d0_c5.arff";
         DataFlink<DataInstance> data = DataFlinkLoader.loadDataFromFile(env, filename, false);

@@ -13,13 +13,26 @@ import org.apache.flink.configuration.Configuration;
 public class DataStreamLoaderExample {
     public static void main(String[] args) throws Exception {
 
-        //Set-up Flink session.
-        Configuration conf = new Configuration();
-        conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
-        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
-        env.getConfig().disableSysoutLogging();
-        env.setParallelism(Main.PARALLELISM);
+        boolean hadoop_cluster = false;
 
+        if (args.length>1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger("taskmanager.network.numberOfBuffers", 12000);
+            conf.setInteger("taskmanager.numberOfTaskSlots",Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
         //Paths to datasets
         String simpleFile = "datasets/simulated/syntheticData.arff";
         String distriFile = "datasets/simulated/distributed.arff";
