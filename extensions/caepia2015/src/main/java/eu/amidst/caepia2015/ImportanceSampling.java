@@ -175,13 +175,13 @@ public class ImportanceSampling implements InferenceAlgorithm {
         }
 
         if(vmp.getNumberOfIterations()==0) {
-            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current())).collect(Collectors.toList());
+            //weightedSampleList = auxIntStream.mapToObj(i -> generateSample(randomGenerator.current())).collect(Collectors.toList());
             weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
-            //weightedSampleList =  IntStream.range(0, sampleSize).mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+            //weightedSampleList =  IntStream.range(0, sampleSize).mapToObj(i -> generateSample(randomGenerator.current()));
 
         }
         else {
-            //weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp)).collect(Collectors.toList());
+            //weightedSampleList = auxIntStream.mapToObj(i -> generateSample(randomGenerator.current(), vmp)).collect(Collectors.toList());
             weightedSampleList = auxIntStream.mapToObj(i -> getWeightedAssignment(randomGenerator.current(), vmp));
         }
     }

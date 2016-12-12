@@ -257,7 +257,7 @@ public class MAPInferenceRobustNew implements PointEstimator {
 //        isSampler.setModel(this.model);
 //        isSampler.setEvidence(this.evidence);
 //        isSampler.setSampleSize(thisInferenceSampleSize);
-//        isSampler.setVariablesAPosteriori(new ArrayList<>());
+//        isSampler.setVariablesOfInterest(new ArrayList<>());
 //        isSampler.setParallelMode(this.parallelMode);
 //        //isSampler.runInference();
 //        Stream<Assignment> samples = isSampler.getSamples();

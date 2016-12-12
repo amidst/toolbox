@@ -2194,7 +2194,7 @@ public class TemperatureHumidityExperimentsNew {
 
 //        ImportanceSamplingCLG importanceSamplingRobust = new ImportanceSamplingCLG();
 //        importanceSamplingRobust.setModel(model);
-//        importanceSamplingRobust.setVariablesAPosteriori(MAPvariables);
+//        importanceSamplingRobust.setVariablesOfInterest(MAPvariables);
 //        importanceSamplingRobust.setSampleSize(1000000);
 //        importanceSamplingRobust.setEvidence(evidencePlusSequence);
 //

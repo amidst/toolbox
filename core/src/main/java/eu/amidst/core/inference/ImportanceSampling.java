@@ -225,7 +225,7 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return weightedSampleStream.map(wsl -> wsl.assignment);
     }
 
-    protected WeightedAssignment getWeightedAssignmentSameModel(Random random) {
+    protected WeightedAssignment generateSampleSameModel(Random random) {
 
         HashMapAssignment sample = new HashMapAssignment(this.model.getNumberOfVars());;
 
@@ -251,10 +251,10 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         return new WeightedAssignment(sample,logWeight);
     }
 
-    protected WeightedAssignment getWeightedAssignment(Random random) {
+    protected WeightedAssignment generateSample(Random random) {
 
         if(this.sameSamplingModel) {
-            return getWeightedAssignmentSameModel(random);
+            return generateSampleSameModel(random);
         }
 
         HashMapAssignment samplingAssignment = new HashMapAssignment(1);
@@ -386,10 +386,10 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
         if (parallelMode) {
             weightedSampleStream = IntStream.range(0, sampleSize).parallel()
-                    .mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+                    .mapToObj(i -> generateSample(randomGenerator.current()));
         } else {
             weightedSampleStream = IntStream.range(0, sampleSize).sequential()
-                    .mapToObj(i -> getWeightedAssignment(randomGenerator.current()));
+                    .mapToObj(i -> generateSample(randomGenerator.current()));
         }
 
         if(saveDataOnMemory_) {

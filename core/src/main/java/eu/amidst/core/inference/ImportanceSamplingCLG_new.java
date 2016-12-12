@@ -17,7 +17,6 @@
 
 package eu.amidst.core.inference;
 
-import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.GaussianMixture;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.distribution.UnivariateDistribution;
@@ -31,7 +30,9 @@ import eu.amidst.core.variables.Variable;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -61,7 +62,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private double logProbOfEvidence;
 
     private boolean parallelMode = true;
-
+    private boolean useGaussianMixtures = false;
 
     private class StreamingUpdateableGaussianMixture {
 
@@ -307,19 +308,24 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
      */
     @Override
     public void setModel(BayesianNetwork model_) {
-        this.model = Serialization.deepCopy(model_);
+        super.setModel(model_);
+
+//        this.model = Serialization.deepCopy(model_);
+
+
+
+        //setSamplingModel(model_);
+//        this.samplingModel = model;
+//        this.causalOrder = Utils.getTopologicalOrder(model.getDAG());
+//        this.sameSamplingModel=true;
+
+//        evidence=null;
+//        weightedSampleStream=null;
+//        this.weightedSampleList=null;
 
         if(this.model.getVariables().getListOfVariables().stream().anyMatch(variable -> !(variable.isMultinomial() || variable.isNormal()))) {
             throw new UnsupportedOperationException("All the Variable objects must be Multinomial or Normal in a CLG network");
         }
-
-        //setSamplingModel(model_);
-        this.samplingModel = model;
-        this.causalOrder = Utils.getTopologicalOrder(model.getDAG());
-        this.sameSamplingModel=true;
-
-        evidence=null;
-        weightedSampleStream=null;
 
         variablesAPosteriori = model.getVariables().getListOfVariables();
         SSMultinomialVariablesAPosteriori = new ArrayList<>(variablesAPosteriori.size());
@@ -356,31 +362,17 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         });
     }
 
-
-    public List<SufficientStatistics> getSSMultinomialVariablesAPosteriori() {
-        return SSMultinomialVariablesAPosteriori;
+    public void setGaussianMixturePosteriors(boolean useGaussianMixtures) {
+        this.useGaussianMixtures = useGaussianMixtures;
     }
 
-    /**
-     * Sets the sampling model for this ImportanceSampling.
-     * @param samplingModel_ a {@link BayesianNetwork} model according to which samples will be simulated.
-     */
-    public void setSamplingModel(BayesianNetwork samplingModel_) {
-        this.samplingModel = new BayesianNetwork(samplingModel_.getDAG(),
-                Serialization.deepCopy(samplingModel_.getConditionalDistributions()));
-        this.causalOrder = Utils.getTopologicalOrder(samplingModel.getDAG());
-
-        if (this.samplingModel.equalBNs(this.model,1E-10)) {
-            this.sameSamplingModel=true;
-        }
-        else {
-            this.sameSamplingModel=false;
-        }
-    }
+//    public List<SufficientStatistics> getSSMultinomialVariablesAPosteriori() {
+//        return SSMultinomialVariablesAPosteriori;
+//    }
 
 
 
-    public void setVariablesAPosteriori(List<Variable> variablesAPosterior) {
+    public void setVariablesOfInterest(List<Variable> variablesAPosterior) {
 
         this.variablesAPosteriori = variablesAPosterior;
         this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
@@ -518,77 +510,6 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //            }
 
 //        });
-    }
-
-    private WeightedAssignment generateSampleSameModel(Random random) {
-
-        HashMapAssignment sample = new HashMapAssignment(this.model.getNumberOfVars());;
-
-        double logWeight = 0.0;
-
-        for (Variable samplingVar : causalOrder) {
-
-            double simulatedValue;
-
-            ConditionalDistribution samplingDistribution = this.model.getConditionalDistribution(samplingVar);
-            UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(sample);
-
-            if( evidence!=null && !Double.isNaN(evidence.getValue(samplingVar))) {
-                simulatedValue=evidence.getValue(samplingVar);
-                logWeight = logWeight + univariateSamplingDistribution.getLogProbability(simulatedValue);
-            }
-            else {
-                simulatedValue = univariateSamplingDistribution.sample(random);
-            }
-            //logWeight = logWeight + univariateSamplingDistribution.getLogProbability(simulatedValue);
-            sample.setValue(samplingVar,simulatedValue);
-        }
-        //double logWeight = Math.exp(logWeight);
-        //System.out.println(logWeight);
-
-
-
-        return new WeightedAssignment(sample,logWeight);
-    }
-
-    private WeightedAssignment generateSample(Random random) {
-
-        if(this.sameSamplingModel) {
-            return generateSampleSameModel(random);
-        }
-
-        HashMapAssignment samplingAssignment = new HashMapAssignment(1);
-        HashMapAssignment modelAssignment = new HashMapAssignment(1);
-        double numerator = 0.0;
-        double denominator = 0.0;
-
-        for (Variable samplingVar : causalOrder) {
-
-            Variable modelVar = this.model.getVariables().getVariableById(samplingVar.getVarID());
-            double simulatedValue;
-
-            if( evidence!=null && !Double.isNaN(evidence.getValue(samplingVar))) {
-                simulatedValue=evidence.getValue(samplingVar);
-
-                UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
-                numerator = numerator + univariateModelDistribution.getLogProbability(simulatedValue);
-            }
-            else {
-                ConditionalDistribution samplingDistribution = this.samplingModel.getConditionalDistribution(samplingVar);
-                UnivariateDistribution univariateSamplingDistribution = samplingDistribution.getUnivariateDistribution(samplingAssignment);
-
-                simulatedValue = univariateSamplingDistribution.sample(random);
-                denominator = denominator + univariateSamplingDistribution.getLogProbability(simulatedValue);
-
-                UnivariateDistribution univariateModelDistribution = this.model.getConditionalDistribution(modelVar).getUnivariateDistribution(modelAssignment);
-                numerator = numerator + univariateModelDistribution.getLogProbability(simulatedValue);
-
-            }
-            modelAssignment.setValue(modelVar,simulatedValue);
-            samplingAssignment.setValue(samplingVar, simulatedValue);
-        }
-        double logWeight = numerator-denominator;
-        return new WeightedAssignment(samplingAssignment,logWeight);
     }
 
 
@@ -833,7 +754,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
         List<Variable> varsPosteriori = new ArrayList<>();
         varsPosteriori.add(gaussianVar0);
-        importanceSamplingCLG.setVariablesAPosteriori(varsPosteriori);
+        importanceSamplingCLG.setVariablesOfInterest(varsPosteriori);
 
         importanceSamplingCLG.runInference();
 
