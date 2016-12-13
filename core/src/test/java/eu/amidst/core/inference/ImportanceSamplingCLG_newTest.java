@@ -28,7 +28,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
 
-public class ImportanceSamplingTest extends TestCase {
+public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
     // A -> B
@@ -66,7 +66,7 @@ public class ImportanceSamplingTest extends TestCase {
 
 
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
 
@@ -110,7 +110,7 @@ public class ImportanceSamplingTest extends TestCase {
         assignment.setValue(varB, 0.0);
 
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
 
@@ -122,7 +122,7 @@ public class ImportanceSamplingTest extends TestCase {
         Multinomial postA = importanceSampling.getPosterior(varA);
         System.out.println("P(A) = " + postA.toString());
 
-        assertEquals(postA.getProbabilities()[0], 0.75, 0.01);
+        assertEquals(0.75, postA.getProbabilities()[0], 0.01);
 
     }
 
@@ -159,7 +159,7 @@ public class ImportanceSamplingTest extends TestCase {
         System.out.println(bn.toString());
 
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
 
@@ -217,7 +217,7 @@ public class ImportanceSamplingTest extends TestCase {
         HashMapAssignment assignment = new HashMapAssignment(1);
         assignment.setValue(varC, 0.0);
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
 
@@ -278,9 +278,10 @@ public class ImportanceSamplingTest extends TestCase {
         System.out.println(bn.toString());
 
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(false);
 
         importanceSampling.runInference();
 
@@ -295,7 +296,6 @@ public class ImportanceSamplingTest extends TestCase {
         assertEquals(0.5, postA.getProbabilities()[0], 0.01);
         assertEquals(2.5, postB.getMean(), 0.02);
         assertEquals(7.2, postB.getVariance(),  0.02);
-
 
 
     }
@@ -335,9 +335,10 @@ public class ImportanceSamplingTest extends TestCase {
         System.out.println(bn.toString());
 
 
-        ImportanceSampling importanceSampling = new ImportanceSampling();
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(false);
 
         importanceSampling.runInference();
 
@@ -349,9 +350,9 @@ public class ImportanceSamplingTest extends TestCase {
         System.out.println("P(A) = " + postA.toString());
         System.out.println("P(B) = " + postB.toString());
 
-        assertEquals(postA.getProbabilities()[0], 0.333, 0.01);
-        assertEquals(postB.getMean(), 0, 0.02);
-        assertEquals(postB.getVariance(), 2.8, 0.02);
+        assertEquals(0.333, postA.getProbabilities()[0], 0.01);
+        assertEquals(0, postB.getMean(), 0.02);
+        assertEquals(2.8, postB.getVariance(), 0.02);
 
 
 

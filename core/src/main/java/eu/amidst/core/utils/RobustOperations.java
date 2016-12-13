@@ -5,8 +5,9 @@ package eu.amidst.core.utils;
  */
 public class RobustOperations {
 
-    public static double robustSumOfLogarithms(double log_x1, double log_x2) {
+    public static double robustSumOfLogarithmsWithZeros(double log_x1, double log_x2) {
         double result;
+
         if(log_x1!=0 && log_x2!=0) {
 
             double aux_max = Math.max(log_x1,log_x2);
@@ -28,9 +29,23 @@ public class RobustOperations {
         else if (log_x1==0) {
             result=log_x2;
         }
+        else if (log_x1 == Double.NEGATIVE_INFINITY) {
+            result=log_x2;
+        }
         else {
             result=log_x1;
         }
+        return result;
+    }
+
+    public static double robustSumOfLogarithms(double log_x1, double log_x2) {
+        double result;
+
+        double aux_max = Math.max(log_x1,log_x2);
+        double aux_min = Math.min(log_x1,log_x2);
+
+        result = aux_max + Math.log( 1 + Math.exp(aux_min-aux_max) );
+
         return result;
     }
 
@@ -91,7 +106,7 @@ public class RobustOperations {
 //                ss_result[i]=log_a;
 //            }
 
-            ss_result[i] = robustSumOfLogarithms(log_a,log_b);
+            ss_result[i] = robustSumOfLogarithmsWithZeros(log_a,log_b);
         }
         return new ArrayVector(ss_result);
     }

@@ -19,6 +19,7 @@ package eu.amidst.core.inference;
 
 import eu.amidst.core.distribution.GaussianMixture;
 import eu.amidst.core.distribution.Multinomial;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
@@ -30,13 +31,13 @@ import eu.amidst.core.variables.Variable;
 import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 
 /**
@@ -54,15 +55,97 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private List<Variable> variablesAPosteriori_multinomials;
     private List<Variable> variablesAPosteriori_normals;
 
-    private List<SufficientStatistics> SSMultinomialVariablesAPosteriori;
-    private List<StreamingUpdateableGaussianMixture> SSNormalVariablesAPosteriori;
+    private List<SufficientStatistics> SSOfMultinomialVariables;
+    private List<StreamingUpdateableGaussianMixture> SSOfGaussianMixtureVariables;
+    private List<StreamingUpdateableRobustNormal> SSOfNormalVariables;
 
 
-    private Assignment evidence;
     private double logProbOfEvidence;
 
     private boolean parallelMode = true;
     private boolean useGaussianMixtures = false;
+
+    private class StreamingUpdateableRobustNormal {
+
+        Variable variable;
+//
+//        private double log_sum_weights = 0;
+//        private double log_sum_positive_terms = 0;
+//        private double log_sum_negative_terms = 0;
+//        private double log_sum_positive_terms_sq = 0;
+//        private double log_sum_negative_terms_sq = 0;
+
+        private double log_sum_weights = Double.NEGATIVE_INFINITY;
+        private double log_sum_positive_terms = Double.NEGATIVE_INFINITY;
+        private double log_sum_negative_terms = Double.NEGATIVE_INFINITY;
+        private double log_sum_positive_terms_sq = Double.NEGATIVE_INFINITY;
+        private double log_sum_negative_terms_sq = Double.NEGATIVE_INFINITY;
+
+
+        NormalDistributionImpl normalDistribution;
+
+        public StreamingUpdateableRobustNormal(Variable var) {
+            this.variable=var;
+        }
+
+        public void update(double dataPoint, double logWeight) {
+
+            double logThisTerm, logThisTerm_sq;
+            boolean output=false;
+
+            if(output) {
+                System.out.println("NUEVO DATO: " + dataPoint + ", CON PESO: " + logWeight);
+            }
+
+            if(dataPoint>0) {
+                logThisTerm = logWeight + Math.log(dataPoint);
+                log_sum_positive_terms = RobustOperations.robustSumOfLogarithms(log_sum_positive_terms, logThisTerm);
+
+                logThisTerm_sq = logWeight + 2 * Math.log(dataPoint);
+                log_sum_positive_terms_sq = RobustOperations.robustSumOfLogarithms(log_sum_positive_terms_sq, logThisTerm_sq);
+            }
+            else {
+                logThisTerm = logWeight + Math.log(-dataPoint);
+                log_sum_negative_terms = RobustOperations.robustSumOfLogarithms(log_sum_negative_terms, logThisTerm);
+
+                logThisTerm_sq = logWeight + 2 * Math.log(-dataPoint);
+                log_sum_negative_terms_sq = RobustOperations.robustSumOfLogarithms(log_sum_negative_terms_sq, logThisTerm_sq);
+            }
+
+            log_sum_weights = (log_sum_weights == Double.NEGATIVE_INFINITY ? logWeight : RobustOperations.robustSumOfLogarithms(log_sum_weights, logWeight));
+
+            if(output) {
+                System.out.println("log_sum_p: " + log_sum_positive_terms + ", log_sum_n:" + log_sum_negative_terms);
+                System.out.println("log_sum_p_sq: " + log_sum_positive_terms_sq + ", log_sum_n_sq:" + log_sum_negative_terms_sq);
+                System.out.println("log_sum_w: " + log_sum_weights);
+
+            }
+        }
+
+        public Normal getNormal() {
+            double logSumTerms, logSumTerms_sq;
+            double meanEstimate, varEstimate;
+
+            if(log_sum_positive_terms > log_sum_negative_terms) {
+                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms, log_sum_negative_terms);
+                meanEstimate = Math.exp( logSumTerms - log_sum_weights );
+            } else {
+                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms,log_sum_negative_terms);
+                meanEstimate = - Math.exp( logSumTerms - log_sum_weights );
+            }
+
+            logSumTerms_sq = RobustOperations.robustSumOfLogarithms(log_sum_positive_terms_sq,log_sum_negative_terms_sq);
+            varEstimate = Math.exp(logSumTerms_sq - log_sum_weights);
+
+            varEstimate = varEstimate - Math.pow(meanEstimate,2);
+
+            Normal normalDistribution = new Normal(variable);
+            normalDistribution.setMean(meanEstimate);
+            normalDistribution.setVariance(varEstimate);
+
+            return normalDistribution;
+        }
+    }
 
     private class StreamingUpdateableGaussianMixture {
 
@@ -328,13 +411,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         }
 
         variablesAPosteriori = model.getVariables().getListOfVariables();
-        SSMultinomialVariablesAPosteriori = new ArrayList<>(variablesAPosteriori.size());
+        SSOfMultinomialVariables = new ArrayList<>(variablesAPosteriori.size());
 
         variablesAPosteriori.stream().forEachOrdered(variable -> {
 
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
             ArrayVector arrayVector = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-            SSMultinomialVariablesAPosteriori.add(arrayVector);
+            SSOfMultinomialVariables.add(arrayVector);
         });
 
         this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
@@ -345,35 +428,39 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     }
 
 
-
-    public Stream<Assignment> getSamples() {
-
-        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
-
-        IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
-
-        if (!parallelMode) {
-            weightedSampleStream = weightedSampleStream.sequential();
-        }
-
-        return weightedSampleStream.mapToObj(i -> {
-            WeightedAssignment weightedSample = generateSample(randomGenerator.current());
-            return weightedSample.getAssignment();
-        });
-    }
+//    public Stream<Assignment> getSamples() {
+//
+//        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+//
+//        IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
+//
+//        if (!parallelMode) {
+//            weightedSampleStream = weightedSampleStream.sequential();
+//        }
+//
+//        return weightedSampleStream.mapToObj(i -> {
+//            WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+//            return weightedSample.getAssignment();
+//        });
+//    }
 
     public void setGaussianMixturePosteriors(boolean useGaussianMixtures) {
         this.useGaussianMixtures = useGaussianMixtures;
+//        this.SSOfNormalVariables = null;
+//        this.SSOfGaussianMixtureVariables = null;
     }
 
 //    public List<SufficientStatistics> getSSMultinomialVariablesAPosteriori() {
-//        return SSMultinomialVariablesAPosteriori;
+//        return SSOfMultinomialVariables;
 //    }
 
 
 
-    public void setVariablesOfInterest(List<Variable> variablesAPosterior) {
+    public void setVariablesOfInterest(List<Variable> variablesAPosterior) throws InvalidObjectException {
 
+        if (variablesAPosterior.stream().anyMatch(variable -> !model.getVariables().getListOfVariables().contains(variable))) {
+            throw new InvalidObjectException("All variables in the list must be included in the Bayesian network");
+        }
         this.variablesAPosteriori = variablesAPosterior;
         this.variablesAPosteriori_multinomials = variablesAPosteriori.stream().filter(Variable::isMultinomial).collect(Collectors.toList());
         this.variablesAPosteriori_normals = variablesAPosteriori.stream().filter(Variable::isNormal).collect(Collectors.toList());
@@ -384,26 +471,31 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     private void initializeSufficientStatistics() {
         // INITIALIZE SUFFICIENT STATISTICS FOR MULTINOMIAL VARIABLES
-        this.SSMultinomialVariablesAPosteriori = new ArrayList<>();
+        this.SSOfMultinomialVariables = new ArrayList<>();
 
         this.variablesAPosteriori.stream().filter(Variable::isMultinomial).forEachOrdered(variable -> {
 
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
             ArrayVector arrayVector = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
 
-            this.SSMultinomialVariablesAPosteriori.add(arrayVector);
+            this.SSOfMultinomialVariables.add(arrayVector);
         });
 
-        // INITIALIZE "SUFFICIENT STATISTICS" FOR NORMAL VARIABLES
-        this.SSNormalVariablesAPosteriori = new ArrayList<>();
-
-
-        this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
-
-            StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
-
-            this.SSNormalVariablesAPosteriori.add(streamingPosteriorDistribution);
-        });
+        // INITIALIZE "SUFFICIENT STATISTICS" FOR NORMAL VARIABLES, TO BUILD A NORMAL OR A GAUSSIAN MIXTURE
+        if(useGaussianMixtures) {
+            this.SSOfGaussianMixtureVariables = new ArrayList<>();
+            this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+                StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
+                this.SSOfGaussianMixtureVariables.add(streamingPosteriorDistribution);
+            });
+        }
+        else {
+            this.SSOfNormalVariables = new ArrayList<>();
+            this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+                StreamingUpdateableRobustNormal streamingPosteriorDistribution = new StreamingUpdateableRobustNormal(variable);
+                this.SSOfNormalVariables.add(streamingPosteriorDistribution);
+            });
+        }
     }
 
     //
@@ -431,7 +523,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 
             ArrayVector SSposterior = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-            SSposterior.copy(SSMultinomialVariablesAPosteriori.get(j));
+            SSposterior.copy(SSOfMultinomialVariables.get(j));
 
             ArrayVector newSSposterior;
 
@@ -445,7 +537,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
             newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
 
-            SSMultinomialVariablesAPosteriori.set(j,newSSposterior);
+            SSOfMultinomialVariables.set(j,newSSposterior);
         });
 
 
@@ -456,7 +548,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
 
             double dataPoint = sample.getValue(variable);
-            SSNormalVariablesAPosteriori.get(j).update(dataPoint, logWeight);
+
+            if(useGaussianMixtures) {
+                SSOfGaussianMixtureVariables.get(j).update(dataPoint, logWeight);
+            }
+            else {
+                SSOfNormalVariables.get(j).update(dataPoint, logWeight);
+            }
 
         });
 
@@ -472,11 +570,11 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //
 //                EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 //
-////            SufficientStatistics SSposterior = SSMultinomialVariablesAPosteriori.get(i);
+////            SufficientStatistics SSposterior = SSOfMultinomialVariables.get(i);
 ////            SufficientStatistics SSsample = ef_univariateDistribution.getSufficientStatistics(sample);
 //
 //                ArrayVector SSposterior = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-//                SSposterior.copy(SSMultinomialVariablesAPosteriori.get(i));
+//                SSposterior.copy(SSOfMultinomialVariables.get(i));
 //
 //                ArrayVector newSSposterior;
 //
@@ -497,12 +595,12 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //
 //                newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
 //
-//                SSMultinomialVariablesAPosteriori.set(i,newSSposterior);
+//                SSOfMultinomialVariables.set(i,newSSposterior);
 //            }
 //            else if(variable.isNormal()) {
 //
 //                double dataPoint = sample.getValue(variable);
-//                SSNormalVariablesAPosteriori.get(i).update(dataPoint, logWeight);
+//                SSOfGaussianMixtureVariables.get(i).update(dataPoint, logWeight);
 //
 //            }
 //            else {
@@ -567,7 +665,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             EF_UnivariateDistribution ef_univariateDistribution = variable.newUnivariateDistribution().toEFUnivariateDistribution();
 
             ArrayVector sumSS = new ArrayVector(ef_univariateDistribution.sizeOfSufficientStatistics());
-            sumSS.copy(SSMultinomialVariablesAPosteriori.get(variablesAPosteriori_multinomials.indexOf(variable)));
+            sumSS.copy(SSOfMultinomialVariables.get(variablesAPosteriori_multinomials.indexOf(variable)));
             //System.out.println(Arrays.toString(sumSS.toArray()));
 
             sumSS = RobustOperations.robustNormalizationOfLogProbabilitiesVector(sumSS);
@@ -586,7 +684,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
 //            throw new UnsupportedOperationException("ImportanceSamplingCLG.getPosterior() not supported yet for non-multinomial distributions");
             int j = variablesAPosteriori_normals.indexOf(variable);
-            return (E)SSNormalVariablesAPosteriori.get(j).getGaussianMixture();
+
+            if(useGaussianMixtures) {
+                return (E) SSOfGaussianMixtureVariables.get(j).getGaussianMixture();
+            }
+            else {
+                return (E) SSOfNormalVariables.get(j).getNormal();
+            }
         }
 
 
