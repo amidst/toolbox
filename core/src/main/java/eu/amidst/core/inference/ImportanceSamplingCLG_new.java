@@ -65,6 +65,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private boolean parallelMode = true;
     private boolean useGaussianMixtures = false;
 
+    private double mixtureOfGaussiansInitialVariance = 50;
+    private double mixtureOfGaussiansNoveltyRate = 0.0001;
+
     private class StreamingUpdateableRobustNormal {
 
         Variable variable;
@@ -160,6 +163,14 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
         NormalDistributionImpl normalDistribution;
 
+
+        public void setInitialVariance(double initial_variance) {
+            this.initial_variance = initial_variance;
+        }
+
+        public void setNoveltyRate(double tau_novelty) {
+            this.tau_novelty = tau_novelty;
+        }
 
         public void update(double dataPoint, double logWeight) {
 
@@ -446,8 +457,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     public void setGaussianMixturePosteriors(boolean useGaussianMixtures) {
         this.useGaussianMixtures = useGaussianMixtures;
-//        this.SSOfNormalVariables = null;
-//        this.SSOfGaussianMixtureVariables = null;
+
+        this.initializeSufficientStatistics();
     }
 
 //    public List<SufficientStatistics> getSSMultinomialVariablesAPosteriori() {
@@ -469,6 +480,22 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     }
 
+
+    public void setMixtureOfGaussiansInitialVariance(double mixtureOfGaussiansInitialVariance) {
+        this.mixtureOfGaussiansInitialVariance = mixtureOfGaussiansInitialVariance;
+        if(useGaussianMixtures) {
+            this.SSOfGaussianMixtureVariables.stream().forEach(object -> object.setInitialVariance(this.mixtureOfGaussiansInitialVariance));
+        }
+    }
+
+    public void setMixtureOfGaussiansNoveltyRate(double mixtureOfGaussiansNoveltyRate) {
+        this.mixtureOfGaussiansNoveltyRate = mixtureOfGaussiansNoveltyRate;
+        if(useGaussianMixtures) {
+            this.SSOfGaussianMixtureVariables.stream().forEach(object -> object.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate));
+        }
+    }
+
+
     private void initializeSufficientStatistics() {
         // INITIALIZE SUFFICIENT STATISTICS FOR MULTINOMIAL VARIABLES
         this.SSOfMultinomialVariables = new ArrayList<>();
@@ -486,6 +513,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             this.SSOfGaussianMixtureVariables = new ArrayList<>();
             this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
                 StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
+                streamingPosteriorDistribution.setInitialVariance(this.mixtureOfGaussiansInitialVariance);
+                streamingPosteriorDistribution.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate);
                 this.SSOfGaussianMixtureVariables.add(streamingPosteriorDistribution);
             });
         }

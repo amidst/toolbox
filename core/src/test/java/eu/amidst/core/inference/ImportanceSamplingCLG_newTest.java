@@ -17,10 +17,7 @@
 
 package eu.amidst.core.inference;
 
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.distribution.Multinomial_MultinomialParents;
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.distribution.Normal_MultinomialParents;
+import eu.amidst.core.distribution.*;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -269,6 +266,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
         normal1.setMean(5);
         normal1.setVariance(1);
+
         distB.setNormal(0, normal0);
         distB.setNormal(1, normal1);
 
@@ -300,7 +298,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
     }
 
-    // A multinomial -> B Gaussian
+    // A  multinomial -> B  Gaussian
     public static void test6() {
 
         Variables variables = new Variables();
@@ -353,6 +351,73 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         assertEquals(0.333, postA.getProbabilities()[0], 0.01);
         assertEquals(0, postB.getMean(), 0.02);
         assertEquals(2.8, postB.getVariance(), 0.02);
+
+
+
+    }
+
+
+    // A  multinomial -> B  mixture of Gaussians
+    public static void test7() {
+
+        Variables variables = new Variables();
+        Variable varA = variables.newMultionomialVariable("A", 2);
+        Variable varB = variables.newGaussianVariable("B");
+
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(varB).addParent(varA);
+
+        BayesianNetwork bn = new BayesianNetwork(dag);
+
+        Multinomial distA = bn.getConditionalDistribution(varA);
+        Normal_MultinomialParents distB = bn.getConditionalDistribution(varB);
+
+        distA.setProbabilities(new double[]{0.333, 0.667});
+
+        Normal normal0 = new Normal(varB);
+        Normal normal1 = new Normal(varB);
+
+        normal0.setMean(0);
+        normal0.setVariance(1);
+
+        normal1.setMean(10);
+        normal1.setVariance(1);
+
+        distB.setNormal(0, normal0);
+        distB.setNormal(1, normal1);
+
+
+        //bn.randomInitialization(new Random(0));
+
+        System.out.println(bn.toString());
+
+
+        ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
+        importanceSampling.setSampleSize(100000);
+        importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(true);
+        importanceSampling.setMixtureOfGaussiansInitialVariance(3);
+        //importanceSampling.setMixtureOfGaussiansNoveltyRate(0.0001);
+
+
+        importanceSampling.runInference();
+
+
+        Multinomial postA = importanceSampling.getPosterior(varA);
+        GaussianMixture postB = importanceSampling.getPosterior(varB);
+
+
+        System.out.println("P(A) = " + postA.toString());
+        System.out.println("P(B) = " + postB.toString());
+
+        assertEquals(0.333, postA.getProbabilities()[0], 0.02);
+        assertEquals(0.666, postB.getParameters()[0], 0.02);
+        assertEquals(10, postB.getParameters()[1], 0.02);
+        assertEquals(1, postB.getParameters()[2], 0.02);
+        assertEquals(0.333, postB.getParameters()[3], 0.02);
+        assertEquals(0, postB.getParameters()[4], 0.02);
+        assertEquals(1, postB.getParameters()[5], 0.02);
 
 
 
