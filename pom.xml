@@ -112,9 +112,8 @@
 
 
     <modules>
-        <module>module-all</module>
 
-      
+        <module>module-all</module>
         <module>core</module>
         <module>core-dynamic</module>
         
@@ -191,6 +190,8 @@
                     </archive>
                 </configuration>
             </plugin>
+
+
 
 
 
