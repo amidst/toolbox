@@ -56,7 +56,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private List<Variable> variablesAPosteriori_normals;
 
     private List<SufficientStatistics> SSOfMultinomialVariables;
-    private List<StreamingUpdateableGaussianMixture> SSOfGaussianMixtureVariables;
+    private List<List<StreamingUpdateableGaussianMixture>> SSOfGaussianMixtureVariables;
     private List<StreamingUpdateableRobustNormal> SSOfNormalVariables;
 
 
@@ -484,17 +484,26 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     public void setMixtureOfGaussiansInitialVariance(double mixtureOfGaussiansInitialVariance) {
         this.mixtureOfGaussiansInitialVariance = mixtureOfGaussiansInitialVariance;
         if(useGaussianMixtures) {
-            this.SSOfGaussianMixtureVariables.stream().forEach(object -> object.setInitialVariance(this.mixtureOfGaussiansInitialVariance));
+            for (int i = 0; i < SSOfGaussianMixtureVariables.size(); i++) {
+                this.SSOfGaussianMixtureVariables.get(i).forEach(object -> object.setInitialVariance(this.mixtureOfGaussiansInitialVariance));
+            }
+
         }
     }
 
     public void setMixtureOfGaussiansNoveltyRate(double mixtureOfGaussiansNoveltyRate) {
         this.mixtureOfGaussiansNoveltyRate = mixtureOfGaussiansNoveltyRate;
         if(useGaussianMixtures) {
-            this.SSOfGaussianMixtureVariables.stream().forEach(object -> object.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate));
+            for (int i = 0; i < SSOfGaussianMixtureVariables.size(); i++) {
+                this.SSOfGaussianMixtureVariables.get(i).forEach(object -> object.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate));
+            }
         }
     }
 
+    public void setParallelMode(boolean parallelMode_) {
+        this.parallelMode = parallelMode_;
+        this.initializeSufficientStatistics();
+    }
 
     private void initializeSufficientStatistics() {
         // INITIALIZE SUFFICIENT STATISTICS FOR MULTINOMIAL VARIABLES
@@ -508,15 +517,29 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             this.SSOfMultinomialVariables.add(arrayVector);
         });
 
+        int parallelism=1;
+        if(parallelMode) {
+            parallelism = Runtime.getRuntime().availableProcessors();
+        }
+
         // INITIALIZE "SUFFICIENT STATISTICS" FOR NORMAL VARIABLES, TO BUILD A NORMAL OR A GAUSSIAN MIXTURE
         if(useGaussianMixtures) {
             this.SSOfGaussianMixtureVariables = new ArrayList<>();
-            this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
-                StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
-                streamingPosteriorDistribution.setInitialVariance(this.mixtureOfGaussiansInitialVariance);
-                streamingPosteriorDistribution.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate);
-                this.SSOfGaussianMixtureVariables.add(streamingPosteriorDistribution);
-            });
+
+            for (int i = 0; i < parallelism; i++) {
+                ArrayList arrayList = new ArrayList();
+
+                this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+                    StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
+                    streamingPosteriorDistribution.setInitialVariance(this.mixtureOfGaussiansInitialVariance);
+                    streamingPosteriorDistribution.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate);
+                    arrayList.add(streamingPosteriorDistribution);
+                });
+
+                this.SSOfGaussianMixtureVariables.add(arrayList);
+            }
+
+
         }
         else {
             this.SSOfNormalVariables = new ArrayList<>();
@@ -543,7 +566,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //        return weightedSampleStream.map(wsl -> wsl.assignment);
 //    }
 
-    private void updatePosteriorDistributions(Assignment sample, double logWeight) {
+    private void updatePosteriorDistributions(Assignment sample, double logWeight, int parallelProcessIndex) {
 
         variablesAPosteriori_multinomials.stream().forEach(variable -> {
 
@@ -579,7 +602,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             double dataPoint = sample.getValue(variable);
 
             if(useGaussianMixtures) {
-                SSOfGaussianMixtureVariables.get(j).update(dataPoint, logWeight);
+                SSOfGaussianMixtureVariables.get(parallelProcessIndex).get(j).update(dataPoint, logWeight);
             }
             else {
                 SSOfNormalVariables.get(j).update(dataPoint, logWeight);
@@ -715,7 +738,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             int j = variablesAPosteriori_normals.indexOf(variable);
 
             if(useGaussianMixtures) {
-                return (E) SSOfGaussianMixtureVariables.get(j).getGaussianMixture();
+                return (E) SSOfGaussianMixtureVariables.get(0).get(j).getGaussianMixture();
             }
             else {
                 return (E) SSOfNormalVariables.get(j).getNormal();
@@ -789,6 +812,63 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //    }
 
 
+    private void runInferenceForGaussianMixtures() {
+
+        int parallelism = Runtime.getRuntime().availableProcessors();
+
+        IntStream parallelProcesses = IntStream.range(0, parallelism).parallel();
+
+        if (!parallelMode) {
+            parallelProcesses = parallelProcesses.sequential();
+        }
+
+        double logSumWeights = parallelProcesses.mapToDouble(parallelProcessIndex -> {
+            IntStream weightedSampleStream = IntStream.range(0, sampleSize/parallelism).sequential();
+
+            return weightedSampleStream
+                   .mapToDouble(i -> {
+                       LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed + i);
+                       WeightedAssignment weightedSample = generateSample(randomGenerator.current());
+                       //System.out.println(weightedSample.assignment.outputString());
+                       //System.out.println(weightedSample.logWeight);
+                       updatePosteriorDistributions(weightedSample.getAssignment(),weightedSample.getWeight(),parallelProcessIndex);
+                       //updateLogProbabilityOfEvidence(weightedSample.logWeight);
+                       //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,weightedSample.logWeight-Math.log(sampleSize));
+                       //System.out.println(weightedSample.logWeight);
+                       //System.out.println(logProbOfEvidence);
+
+                       return weightedSample.getWeight();
+
+                   }).reduce(RobustOperations::robustSumOfLogarithms).getAsDouble();
+
+        }).reduce(RobustOperations::robustSumOfLogarithms).getAsDouble();
+
+        if (evidence!=null) {
+            logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+        }
+        else {
+            logProbOfEvidence = 0;
+        }
+
+
+
+
+
+
+        //        return weightedSampleStream.mapToDouble(ws -> ws.logWeight - Math.log(sampleSize)).reduce(this::robustSumOfLogarithms).getAsDouble();
+
+
+        //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,-Math.log(sampleSize));
+
+
+
+//        if(saveDataOnMemory_) {
+//            weightedSampleList = weightedSampleStream.collect(Collectors.toList());
+//            //weightedSampleList.forEach(weightedAssignment -> System.out.println("Weight: " + weightedAssignment.logWeight + " for assignment " + weightedAssignment.assignment.getValue(this.model.getVariables().getListOfVariables().get(0)) + " prob " + model.getLogProbabiltyOf(weightedAssignment.assignment)));
+//        }
+
+
+    }
 
 
     /**
@@ -797,13 +877,18 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     @Override
     public void runInference() {
 
+        if(useGaussianMixtures) {
+            this.runInferenceForGaussianMixtures();
+            return;
+        }
+
         LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
 
         IntStream weightedSampleStream = IntStream.range(0, sampleSize).parallel();
 
-//        if (!parallelMode) {
+        if (!parallelMode) {
             weightedSampleStream = weightedSampleStream.sequential();
-//        }
+        }
 
 //            weightedSampleStream = IntStream.range(0, sampleSize).parallel()
 //                    .mapToObj(i -> generateSample(randomGenerator.current()));
@@ -817,7 +902,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                     WeightedAssignment weightedSample = generateSample(randomGenerator.current());
                     //System.out.println(weightedSample.assignment.outputString());
                     //System.out.println(weightedSample.logWeight);
-                    updatePosteriorDistributions(weightedSample.getAssignment(),weightedSample.getWeight());
+                    updatePosteriorDistributions(weightedSample.getAssignment(),weightedSample.getWeight(),0);
                     //updateLogProbabilityOfEvidence(weightedSample.logWeight);
 
 
@@ -837,10 +922,10 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,-Math.log(sampleSize));
 
         if (evidence!=null) {
-            logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+            this.logProbOfEvidence = logSumWeights - Math.log(sampleSize);
         }
         else {
-            logProbOfEvidence = 0;
+            this.logProbOfEvidence = 0;
         }
 
 //        if(saveDataOnMemory_) {
