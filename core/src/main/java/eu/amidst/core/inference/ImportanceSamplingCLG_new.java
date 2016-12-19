@@ -57,7 +57,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     private List<SufficientStatistics> SSOfMultinomialVariables;
     private List<List<StreamingUpdateableGaussianMixture>> SSOfGaussianMixtureVariables;
-    private List<StreamingUpdateableRobustNormal> SSOfNormalVariables;
+    private List<List<StreamingUpdateableRobustNormal>> SSOfNormalVariables;
+    //private List<StreamingUpdateableRobustNormal> SSOfNormalVariables;
 
 
     private double logProbOfEvidence;
@@ -67,6 +68,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     private double mixtureOfGaussiansInitialVariance = 50;
     private double mixtureOfGaussiansNoveltyRate = 0.0001;
+
+
+
 
     private class StreamingUpdateableRobustNormal {
 
@@ -148,6 +152,25 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
             return normalDistribution;
         }
+
+        public double getLogSumWeights() {
+            return log_sum_weights;
+        }
+
+        protected double [] getLogParameters() {
+            return new double[]{log_sum_positive_terms,log_sum_negative_terms,log_sum_positive_terms_sq,log_sum_negative_terms_sq,log_sum_weights};
+        }
+
+        protected void setLogParameters(double[] logParameters) {
+            // CAREFUL USING THIS METHOD!!
+            if(logParameters.length==5) {
+                this.log_sum_positive_terms=logParameters[0];
+                this.log_sum_negative_terms=logParameters[1];
+                this.log_sum_positive_terms_sq=logParameters[2];
+                this.log_sum_negative_terms_sq=logParameters[3];
+                this.log_sum_weights=logParameters[4];
+            }
+        }
     }
 
     private class StreamingUpdateableGaussianMixture {
@@ -161,6 +184,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         private List<Double> componentWeight;
         private List<Double> log_sumProbs;
 
+        private double log_sum_weights = Double.NEGATIVE_INFINITY;
+
         NormalDistributionImpl normalDistribution;
 
 
@@ -172,7 +197,23 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             this.tau_novelty = tau_novelty;
         }
 
+        public double getLogSumWeights() {
+            return log_sum_weights;
+        }
+
+        protected void add(double weight, Normal normal) {
+            // CAREFUL USING THIS METHOD!!
+            M=M+1;
+            mean.add(normal.getMean());
+            variance.add(normal.getVariance());
+            componentWeight.add(weight);
+            log_sumProbs.add(1.0);
+        }
+
+
         public void update(double dataPoint, double logWeight) {
+
+            this.log_sum_weights = (log_sum_weights == Double.NEGATIVE_INFINITY ? logWeight : RobustOperations.robustSumOfLogarithms(log_sum_weights, logWeight));
 
             boolean output=false;
 
@@ -543,10 +584,21 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         }
         else {
             this.SSOfNormalVariables = new ArrayList<>();
-            this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
-                StreamingUpdateableRobustNormal streamingPosteriorDistribution = new StreamingUpdateableRobustNormal(variable);
-                this.SSOfNormalVariables.add(streamingPosteriorDistribution);
-            });
+//            this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+//                StreamingUpdateableRobustNormal streamingPosteriorDistribution = new StreamingUpdateableRobustNormal(variable);
+//                this.SSOfNormalVariables.add(streamingPosteriorDistribution);
+//            });
+
+            for (int i = 0; i < parallelism; i++) {
+                ArrayList arrayList = new ArrayList();
+
+                this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
+                    StreamingUpdateableRobustNormal streamingPosteriorDistribution = new StreamingUpdateableRobustNormal(variable);
+                    arrayList.add(streamingPosteriorDistribution);
+                });
+
+                this.SSOfNormalVariables.add(arrayList);
+            }
         }
     }
 
@@ -605,7 +657,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                 SSOfGaussianMixtureVariables.get(parallelProcessIndex).get(j).update(dataPoint, logWeight);
             }
             else {
-                SSOfNormalVariables.get(j).update(dataPoint, logWeight);
+                SSOfNormalVariables.get(parallelProcessIndex).get(j).update(dataPoint, logWeight);
             }
 
         });
@@ -726,7 +778,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             Multinomial posteriorDistribution = ef_univariateDistribution.toUnivariateDistribution();
             posteriorDistribution.setProbabilities(Utils.normalize(posteriorDistribution.getParameters()));
 
-            return (E)posteriorDistribution;
+            return (E) posteriorDistribution;
         }
 
 
@@ -738,16 +790,85 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             int j = variablesAPosteriori_normals.indexOf(variable);
 
             if(useGaussianMixtures) {
-                return (E) SSOfGaussianMixtureVariables.get(0).get(j).getGaussianMixture();
+                List<StreamingUpdateableGaussianMixture> auxList = new ArrayList<>();
+                for (int i = 0; i < SSOfGaussianMixtureVariables.size(); i++) {
+                    auxList.add(SSOfGaussianMixtureVariables.get(i).get(j));
+                }
+                return (E) auxList.stream().reduce(this::reduceGaussianMixture).get().getGaussianMixture();
+                //return (E) SSOfGaussianMixtureVariables.get(0).get(j).getGaussianMixture();
             }
             else {
-                return (E) SSOfNormalVariables.get(j).getNormal();
+                List<StreamingUpdateableRobustNormal> auxList = new ArrayList<>();
+                for (int i = 0; i < SSOfNormalVariables.size(); i++) {
+                    auxList.add(SSOfNormalVariables.get(i).get(j));
+                }
+                return (E) auxList.stream().reduce(this::reduceNormal).get().getNormal();
             }
         }
 
 
     }
 
+    protected StreamingUpdateableRobustNormal reduceNormal(StreamingUpdateableRobustNormal distr1, StreamingUpdateableRobustNormal distr2) {
+        double [] paramDistr1 = distr1.getLogParameters();
+        double [] paramDistr2 = distr2.getLogParameters();
+        double [] paramNewDistr = new double[5];
+
+        for (int i = 0; i < paramDistr1.length; i++) {
+            paramNewDistr[i] = RobustOperations.robustSumOfLogarithms(paramDistr1[i],paramDistr2[i]);
+        }
+
+        StreamingUpdateableRobustNormal newDistr = new StreamingUpdateableRobustNormal(distr1.getNormal().getVariable());
+        newDistr.setLogParameters(paramNewDistr);
+        return newDistr;
+    }
+
+    private StreamingUpdateableGaussianMixture reduceGaussianMixture(StreamingUpdateableGaussianMixture distr1, StreamingUpdateableGaussianMixture distr2) {
+
+        double[] paramDistr1 = distr1.getGaussianMixture().getParameters();
+        double[] paramDistr2 = distr2.getGaussianMixture().getParameters();
+
+        StreamingUpdateableGaussianMixture newDistr = new StreamingUpdateableGaussianMixture();
+
+        double logWeightDistr1 = distr1.getLogSumWeights();
+        double logWeightDistr2 = distr1.getLogSumWeights();
+
+        double logSumWeights = RobustOperations.robustSumOfLogarithms(logWeightDistr1,logWeightDistr2);
+
+        for (int i = 0; i < (paramDistr1.length)/3; i++) {
+            double weightThisTerm = paramDistr1[3*i+0];
+            double meanThisTerm =   paramDistr1[3*i+1];
+            double varThisTerm =    paramDistr1[3*i+2];
+
+            double relativeWeight = Math.exp(logWeightDistr1 - logSumWeights);
+            double newWeight = relativeWeight * weightThisTerm;
+
+            if(newWeight > 0.0001) {
+                Normal normal = new Normal(distr1.getGaussianMixture().getVariable());
+                normal.setMean(meanThisTerm);
+                normal.setVariance(varThisTerm);
+                newDistr.add(newWeight, normal);
+            }
+        }
+
+        for (int i = 0; i < (paramDistr2.length)/3; i++) {
+            double weightThisTerm = paramDistr2[3*i+0];
+            double meanThisTerm =   paramDistr2[3*i+1];
+            double varThisTerm =    paramDistr2[3*i+2];
+
+            double relativeWeight = Math.exp(logWeightDistr2 - logSumWeights);
+            double newWeight = relativeWeight * weightThisTerm;
+
+            if(newWeight > 0.0001) {
+                Normal normal = new Normal(distr1.getGaussianMixture().getVariable());
+                normal.setMean(meanThisTerm);
+                normal.setVariance(varThisTerm);
+                newDistr.add(newWeight, normal);
+            }
+        }
+
+        return newDistr;
+    }
 //    /**
 //     * {@inheritDoc}
 //     */
