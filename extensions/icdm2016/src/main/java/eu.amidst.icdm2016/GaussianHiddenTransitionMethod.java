@@ -74,7 +74,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
                 precisionPrior = 1 / varPrior;
                 meanPrior = 0;
             }else if(paramVariable.getName().contains("_Beta0_")){
-                varPrior = 1;
+                varPrior = 1e100;
                 precisionPrior = 1 / varPrior;
                 meanPrior = 0;
             }else{

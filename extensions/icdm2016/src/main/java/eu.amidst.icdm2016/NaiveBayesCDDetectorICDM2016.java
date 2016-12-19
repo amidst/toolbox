@@ -24,7 +24,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
     //static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
 
-    static String[] varNames = {"VAR07"};
+    static String[] varNames = {"VAR04"};
 
     static int windowSize = 50000;
 
