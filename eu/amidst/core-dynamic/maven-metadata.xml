@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>core-dynamic</artifactId>
   <versioning>
-    <release>0.6.0</release>
+    <release>0.6.1-alpha</release>
     <versions>
-      <version>0.6.0</version>
+      <version>0.6.1-alpha</version>
     </versions>
-    <lastUpdated>20161014160938</lastUpdated>
+    <lastUpdated>20161219163452</lastUpdated>
   </versioning>
 </metadata>
