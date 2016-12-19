@@ -63,9 +63,10 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
-
+        importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
 
         importanceSampling.runInference();
 
@@ -107,8 +108,10 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
 
         importanceSampling.setEvidence(assignment);
 
@@ -156,8 +159,10 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
 
         importanceSampling.runInference();
 
@@ -214,8 +219,10 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         assignment.setValue(varC, 0.0);
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
+        importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
 
         importanceSampling.setEvidence(assignment);
 
@@ -276,9 +283,11 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
         importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
+
 
         importanceSampling.runInference();
 
@@ -292,7 +301,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
         assertEquals(0.5, postA.getProbabilities()[0], 0.01);
         assertEquals(2.5, postB.getMean(), 0.02);
-        assertEquals(7.2, postB.getVariance(),  0.02);
+        assertEquals(7.25, postB.getVariance(),  0.2);
 
 
     }
@@ -333,9 +342,10 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(100000);
+        importanceSampling.setSampleSize(10000);
         importanceSampling.setModel(bn);
         importanceSampling.setGaussianMixturePosteriors(false);
+        importanceSampling.setParallelMode(false);
 
         importanceSampling.runInference();
 
@@ -349,7 +359,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
         assertEquals(0.333, postA.getProbabilities()[0], 0.01);
         assertEquals(0, postB.getMean(), 0.02);
-        assertEquals(2.8, postB.getVariance(), 0.5);
+        assertEquals(2.666, postB.getVariance(), 0.2);
 
     }
 
@@ -393,6 +403,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
         importanceSampling.setSampleSize(100000);
         importanceSampling.setModel(bn);
+        importanceSampling.setParallelMode(false);
         importanceSampling.setGaussianMixturePosteriors(true);
         importanceSampling.setMixtureOfGaussiansInitialVariance(3);
         //importanceSampling.setMixtureOfGaussiansNoveltyRate(0.0001);

@@ -131,9 +131,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
             if(log_sum_positive_terms > log_sum_negative_terms) {
                 logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms, log_sum_negative_terms);
-                meanEstimate = Math.exp( logSumTerms - log_sum_weights );
+                meanEstimate =   Math.exp( logSumTerms - log_sum_weights );
             } else {
-                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms,log_sum_negative_terms);
+                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms, log_sum_negative_terms);
                 meanEstimate = - Math.exp( logSumTerms - log_sum_weights );
             }
 
@@ -814,16 +814,21 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
     private void runInferenceForGaussianMixtures() {
 
-        int parallelism = Runtime.getRuntime().availableProcessors();
+        int parallelism = 1;
+        IntStream parallelProcesses;
 
-        IntStream parallelProcesses = IntStream.range(0, parallelism).parallel();
-
-        if (!parallelMode) {
-            parallelProcesses = parallelProcesses.sequential();
+        if (parallelMode) {
+            parallelism = Runtime.getRuntime().availableProcessors();
+            parallelProcesses = IntStream.range(0, parallelism).parallel();
+        }
+        else {
+            parallelProcesses = IntStream.range(0, 1).sequential();
         }
 
+        int subsampleSize = sampleSize/parallelism;
+
         double logSumWeights = parallelProcesses.mapToDouble(parallelProcessIndex -> {
-            IntStream weightedSampleStream = IntStream.range(0, sampleSize/parallelism).sequential();
+            IntStream weightedSampleStream = IntStream.range(0, subsampleSize).sequential();
 
             return weightedSampleStream
                    .mapToDouble(i -> {

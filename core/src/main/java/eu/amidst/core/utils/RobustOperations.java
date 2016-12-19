@@ -138,7 +138,7 @@ public class RobustOperations {
 //            else {
 //                log_sumProbabilities=log_a;
 //            }
-            log_sumProbabilities = robustSumOfLogarithms(log_sumProbabilities, log_b);
+            log_sumProbabilities = robustSumOfLogarithmsWithZeros(log_sumProbabilities, log_b);
         }
 
         //System.out.println("logSUM: " + log_sumProbabilities);
