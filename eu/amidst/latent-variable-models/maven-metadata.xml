@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>latent-variable-models</artifactId>
   <versioning>
-    <release>0.6.0</release>
+    <release>0.6.1-alpha</release>
     <versions>
-      <version>0.6.0</version>
+      <version>0.6.1-alpha</version>
     </versions>
-    <lastUpdated>20161014161147</lastUpdated>
+    <lastUpdated>20161219171107</lastUpdated>
   </versioning>
 </metadata>
