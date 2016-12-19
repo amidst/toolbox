@@ -51,7 +51,7 @@ public class PlateuStructure implements Serializable {
     /**
      * Represents a map describing which variables are replicated
      */
-    Map<Variable, Boolean> replicatedVariables;
+    protected Map<Variable, Boolean> replicatedVariables;
 
     /**
      * Represents the list of non replicated {@link Node}s.

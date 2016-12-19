@@ -298,7 +298,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         this.plateuStructure.runInference();
         nIterTotal+=this.plateuStructure.getVMP().getNumberOfIterations();
 
-        this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
+//        this.updateNaturalParameterPrior(this.plateuStructure.getPlateauNaturalParameterPosterior());
 
         //this.plateuVMP.resetQs();
         return this.plateuStructure.getLogProbabilityOfEvidence();

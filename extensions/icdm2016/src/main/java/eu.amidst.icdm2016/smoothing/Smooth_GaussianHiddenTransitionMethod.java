@@ -1,25 +1,21 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package eu.amidst.icdm2016;
+package eu.amidst.icdm2016.smoothing;
 
 
 
-import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
+import eu.amidst.core.exponentialfamily.EF_Normal;
+import eu.amidst.core.exponentialfamily.EF_NormalParameter;
+import eu.amidst.core.exponentialfamily.EF_Normal_NormalParents;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.TransitionMethod;
 import eu.amidst.core.variables.Variable;
@@ -30,7 +26,7 @@ import java.util.List;
 /**
  * Created by andresmasegosa on 13/4/15.
  */
-public class GaussianHiddenTransitionMethod implements TransitionMethod, Serializable{
+public class Smooth_GaussianHiddenTransitionMethod implements TransitionMethod, Serializable{
     /** Represents the serial version ID for serializing the object. */
     private static final long serialVersionUID = 4107783324901370839L;
 
@@ -47,7 +43,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
         this.fading = fading;
     }
 
-    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double transtionVariance_){
+    public Smooth_GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double transtionVariance_){
         this.localHiddenVars=localHiddenVars_;
         this.meanStart = meanStart_;
         this.transtionVariance = transtionVariance_;
@@ -89,9 +85,8 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
 
         //Initialization for Hidden
-        for (Variable localVar : this.localHiddenVars) {
 
-            EF_Normal normal = bayesianNetwork.getDistribution(localVar);
+            EF_Normal normal = bayesianNetwork.getDistribution(localHiddenVars.get(0));
 
 
             //double mean = meanStart;
@@ -108,18 +103,35 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             normal.updateMomentFromNaturalParameters();
 
 
-            double meanQ = 12.615798294948437;
-            double invVarQ = 0.663579899051184;
+            /*double meanQ = 0;
+            double invVarQ = 1e100;
 
-            EF_Normal qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localVar).getQDist();
+            EF_Normal qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localHiddenVars.get(0)).getQDist();
 
             qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
             qNormal.fixNumericalInstability();
             qNormal.updateMomentFromNaturalParameters();
+            */
 
+        for (int i = 1; i < this.localHiddenVars.size(); i++) {
+
+            EF_Normal_NormalParents normal_normalParents = bayesianNetwork.getDistribution(localHiddenVars.get(i));
+
+            normal_normalParents.setBeta0(0);
+            normal_normalParents.setBetas(new double[]{1.0});
+            normal_normalParents.setVariance(1);
+
+            /*meanQ = 0;
+            invVarQ = 1e100;
+
+            qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localHiddenVars.get(i)).getQDist();
+
+            qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
+            qNormal.fixNumericalInstability();
+            qNormal.updateMomentFromNaturalParameters();
+            */
 
         }
-
 
         return bayesianNetwork;
 
@@ -127,39 +139,6 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
     @Override
     public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
-
-        for (Variable localVar : this.localHiddenVars) {
-            Normal normalGlobalHiddenPreviousTimeStep = plateuStructure.getEFParameterPosterior(localVar).toUnivariateDistribution();
-
-            EF_Normal normal = bayesianNetwork.getDistribution(localVar);
-
-            double variance = normalGlobalHiddenPreviousTimeStep.getVariance() + this.transtionVariance;
-            double mean = normalGlobalHiddenPreviousTimeStep.getMean();
-
-            normal.setNaturalWithMeanPrecision(mean,1/variance);
-            normal.fixNumericalInstability();
-            normal.updateMomentFromNaturalParameters();
-        }
-
-        /***** FADING ****/
-
-
-        if (fading<1.0) {
-            bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
-                EF_BaseDistribution_MultinomialParents dist = bayesianNetwork.getDistribution(var);
-                EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
-                NaturalParameters naturalParameters = prior.getNaturalParameters();
-                naturalParameters.multiplyBy(fading);
-                prior.setNaturalParameters(naturalParameters);
-                dist.setBaseEFDistribution(0, prior);
-            });
-        }
-
-
-
-
-
-
 
         return bayesianNetwork;
     }

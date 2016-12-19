@@ -1,4 +1,15 @@
-package eu.amidst.icdm2016;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *
+ * See the License for the specific language governing permissions and limitations under the License.
+ *
+ */
+
+package eu.amidst.icdm2016.smoothing;
 
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
@@ -10,14 +21,13 @@ import eu.amidst.core.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * Created by ana@cs.aau.dk on 27/04/16.
  */
-public class NaiveBayesCDDetectorICDM2016 {
+public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
-    private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
+    private static Smooth_NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
     private static Variable unemploymentRateVar;
     private static boolean includeUR = false;
     private static boolean includeIndicators = false;
@@ -26,7 +36,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
     static String[] varNames = {"VAR04"};
 
-    static int windowSize = 50000;
+    static int windowSize = 33000;
 
     static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
 
@@ -55,13 +65,22 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         //We can open the data stream using the static class DataStreamLoader
 
-        DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"00.arff");
+        String outputFile = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/joinMonthsMinor.arff";
+
+
+        DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(outputFile);
 
         List<Attribute> attsSubSetList = new ArrayList<>();
-        attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName("DEFAULTING"));
-        for (String varName : varNames) {
-            attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(varName));
+
+        for (Attribute attribute : dataMonth0.getAttributes()) {
+            if (attribute.getName().startsWith("DEFAULTING"))
+                attsSubSetList.add(attribute);
+            for (String varName : varNames) {
+                if (attribute.getName().startsWith(varName))
+                    attsSubSetList.add(attribute);
+            }
         }
+
         String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
         if(includeUR){
             attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(unemploymentRateAttName));
@@ -69,7 +88,7 @@ public class NaiveBayesCDDetectorICDM2016 {
         Attributes attsSubset = new Attributes(attsSubSetList);
 
         //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
-        virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+        virtualDriftDetector = new Smooth_NaiveBayesVirtualConceptDriftDetector();
 
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
@@ -92,13 +111,14 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         virtualDriftDetector.setIncludeIndicators(includeIndicators);
 
+
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
+        System.out.println(virtualDriftDetector.getSvb().getDAG());
+
         //If UR is to be included
         //virtualDriftDetector.initLearningWithUR();
-
-        int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
         //Some prints
         System.out.print("Month");
@@ -119,21 +139,16 @@ public class NaiveBayesCDDetectorICDM2016 {
 
 
 
-        for (int i = 0; i < NSETS; i++) {
-
-            int currentMonth = i;
-
-            if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
-                continue;
-            DataStream<DataInstance> dataMonthi;
-            if (currentMonth<10)
-                dataMonthi= DataStreamLoader.openFromFile(path+"0"+currentMonth+".arff");
-            else
-                dataMonthi= DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
-            meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
+            meanHiddenVars = virtualDriftDetector.updateModel(dataMonth0);
+
+        System.out.println("-----------");
+        for (int i = 0; i < meanHiddenVars.length; i++) {
+            System.out.println(meanHiddenVars[i]);
+        }
+        System.out.println("-----------");
 
 
             List<Variable> param = virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables();
@@ -141,10 +156,13 @@ public class NaiveBayesCDDetectorICDM2016 {
             for (Variable variable : param) {
                 if (!variable.isNormal() && !variable.isNormalParameter())
                     continue;
+                try {
+                    Normal dist = virtualDriftDetector.getSvb().getParameterPosterior(variable);
 
-                Normal dist = virtualDriftDetector.getSvb().getParameterPosterior(variable);
+                    System.out.print(variable.getName() + "\t" + dist.getMean() + "\t" + dist.getVariance() + "\t");
+                }catch(Exception ex){
 
-                System.out.print(variable.getName()+"\t"+dist.getMean()+"\t"+dist.getVariance()+"\t");
+                }
             }
 
             System.out.println();
@@ -157,26 +175,6 @@ public class NaiveBayesCDDetectorICDM2016 {
             //We print the output
             //printOutput(meanHiddenVars, currentMonth);
 
-/*
-            for (Variable paramVariable : virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables()) {
 
-                if (!paramVariable.isNormalParameter())
-                    continue;
-
-                if (i>=1500 && paramVariable.getName().contains("_Beta_")) {
-                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
-                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
-                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
-                    ef_normal.updateMomentFromNaturalParameters();
-                } else if (i>=1 && paramVariable.getName().contains("_Beta0_")) {
-                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
-                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
-                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
-                    ef_normal.updateMomentFromNaturalParameters();
-                }
-
-            }
-            */
-        }
     }
 }
