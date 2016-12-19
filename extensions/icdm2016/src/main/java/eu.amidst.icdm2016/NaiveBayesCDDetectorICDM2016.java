@@ -4,6 +4,7 @@ import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.Attributes;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
@@ -20,10 +21,16 @@ public class NaiveBayesCDDetectorICDM2016 {
     private static Variable unemploymentRateVar;
     private static boolean includeUR = false;
     private static boolean includeIndicators = false;
-    static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+
+    //static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+
+    static String[] varNames = {"VAR07"};
+
     static int windowSize = 50000;
 
-    static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
+    static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+
+    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/dataWekaUnemploymentRateShifted";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
@@ -48,7 +55,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         //We can open the data stream using the static class DataStreamLoader
 
-        DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"0.arff");
+        DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(path+"00.arff");
 
         List<Attribute> attsSubSetList = new ArrayList<>();
         attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName("DEFAULTING"));
@@ -118,22 +125,58 @@ public class NaiveBayesCDDetectorICDM2016 {
 
             if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                 continue;
-
-            DataStream<DataInstance> dataMonthi = DataStreamLoader.openFromFile(path+currentMonth+".arff");
+            DataStream<DataInstance> dataMonthi;
+            if (currentMonth<10)
+                dataMonthi= DataStreamLoader.openFromFile(path+"0"+currentMonth+".arff");
+            else
+                dataMonthi= DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
             virtualDriftDetector.setTransitionVariance(0);
 
             meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
 
-            virtualDriftDetector.setTransitionVariance(0.1);
+
+            List<Variable> param = virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables();
+
+            for (Variable variable : param) {
+                if (!variable.isNormal() && !variable.isNormalParameter())
+                    continue;
+
+                Normal dist = virtualDriftDetector.getSvb().getParameterPosterior(variable);
+
+                System.out.print(variable.getName()+"\t"+dist.getMean()+"\t"+dist.getVariance()+"\t");
+            }
+
+            System.out.println();
+
+            virtualDriftDetector.setTransitionVariance(1);
             virtualDriftDetector.getSvb().applyTransition();
 
             //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
 
             //We print the output
-            printOutput(meanHiddenVars, currentMonth);
+            //printOutput(meanHiddenVars, currentMonth);
 
+/*
+            for (Variable paramVariable : virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables()) {
 
+                if (!paramVariable.isNormalParameter())
+                    continue;
+
+                if (i>=1500 && paramVariable.getName().contains("_Beta_")) {
+                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
+                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
+                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
+                    ef_normal.updateMomentFromNaturalParameters();
+                } else if (i>=1 && paramVariable.getName().contains("_Beta0_")) {
+                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
+                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
+                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
+                    ef_normal.updateMomentFromNaturalParameters();
+                }
+
+            }
+            */
         }
     }
 }

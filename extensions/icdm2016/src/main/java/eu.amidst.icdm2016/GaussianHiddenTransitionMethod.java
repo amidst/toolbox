@@ -57,6 +57,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
     public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
 
 
+        //Initialization for Beta0 and Betas
         for (Variable paramVariable : bayesianNetwork.getParametersVariables().getListOfParamaterVariables()){
 
             if (!paramVariable.isNormalParameter())
@@ -68,10 +69,16 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             if(paramVariable.getName().contains("_INDICATOR = 0.000}")){
                 precisionPrior = Double.MAX_VALUE;
                 meanPrior = 0;
-            }else {
+            }else if(paramVariable.getName().contains("_Beta_")){
                 varPrior = 1e100;
                 precisionPrior = 1 / varPrior;
                 meanPrior = 0;
+            }else if(paramVariable.getName().contains("_Beta0_")){
+                varPrior = 1;
+                precisionPrior = 1 / varPrior;
+                meanPrior = 0;
+            }else{
+                throw new UnsupportedOperationException("ERROR");
             }
 
             prior.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
@@ -81,6 +88,7 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
         }
 
 
+        //Initialization for Hidden
         for (Variable localVar : this.localHiddenVars) {
 
             EF_Normal normal = bayesianNetwork.getDistribution(localVar);
@@ -91,15 +99,25 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
             //normal.setNaturalWithMeanPrecision(mean,1/var);
             //(8.371590159011983; 0.331789949525592);
-            double mean = 12.615798294948437;
-            double invVar = 0.663579899051184;
+            double meanPrior = 0;
+            double varPrior = 1e100;
+            double precisionPrior = 1 / varPrior;
 
-            normal.setNaturalWithMeanPrecision(mean,invVar);
+            normal.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
 
-        }
 
+            double meanQ = 12.615798294948437;
+            double invVarQ = 0.663579899051184;
+
+            EF_Normal qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localVar).getQDist();
+
+            qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
+            qNormal.fixNumericalInstability();
+            qNormal.updateMomentFromNaturalParameters();
+
+        }
 
 
         return bayesianNetwork;
