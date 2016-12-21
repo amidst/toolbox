@@ -11,11 +11,13 @@
 
 package eu.amidst.icdm2016.smoothing;
 
+import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.exponentialfamily.EF_ConditionalDistribution;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.learning.parametric.bayesian.PlateuStructure;
 import eu.amidst.core.models.DAG;
+import eu.amidst.core.utils.Utils;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
@@ -46,6 +48,40 @@ public class Smooth_PlateuStructureGlobalAsInIDA2015 extends PlateuStructure imp
     public Smooth_PlateuStructureGlobalAsInIDA2015(List<Variable> initialNonReplicatedVariablesList) {
         this.initialNonReplicatedVariablesList = new ArrayList<>();
         this.initialNonReplicatedVariablesList.addAll(initialNonReplicatedVariablesList);
+    }
+
+    public void setEvidence(List<? extends DataInstance> data) {
+        if (data.size() > nReplications)
+            throw new IllegalArgumentException("The size of the data is bigger than the number of repetitions");
+
+        for (int i = 0; i < nReplications && i < data.size(); i++) {
+            final int slice = i;
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(data.get(slice));
+
+                if (Utils.isMissingValue(data.get(slice).getValue(node.getMainVariable())))
+                    node.setActive(false);
+                else
+                    node.setActive(true);
+
+            });
+        }
+
+        for (int i = data.size(); i < nReplications; i++) {
+            this.replicatedNodes.get(i).forEach(node -> {
+                node.setAssignment(null);
+                node.setActive(false);
+            });
+        }
+
+
+
+        //Non-replicated nodes can have evidende, which is taken from the first data sample in the list
+        for (Node nonReplictedNode : this.nonReplictedNodes) {
+            nonReplictedNode.setAssignment(data.get(0));
+        }
+
+
     }
 
     public void setDAG(DAG dag) {
@@ -133,11 +169,13 @@ public class Smooth_PlateuStructureGlobalAsInIDA2015 extends PlateuStructure imp
                 }
                 node.setParents(parents);
 
+                int  interval = this.ef_learningmodel.getParametersVariables().getNumberOfVars()/63;
 
                 for (Variable variable : node.getPDist().getConditioningVariables()) {
                     if (variable.getName().contains("Beta") || variable.getName().contains("Gamma")) {
-                        Variable referenceParent = this.ef_learningmodel.getParametersVariables().getVariableById(variable.getVarID() - 7 * index);
+                        Variable referenceParent = this.ef_learningmodel.getParametersVariables().getVariableById(variable.getVarID() - interval * index);
                         node.setVariableToNodeParent(variable, this.getNodeOfNonReplicatedVar(referenceParent));
+
                     }
                 }
 

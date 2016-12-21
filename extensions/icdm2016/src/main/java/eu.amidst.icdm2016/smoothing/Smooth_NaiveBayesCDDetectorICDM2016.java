@@ -34,9 +34,8 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
     //static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
 
-    static String[] varNames = {"VAR04"};
 
-    static int windowSize = 33000;
+    static int windowSize = 39000;
 
     static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
 
@@ -61,11 +60,26 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
         int NSETS = 84;
 
+        String[] varNames = {"VAR07"};
+
         int numVars = varNames.length;
 
         //We can open the data stream using the static class DataStreamLoader
 
-        String outputFile = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/joinMonthsMinor.arff";
+/*        args = new String[2];
+        args[0] = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/joinMonthsMinor.arff";
+        args[1] = "2";
+*/
+        if (Integer.parseInt(args[1])==0){
+            varNames=new String[]{"VAR04"};
+        }else if (Integer.parseInt(args[1])==1){
+            varNames=new String[]{"VAR07"};
+        }else{
+            varNames = new String[]{"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
+        }
+
+
+        String outputFile = args[0];
 
 
         DataStream<DataInstance> dataMonth0 = DataStreamLoader.openFromFile(outputFile);
@@ -156,13 +170,8 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
             for (Variable variable : param) {
                 if (!variable.isNormal() && !variable.isNormalParameter())
                     continue;
-                try {
                     Normal dist = virtualDriftDetector.getSvb().getParameterPosterior(variable);
-
                     System.out.print(variable.getName() + "\t" + dist.getMean() + "\t" + dist.getVariance() + "\t");
-                }catch(Exception ex){
-
-                }
             }
 
             System.out.println();

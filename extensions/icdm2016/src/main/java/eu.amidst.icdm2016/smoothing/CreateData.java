@@ -111,20 +111,33 @@ public class CreateData {
                         else
                             fileWriter.write(array[nvars[j]]+",");
                     }
+                }else{
+                    for (int j = 0; j < nvars.length; j++) {
+                        if (i == (NSETS - 2) && j== (nvars.length-1))
+                            fileWriter.write("?\n");
+                        else if (j== (nvars.length-1))
+                            fileWriter.write("?,");
+                        else
+                            fileWriter.write("?,");
+                    }
                 }
             }
 
 
+            boolean moredata=false;
             for (int i = 0; i < NSETS; i++) {
                 int currentMonth = i;
 
                 if (IntStream.of(peakMonths).anyMatch(x -> x == currentMonth))
                     continue;
 
-                if (!dataMonthi[i].hasNext()) {
-                    end=true;
+                if (dataMonthi[i].hasNext()) {
+                    moredata=true;
                 }
             }
+
+            if (!moredata)
+                end=true;
 
             fileWriter.flush();
 
