@@ -1,4 +1,4 @@
-v0.6.1-alpha
+v0.6.1
 ============
 This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
 
@@ -8,8 +8,8 @@ Changes:
 - Fixed some bugs
 
 
-**Release Date**: 19/12/2016
-**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0-alpha/index.html)
+**Release Date**: 03/01/2017
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.1/index.html)
 
 
 
@@ -28,7 +28,7 @@ Changes:
 
 
 **Release Date**: 14/10/2016
-**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0/index.html)
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.0/index.html)
 
 
 
@@ -43,7 +43,7 @@ Changes:
 - Fixed some bugs
  
 **Release Date**: 14/09/2016
-**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.6.0-alpha/index.html)
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.0-alpha/index.html)
 
 
 v0.5.1
@@ -54,7 +54,7 @@ Changes:
 - Fixed some bugs
  
 **Release Date**: 15/07/2016
-**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.5.1/index.html)
+**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.5.1/index.html)
 
 
 
@@ -67,7 +67,7 @@ Added functionalities:
 - Support for Latent Dirichlet Allocation Models
  
 **Release Date**: 06/07/2016
-**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/),[JavaDoc](http://amidst.github.io/toolbox/javadoc/0.5.0/index.html)
+**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.5.0/index.html)
 
 
 v0.4.3
@@ -84,7 +84,7 @@ Minor changes:
 - Module standardmodels has been renamed as latent-variable-models 
  
 **Release Date**: 01/06/2016
-**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/), [JavaDoc](http://amidst.github.io/toolbox/javadoc/0.4.3/index.html)
+**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/), [JavaDoc](http://javadoc.amidsttoolbox.com/0.4.3/index.html)
 
 v0.4.2
 ==============
@@ -97,7 +97,7 @@ Added functionalities:
 ![Latent Variable Models](http://amidst.github.io/toolbox/docs/web/figs/amidstModels-crop.png)
 
 **Release Date**: 02/05/2016
-**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/), [JavaDoc](http://amidst.github.io/toolbox/javadoc/0.4.2/index.html)
+**Further Information**: [Project Web Page](https://amidst.github.io/toolbox/), [JavaDoc](http://javadoc.amidsttoolbox.com/0.4.2/index.html)
 
 
 v0.4.1
@@ -108,7 +108,7 @@ Added Functionalities:
 - Support for multi-core parallel Bayesian learning using Java streams.
 
 **Release Date**: 31/12/2015
-**Further Information**: [Deliverable 4.4](https://amidst.github.io/toolbox/docs/deliverables/D4.3.pdf), [JavaDoc](http://amidst.github.io/toolbox/javadoc/0.4.1/index.html)
+**Further Information**: [Deliverable 4.4](https://amidst.github.io/toolbox/docs/deliverables/D4.3.pdf), [JavaDoc](http://javadoc.amidsttoolbox.com/0.4.1/index.html)
 
 
 v0.4

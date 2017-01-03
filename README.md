@@ -1,5 +1,5 @@
 # AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
-v.0.6.1-alpha
+v.0.6.1
 
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
 [![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=develop)](https://travis-ci.org/amidst/toolbox)
@@ -29,8 +29,8 @@ AMIDST provides tailored parallel (powered by Java 8 Streams) and distributed (p
 
 #Features<a name="features"></a>
 
-* **Probabilistic Graphical Models**: Specify your model using probabilistic graphical models with [latent variables](http://amidst.github.io/toolbox/examples/bnetworks.html)
-and [temporal dependencies](http://amidst.github.io/toolbox/DynamicCodeExamples.html). AMIDST contains a  large list of predefined latent variable models: 
+* **Probabilistic Graphical Models**: Specify your model using probabilistic graphical models with [latent variables](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/bnetworks-061/)
+and [temporal dependencies](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/dbnetworks-061/). AMIDST contains a  large list of predefined latent variable models: 
 
 ![](http://amidst.github.io/toolbox/docs/web/figs/amidstModels-crop.png)
 
@@ -47,7 +47,7 @@ computer cluster using **Apache Flink** or (soon) **Apache Spark**.
 Flexible toolbox for researchers performing their experimentation in machine learning.
 
 * **Interoperability**: Leverage existing functionalities and algorithms by interfacing 
-to other software tools such as [Hugin](http://amidst.github.io/toolbox/examples/bnetworks.html#sec:bns:huginlink), [MOA](http://amidst.github.io/toolbox/examples/bnetworks.html#sec:bns:moalink), Weka, R, etc.
+to other software tools such as [Hugin](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/bnetworks-061/#sec:bns:huginlink), [MOA](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/bnetworks-061/#sec:bns:moalink), Weka, R, etc.
 
 
 #Simple Code Example<a name="example"></a>
@@ -116,7 +116,7 @@ in collaboration with one of our partners, DAIMLER.
 
 # Documentation<a name="documentation"></a>
 
-* [Getting Started!](http://amidst.github.io/toolbox/GettingStarted.html) explains how to
+* [Getting Started!](http://www.amidsttoolbox.com/documentation/0-6-1/first-steps-061/getting-started-061/) explains how to
 install the AMIDST toolbox, how this toolbox makes use of Java 8 new functional style programming
 features, and why it is based on a module based architecture.
 
@@ -124,19 +124,19 @@ features, and why it is based on a module based architecture.
 the main functionalities (i.e., data streams, BNs, DBNs, static and dynamic learning and inference
 engines, etc.) of the AMIDST toolbox.
 
-* [Bayesian networks: Code Examples](http://amidst.github.io/toolbox/CodeExamples.html) includes
+* [Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/bnetworks-061/) includes
 a list of source code examples explaining how to use some functionalities of the AMIDST toolbox.
 
-* [Dynamic Bayesian networks: Code Examples](http://amidst.github.io/toolbox/DynamicCodeExamples.html)
+* [Dynamic Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/dbnetworks-061/)
 includes some source code examples of functionalities related to Dynamic Bayesian networks.
 
-* [FlinkLink](http://amidst.github.io/toolbox/examples/flinklink.html): Code Examples includes some 
+* [FlinkLink](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/flinklink-061/): Code Examples includes some 
 source code examples of functionalities related to the module that integrates Apache Flink with AMIDST.
 
-* [SparkLink](http://www.amidsttoolbox.com/documentation/0-6-0/examples-060/sparklink-060/): some source code examples of 
+* [SparkLink](http://www.amidsttoolbox.com/documentation/0-6-1/examples-061/sparklink-061/): some source code examples of 
 functionalities related to the module that integrates Apache Spark with AMIDST.
 
-* [API JavaDoc](http://amidst.github.io/toolbox/javadoc/index.html) of the AMIDST toolbox. 
+* [API JavaDoc](http://javadoc.amidsttoolbox.com/) of the AMIDST toolbox. 
 
 
 # Scalability
