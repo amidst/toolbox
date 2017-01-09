@@ -78,6 +78,7 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
             varNames = new String[]{"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
         }
 
+        double transitionVariance = Double.parseDouble(args[2]);
 
         String outputFile = args[0];
 
@@ -176,7 +177,7 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
             System.out.println();
 
-            virtualDriftDetector.setTransitionVariance(1);
+            virtualDriftDetector.setTransitionVariance(transitionVariance);
             virtualDriftDetector.getSvb().applyTransition();
 
             //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
