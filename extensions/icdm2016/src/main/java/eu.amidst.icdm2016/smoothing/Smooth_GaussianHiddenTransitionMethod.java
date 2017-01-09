@@ -119,7 +119,7 @@ public class Smooth_GaussianHiddenTransitionMethod implements TransitionMethod, 
 
             normal_normalParents.setBeta0(0);
             normal_normalParents.setBetas(new double[]{1.0});
-            normal_normalParents.setVariance(1);
+            normal_normalParents.setVariance(transtionVariance);
 
             /*meanQ = 0;
             invVarQ = 1e100;

@@ -66,10 +66,13 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
         //We can open the data stream using the static class DataStreamLoader
 
-/*        args = new String[2];
+/*
+        args = new String[3];
         args[0] = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/joinMonthsMinor.arff";
         args[1] = "2";
+        args[2] = "100";
 */
+
         if (Integer.parseInt(args[1])==0){
             varNames=new String[]{"VAR04"};
         }else if (Integer.parseInt(args[1])==1){
@@ -127,6 +130,8 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
         virtualDriftDetector.setIncludeIndicators(includeIndicators);
 
 
+        virtualDriftDetector.setTransitionVariance(transitionVariance);
+
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
@@ -155,7 +160,6 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
 
 
-            virtualDriftDetector.setTransitionVariance(0);
 
             meanHiddenVars = virtualDriftDetector.updateModel(dataMonth0);
 
