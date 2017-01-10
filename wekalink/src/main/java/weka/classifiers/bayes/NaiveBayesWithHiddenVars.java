@@ -17,22 +17,8 @@
 
 package weka.classifiers.bayes;
 
-import eu.amidst.core.datastream.Attributes;
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
-import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
-import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.inference.ImportanceSampling;
-import eu.amidst.core.inference.InferenceAlgorithm;
-import eu.amidst.core.learning.parametric.ParameterLearningAlgorithm;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
-import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-import eu.amidst.wekalink.converterFromWekaToAmidst.Converter;
-import eu.amidst.wekalink.converterFromWekaToAmidst.DataRowWeka;
-import weka.classifiers.AbstractClassifier;
 import weka.core.*;
 
 import java.util.Collections;
@@ -44,30 +30,12 @@ import java.util.stream.IntStream;
  * This class extends the {@link weka.classifiers.AbstractClassifier} and defines the AMIDST Classifier that could be run using the MOA’s graphical user interface.
  * MOA (Massive Online Analysis) is an open source software available at http://moa.cms.waikato.ac.nz
  */
-public class AmidstClassifier extends AbstractClassifier implements OptionHandler, Randomizable{
+public class NaiveBayesWithHiddenVars extends AmidstGeneralClassifier implements OptionHandler, Randomizable{
     /** Represents the number of Gaussian hidden variables in this AmidstClassifier. */
     protected  int nOfGaussianHiddenVars_ = 0;
 
     /** Represents the number of Multinomial hidden variables in this AmidstClassifier. */
     protected  int nOfStatesMultHiddenVar_ = 0;
-
-    /** Represents a {@link DAG} object. */
-    private DAG dag = null;
-
-    /** Represents the class variable in this AmidstClassifier. */
-    private Variable classVar_;
-
-    /** Represents the used {@link ParameterLearningAlgorithm}. */
-    private ParameterLearningAlgorithm parameterLearningAlgorithm_;
-
-    /** Represents a {@code BayesianNetwork} object. */
-    private BayesianNetwork bnModel_;
-
-    /** Represents the used {@link InferenceAlgorithm}. */
-    InferenceAlgorithm inferenceAlgorithm_;
-
-    /** Represents the set of {@link Attributes}. */
-    Attributes attributes_;
 
     public int getnOfGaussianHiddenVars_() {
         return nOfGaussianHiddenVars_;
@@ -112,24 +80,18 @@ public class AmidstClassifier extends AbstractClassifier implements OptionHandle
 
 
     @Override
-    public void buildClassifier(Instances data) throws Exception {
+    public DAG buildDAG(){
 
-        attributes_ = Converter.convertAttributes(data.enumerateAttributes(),data.classAttribute());
         Variables modelHeader = new Variables(attributes_);
-        classVar_ = modelHeader.getVariableByName(data.classAttribute().name());
-
-        inferenceAlgorithm_ = new ImportanceSampling();
-        inferenceAlgorithm_.setSeed(this.getSeed());
 
         /* Create both Gaussian and Multinomial hidden variables. */
-
         if(getnOfGaussianHiddenVars_() > 0)
             IntStream.rangeClosed(0, getnOfGaussianHiddenVars_()-1)
                     .forEach(i -> modelHeader.newGaussianVariable("HiddenG_" + i));
         if(getnOfStatesMultHiddenVar_() > 0)
             modelHeader.newMultinomialVariable("HiddenM", getnOfStatesMultHiddenVar_());
 
-        dag = new DAG(modelHeader);
+        DAG dag = new DAG(modelHeader);
 
         /* Set DAG structure. */
         /* 1. Add classVar as parent of all Gaussian and Multinomial hidden variables. */
@@ -155,73 +117,8 @@ public class AmidstClassifier extends AbstractClassifier implements OptionHandle
 
         System.out.println(dag.toString());
 
-        /*
-        if(getnOfStatesMultHiddenVar_() == 0 && getnOfGaussianHiddenVars_() == 0){   //ML can be used when Lapalace is introduced
-            parameterLearningAlgorithm_ = new ParallelMaximumLikelihood();
-        }else
-            parameterLearningAlgorithm_ = new SVB();
-            */
-        parameterLearningAlgorithm_ = new SVB();
-        parameterLearningAlgorithm_.setDAG(dag);
 
-
-        DataOnMemoryListContainer<DataInstance> batch_ = new DataOnMemoryListContainer(attributes_);
-
-        data.stream().forEach(instance ->
-            batch_.add(new DataInstanceFromDataRow(new DataRowWeka(instance, this.attributes_)))
-        );
-
-        parameterLearningAlgorithm_.setDataStream(batch_);
-        parameterLearningAlgorithm_.initLearning();
-        parameterLearningAlgorithm_.runLearning();
-        //parameterLearningAlgorithm_.updateModel(batch_);
-
-        bnModel_ = parameterLearningAlgorithm_.getLearntBayesianNetwork();
-
-        System.out.println(bnModel_);
-        inferenceAlgorithm_.setModel(bnModel_);
-    }
-
-    /**
-     * Updates the classifier with the given instance.
-     *
-     * @param instance the new training instance to include in the model
-     * @exception Exception if the instance could not be incorporated in the
-     *              model.
-     */
-    public void updateClassifier(Instance instance) throws Exception {
-        DataOnMemoryListContainer<DataInstance> batch_ = new DataOnMemoryListContainer(attributes_);
-
-        batch_.add(new DataInstanceFromDataRow(new DataRowWeka(instance, this.attributes_)));
-
-        parameterLearningAlgorithm_.updateModel(batch_);
-
-        bnModel_ = parameterLearningAlgorithm_.getLearntBayesianNetwork();
-        inferenceAlgorithm_.setModel(bnModel_);
-    }
-
-    /**
-     * Calculates the class membership probabilities for the given test instance.
-     *
-     * @param instance the instance to be classified
-     * @return predicted class probability distribution
-     * @exception Exception if there is a problem generating the prediction
-     */
-    @Override
-    public double[] distributionForInstance(Instance instance) throws Exception {
-        if(bnModel_ == null) {
-            throw new UnsupportedOperationException("The model was not learnt");
-            //return new double[0];
-        }
-
-        DataInstance dataInstance = new DataInstanceFromDataRow(new DataRowWeka(instance, this.attributes_));
-        double realValue = dataInstance.getValue(classVar_);
-        dataInstance.setValue(classVar_, eu.amidst.core.utils.Utils.missingValue());
-        this.inferenceAlgorithm_.setEvidence(dataInstance);
-        this.inferenceAlgorithm_.runInference();
-        Multinomial multinomial = this.inferenceAlgorithm_.getPosterior(classVar_);
-        dataInstance.setValue(classVar_, realValue);
-        return multinomial.getProbabilities();
+        return dag;
     }
 
     /**
@@ -304,22 +201,12 @@ public class AmidstClassifier extends AbstractClassifier implements OptionHandle
         return options.toArray(new String[0]);
     }
 
-    @Override
-    public void setSeed(int seed) {
-
-    }
-
-    @Override
-    public int getSeed() {
-        return 0;
-    }
-
     /**
      * Main method for testing this class.
      *
      * @param argv the options
      */
     public static void main(String[] argv) {
-        runClassifier(new AmidstClassifier(), argv);
+        runClassifier(new NaiveBayesWithHiddenVars(), argv);
     }
 }
