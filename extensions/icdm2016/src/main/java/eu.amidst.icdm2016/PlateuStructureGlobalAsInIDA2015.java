@@ -56,13 +56,13 @@ public class PlateuStructureGlobalAsInIDA2015 extends PlateuStructure implements
         nonReplictedNodes = new ArrayList();
         replicatedNodes = new ArrayList<>(nReplications);
 
-        Variable hiddenVar = this.initialNonReplicatedVariablesList.get(0);
+        //Variable hiddenVar = this.initialNonReplicatedVariablesList.get(0);
 
         replicatedVarsToNode = new ArrayList<>();
         nonReplicatedVarsToNode = new ConcurrentHashMap<>();
         nonReplictedNodes = ef_learningmodel.getDistributionList().stream()
                 .filter(dist -> isNonReplicatedVar(dist.getVariable()))
-                .filter(dist -> !dist.getVariable().equals(hiddenVar))
+                .filter(dist -> !this.initialNonReplicatedVariablesList.contains(dist.getVariable()))
                 .map(dist -> {
                     Node node = new Node(dist);
                     nonReplicatedVarsToNode.put(dist.getVariable(), node);
@@ -71,9 +71,11 @@ public class PlateuStructureGlobalAsInIDA2015 extends PlateuStructure implements
                 .collect(Collectors.toList());
 
 
-        Node nodeHiddenVar = new Node(ef_learningmodel.getDistribution(hiddenVar));
-        nonReplicatedVarsToNode.put(hiddenVar, nodeHiddenVar);
-        nonReplictedNodes.add(nodeHiddenVar);
+        for (Variable hiddenVar : this.initialNonReplicatedVariablesList) {
+            Node nodeHiddenVar = new Node(ef_learningmodel.getDistribution(hiddenVar));
+            nonReplicatedVarsToNode.put(hiddenVar, nodeHiddenVar);
+            nonReplictedNodes.add(nodeHiddenVar);
+        }
 
         for (int i = 0; i < nReplications; i++) {
 
