@@ -8,6 +8,7 @@ import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.variables.Variable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -24,11 +25,15 @@ public class NaiveBayesCDDetectorICDM2016 {
 
     //static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
 
+    static double transitionVariance = 10;
+
     static String[] varNames = {"VAR04"};
 
     static int windowSize = 50000;
 
-    static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+    //static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+
+    static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaLocalResiduals/R1_";
 
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
     //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/dataWekaUnemploymentRateShifted";
@@ -47,7 +52,7 @@ public class NaiveBayesCDDetectorICDM2016 {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         int NSETS = 84;
 
@@ -149,7 +154,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
             System.out.println();
 
-            virtualDriftDetector.setTransitionVariance(1);
+            virtualDriftDetector.setTransitionVariance(transitionVariance);
             virtualDriftDetector.getSvb().applyTransition();
 
             //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
@@ -157,26 +162,8 @@ public class NaiveBayesCDDetectorICDM2016 {
             //We print the output
             //printOutput(meanHiddenVars, currentMonth);
 
-/*
-            for (Variable paramVariable : virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables()) {
+            //RemoveGlobalHiddenResiduals.remove(i,virtualDriftDetector,dataMonthi);
 
-                if (!paramVariable.isNormalParameter())
-                    continue;
-
-                if (i>=1500 && paramVariable.getName().contains("_Beta_")) {
-                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
-                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
-                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
-                    ef_normal.updateMomentFromNaturalParameters();
-                } else if (i>=1 && paramVariable.getName().contains("_Beta0_")) {
-                    virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).setActive(false);
-                    EF_NormalParameter ef_normal = (EF_NormalParameter) virtualDriftDetector.getSvb().getPlateuStructure().getNodeOfNonReplicatedVar(paramVariable).getQDist();
-                    ef_normal.setNaturalWithMeanPrecision(ef_normal.getMean(),Double.MAX_VALUE);
-                    ef_normal.updateMomentFromNaturalParameters();
-                }
-
-            }
-            */
         }
     }
 }

@@ -27,7 +27,7 @@ import java.io.IOException;
  */
 public class RemoveGlobalHiddenResiduals {
 
-    static String outputPath="/Users/andresmasegosa/Documents/tmp/R3_";
+    static String outputPath="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaLocalResiduals/R1_";
 
     public static void remove(int currentMonth, NaiveBayesVirtualConceptDriftDetector virtualDriftDetector, DataStream<DataInstance> dataMonthi) throws IOException {
         //WRITE RESIDUALS
@@ -62,7 +62,11 @@ public class RemoveGlobalHiddenResiduals {
         }
 
         //Print new dataset
-        DataStreamWriter.writeDataToFile(newData, outputPath + currentMonth + ".arff");
+        if (currentMonth<10)
+            DataStreamWriter.writeDataToFile(newData, outputPath +"0"+currentMonth + ".arff");
+        else
+            DataStreamWriter.writeDataToFile(newData, outputPath + currentMonth + ".arff");
+
     }
 
 }
