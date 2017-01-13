@@ -35,22 +35,38 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
     private static final long serialVersionUID = 4107783324901370839L;
 
     List<Variable> localHiddenVars;
-    double meanStart;
-    double transtionVariance;
-    double fading = 1.0;
+    double meanPH0=0;
+    double varPH0 = 1e100;
+    double transtionVariance=1;
 
-    public void setTransitionVariance(double noise) {
-        this.transtionVariance = noise;
-    }
+    double meanPAlpha=0;
+    double varPAlpha = 1e100;
 
-    public void setFading(double fading) {
-        this.fading = fading;
-    }
+    double meanPBeta=0;
+    double varPBeta = 1e100;
 
-    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double transtionVariance_){
+    public GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_){
         this.localHiddenVars=localHiddenVars_;
-        this.meanStart = meanStart_;
-        this.transtionVariance = transtionVariance_;
+    }
+
+
+    public void setPH0(double mean, double var){
+        this.meanPH0=mean;
+        this.varPH0=var;
+    }
+
+    public void setPAlpha(double mean, double var) {
+        this.meanPAlpha=mean;
+        this.varPAlpha=var;
+    }
+
+    public void setPBeta(double mean, double var) {
+        this.meanPBeta=mean;
+        this.varPBeta=var;
+    }
+
+    public void setTransitionVariance(double transtionVariance) {
+        this.transtionVariance = transtionVariance;
     }
 
     @Override
@@ -70,13 +86,13 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
                 precisionPrior = Double.MAX_VALUE;
                 meanPrior = 0;
             }else if(paramVariable.getName().contains("_Beta_")){
-                varPrior = 1e100;
+                varPrior = varPBeta;
                 precisionPrior = 1 / varPrior;
-                meanPrior = 0;
+                meanPrior = meanPBeta;
             }else if(paramVariable.getName().contains("_Beta0_")){
-                varPrior = 1e100;
+                varPrior = varPAlpha;
                 precisionPrior = 1 / varPrior;
-                meanPrior = 0;
+                meanPrior = meanPAlpha;
             }else{
                 throw new UnsupportedOperationException("ERROR");
             }
@@ -93,14 +109,8 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
 
             EF_Normal normal = bayesianNetwork.getDistribution(localVar);
 
-
-            //double mean = meanStart;
-            //double var = 1;
-
-            //normal.setNaturalWithMeanPrecision(mean,1/var);
-            //(8.371590159011983; 0.331789949525592);
-            double meanPrior = 0;
-            double varPrior = 1e100;
+            double meanPrior = meanPH0;
+            double varPrior = varPH0;
             double precisionPrior = 1 / varPrior;
 
             normal.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
@@ -116,7 +126,6 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
             qNormal.fixNumericalInstability();
             qNormal.updateMomentFromNaturalParameters();
-
 
         }
 
@@ -140,25 +149,6 @@ public class GaussianHiddenTransitionMethod implements TransitionMethod, Seriali
             normal.fixNumericalInstability();
             normal.updateMomentFromNaturalParameters();
         }
-
-        /***** FADING ****/
-
-
-        if (fading<1.0) {
-            bayesianNetwork.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
-                EF_BaseDistribution_MultinomialParents dist = bayesianNetwork.getDistribution(var);
-                EF_UnivariateDistribution prior = dist.getBaseEFUnivariateDistribution(0);
-                NaturalParameters naturalParameters = prior.getNaturalParameters();
-                naturalParameters.multiplyBy(fading);
-                prior.setNaturalParameters(naturalParameters);
-                dist.setBaseEFDistribution(0, prior);
-            });
-        }
-
-
-
-
-
 
 
         return bayesianNetwork;

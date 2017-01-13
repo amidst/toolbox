@@ -31,23 +31,40 @@ public class Smooth_GaussianHiddenTransitionMethod implements TransitionMethod, 
     private static final long serialVersionUID = 4107783324901370839L;
 
     List<Variable> localHiddenVars;
-    double meanStart;
-    double transtionVariance;
-    double fading = 1.0;
+
+    double meanPH0=0;
+    double varPH0 = 1e100;
+    double transtionVariance=1;
+
+    double meanPAlpha=0;
+    double varPAlpha = 1e100;
+
+    double meanPBeta=0;
+    double varPBeta = 1e100;
+
+    public Smooth_GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_){
+        this.localHiddenVars=localHiddenVars_;
+    }
 
     public void setTransitionVariance(double noise) {
         this.transtionVariance = noise;
     }
 
-    public void setFading(double fading) {
-        this.fading = fading;
+    public void setPH0(double mean, double var){
+        this.meanPH0=mean;
+        this.varPH0=var;
     }
 
-    public Smooth_GaussianHiddenTransitionMethod(List<Variable> localHiddenVars_, double meanStart_, double transtionVariance_){
-        this.localHiddenVars=localHiddenVars_;
-        this.meanStart = meanStart_;
-        this.transtionVariance = transtionVariance_;
+    public void setPAlpha(double mean, double var) {
+        this.meanPAlpha=mean;
+        this.varPAlpha=var;
     }
+
+    public void setPBeta(double mean, double var) {
+        this.meanPBeta=mean;
+        this.varPBeta=var;
+    }
+
 
     @Override
     public EF_LearningBayesianNetwork initModel(EF_LearningBayesianNetwork bayesianNetwork, PlateuStructure plateuStructure) {
@@ -66,13 +83,13 @@ public class Smooth_GaussianHiddenTransitionMethod implements TransitionMethod, 
                 precisionPrior = Double.MAX_VALUE;
                 meanPrior = 0;
             }else if(paramVariable.getName().contains("_Beta_")){
-                varPrior = 1e100;
+                varPrior = varPBeta;
                 precisionPrior = 1 / varPrior;
-                meanPrior = 0;
+                meanPrior = meanPBeta;
             }else if(paramVariable.getName().contains("_Beta0_")){
-                varPrior = 1e100;
+                varPrior = varPAlpha;
                 precisionPrior = 1 / varPrior;
-                meanPrior = 0;
+                meanPrior = meanPAlpha;
             }else{
                 throw new UnsupportedOperationException("ERROR");
             }
@@ -86,50 +103,23 @@ public class Smooth_GaussianHiddenTransitionMethod implements TransitionMethod, 
 
         //Initialization for Hidden
 
-            EF_Normal normal = bayesianNetwork.getDistribution(localHiddenVars.get(0));
+        EF_Normal normal = bayesianNetwork.getDistribution(localHiddenVars.get(0));
 
+        double meanPrior = meanPH0;
+        double varPrior = varPH0;
+        double precisionPrior = 1 / varPrior;
 
-            //double mean = meanStart;
-            //double var = 1;
+        normal.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
+        normal.fixNumericalInstability();
+        normal.updateMomentFromNaturalParameters();
 
-            //normal.setNaturalWithMeanPrecision(mean,1/var);
-            //(8.371590159011983; 0.331789949525592);
-            double meanPrior = 0;
-            double varPrior = 1e100;
-            double precisionPrior = 1 / varPrior;
-
-            normal.setNaturalWithMeanPrecision(meanPrior,precisionPrior);
-            normal.fixNumericalInstability();
-            normal.updateMomentFromNaturalParameters();
-
-
-            /*double meanQ = 0;
-            double invVarQ = 1e100;
-
-            EF_Normal qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localHiddenVars.get(0)).getQDist();
-
-            qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
-            qNormal.fixNumericalInstability();
-            qNormal.updateMomentFromNaturalParameters();
-            */
-
-        for (int i = 1; i < this.localHiddenVars.size(); i++) {
+       for (int i = 1; i < this.localHiddenVars.size(); i++) {
 
             EF_Normal_NormalParents normal_normalParents = bayesianNetwork.getDistribution(localHiddenVars.get(i));
 
             normal_normalParents.setBeta0(0);
             normal_normalParents.setBetas(new double[]{1.0});
             normal_normalParents.setVariance(transtionVariance);
-
-            /*meanQ = 0;
-            invVarQ = 1e100;
-
-            qNormal = (EF_Normal)plateuStructure.getNodeOfNonReplicatedVar(localHiddenVars.get(i)).getQDist();
-
-            qNormal.setNaturalWithMeanPrecision(meanQ,invVarQ);
-            qNormal.fixNumericalInstability();
-            qNormal.updateMomentFromNaturalParameters();
-            */
 
         }
 

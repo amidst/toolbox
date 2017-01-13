@@ -34,7 +34,6 @@ import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-import eu.amidst.icdm2016.GaussianHiddenTransitionMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +63,18 @@ public class Smooth_NaiveBayesVirtualConceptDriftDetector {
 
     /** Represents the variance added when making a transition*/
     double transitionVariance;
+
+    //Represents the mean and variance of the Normal prior por H_0
+    double meanPH0=0;
+    double varPH0 = 1e100;
+
+    //Represents the mean and variance of the Normal prior for all the alpha paramters
+    double meanPAlpha=0;
+    double varPAlpha = 1e100;
+
+    //Represents the mean and variance of the Normal prior for all the beta parameters
+    double meanPBeta=0;
+    double varPBeta = 1e100;
 
     /** Represents the index of the class variable of the classifier*/
     int classIndex = -1;
@@ -109,6 +120,9 @@ public class Smooth_NaiveBayesVirtualConceptDriftDetector {
      * @param numberOfGlobalVars A positive integer value.
      */
     public void setNumberOfGlobalVars(int numberOfGlobalVars) {
+        if (numberOfGlobalVars>1)
+            throw new UnsupportedOperationException("Code not ready to support more than one hidden var");
+
         this.numberOfGlobalVars = numberOfGlobalVars;
     }
 
@@ -162,6 +176,21 @@ public class Smooth_NaiveBayesVirtualConceptDriftDetector {
             ((Smooth_GaussianHiddenTransitionMethod)this.svb.getTransitionMethod()).setTransitionVariance(transitionVariance);
     }
 
+    public void setPH0(double mean, double var){
+        this.meanPH0=mean;
+        this.varPH0=var;
+    }
+
+    public void setPAlpha(double mean, double var) {
+        this.meanPAlpha=mean;
+        this.varPAlpha=var;
+    }
+
+    public void setPBeta(double mean, double var) {
+        this.meanPBeta=mean;
+        this.varPBeta=var;
+    }
+
     /**
      * Set the seed of the class
      * @param seed, an integer value
@@ -176,18 +205,6 @@ public class Smooth_NaiveBayesVirtualConceptDriftDetector {
      */
     public SVB getSvb() {
         return svb;
-    }
-
-
-    public void deactivateTransitionMethod(){
-        svb.setTransitionMethod(null);
-    }
-
-    public void activateTransitionMethod(){
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars,
-                0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
     }
 
     public boolean isIncludeIndicators() {
@@ -310,8 +327,12 @@ public class Smooth_NaiveBayesVirtualConceptDriftDetector {
         svb = new SVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new Smooth_PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
-        Smooth_GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new Smooth_GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
+        Smooth_GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new Smooth_GaussianHiddenTransitionMethod(this.hiddenVars);
+        gaussianHiddenTransitionMethod.setTransitionVariance(this.transitionVariance);
+        gaussianHiddenTransitionMethod.setPH0(meanPH0,varPH0);
+        gaussianHiddenTransitionMethod.setPAlpha(meanPAlpha,varPAlpha);
+        gaussianHiddenTransitionMethod.setPBeta(meanPBeta,varPBeta);
+
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);

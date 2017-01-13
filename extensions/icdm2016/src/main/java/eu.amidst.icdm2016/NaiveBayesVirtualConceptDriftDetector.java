@@ -53,6 +53,18 @@ public class NaiveBayesVirtualConceptDriftDetector {
     /** Represents the variance added when making a transition*/
     double transitionVariance;
 
+    //Represents the mean and variance of the Normal prior por H_0
+    double meanPH0=0;
+    double varPH0 = 1e100;
+
+    //Represents the mean and variance of the Normal prior for all the alpha paramters
+    double meanPAlpha=0;
+    double varPAlpha = 1e100;
+
+    //Represents the mean and variance of the Normal prior for all the beta parameters
+    double meanPBeta=0;
+    double varPBeta = 1e100;
+
     /** Represents the index of the class variable of the classifier*/
     int classIndex = -1;
 
@@ -84,6 +96,23 @@ public class NaiveBayesVirtualConceptDriftDetector {
     boolean output = false;
 
     double elbo=0;
+
+
+    public void setPH0(double mean, double var){
+        this.meanPH0=mean;
+        this.varPH0=var;
+    }
+
+    public void setPAlpha(double mean, double var) {
+        this.meanPAlpha=mean;
+        this.varPAlpha=var;
+    }
+
+    public void setPBeta(double mean, double var) {
+        this.meanPBeta=mean;
+        this.varPBeta=var;
+    }
+
     /**
      * Returns the class variable of the classifier
      * @return A <code>Variable</code> object
@@ -166,17 +195,6 @@ public class NaiveBayesVirtualConceptDriftDetector {
         return svb;
     }
 
-
-    public void deactivateTransitionMethod(){
-        svb.setTransitionMethod(null);
-    }
-
-    public void activateTransitionMethod(){
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(hiddenVars,
-                0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
-        svb.setTransitionMethod(gaussianHiddenTransitionMethod);
-    }
 
     public boolean isIncludeIndicators() {
         return includeIndicators;
@@ -274,8 +292,12 @@ public class NaiveBayesVirtualConceptDriftDetector {
         svb = new SVB();
         svb.setSeed(this.seed);
         svb.setPlateuStructure(new PlateuStructureGlobalAsInIDA2015(hiddenVarsWithUR));
-        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars, 0, this.transitionVariance);
-        gaussianHiddenTransitionMethod.setFading(fading);
+        GaussianHiddenTransitionMethod gaussianHiddenTransitionMethod = new GaussianHiddenTransitionMethod(this.hiddenVars);
+        gaussianHiddenTransitionMethod.setTransitionVariance(this.transitionVariance);
+        gaussianHiddenTransitionMethod.setPH0(meanPH0,varPH0);
+        gaussianHiddenTransitionMethod.setPAlpha(meanPAlpha,varPAlpha);
+        gaussianHiddenTransitionMethod.setPBeta(meanPBeta,varPBeta);
+
         svb.setTransitionMethod(gaussianHiddenTransitionMethod);
         svb.setWindowsSize(this.windowsSize);
         svb.setDAG(dag);
