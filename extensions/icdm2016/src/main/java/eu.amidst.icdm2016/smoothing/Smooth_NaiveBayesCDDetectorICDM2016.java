@@ -83,6 +83,8 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
 
         double transitionVariance = Double.parseDouble(args[2]);
 
+        int seed = Integer.parseInt(args[3]);
+
         String outputFile = args[0];
 
 
@@ -111,7 +113,7 @@ public class Smooth_NaiveBayesCDDetectorICDM2016 {
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
-        virtualDriftDetector.setSeed(1);
+        virtualDriftDetector.setSeed(seed);
 
         //We set the data which is going to be used
         //virtualDriftDetector.setData(dataMonth0);
