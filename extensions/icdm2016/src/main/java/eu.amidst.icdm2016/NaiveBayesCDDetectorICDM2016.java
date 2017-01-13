@@ -14,40 +14,31 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 /**
+ *
+ * This is the class used to perform the experiments for ICDM2016 and for the journal version DSS.
+ *
  * Created by ana@cs.aau.dk on 27/04/16.
  */
 public class NaiveBayesCDDetectorICDM2016 {
 
     private static NaiveBayesVirtualConceptDriftDetector virtualDriftDetector;
-    private static Variable unemploymentRateVar;
-    private static boolean includeUR = false;
-    private static boolean includeIndicators = false;
 
+    //Global Model including all variables
     //static String[] varNames = {"VAR01","VAR02","VAR03","VAR04","VAR07","VAR08"};
 
-    static double transitionVariance = 10;
-
+    //Local Model only including one variable
     static String[] varNames = {"VAR04"};
 
     static int windowSize = 50000;
 
-    //static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
+    static String path = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/dataWeka";
 
-    static String path="/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaLocalResiduals/R1_";
-
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWeka/dataWeka";
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaUnemploymentRateShifted/dataWekaUnemploymentRateShifted";
-    //static String path="/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataNoResidualsNoUR/dataNoResidualsNoUR";
     private static void printOutput(double [] meanHiddenVars, int currentMonth){
         for (int j = 0; j < meanHiddenVars.length; j++) {
             System.out.print(currentMonth + "\t" + meanHiddenVars[j]);
             meanHiddenVars[j] = 0;
         }
 
-        if (unemploymentRateVar != null) {
-            System.out.print("\t" +virtualDriftDetector.getSvb().getPlateuStructure().
-                    getNodeOfNonReplicatedVar(unemploymentRateVar).getAssignment().getValue(unemploymentRateVar));
-        }
         System.out.println();
     }
 
@@ -55,8 +46,6 @@ public class NaiveBayesCDDetectorICDM2016 {
     public static void main(String[] args) throws IOException {
 
         int NSETS = 84;
-
-        int numVars = varNames.length;
 
         //We can open the data stream using the static class DataStreamLoader
 
@@ -67,10 +56,7 @@ public class NaiveBayesCDDetectorICDM2016 {
         for (String varName : varNames) {
             attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(varName));
         }
-        String unemploymentRateAttName = "UNEMPLOYMENT_RATE_ALMERIA";
-        if(includeUR){
-            attsSubSetList.add(dataMonth0.getAttributes().getAttributeByName(unemploymentRateAttName));
-        }
+
         Attributes attsSubset = new Attributes(attsSubSetList);
 
         //We create a eu.amidst.eu.amidst.icdm2016.NaiveBayesVirtualConceptDriftDetector object
@@ -79,10 +65,10 @@ public class NaiveBayesCDDetectorICDM2016 {
         //We set class variable as the last attribute
         virtualDriftDetector.setClassIndex(-1);
 
+        //We set the seed that defines the random initialization for the Q's.
         virtualDriftDetector.setSeed(1);
 
         //We set the data which is going to be used
-        //virtualDriftDetector.setData(dataMonth0);
         virtualDriftDetector.setAttributes(attsSubset);
 
         //We fix the size of the window
@@ -90,18 +76,27 @@ public class NaiveBayesCDDetectorICDM2016 {
 
         virtualDriftDetector.setOutput(false);
 
+
+        //Parameters
         //We fix the number of global latent variables
         virtualDriftDetector.setNumberOfGlobalVars(1);
 
-        virtualDriftDetector.setIncludeUR(includeUR);
+        //We set the transition variance
+        virtualDriftDetector.setTransitionVariance(10);
 
-        virtualDriftDetector.setIncludeIndicators(includeIndicators);
+        //Set Prior for H0
+        virtualDriftDetector.setPH0(0,1e100);
+
+        //Set Prior for Alphas
+        virtualDriftDetector.setPAlpha(0,1e100);
+
+        //Set Prior for Betas
+        virtualDriftDetector.setPBeta(0,1e100);
+
 
         //We should invoke this method before processing any data
         virtualDriftDetector.initLearning();
 
-        //If UR is to be included
-        //virtualDriftDetector.initLearningWithUR();
 
         int[] peakMonths = {2, 8, 14, 20, 26, 32, 38, 44, 47, 50, 53, 56, 59, 62, 65, 68, 71, 74, 77, 80, 83};
 
@@ -111,17 +106,8 @@ public class NaiveBayesCDDetectorICDM2016 {
             System.out.print("\t" + hiddenVar.getName());
         }
 
-        try {
-            unemploymentRateVar = virtualDriftDetector.getSvb().getDAG().getVariables().getVariableByName(unemploymentRateAttName);
-            System.out.print("\t UnempRate");
-        } catch (UnsupportedOperationException e) {
-        }
-
 
         System.out.println();
-
-        double[] meanHiddenVars;
-
 
 
         for (int i = 0; i < NSETS; i++) {
@@ -136,10 +122,7 @@ public class NaiveBayesCDDetectorICDM2016 {
             else
                 dataMonthi= DataStreamLoader.openFromFile(path+currentMonth+".arff");
 
-            virtualDriftDetector.setTransitionVariance(0);
-
-            meanHiddenVars = virtualDriftDetector.updateModel(dataMonthi);
-
+            virtualDriftDetector.updateModel(dataMonthi);
 
             List<Variable> param = virtualDriftDetector.getSvb().getPlateuStructure().getNonReplicatedVariables();
 
@@ -154,13 +137,7 @@ public class NaiveBayesCDDetectorICDM2016 {
 
             System.out.println();
 
-            virtualDriftDetector.setTransitionVariance(transitionVariance);
-            virtualDriftDetector.getSvb().applyTransition();
-
             //System.out.println(virtualDriftDetector.getLearntBayesianNetwork());
-
-            //We print the output
-            //printOutput(meanHiddenVars, currentMonth);
 
             //RemoveGlobalHiddenResiduals.remove(i,virtualDriftDetector,dataMonthi);
 
