@@ -283,7 +283,7 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
 
 
         ImportanceSamplingCLG_new importanceSampling = new ImportanceSamplingCLG_new();
-        importanceSampling.setSampleSize(10000);
+        importanceSampling.setSampleSize(100000);
         importanceSampling.setModel(bn);
         importanceSampling.setGaussianMixturePosteriors(false);
         importanceSampling.setParallelMode(false);
