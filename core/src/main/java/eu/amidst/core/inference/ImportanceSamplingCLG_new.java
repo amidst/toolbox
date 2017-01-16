@@ -58,10 +58,11 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private List<SufficientStatistics> SSOfMultinomialVariables;
     private List<List<StreamingUpdateableGaussianMixture>> SSOfGaussianMixtureVariables;
     private List<List<StreamingUpdateableRobustNormal>> SSOfNormalVariables;
+
     //private List<StreamingUpdateableRobustNormal> SSOfNormalVariables;
 
 
-    private double logProbOfEvidence;
+    //private double logProbOfEvidence;
 
     private boolean parallelMode = true;
     private boolean useGaussianMixtures = false;
@@ -87,9 +88,6 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         private double log_sum_negative_terms = Double.NEGATIVE_INFINITY;
         private double log_sum_positive_terms_sq = Double.NEGATIVE_INFINITY;
         private double log_sum_negative_terms_sq = Double.NEGATIVE_INFINITY;
-
-
-        NormalDistributionImpl normalDistribution;
 
         public StreamingUpdateableRobustNormal(Variable var) {
             this.variable=var;
@@ -178,6 +176,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         private double initial_variance = 50;
         private double tau_novelty = 0.0001;
 
+        private Variable variable;
+
         private int M = 0;
         private List<Double> mean;
         private List<Double> variance;
@@ -188,6 +188,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
         NormalDistributionImpl normalDistribution;
 
+        public StreamingUpdateableGaussianMixture(Variable variable1) {
+            this.variable = variable1;
+        }
 
         public void setInitialVariance(double initial_variance) {
             this.initial_variance = initial_variance;
@@ -202,6 +205,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         }
 
         protected void add(double weight, Normal normal) {
+
+            if(M==0) {
+                mean = new ArrayList<>();
+                variance = new ArrayList<>();
+                componentWeight = new ArrayList<>();
+                log_sumProbs = new ArrayList<>();
+            }
             // CAREFUL USING THIS METHOD!!
             M=M+1;
             mean.add(normal.getMean());
@@ -431,7 +441,8 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                 parameters[3 * i + 1] = mean.get(i);
                 parameters[3 * i + 2] = variance.get(i);
             }
-            GaussianMixture result = new GaussianMixture(parameters);
+            GaussianMixture result = new GaussianMixture(variable);
+            result.setParameters(parameters);
 
             return result;
         }
@@ -571,7 +582,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                 ArrayList arrayList = new ArrayList();
 
                 this.variablesAPosteriori.stream().filter(Variable::isNormal).forEachOrdered(variable -> {
-                    StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture();
+                    StreamingUpdateableGaussianMixture streamingPosteriorDistribution = new StreamingUpdateableGaussianMixture(variable);
                     streamingPosteriorDistribution.setInitialVariance(this.mixtureOfGaussiansInitialVariance);
                     streamingPosteriorDistribution.setNoveltyRate(this.mixtureOfGaussiansNoveltyRate);
                     arrayList.add(streamingPosteriorDistribution);
@@ -828,10 +839,10 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         double[] paramDistr1 = distr1.getGaussianMixture().getParameters();
         double[] paramDistr2 = distr2.getGaussianMixture().getParameters();
 
-        StreamingUpdateableGaussianMixture newDistr = new StreamingUpdateableGaussianMixture();
+        StreamingUpdateableGaussianMixture newDistr = new StreamingUpdateableGaussianMixture(distr1.variable);
 
         double logWeightDistr1 = distr1.getLogSumWeights();
-        double logWeightDistr2 = distr1.getLogSumWeights();
+        double logWeightDistr2 = distr2.getLogSumWeights();
 
         double logSumWeights = RobustOperations.robustSumOfLogarithms(logWeightDistr1,logWeightDistr2);
 
@@ -969,11 +980,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
         }).reduce(RobustOperations::robustSumOfLogarithms).getAsDouble();
 
+        this.logSumWeights = logSumWeights;
+
         if (evidence!=null) {
-            logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+            logProbEvidence = logSumWeights - Math.log(sampleSize);
         }
         else {
-            logProbOfEvidence = 0;
+            logProbEvidence = 0;
         }
 
 
@@ -1047,11 +1060,13 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 
         //logProbOfEvidence = robustSumOfLogarithms(logProbOfEvidence,-Math.log(sampleSize));
 
+        this.logSumWeights = logSumWeights;
+
         if (evidence!=null) {
-            this.logProbOfEvidence = logSumWeights - Math.log(sampleSize);
+            this.logProbEvidence = logSumWeights - Math.log(sampleSize);
         }
         else {
-            this.logProbOfEvidence = 0;
+            this.logProbEvidence = 0;
         }
 
 //        if(saveDataOnMemory_) {

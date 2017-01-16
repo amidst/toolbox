@@ -74,6 +74,9 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     protected boolean parallelMode = true;
     protected boolean updatedPosteriors = false;
 
+    protected double logProbEvidence;
+    protected double logSumWeights;
+
     protected class WeightedAssignment {
         private HashMapAssignment assignment;
         private double weight;
@@ -192,22 +195,28 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
     }
 
 
+    public double getLogSumWeights() {
+        return this.logSumWeights;
+    }
+
+
     /**
      * {@inheritDoc}
      */
     @Override
     public double getLogProbabilityOfEvidence() {
+        return this.logProbEvidence;
 
-        if(keepDataOnMemory) {
-            weightedSampleStream = weightedSampleList.stream().sequential();
-        } else {
-            computeWeightedSampleStream(false);
-        }
-        if(parallelMode) {
-            weightedSampleStream.parallel();
-        }
-
-        return Math.log(weightedSampleStream.mapToDouble(ws -> Math.exp(ws.weight)).filter(Double::isFinite).average().getAsDouble());
+//        if(keepDataOnMemory) {
+//            weightedSampleStream = weightedSampleList.stream().sequential();
+//        } else {
+//            computeWeightedSampleStream(false);
+//        }
+//        if(parallelMode) {
+//            weightedSampleStream.parallel();
+//        }
+//
+//        return Math.log(weightedSampleStream.mapToDouble(ws -> Math.exp(ws.weight)).filter(Double::isFinite).average().getAsDouble());
     }
 
     /**
@@ -402,7 +411,9 @@ public class ImportanceSampling implements InferenceAlgorithm, Serializable {
      */
     @Override
     public void runInference() {
-        if(keepDataOnMemory) computeWeightedSampleStream(true);
+        if(keepDataOnMemory) {
+            computeWeightedSampleStream(true);
+        }
         //computeWeightedSampleStream(keepDataOnMemory);
 
         this.updatedPosteriors = true;
