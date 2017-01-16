@@ -46,6 +46,40 @@ public class GaussianMixture extends UnivariateDistribution {
     /** Represents the set of coefficients in the linear combination. */
     private double[] coefficients;
 
+    private class WeightedTerm {
+        private double weight;
+        private Normal normal;
+
+        public WeightedTerm(double coeff, Normal normal) {
+            this.weight =coeff;
+            this.normal=normal;
+        }
+
+        public double getWeight() {
+            return weight;
+        }
+
+        public Normal getNormal() {
+            return normal;
+        }
+
+        public double getMean() {
+            return normal.getMean();
+        }
+
+        public double getVar() {
+            return normal.getVariance();
+        }
+
+        public void setNormal(Normal normal) {
+            this.normal = normal;
+        }
+
+        public void setWeight(double weight) {
+            this.weight = weight;
+        }
+    }
+
     /**
      * Creates a new GaussianMixture distribution for a given variable.
      * @param var1 a {@link Variable} object.
@@ -54,13 +88,13 @@ public class GaussianMixture extends UnivariateDistribution {
         this.var=var1;
 
         terms = new ArrayList<Normal>();
-        Normal aux=new Normal(var1);
-        aux.setMean(0);
-        aux.setVariance(1);
-        terms.add(aux);
+//        Normal aux=new Normal(var1);
+//        aux.setMean(0);
+//        aux.setVariance(1);
+//        terms.add(aux);
 
-        coefficients=new double[1];
-        coefficients[0]=1;
+//        coefficients=new double[1];
+//        coefficients[0]=1;
     }
 
     /**
@@ -79,7 +113,7 @@ public class GaussianMixture extends UnivariateDistribution {
      * @param params a list of parameters (must be of length multiple of 3).
      */
     public GaussianMixture(double[] params) {
-
+        terms = new ArrayList<Normal>();
         this.setParameters(params);
     }
 
@@ -190,6 +224,140 @@ public class GaussianMixture extends UnivariateDistribution {
         }
     };
 
+
+    public void addTerm(Normal normal, double weight) {
+        if(this.coefficients==null) {
+            this.coefficients = new double[1];
+            this.coefficients[0] = weight;
+        }
+        else {
+            double[] newCoefficients = Arrays.copyOf(this.coefficients, this.coefficients.length + 1);
+            newCoefficients[newCoefficients.length - 1] = weight;
+            this.coefficients = newCoefficients;
+        }
+        this.terms.add(normal);
+    }
+
+    public void normalizeWeights() {
+        double sumWeights = Arrays.stream(this.coefficients).sum();
+        for (int i = 0; i < this.coefficients.length; i++) {
+            this.coefficients[i]=this.coefficients[i]/sumWeights;
+        }
+    }
+
+    public void filterTerms(double minWeightThreshold) {
+        List<Normal> newListOfTerms = new ArrayList<>();
+        List<Double> newListOfCoefficients = new ArrayList<>();;
+
+        for (int i = 0; i < this.coefficients.length; i++) {
+            if (this.coefficients[i] >= minWeightThreshold) {
+                newListOfTerms.add( this.terms.get(i) );
+                newListOfCoefficients.add( this.coefficients[i] );
+            }
+        }
+
+        this.coefficients = newListOfCoefficients.stream().mapToDouble(Double::doubleValue).toArray();
+        this.terms = newListOfTerms;
+
+        this.normalizeWeights();
+    }
+
+    public void sortByMean() {
+        List<WeightedTerm> termList = new ArrayList<>();
+        for (int i = 0; i < coefficients.length; i++) {
+            termList.add(new WeightedTerm(coefficients[i],terms.get(i)));
+        }
+
+        termList.sort((w1,w2) -> w1.getMean() > w2.getMean() ? 1 : -1);
+
+        List<Normal> newTerms = new ArrayList<>();
+        double [] newCoeffs = new double[coefficients.length];
+
+        for (int i = 0; i < coefficients.length; i++) {
+            newTerms.add(termList.get(i).getNormal());
+            newCoeffs[i]=termList.get(i).getWeight();
+        }
+
+        this.terms = newTerms;
+        this.coefficients = newCoeffs;
+    }
+
+    public void sortByWeight() {
+        List<WeightedTerm> termList = new ArrayList<>();
+        for (int i = 0; i < coefficients.length; i++) {
+            termList.add(new WeightedTerm(coefficients[i],terms.get(i)));
+        }
+
+        termList.sort((w1,w2) -> w1.getWeight() > w2.getWeight() ? 1 : -1);
+
+        List<Normal> newTerms = new ArrayList<>();
+        double [] newCoeffs = new double[coefficients.length];
+
+        for (int i = 0; i < coefficients.length; i++) {
+            newTerms.add(termList.get(i).getNormal());
+            newCoeffs[i]=termList.get(i).getWeight();
+        }
+
+        this.terms = newTerms;
+        this.coefficients = newCoeffs;
+    }
+
+    public void mergeTerms(double threshold) {
+        this.sortByMean();
+
+        List<WeightedTerm> termList = new ArrayList<>();
+        for (int i = 0; i < coefficients.length; i++) {
+            termList.add(new WeightedTerm(coefficients[i],terms.get(i)));
+        }
+
+        int i=0;
+        while (i<termList.size()) {
+            Normal distrP = termList.get(i).getNormal();
+            boolean ended=false;
+            while(!ended) {
+                ended=true;
+                for (int j = i + 1; j < termList.size(); j++) {
+                    Normal distrQ = termList.get(j).getNormal();
+                    double KL_distance = distrP.toEFUnivariateDistribution().kl(distrQ.toEFUnivariateDistribution().getNaturalParameters(), 0);
+                    if (KL_distance < threshold) {
+                        ended = false;
+
+                        double mean1 = distrP.getMean();
+                        double mean2 = distrQ.getMean();
+
+                        double var1 = distrP.getVariance();
+                        double var2 = distrQ.getVariance();
+
+                        double newMean = (mean1 + mean2)/2;
+                        double newVar = (var1+Math.pow(mean1,2) + var2+Math.pow(mean2,2))/2 - Math.pow(newMean,2);
+
+                        double newWeight = termList.get(i).getWeight() + termList.get(j).getWeight();
+                        Normal newTerm = new Normal(distrP.getVariable());
+                        newTerm.setMean(newMean);
+                        newTerm.setVariance(newVar);
+
+                        termList.get(i).setNormal(newTerm);
+                        termList.get(i).setWeight(newWeight);
+
+                        termList.remove(j);
+                    }
+                }
+            }
+            i=i+1;
+        }
+
+        List<Normal> newTerms = new ArrayList<>();
+        double [] newCoeffs = new double[termList.size()];
+
+        for (int k = 0; k < termList.size(); k++) {
+            newTerms.add(termList.get(k).getNormal());
+            newCoeffs[k]=termList.get(k).getWeight();
+        }
+
+        this.terms = newTerms;
+        this.coefficients = newCoeffs;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -234,7 +402,7 @@ public class GaussianMixture extends UnivariateDistribution {
 
         };
         DoubleStream aux = Arrays.stream(this.coefficients);
-        double suma=aux.sum();
+        double suma = aux.sum();
         aux = Arrays.stream(this.coefficients);
         this.coefficients = aux.map(x -> x/suma).toArray();
 
