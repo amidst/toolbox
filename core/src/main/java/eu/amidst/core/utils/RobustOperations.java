@@ -44,7 +44,7 @@ public class RobustOperations {
         double aux_max = Math.max(log_x1,log_x2);
         double aux_min = Math.min(log_x1,log_x2);
 
-        result = aux_max + Math.log( 1 + Math.exp(aux_min-aux_max) );
+        result = aux_max + Math.log1p( Math.exp(aux_min-aux_max) );
 
         return result;
     }
