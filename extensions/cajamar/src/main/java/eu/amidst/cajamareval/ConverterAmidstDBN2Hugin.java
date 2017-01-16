@@ -31,7 +31,8 @@ public class ConverterAmidstDBN2Hugin {
         huginDBN = DBNConverterToHugin.convertToHugin(amidstDBN);
 
 
-        String outFile = dbnPath + ".net";
+        String outFile = dbnPath + "DBNHugin.net";
+        huginDBN.setName("DBNHugin");
         huginDBN.saveAsNet(outFile);
         System.out.println("\nHugin network saved in \"" + outFile + "\"" + ".");
     }

@@ -63,20 +63,33 @@ public class DBNConverterToHugin {
         //A reverse order of the variables is used instead.
         for(int i=1;i<=size;i++){
             Variable amidstVar = dynamicVars.getVariableById(size-i);
-            LabelledDCNode n = new LabelledDCNode(huginDBN);
+            if(amidstVar.isMultinomial()){
+                LabelledDCNode n = new LabelledDCNode(huginDBN);
 
-            n.setName(amidstVar.getName());
-            n.setNumberOfStates(amidstVar.getNumberOfStates());
-            n.setLabel(amidstVar.getName());
+                n.setName(amidstVar.getName());
+                n.setNumberOfStates(amidstVar.getNumberOfStates());
+                n.setLabel(amidstVar.getName());
 
-            for (int j=0;j<n.getNumberOfStates();j++){
+                for (int j=0;j<n.getNumberOfStates();j++){
                     String stateName = ((FiniteStateSpace)amidstVar.getStateSpaceType()).getStatesName(j);
                     n.setStateLabel(j, stateName);
+                }
+                Node huginVar = this.huginDBN.getNodeByName(amidstVar.getName());
+                Node clone = huginVar.createTemporalClone();
+                clone.setName("T_"+huginVar.getName());
+                clone.setLabel("T_"+huginVar.getLabel());
             }
-            Node huginVar = this.huginDBN.getNodeByName(amidstVar.getName());
-            Node clone = huginVar.createTemporalClone();
-            clone.setName("T_"+huginVar.getName());
-            clone.setLabel("T_"+huginVar.getLabel());
+            else if (amidstVar.isNormal()) {
+                ContinuousChanceNode c = new ContinuousChanceNode(this.huginDBN);
+                c.setName(amidstVar.getName());
+                Node huginVar = this.huginDBN.getNodeByName(amidstVar.getName());
+                Node clone = huginVar.createTemporalClone();
+                clone.setName("T_"+amidstVar.getName());
+                clone.setLabel("T_"+amidstVar.getName());
+            }
+            else {
+                throw new IllegalArgumentException("Unrecognized DistributionType:" + amidstVar.getDistributionTypeEnum().toString());
+            }
         }
      }
 
@@ -125,42 +138,51 @@ public class DBNConverterToHugin {
         for (int i = 0; i < numNodes; i++) {
             Node huginNode = huginNodes.get(i);
 
-            //Master nodes. TIME T from AMIDST
-            if (huginNode.getTemporalMaster() == null) {
-                Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getName());
-                if (amidstDBN.getConditionalDistributionTimeT(amidstVar) instanceof Multinomial){
-                    dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
-                    dist.setMultinomial(0,amidstDBN.getConditionalDistributionTimeT(amidstVar));
-                }else {
-                    dist = amidstDBN.getConditionalDistributionTimeT(amidstVar);
+            if (huginNode.getKind().compareTo(Class.H_KIND_DISCRETE)==0) {
+                //Master nodes. TIME T from AMIDST
+                if (huginNode.getTemporalMaster() == null) {
+                    Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getName());
+                    if (amidstDBN.getConditionalDistributionTimeT(amidstVar) instanceof Multinomial) {
+                        dist = new Multinomial_MultinomialParents(amidstVar, new ArrayList());
+                        dist.setMultinomial(0, amidstDBN.getConditionalDistributionTimeT(amidstVar));
+                    } else {
+                        dist = amidstDBN.getConditionalDistributionTimeT(amidstVar);
+                    }
+                    nStates = amidstVar.getNumberOfStates();
                 }
-                nStates = amidstVar.getNumberOfStates();
-            }
 
-            //Temporal clones. TIME 0 from AMIDST
-            if(huginNode.getTemporalClone()==null){
-                Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getTemporalMaster().getName());
-                if (amidstDBN.getConditionalDistributionTime0(amidstVar) instanceof Multinomial){
-                    dist = new Multinomial_MultinomialParents(amidstVar,new ArrayList());
-                    dist.setMultinomial(0,amidstDBN.getConditionalDistributionTime0(amidstVar));
-                }else {
-                    dist = amidstDBN.getConditionalDistributionTime0(amidstVar);
+                //Temporal clones. TIME 0 from AMIDST
+                if (huginNode.getTemporalClone() == null) {
+                    Variable amidstVar = amidstDBN.getDynamicVariables().getVariableByName(huginNode.getTemporalMaster().getName());
+                    if (amidstDBN.getConditionalDistributionTime0(amidstVar) instanceof Multinomial) {
+                        dist = new Multinomial_MultinomialParents(amidstVar, new ArrayList());
+                        dist.setMultinomial(0, amidstDBN.getConditionalDistributionTime0(amidstVar));
+                    } else {
+                        dist = amidstDBN.getConditionalDistributionTime0(amidstVar);
+                    }
+                    nStates = amidstVar.getNumberOfStates();
                 }
-                nStates = amidstVar.getNumberOfStates();
+
+                List<Multinomial> probabilities = dist.getMultinomialDistributions();
+                List<Variable> conditioningVariables = dist.getConditioningVariables();
+                int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
+
+                int sizeArray = numParentAssignments * nStates;
+                double[] finalArray = new double[sizeArray];
+
+                for (int j = 0; j < numParentAssignments; j++) {
+                    double[] sourceArray = probabilities.get(j).getProbabilities();
+                    System.arraycopy(sourceArray, 0, finalArray, j * nStates, nStates);
+                }
+                huginNode.getTable().setData(finalArray);
             }
+            else if (huginNode.getKind().compareTo(Class.H_KIND_CONTINUOUS)==0) {
 
-            List<Multinomial> probabilities = dist.getMultinomialDistributions();
-            List<Variable> conditioningVariables = dist.getConditioningVariables();
-            int numParentAssignments = MultinomialIndex.getNumberOfPossibleAssignments(conditioningVariables);
-
-            int sizeArray = numParentAssignments * nStates;
-            double[] finalArray = new double[sizeArray];
-
-            for (int j = 0; j < numParentAssignments; j++) {
-                double[] sourceArray = probabilities.get(j).getProbabilities();
-                System.arraycopy(sourceArray, 0, finalArray, j * nStates, nStates);
             }
-            huginNode.getTable().setData(finalArray);
+            else {
+                throw new IllegalArgumentException("Unrecognized DistributionType:" + huginNode.getKind().toString());
+
+            }
         }
     }
 
