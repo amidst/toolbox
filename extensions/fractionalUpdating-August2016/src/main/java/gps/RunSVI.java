@@ -36,7 +36,9 @@ public class RunSVI {
 
         String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
-        int ntopics = 10;
+
+
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
@@ -111,9 +113,6 @@ public class RunSVI {
 
         FileWriter fw = new FileWriter(dataPath+"SVI_Output_"+Arrays.toString(args)+"_.txt");
 
-
-//        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
-
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
 
@@ -174,10 +173,6 @@ public class RunSVI {
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
             fw.flush();
-//            BayesianNetwork bn = svb.getLearntBayesianNetwork();
-//            Normal normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
-
-//            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
 
             totalLog+=log/inst;
 

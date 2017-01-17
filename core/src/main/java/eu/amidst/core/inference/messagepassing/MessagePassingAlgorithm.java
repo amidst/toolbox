@@ -175,7 +175,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
                 Message<E> selfMessage = newSelfMessage(node);
 
                 Optional<Message<E>> message = node.getChildren()
-                                .stream()
+                                .parallelStream()
                                 .filter(children -> children.isActive())
                                 .map(children -> newMessageToParent(children, node))
                                 .reduce(Message::combineNonStateless);

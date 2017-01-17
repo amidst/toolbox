@@ -151,14 +151,12 @@ public class RunSVB {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
-                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
-                break;
             }
 
             double inst =test.getNumberOfDataInstances();

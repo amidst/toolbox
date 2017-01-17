@@ -316,15 +316,28 @@ public class DAGsGeneration {
         // Define the global hidden variable.
         Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
 
+        Variable gps_X_Real = variables.newGaussianVariable("GPSX_0_Real");
+        Variable gps_Y_Real = variables.newGaussianVariable("GPSY_0_Real");
+
+        Variable gps_X_Obs = variables.getVariableByName("GPSX_0");
+        Variable gps_Y_Obs = variables.getVariableByName("GPSY_0");
+
         // Create an empty DAG object with the defined variables.
         DAG dag = new DAG(variables);
 
-        // Link all the vars to the globalhidden
-        dag.getParentSets()
-                .stream()
-                .filter(w -> w.getMainVar() != classVar)
-                .filter(w -> w.getMainVar() != globalHiddenVar)
-                .forEach(w -> w.addParent(globalHiddenVar));
+
+        dag.getParentSet(gps_X_Obs).addParent(gps_X_Real);
+        dag.getParentSet(gps_Y_Obs).addParent(gps_Y_Real);
+
+
+        dag.getParentSet(gps_X_Real).addParent(globalHiddenVar);
+        dag.getParentSet(gps_Y_Real).addParent(globalHiddenVar);
+
+        dag.getParentSet(gps_X_Real).addParent(classVar);
+        dag.getParentSet(gps_Y_Real).addParent(classVar);
+
+
+        dag.getParentSet(globalHiddenVar).addParent(classVar);
 
         // Show the new dynamic DAG structure
         System.out.println(dag.toString());

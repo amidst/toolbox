@@ -17,6 +17,7 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
+import eu.amidst.core.variables.Variable;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,16 +33,17 @@ public class RunMultiDrift {
 
     public static void main(String[] args) throws Exception{
 
-        //String model = "GPS0";
-        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-
+/*        String model = "GPS0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        int docsPerBatch = 35000;
+*/
         String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        int docsPerBatch = 35000;
 
-        int ntopics = 10;
+        int ntopics = 2;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 30000;
 
         if (args.length>1){
             int cont=0;
@@ -106,7 +108,11 @@ public class RunMultiDrift {
         FileWriter fw = new FileWriter(dataPath+"MultiDriftSVB_Output_"+Arrays.toString(args)+"_.txt");
 
 
-//        Iterator<DataOnMemory<DataInstance>> iterator = dataInstances.iterableOverBatches(docsPerBatch).iterator();
+        fw.write("\t\t\t\t");
+        for (Variable var : svb.getPlateuStructure().getNonReplicatedVariables()) {
+            fw.write(var.getName() + "\t");
+        }
+        fw.write("\n");
 
         final String path = dataPath;
         final int finalDocsPerBatch = docsPerBatch;
@@ -161,7 +167,6 @@ public class RunMultiDrift {
                     lambda +=vals[i];
                     n++;
                 }
-                break;
             }
             lambda/=n;
 
@@ -169,7 +174,6 @@ public class RunMultiDrift {
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
-                break;
             }
 
             double inst =test.getNumberOfDataInstances();

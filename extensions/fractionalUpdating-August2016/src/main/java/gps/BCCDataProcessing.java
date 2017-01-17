@@ -146,8 +146,8 @@ public class BCCDataProcessing {
 
     public static void computSize(String[] args) {
 
-        //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
-        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
+        //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
 
 
@@ -156,15 +156,17 @@ public class BCCDataProcessing {
         Arrays.sort(strings);
         for (String string : strings) {
 
-                if (!string.endsWith(".arff"))
-                    continue;
+            if (!string.endsWith(".arff"))
+                continue;
 
-                DataOnMemory<DataInstance> batch = DataStreamLoader.loadDataOnMemoryFromFile(dataOutput+string);
+            DataOnMemory<DataInstance> batch = DataStreamLoader.loadDataOnMemoryFromFile(dataOutput+string);
 
-                System.out.println(batch.getNumberOfDataInstances());
+            System.out.println(batch.getNumberOfDataInstances());
 
-
+            totalLog+=batch.getNumberOfDataInstances();
         }
+
+        System.out.println(totalLog);
     }
 
     public static void main(String[] args) {

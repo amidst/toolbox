@@ -29,16 +29,16 @@ public class RunDrift {
 
     public static void main(String[] args) throws Exception{
 
-        //String model = "GPS0";
-        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        String model = "GPS0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        int docsPerBatch = 30000;
 
-        String model = "BCC0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
-
+        //String model = "BCC1";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        //int docsPerBatch = 30000;
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 1000;
 
         if (args.length>1){
             int cont=0;
@@ -146,7 +146,6 @@ public class RunDrift {
                 svb.updateModelWithConceptDrift(iteratorInner.next());
                 lambda += svb.getLambdaMomentParameter();
                 n++;
-                break;
             }
             lambda/=n;
 
@@ -154,7 +153,6 @@ public class RunDrift {
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
-                break;
             }
 
             double inst =test.getNumberOfDataInstances();
@@ -162,6 +160,8 @@ public class RunDrift {
             System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+
+            fw.flush();
 
             totalLog+=log/inst;
 

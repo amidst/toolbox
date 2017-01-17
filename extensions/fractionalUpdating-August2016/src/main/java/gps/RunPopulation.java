@@ -32,14 +32,20 @@ public class RunPopulation {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+//        String model = "GPS0";
+//        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+
+
+        String model = "BCC1";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+
+
         int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
         int docsPerBatch = 1000;
-        int setSIZE = 1000;
-        double learningRate = 1;
+        int setSIZE = 10000;
+        double learningRate = 0.1;
         boolean fixedLearningRate = true;
 
         if (args.length>1){
@@ -159,14 +165,12 @@ public class RunPopulation {
 
             while (iteratorInner.hasNext()){
                 svb.updateModel(iteratorInner.next());
-                break;
             }
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
                 log+=svb.predictedLogLikelihood(iteratorInner.next());
-                break;
             }
 
             double inst =test.getNumberOfDataInstances();
@@ -175,10 +179,7 @@ public class RunPopulation {
 
             fw.write((count++)+"\t"+log/inst+"\t"+inst+"\n");
 
-            //BayesianNetwork bn = svb.getLearntBayesianNetwork();
-            //Normal  normal = bn.getConditionalDistribution(bn.getVariables().getVariableByName("GPSX_0"));
-
-            //fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t" + normal.getMean() + "\t" + normal.getVariance() + "\n");
+            fw.flush();
 
             totalLog+=log/inst;
 
