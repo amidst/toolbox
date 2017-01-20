@@ -20,7 +20,7 @@ public class DistributedISScalability {
         BayesianNetworkGenerator.setSeed(seedBN);
         BayesianNetworkGenerator.setNumberOfMultinomialVars(nDiscreteVars, 2);
         BayesianNetworkGenerator.setNumberOfGaussianVars(nContVars);
-        BayesianNetworkGenerator.setNumberOfLinks( (int)1.5*(nDiscreteVars+nContVars));
+        BayesianNetworkGenerator.setNumberOfLinks( (int)2.5*(nDiscreteVars+nContVars));
         BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
 
         System.out.println(bn);
@@ -33,13 +33,13 @@ public class DistributedISScalability {
         distributedIS.setSeed(seedIS);
         distributedIS.setModel(bn);
         distributedIS.setSampleSize(sampleSize);
+        distributedIS.setVariablesOfInterest(variableList);
+        distributedIS.setGaussianMixturePosteriors(true);
 
         distributedIS.runInference();
 
         for (int i = 0; i < variableList.size(); i++) {
-            //Variable var = variableList.get(variableList.size()-1);
             Variable var = variableList.get(i);
-
             System.out.println("Var: " + var.getName() + ", conditional=" + bn.getConditionalDistribution(var) + ", posterior=" + distributedIS.getPosterior(var));
         }
 

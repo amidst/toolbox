@@ -125,6 +125,12 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                 System.out.println("log_sum_w: " + log_sum_weights);
 
             }
+
+            if(Double.isNaN(log_sum_positive_terms) || Double.isNaN(log_sum_negative_terms) || Double.isNaN(log_sum_negative_terms_sq) || Double.isNaN(log_sum_positive_terms_sq) || Double.isNaN(log_sum_weights) ) {
+                System.out.println("log_sum_p: " + log_sum_positive_terms + ", log_sum_n:" + log_sum_negative_terms);
+                System.out.println("log_sum_p_sq: " + log_sum_positive_terms_sq + ", log_sum_n_sq:" + log_sum_negative_terms_sq);
+                System.out.println("log_sum_w: " + log_sum_weights);
+            }
         }
 
         public Normal getNormal() {
@@ -135,7 +141,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
                 logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms, log_sum_negative_terms);
                 meanEstimate =   Math.exp( logSumTerms - log_sum_weights );
             } else {
-                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_positive_terms, log_sum_negative_terms);
+                logSumTerms = RobustOperations.robustDifferenceOfLogarithms(log_sum_negative_terms, log_sum_positive_terms);
                 meanEstimate = - Math.exp( logSumTerms - log_sum_weights );
             }
 
@@ -147,6 +153,10 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             Normal normalDistribution = new Normal(variable);
             normalDistribution.setMean(meanEstimate);
             normalDistribution.setVariance(varEstimate);
+
+            if(Double.isNaN(meanEstimate) || Double.isNaN(varEstimate)) {
+                System.out.println("NaN in Normal");
+            }
 
             return normalDistribution;
         }
@@ -162,11 +172,17 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         protected void setLogParameters(double[] logParameters) {
             // CAREFUL USING THIS METHOD!!
             if(logParameters.length==5) {
-                this.log_sum_positive_terms=logParameters[0];
-                this.log_sum_negative_terms=logParameters[1];
-                this.log_sum_positive_terms_sq=logParameters[2];
-                this.log_sum_negative_terms_sq=logParameters[3];
-                this.log_sum_weights=logParameters[4];
+                this.log_sum_positive_terms = logParameters[0];
+                this.log_sum_negative_terms = logParameters[1];
+                this.log_sum_positive_terms_sq = logParameters[2];
+                this.log_sum_negative_terms_sq = logParameters[3];
+                this.log_sum_weights = logParameters[4];
+            }
+
+            if(Double.isNaN(log_sum_positive_terms) || Double.isNaN(log_sum_negative_terms) || Double.isNaN(log_sum_negative_terms_sq) || Double.isNaN(log_sum_positive_terms_sq) || Double.isNaN(log_sum_weights) ) {
+                System.out.println("log_sum_p: " + log_sum_positive_terms + ", log_sum_n:" + log_sum_negative_terms);
+                System.out.println("log_sum_p_sq: " + log_sum_positive_terms_sq + ", log_sum_n_sq:" + log_sum_negative_terms_sq);
+                System.out.println("log_sum_w: " + log_sum_weights);
             }
         }
     }
@@ -826,9 +842,18 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         double [] paramNewDistr = new double[5];
 
         for (int i = 0; i < paramDistr1.length; i++) {
-            paramNewDistr[i] = RobustOperations.robustSumOfLogarithms(paramDistr1[i],paramDistr2[i]);
+            if (Double.isNaN(paramDistr1[i])) {
+                paramNewDistr[i] = paramDistr2[i];
+            }
+            else if(Double.isNaN(paramDistr2[i])) {
+                paramNewDistr[i] = paramDistr1[i];
+            }
+            else {
+                paramNewDistr[i] = RobustOperations.robustSumOfLogarithms(paramDistr1[i], paramDistr2[i]);
+            }
         }
 
+        boolean containNaNs = Arrays.stream(paramNewDistr).anyMatch(Double::isNaN);
         StreamingUpdateableRobustNormal newDistr = new StreamingUpdateableRobustNormal(distr1.getNormal().getVariable());
         newDistr.setLogParameters(paramNewDistr);
         return newDistr;
