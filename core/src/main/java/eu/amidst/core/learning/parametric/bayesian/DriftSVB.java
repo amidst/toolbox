@@ -132,6 +132,9 @@ public class DriftSVB extends SVB{
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
+            if (niter==0)
+                this.plateuStructure.resetQs();
+
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
             this.plateuStructure.runInference();
@@ -171,7 +174,7 @@ public class DriftSVB extends SVB{
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            //System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
+            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda);
 
             if (!Double.isNaN(elbo) && percentageIncrease<0.0001){//this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;

@@ -146,8 +146,8 @@ public class BCCDataProcessing {
 
     public static void computSize(String[] args) {
 
-        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
-        //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
 
 
@@ -163,7 +163,10 @@ public class BCCDataProcessing {
 
             System.out.println(batch.getNumberOfDataInstances());
 
-            totalLog+=batch.getNumberOfDataInstances();
+            //
+            //
+
+            totalLog+=(int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
         }
 
         System.out.println(totalLog);

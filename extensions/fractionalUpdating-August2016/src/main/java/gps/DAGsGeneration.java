@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class DAGsGeneration {
 
-    static public double maxTrain = 50000;
+    static public double maxTrain = 500000;
 
     public static DAG getBCCFullMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
@@ -316,8 +316,8 @@ public class DAGsGeneration {
         // Define the global hidden variable.
         Variable globalHiddenVar = variables.newMultinomialVariable("GlobalHidden",nstates);
 
-        Variable gps_X_Real = variables.newGaussianVariable("GPSX_0_Real");
-        Variable gps_Y_Real = variables.newGaussianVariable("GPSY_0_Real");
+        //Variable gps_X_Real = variables.newGaussianVariable("GPSX_0_Real");
+        //Variable gps_Y_Real = variables.newGaussianVariable("GPSY_0_Real");
 
         Variable gps_X_Obs = variables.getVariableByName("GPSX_0");
         Variable gps_Y_Obs = variables.getVariableByName("GPSY_0");
@@ -326,15 +326,15 @@ public class DAGsGeneration {
         DAG dag = new DAG(variables);
 
 
-        dag.getParentSet(gps_X_Obs).addParent(gps_X_Real);
-        dag.getParentSet(gps_Y_Obs).addParent(gps_Y_Real);
+        //dag.getParentSet(gps_X_Obs).addParent(gps_X_Real);
+        //dag.getParentSet(gps_Y_Obs).addParent(gps_Y_Real);
 
 
-        dag.getParentSet(gps_X_Real).addParent(globalHiddenVar);
-        dag.getParentSet(gps_Y_Real).addParent(globalHiddenVar);
+        dag.getParentSet(gps_X_Obs).addParent(globalHiddenVar);
+        dag.getParentSet(gps_Y_Obs).addParent(globalHiddenVar);
 
-        dag.getParentSet(gps_X_Real).addParent(classVar);
-        dag.getParentSet(gps_Y_Real).addParent(classVar);
+        dag.getParentSet(gps_X_Obs).addParent(classVar);
+        dag.getParentSet(gps_Y_Obs).addParent(classVar);
 
 
         dag.getParentSet(globalHiddenVar).addParent(classVar);

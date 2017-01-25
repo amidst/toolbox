@@ -15,5 +15,5 @@ package gps;
  * Created by andresmasegosa on 4/8/16.
  */
 public class Main {
-    public static int MIN = 500;
+    public static int MIN = 1;
 }

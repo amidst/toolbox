@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
  */
 public class PlateauLDA extends PlateuStructure {
 
+    public static double TOPIC_PRIOR=0.01;
+    public static double MIXING_PRIOR=0.1;
+
     Variable word;
     Variable topicIndicator;
     Variable dirichletMixingTopics;
@@ -97,7 +100,7 @@ public class PlateauLDA extends PlateuStructure {
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a, b) -> a.getVarID() - b.getVarID()).collect(Collectors.toList());
 
         for (int i = 0; i < nTopics; i++) {
-            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, 0.1);
+            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, MIXING_PRIOR);
         }
 
 
@@ -108,7 +111,7 @@ public class PlateauLDA extends PlateuStructure {
             NaturalParameters vec = this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
 
             for (int i = 0; i < vec.size(); i++) {
-                vec.set(i, 0.01);
+                vec.set(i, TOPIC_PRIOR);
             }
         }
 

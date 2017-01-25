@@ -9,15 +9,18 @@
  *
  */
 
-package eu.amidst.core.learning.parametric.bayesian;
+package eu.amidst.lda.core;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
+import eu.amidst.core.exponentialfamily.EF_Dirichlet;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
 import eu.amidst.core.exponentialfamily.MomentParameters;
+import eu.amidst.core.exponentialfamily.ParameterVariables;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.CompoundVector;
@@ -33,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 14/4/16.
  */
-public class MultiDriftSVB extends SVB{
+public class MultiDriftLDAv2 extends SVB{
 
 
     EF_TruncatedExponential ef_TExpP;
@@ -150,8 +153,8 @@ public class MultiDriftSVB extends SVB{
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
-            if (niter==0)
-                this.plateuStructure.resetQs();
+            //if (niter==0)
+            //    this.plateuStructure.resetQs();
 
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
@@ -167,8 +170,7 @@ public class MultiDriftSVB extends SVB{
             this.plateuStructure.updateNaturalParameterPrior(this.prior);
             for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                kl_q_p0[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-                        node.getPDist().getExpectedLogNormalizer(momentParents));
+                kl_q_p0[count] = local_kl((EF_Dirichlet)node.getQDist(),(EF_Dirichlet)node.getPDist());
                 count++;
             }
 
@@ -178,8 +180,7 @@ public class MultiDriftSVB extends SVB{
             this.plateuStructure.updateNaturalParameterPrior(this.posteriorT_1);
             for (Node node : this.plateuStructure.getNonReplictedNodes().collect(Collectors.toList())) {
                 Map<Variable, MomentParameters> momentParents = node.getMomentParents();
-                kl_q_pt_1[count] = node.getQDist().kl(node.getPDist().getExpectedNaturalFromParents(momentParents),
-                        node.getPDist().getExpectedLogNormalizer(momentParents));
+                kl_q_pt_1[count] = local_kl((EF_Dirichlet)node.getQDist(),(EF_Dirichlet)node.getPDist());
                 count++;
             }
 
@@ -222,6 +223,54 @@ public class MultiDriftSVB extends SVB{
     }
 
 
+    public static double  local_kl(EF_Dirichlet q, EF_Dirichlet p){
+
+        double LIMIT = PlateauLDA.TOPIC_PRIOR;
+
+        double kl = 0;
+        int size = q.getNaturalParameters().size();
+        int nstates = 0;
+        for (int i = 0; i < size; i++) {
+            double nqi = q.getNaturalParameters().get(i);
+            double npi = p.getNaturalParameters().get(i);
+            if (npi > (LIMIT+0.01) || nqi > (LIMIT+0.01)) {
+                nstates++;
+            }
+        }
+
+        ParameterVariables parameterVariables = new ParameterVariables(0);
+        Variable var = parameterVariables.newDirichletParameter("Local",nstates);
+        EF_Dirichlet localQ = new EF_Dirichlet(var);
+        EF_Dirichlet localP = new EF_Dirichlet(var);
+
+
+        int count =0;
+        for (int i = 0; i < size; i++) {
+            double nqi = q.getNaturalParameters().get(i);
+            double npi = p.getNaturalParameters().get(i);
+
+            if (npi > (LIMIT+0.01) || nqi > (LIMIT+0.01)) {
+                localQ.getNaturalParameters().set(count,nqi);
+                localP.getNaturalParameters().set(count,npi);
+                count++;
+            }
+
+        }
+
+        localP.fixNumericalInstability();
+        localQ.fixNumericalInstability();
+        localP.updateMomentFromNaturalParameters();
+        localQ.updateMomentFromNaturalParameters();
+
+        kl = localQ.kl(localP.getNaturalParameters(),localP.computeLogNormalizer());
+
+        if (kl<0){
+            System.out.println("ERROR");
+        }
+
+        return kl;
+    }
+
     public double[] getLambdaMomentParameters(){
 
         double[] out = new double[this.prior.getNumberOfBaseVectors()];
@@ -250,7 +299,7 @@ public class MultiDriftSVB extends SVB{
         int batchSize = 1000;
 
 
-        MultiDriftSVB svb = new MultiDriftSVB();
+        MultiDriftLDAv2 svb = new MultiDriftLDAv2();
         svb.setWindowsSize(batchSize);
         svb.setSeed(0);
         VMP vmp = svb.getPlateuStructure().getVMP();

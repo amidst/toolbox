@@ -102,6 +102,7 @@ public final class Utils {
         return index;
     }
 
+
     /**
      * Returns the index of the minimum element in a given vector.
      * @param vector a {@link Vector} object.
@@ -145,6 +146,22 @@ public final class Utils {
         }
     }
 
+    /**
+     * Returns the index of the min element in a given array of doubles.
+     * @param vals an {@code array} of {@code double}.
+     * @return an {@code int} that represents the index of the maximum element in the array.
+     */
+    public static int minIndex(double[] vals){
+        double min = Double.POSITIVE_INFINITY;
+        int index = -1;
+        for (int i=0; i<vals.length; i++){
+            if (vals[i]<min) {
+                min = vals[i];
+                index = i;
+            }
+        }
+        return index;
+    }
     /**
      * Returns the index of the maximum element in a given array of doubles.
      * @param vals an {@code array} of {@code double}.

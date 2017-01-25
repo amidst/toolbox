@@ -12,12 +12,16 @@
 package simulatedData;
 
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.BayesianParameterLearningAlgorithm;
+import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
+import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import eu.amidst.lda.core.MultiDriftLDAv1;
+import eu.amidst.lda.core.MultiDriftLDAv2;
 
 import static simulatedData.StaticMethods.*;
 
@@ -29,7 +33,7 @@ public class MultinomialManyStates {
 
     public static void main(String[] args) {
 
-        int nStates = 100;
+        int nStates = 1000;
 
         Variables variables = new Variables();
 
@@ -40,7 +44,7 @@ public class MultinomialManyStates {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
 
-        BayesianParameterLearningAlgorithm svb = initSVB();
+        BayesianParameterLearningAlgorithm svb = initMultiDriftLDAv2();
 
         svb.setDAG(bn.getDAG());
 
@@ -67,7 +71,7 @@ public class MultinomialManyStates {
             multinomialDist = bn.getConditionalDistribution(multinomialVar);
 
             if (i%3==1) {
-                double m = i*10+1;
+                double m = i+1;
                 multinomialDist.setProbabilityOfState(0,m/(m+nStates));
                 for (int j = 1; j < nStates; j++) {
                     multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
@@ -92,6 +96,33 @@ public class MultinomialManyStates {
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
                 System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
+                total+=log;
+
+            }else if (svb.getClass().getName().compareTo("eu.amidst.lda.core.MultiDriftLDAv2")==0){
+                ((MultiDriftLDAv2)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
+
+                sampler.setSeed(10*i);
+
+                double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
+
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((MultiDriftLDAv2)svb).getLambdaMomentParameters()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
+                total+=log;
+
+            } else if (svb.getClass().getName().compareTo("eu.amidst.lda.core.MultiDriftLDAv1")==0){
+                ((MultiDriftLDAv1)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
+
+                sampler.setSeed(10*i);
+
+                double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
+
+                System.out.print(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t");
+
+                double[] lambdas = ((MultiDriftLDAv1)svb).getLambdaMomentParameters()[0];
+
+                for (int j = 0; j < lambdas.length; j++) {
+                    System.out.print(lambdas[j]+"\t");
+                }
+                System.out.println();
                 total+=log;
 
             }else{

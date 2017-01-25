@@ -9,21 +9,22 @@
  *
  */
 
-package gps;
+package text;
 
+import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.lda.core.BatchSpliteratorByID;
+import eu.amidst.lda.core.PlateauLDA;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -33,17 +34,20 @@ public class RunMultiDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-        int docsPerBatch = 35000;
+        String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+
+        String model = "TEXT";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYearReduced/";
+        int docsPerBatch = 20000;
+
 
 /*        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
 */
         int ntopics = 5;
-        int niter = 100;
-        double threshold = 0.1;
+        int niter = 10;
+        double threshold = 0.001;
 
         if (args.length>1){
             int cont=0;
@@ -62,11 +66,18 @@ public class RunMultiDrift {
         MultiDriftSVB svb = new MultiDriftSVB();
 
 
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+
-                Arrays.asList(new File(dataPath).list())
-                .stream()
-                .filter(string -> string.endsWith(".arff")).findFirst().get());
+        Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
+        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        plateauLDA.setNTopics(ntopics);
+        plateauLDA.getVMP().setTestELBO(true);
+        plateauLDA.getVMP().setMaxIter(niter);
+        plateauLDA.getVMP().setOutput(true);
+        plateauLDA.getVMP().setThreshold(threshold);
+
+        svb.setPlateuStructure(plateauLDA);
+        svb.setOutput(true);
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
         svb.getPlateuStructure().getVMP().setMaxIter(niter);
@@ -74,33 +85,9 @@ public class RunMultiDrift {
         svb.getPlateuStructure().getVMP().setThreshold(threshold);
 
         svb.setWindowsSize(docsPerBatch);
-
-        if (model.compareTo("GPS0")==0) {
-            svb.setDAG(DAGsGeneration.getGPSMixtureDAGNoDay(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("GPS1")==0) {
-            svb.setDAG(DAGsGeneration.getGPSMixtureDAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("GPS2")==0) {
-            svb.setDAG(DAGsGeneration.getGPSFADAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("BCC0")==0) {
-            svb.setDAG(DAGsGeneration.getBCCMixtureDAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("BCC1")==0) {
-            svb.setDAG(DAGsGeneration.getBCCFullMixtureDAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("BCC2")==0) {
-            svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("BCC3")==0) {
-            svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
-        }else if (model.compareTo("BCC4")==0) {
-            svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
-        }else if (model.compareTo("BCC5")==0) {
-            svb.setDAG(DAGsGeneration.getBCCNBNoClass(dataInstances.getAttributes()));
-        }        svb.setOutput(true);
-
         svb.initLearning();
 
         svb.randomInitialize();
-
-        System.out.println(svb.getLearntBayesianNetwork());
-
 
         //svb.setLowerInterval(0.5);
 
@@ -123,42 +110,24 @@ public class RunMultiDrift {
         Random random = new Random(1);
 
         double totalLog = 0;
-        String[] strings = new File(dataPath).list();
-        Arrays.sort(strings);
-        for (String string : strings) {
 
-            if (!string.endsWith(".arff"))
-                continue;
+        for (int year = 0; year < years.length; year++) {
 
-            System.out.println("EPOCH: " + count +", "+ string);
-
-            DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
-
-            if (batch.getNumberOfDataInstances()<Main.MIN)
-                continue;
-
-            Collections.shuffle(batch.getList(),random);
+            DataStream<DataInstance> batch= DataStreamLoader.open(dataPath+"abstract_"+years[year]+".arff");
 
 
+            List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,1);
+
+            DataOnMemory<DataInstance> train = trainTest.get(0);
+            DataOnMemory<DataInstance> test = trainTest.get(1);
 
 
-
-
-            int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
-
-            DataOnMemoryListContainer<DataInstance> train= new
-                    DataOnMemoryListContainer(batch.getAttributes());
-            train.addAll(batch.getList().subList(0,limit));
-
-            DataOnMemoryListContainer<DataInstance> test= new
-                    DataOnMemoryListContainer(batch.getAttributes());
-            test.addAll(batch.getList().subList(limit+1,batch.getNumberOfDataInstances()));
-
-            Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
+            Iterator<DataOnMemory<DataInstance>> iteratorInner = BatchSpliteratorByID.iterableOverDocuments(train, finalDocsPerBatch).iterator();
 
             double lambda = 0;
             int n = 0;
             double[] vals = null;
+
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
                 vals =  svb.getLambdaMomentParameters();
@@ -169,17 +138,19 @@ public class RunMultiDrift {
             }
             lambda/=n;
 
+            int wordCount = 0;
             double log = 0;
-            iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
+           iteratorInner = BatchSpliteratorByID.iterableOverDocuments(test, finalDocsPerBatch).iterator();
             while (iteratorInner.hasNext()) {
-                log+=svb.predictedLogLikelihood(iteratorInner.next());
+                DataOnMemory<DataInstance> batchTest = iteratorInner.next();
+                log+=svb.predictedLogLikelihood(batchTest);
+
+                wordCount+=batchTest.stream().mapToDouble(d -> d.getValue(wordCountAtt)).sum();
             }
 
-            double inst =test.getNumberOfDataInstances();
+            System.out.println("OUT"+(count)+"\t"+log/wordCount+"\t"+wordCount+"\t"+lambda+"\n");
 
-            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
-
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda);
+            fw.write((count++)+"\t"+log/wordCount+"\t"+wordCount+"\t"+lambda);
             for (int i = 0; i < vals.length; i++) {
                 fw.write("\t"+vals[i]);
             }
@@ -187,9 +158,12 @@ public class RunMultiDrift {
 
             fw.flush();
 
-            totalLog+=log/inst;
+            totalLog+=log/wordCount;
 
-            System.out.println(svb.getLearntBayesianNetwork());
+//            System.out.println(svb.getLearntBayesianNetwork());
+
+
+            Utils.printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
 
         }
         fw.close();

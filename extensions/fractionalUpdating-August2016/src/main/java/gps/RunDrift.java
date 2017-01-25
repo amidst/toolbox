@@ -106,7 +106,7 @@ public class RunDrift {
 
 
 
-        Random random = new Random(0);
+        Random random = new Random(1);
 
         double totalLog = 0;
         String[] strings = new File(dataPath).list();
@@ -124,11 +124,7 @@ public class RunDrift {
 
             Collections.shuffle(batch.getList(),random);
 
-            if (batch.getNumberOfDataInstances()<DAGsGeneration.maxTrain)
-                DAGsGeneration.maxTrain= batch.getNumberOfDataInstances();
-
-
-            int limit = (int) ((DAGsGeneration.maxTrain*2.0)/3.0);
+            int limit = (int) ((batch.getNumberOfDataInstances()*2.0)/3.0);
 
             DataOnMemoryListContainer<DataInstance> train= new
                     DataOnMemoryListContainer(batch.getAttributes());
