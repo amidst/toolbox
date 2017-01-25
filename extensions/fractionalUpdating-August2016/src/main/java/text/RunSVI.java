@@ -38,7 +38,7 @@ public class RunSVI {
 
         String model = "TEXT";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        int docsPerBatch = 10000;
+        int docsPerBatch = 1000;
 
 
 /*        String model = "BCC1";
@@ -76,6 +76,7 @@ public class RunSVI {
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        plateauLDA.setGlobalUpdate(false);
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);

@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
  */
 public class PlateauLDA extends PlateuStructure {
 
+    boolean globalUpdate = true;
+
     public static double TOPIC_PRIOR=0.01;
     public static double MIXING_PRIOR=0.1;
 
@@ -56,6 +58,14 @@ public class PlateauLDA extends PlateuStructure {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
         this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
+    }
+
+    public boolean isGlobalUpdate() {
+        return globalUpdate;
+    }
+
+    public void setGlobalUpdate(boolean globalUpdate) {
+        this.globalUpdate = globalUpdate;
     }
 
     public DAG getDagLDA() {
@@ -242,10 +252,7 @@ public class PlateauLDA extends PlateuStructure {
         });
     }
 
-    /**
-     * Runs inference.
-     */
-    public void runInference() {
+    public void runInferenceGlobal() {
 
         boolean convergence = false;
         local_elbo = Double.NEGATIVE_INFINITY;
@@ -310,6 +317,85 @@ public class PlateauLDA extends PlateuStructure {
         if (this.vmp.isOutput()) {
             System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
         }
+    }
+
+    public void runInferenceLocal() {
+
+        boolean convergence = false;
+        local_elbo = Double.NEGATIVE_INFINITY;
+        local_iter = 0;
+        while (!convergence && (local_iter++) < this.vmp.getMaxIter()) {
+
+            long start = System.nanoTime();
+
+            this.replicatedNodes
+                    .parallelStream()
+                    .forEach(nodes -> {
+                        for (Node node : nodes) {
+
+
+                            if (!node.isActive() || node.isObserved())
+                                continue;
+
+                            Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                            Optional<Message<NaturalParameters>> message = node.getChildren()
+                                    .stream()
+                                    .filter(children -> children.isActive())
+                                    .map(children -> this.vmp.newMessageToParent(children, node))
+                                    .reduce(Message::combineNonStateless);
+
+                            if (message.isPresent())
+                                selfMessage.combine(message.get());
+
+                            //for (Node child: node.getChildren()){
+                            //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
+                            //}
+
+                            this.vmp.updateCombinedMessage(node, selfMessage);
+                        }
+                    });
+
+            this.nonReplictedNodes
+                    .parallelStream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
+
+            convergence = this.testConvergence();
+
+            //System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
+
+        }
+
+        if (this.vmp.isOutput()) {
+            System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
+        }
+    }
+
+    /**
+     * Runs inference.
+     */
+    public void runInference() {
+
+        if (this.globalUpdate)
+            this.runInferenceGlobal();
+        else
+            this.runInferenceLocal();
+
     }
 
     /**

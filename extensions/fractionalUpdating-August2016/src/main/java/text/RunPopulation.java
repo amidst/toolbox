@@ -76,6 +76,7 @@ public class RunPopulation {
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        plateauLDA.setGlobalUpdate(false);
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);
