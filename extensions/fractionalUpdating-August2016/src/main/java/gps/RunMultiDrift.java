@@ -33,15 +33,19 @@ public class RunMultiDrift {
 
     public static void main(String[] args) throws Exception{
 
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        //int docsPerBatch = 35000;
+
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-        int docsPerBatch = 35000;
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
+        int docsPerBatch = 8000;
 
 /*        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
 */
-        int ntopics = 5;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
 

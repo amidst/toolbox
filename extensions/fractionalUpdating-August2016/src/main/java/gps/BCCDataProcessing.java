@@ -147,10 +147,10 @@ public class BCCDataProcessing {
     public static void computSize(String[] args) {
 
         //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
-        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_10/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
 
 
-
+        double max = 0;
         double totalLog = 0;
         String[] strings = new File(dataOutput).list();
         Arrays.sort(strings);
@@ -163,6 +163,9 @@ public class BCCDataProcessing {
 
             System.out.println(batch.getNumberOfDataInstances());
 
+            if (batch.getNumberOfDataInstances()>max){
+                max = batch.getNumberOfDataInstances();
+            }
             //
             //
 
@@ -170,6 +173,7 @@ public class BCCDataProcessing {
         }
 
         System.out.println(totalLog);
+        System.out.println(max);
     }
 
     public static void main(String[] args) {

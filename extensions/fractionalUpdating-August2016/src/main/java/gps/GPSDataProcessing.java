@@ -70,7 +70,7 @@ public class GPSDataProcessing {
 
                         StringBuilder out = new StringBuilder();
 
-                        DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
+                        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
                         String client=null;
                         if (i<10)
@@ -106,7 +106,7 @@ public class GPSDataProcessing {
                                     String[] parts= line.split(",");
 
 
-                                    format.parse(parts[6]);
+                                    format.parse(parts[5]+" "+parts[6]);
                                     int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
                                     int currentHour = format.getCalendar().get(Calendar.HOUR_OF_DAY);
 
@@ -390,9 +390,9 @@ public class GPSDataProcessing {
 
         args = new String[5];
         args[0]="1";
-        args[1]="100";
+        args[1]="10";
         args[2]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/Data/";
-        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/Mix";
+        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_10/Mix";
         args[4]="hour";
 
 

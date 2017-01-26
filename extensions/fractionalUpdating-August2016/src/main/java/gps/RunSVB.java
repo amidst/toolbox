@@ -32,16 +32,21 @@ public class RunSVB {
 
     public static void main(String[] args) throws Exception{
 
+
+        String model = "GPS0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
+        int docsPerBatch = 8000;
+
         //String model = "GPS0";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC3";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        //String model = "BCC3";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        //int docsPerBatch = 30000;
 
-        int ntopics = 5;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
-        int docsPerBatch = 30000;
 
         if (args.length>1){
             int cont = 0;
