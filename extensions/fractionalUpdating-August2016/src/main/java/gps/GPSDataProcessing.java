@@ -32,6 +32,123 @@ import java.util.stream.IntStream;
  */
 public class GPSDataProcessing {
 
+    public static void createDataByHour(String[] args) throws Exception{
+
+
+
+        int LIMIT = Integer.parseInt(args[0]);
+
+        int SKIP = Integer.parseInt(args[1]);
+
+        String path = args[2];
+
+        String output = args[3];
+
+
+
+            for (int hour = 0; hour < 24; hour++) {
+                double finalHour = hour;
+                try {
+
+                    FileWriter fileWriter = new FileWriter(output+"_hour_"+String.format("%02d", hour)+".arff");
+
+                    fileWriter.write("@relation mixture-"+LIMIT+"\n");
+
+
+                    for (int i = 0; i < LIMIT; i++) {
+                        fileWriter.write("@attribute GPSX_"+i+" real\n");
+                        fileWriter.write("@attribute GPSY_"+i+" real\n");
+                    }
+
+                    fileWriter.write("@attribute DAY {1,2,3,4,5,6,7}\n");
+
+                    fileWriter.write("@data\n");
+
+
+                    //for (int i = 0; i < 182; i++) {
+                    List<String> outputString =   IntStream.range(0,182).parallel().mapToObj(i -> {
+
+                        StringBuilder out = new StringBuilder();
+
+                        DateFormat format = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
+
+                        String client=null;
+                        if (i<10)
+                            client="00"+i;
+                        else if (i<100)
+                            client="0"+i;
+                        else
+                            client=i+"";
+
+                        File folder = new File(path + client + "/Trajectory/");
+                        System.out.println(path + client + "/Trajectory/");
+
+                        for (final String fileEntry : folder.list()) {
+                            Path path1 = Paths.get(path + client + "/Trajectory/"+fileEntry);
+                            Reader source = null;
+                            try {
+                                source = Files.newBufferedReader(path1);
+
+                                BufferedReader reader = new BufferedReader(source);
+
+                                Iterator<String> headerLines =  reader.lines().skip(6).iterator();
+                                StringBuilder builder = new StringBuilder();
+                                int count = 0;
+                                int countLine = 0;
+
+                                while (headerLines.hasNext()){
+                                    String line = headerLines.next();
+                                    countLine++;
+                                    if (countLine%SKIP!=0){
+                                        continue;
+                                    }
+
+                                    String[] parts= line.split(",");
+
+
+                                    format.parse(parts[6]);
+                                    int dayOfWeek =  format.getCalendar().get(Calendar.DAY_OF_WEEK);
+                                    int currentHour = format.getCalendar().get(Calendar.HOUR_OF_DAY);
+
+                                    if (finalHour !=currentHour)
+                                        continue;
+
+                                    if (count<LIMIT){
+                                        builder.append(parts[0]+","+parts[1]+",");
+                                        count++;
+                                    }else {
+                                        out.append(builder.toString()+dayOfWeek+"\n");
+                                        count=0;
+                                        builder = new StringBuilder();
+                                    }
+
+                                }
+
+
+                                reader.close();
+                                source.close();
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        return out.toString();
+                    }).collect(Collectors.toList());
+
+                    for (String s : outputString) {
+                        fileWriter.write(s);
+                    }
+
+                    fileWriter.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+    }
+
     public static void createDataByMonth(String[] args) throws Exception{
 
 
@@ -273,16 +390,18 @@ public class GPSDataProcessing {
 
         args = new String[5];
         args[0]="1";
-        args[1]="10";
+        args[1]="100";
         args[2]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/Data/";
-        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_week_10/Mix";
-        args[4]="week";
+        args[3]="/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/Mix";
+        args[4]="hour";
 
 
         if (args[4].contains("month"))
              createDataByMonth(args);
         else if (args[4].contains("week"))
             createDataByWeek(args);
+        else if (args[4].contains("hour"))
+            createDataByHour(args);
 
 
     }

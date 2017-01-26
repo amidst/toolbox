@@ -30,13 +30,13 @@ public class RunDrift {
     public static void main(String[] args) throws Exception{
 
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
-        int docsPerBatch = 30000;
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_10/";
+        int docsPerBatch = 90000;
 
         //String model = "BCC1";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         //int docsPerBatch = 30000;
-        int ntopics = 10;
+        int ntopics = 5;
         int niter = 100;
         double threshold = 0.1;
 
