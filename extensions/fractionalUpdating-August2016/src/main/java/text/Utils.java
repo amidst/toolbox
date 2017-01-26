@@ -142,9 +142,28 @@ public class Utils {
         System.out.println(totalLog);
     }
 
+    public static void splitNIPSPapers(String[] args) throws IOException {
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
+        String arrffName = "docword.nips.arff";
+
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+arrffName);
+
+        List<DataOnMemory<DataInstance>> batches = BatchSpliteratorByID.streamOverDocuments(dataInstances,150).collect(Collectors.toList());
+
+
+        int count = 0;
+        for (DataOnMemory<DataInstance> batch : batches) {
+            DataStreamWriter.writeDataToFile(batch,dataPath + "nipsByYear/nips_"+count+".arff");
+            count++;
+        }
+
+        System.out.println(batches.size());
+    }
+
+
     public static void main(String[] args) throws IOException {
 
-        Utils.reduceVocab(args);
+        Utils.splitNIPSPapers(args);
     }
 
 }

@@ -34,11 +34,13 @@ public class RunDrift {
 
     public static void main(String[] args) throws Exception{
 
-        String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+        String[] yearsABSTRACT = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+        String[] yearsNIPS = {"0","1","2","3","4","5","6","7","8","9"};
 
-        String model = "TEXT";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        int docsPerBatch = 10000;
+        String model = "NIPS";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        int docsPerBatch = 150;
 
 
 /*        String model = "BCC1";
@@ -61,12 +63,25 @@ public class RunDrift {
             args[1]="";
         }
 
+        String[] years=null;
+
+        if (model.equals("ABSTRACRTS"))
+            years=yearsABSTRACT;
+        else if (model.equals("NIPS"))
+            years=yearsNIPS;
+
+        String localPath=null;
+
+        if (model.equals("ABSTRACRTS"))
+            localPath="abstract_";
+        else if (model.equals("NIPS"))
+            localPath="nips_";
 
 
         DriftSVB svb = new DriftSVB();
 
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
@@ -113,7 +128,7 @@ public class RunDrift {
 
         for (int year = 0; year < years.length; year++) {
 
-            DataStream<DataInstance> batch= DataStreamLoader.open(dataPath+"abstract_"+years[year]+".arff");
+            DataStream<DataInstance> batch=DataStreamLoader.open(dataPath+localPath+years[year]+".arff");
 
 
             List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,1);

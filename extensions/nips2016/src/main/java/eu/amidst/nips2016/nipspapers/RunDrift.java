@@ -108,9 +108,9 @@ public class RunDrift {
 
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
-        String arrffName = "docword.nips.reduced.arff";
-        int ntopics = 2;
-        int niter = 1000;
+        String arrffName = "docword.nips.arff";
+        int ntopics = 5;
+        int niter = 100;
         double threshold = 0.01;
         int docsPerBatch = 150;
 
@@ -169,7 +169,7 @@ public class RunDrift {
             double log = 0;
             int nwords = 0;
 
-            processBatch(batches.get(i));
+            //processBatch(batches.get(i));
             /*for (int j = i+1; j < (i+1+1) && j< batches.size(); j++) {
                 log += svb.predictedLogLikelihood(batches.get(j));
                 nwords +=nwords(batches.get(j));
