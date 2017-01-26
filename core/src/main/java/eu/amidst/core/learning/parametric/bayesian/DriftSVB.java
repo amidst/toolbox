@@ -105,10 +105,10 @@ public class DriftSVB extends SVB{
 
         //Restart Truncated-Exp
         double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
-        this.ef_TExpP.getNaturalParameters().set(0,delta);
+        this.ef_TExpP.getNaturalParameters().set(0,-delta);
         this.ef_TExpP.updateMomentFromNaturalParameters();
 
-        this.ef_TExpQ.getNaturalParameters().set(0,delta);
+        this.ef_TExpQ.getNaturalParameters().set(0,-delta);
         this.ef_TExpQ.updateMomentFromNaturalParameters();
 
         boolean convergence = false;

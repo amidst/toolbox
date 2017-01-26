@@ -118,7 +118,7 @@ public class MultiDriftSVB extends SVB{
 
         //Restart Truncated-Exp
         double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
-        this.ef_TExpP.getNaturalParameters().set(0,delta);
+        this.ef_TExpP.getNaturalParameters().set(0,-delta);
         this.ef_TExpP.updateMomentFromNaturalParameters();
 
         //Restart Truncated-Exp
@@ -201,7 +201,7 @@ public class MultiDriftSVB extends SVB{
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+lambda[0]);
+            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+ lambda[0]);
 
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;

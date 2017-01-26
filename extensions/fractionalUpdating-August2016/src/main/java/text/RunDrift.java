@@ -39,7 +39,9 @@ public class RunDrift {
 
         String model = "NIPS";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+
         int docsPerBatch = 150;
 
 
@@ -79,7 +81,6 @@ public class RunDrift {
 
 
         DriftSVB svb = new DriftSVB();
-
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

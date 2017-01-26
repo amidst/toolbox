@@ -39,7 +39,9 @@ public class RunMultiDrift {
 
         String model = "NIPS";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+
         int docsPerBatch = 150;
 
 
@@ -79,7 +81,6 @@ public class RunMultiDrift {
 
 
         MultiDriftSVB svb = new MultiDriftSVB();
-
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
@@ -181,7 +182,7 @@ public class RunMultiDrift {
 //            System.out.println(svb.getLearntBayesianNetwork());
 
 
-            Utils.printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
+            //Utils.printTopics(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
 
         }
         fw.close();

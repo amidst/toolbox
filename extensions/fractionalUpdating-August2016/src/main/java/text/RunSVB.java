@@ -37,9 +37,11 @@ public class RunSVB {
         String[] yearsABSTRACT = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
         String[] yearsNIPS = {"0","1","2","3","4","5","6","7","8","9"};
 
-        String model = "ABSTRACT";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        int docsPerBatch = 20000;
+        String model = "NIPS";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+
+        int docsPerBatch = 150;
 
 /*        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
@@ -47,7 +49,7 @@ public class RunSVB {
 */
         int ntopics = 5;
         int niter = 100;
-        double threshold = 0.01;
+        double threshold = 0.000001;
 
         if (args.length>1){
             int cont=0;
