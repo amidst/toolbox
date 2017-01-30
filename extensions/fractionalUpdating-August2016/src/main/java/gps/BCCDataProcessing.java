@@ -147,7 +147,9 @@ public class BCCDataProcessing {
     public static void computSize(String[] args) {
 
         //String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWekaNoPeakMonths/";
-        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
+       // String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_10/";
+        String dataOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/DriftSets/electricityByMonth/";
+
 
 
         double max = 0;

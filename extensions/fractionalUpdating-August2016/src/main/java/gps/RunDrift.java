@@ -82,8 +82,9 @@ public class RunDrift {
             svb.setDAG(DAGsGeneration.getBCCFADAG(dataInstances.getAttributes(), ntopics));
         }else if (model.compareTo("BCC3")==0) {
             svb.setDAG(DAGsGeneration.getBCCLocalMixtureDAG(dataInstances.getAttributes(), ntopics));
+        }else if (model.compareTo("ELEC")==0) {
+            svb.setDAG(DAGsGeneration.getLinearRegressionElectricity(dataInstances.getAttributes(),ntopics));
         }
-
 
         svb.setOutput(true);
 

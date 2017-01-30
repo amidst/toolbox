@@ -94,6 +94,8 @@ public class RunSVB {
             svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
         }else if (model.compareTo("BCC5")==0) {
             svb.setDAG(DAGsGeneration.getBCCNBNoClass(dataInstances.getAttributes()));
+        }else if (model.compareTo("ELEC")==0) {
+            svb.setDAG(DAGsGeneration.getLinearRegressionElectricity(dataInstances.getAttributes(),ntopics));
         }
 
         svb.setOutput(true);

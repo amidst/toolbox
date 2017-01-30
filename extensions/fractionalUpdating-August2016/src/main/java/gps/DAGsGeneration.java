@@ -27,6 +27,19 @@ public class DAGsGeneration {
 
     static public double maxTrain = 500000;
 
+    public static DAG getLinearRegressionElectricity(Attributes attributes, int nstates) {
+        Variables variables = new Variables(attributes.subSet(2,3,4,5,6,7,8));
+        Variable predClass =variables.getVariableByName("class");
+
+        DAG dag = new DAG(variables);
+        for (Variable variable : variables) {
+            if (variable!=predClass)
+                dag.getParentSet(predClass).addParent(variable);
+        }
+
+        return dag;
+    }
+
     public static DAG getBCCFullMixtureDAG(Attributes attributes, int nstates) {
         // Create a Variables object from the attributes of the input data stream.
         Variables variables = new Variables(attributes.subSet(2,3,4,13));

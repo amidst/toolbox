@@ -37,15 +37,20 @@ public class RunMultiDrift {
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         //int docsPerBatch = 35000;
 
-        String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
-        int docsPerBatch = 8000;
+        //String model = "GPS0";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
+        //int docsPerBatch = 8000;
 
-/*        String model = "BCC1";
+        String model = "ELEC";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/DriftSets/electricityByMonth/";
+        int docsPerBatch = 1600;
+
+
+/*      String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
-*/
-        int ntopics = 10;
+*/  
+        int ntopics = 5;
         int niter = 100;
         double threshold = 0.1;
 
@@ -97,7 +102,12 @@ public class RunMultiDrift {
             svb.setDAG(DAGsGeneration.getBCCNB(dataInstances.getAttributes()));
         }else if (model.compareTo("BCC5")==0) {
             svb.setDAG(DAGsGeneration.getBCCNBNoClass(dataInstances.getAttributes()));
-        }        svb.setOutput(true);
+        }else if (model.compareTo("ELEC")==0) {
+            svb.setDAG(DAGsGeneration.getLinearRegressionElectricity(dataInstances.getAttributes(),ntopics));
+        }
+
+
+        svb.setOutput(true);
 
         svb.initLearning();
 
