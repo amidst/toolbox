@@ -203,8 +203,8 @@ public final class NextDynamicDataInstance {
                 past = present;
                 //present = reader.next();
                 timeIDcounter = 1;
-                startOfSequence=true;
-                return null;
+                //startOfSequence=true;
+                return dynDataInstStart;
             }
         }
     }

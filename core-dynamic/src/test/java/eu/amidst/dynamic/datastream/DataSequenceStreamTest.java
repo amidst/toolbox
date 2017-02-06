@@ -17,8 +17,10 @@
 
 package eu.amidst.dynamic.datastream;
 
+import eu.amidst.core.datastream.DataStream;
 import eu.amidst.dynamic.exponentialfamily.EF_DynamicBayesianNetwork;
 import eu.amidst.core.exponentialfamily.SufficientStatistics;
+import eu.amidst.dynamic.io.DynamicDataStreamLoader;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
 import eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler;
@@ -198,6 +200,37 @@ public class DataSequenceStreamTest extends TestCase {
 
         /*******************************************************************************/
 
+    }
+
+    @Test
+    public void test3() {
+
+
+
+        DataStream<DynamicDataInstance> data = DynamicDataStreamLoader.loadFromFile("../datasets/simulated/exampleDS_d5_c0.arff");
+
+
+        //Sample from the dynamic NB given as inputs both nSequences (= 10000) and sequenceLength (= 100)
+
+        int nsquences = 20;
+        int sizesequences = 50;
+        assertTrue(data.stream().count() == nsquences * sizesequences);
+
+        Iterator<DynamicDataInstance> it = data.iterator();
+        for (int i = 0; i < nsquences; i++) {
+            for (int j = 0; j < sizesequences; j++) {
+                DynamicDataInstance dataInstance = it.next();
+                assertTrue(dataInstance.getSequenceID() == i);
+                assertTrue(dataInstance.getTimeID() == j);
+            }
+        }
+        assertTrue(DataSequenceStream.streamOfDataSequences(data).count() == nsquences);
+
+        Iterator<DataSequence> sequences = DataSequenceStream.streamOfDataSequences(data).iterator();
+        for (int i = 0; i < nsquences; i++) {
+            assertTrue(sequences.next().getSequenceID() == i);
+        }
+        DataSequenceStream.parallelStreamOfDataSequences(data).forEach(batch -> assertTrue(batch.stream().count() == sizesequences));
     }
 
 }
