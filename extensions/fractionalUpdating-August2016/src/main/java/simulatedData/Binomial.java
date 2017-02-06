@@ -45,7 +45,7 @@ public class Binomial {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
 
-        BayesianParameterLearningAlgorithm svb = initMultiDrift();
+        BayesianParameterLearningAlgorithm svb = initDrift();
 
         svb.setDAG(bn.getDAG());
 
@@ -58,9 +58,8 @@ public class Binomial {
         double total = 0;
 
         Multinomial multinomialDist = bn.getConditionalDistribution(multinomialVar);
-        for (int i = 0; i < nStates; i++) {
-            multinomialDist.setProbabilityOfState(i,1.0/nStates);
-        }
+        multinomialDist.setProbabilityOfState(0,0.8);
+        multinomialDist.setProbabilityOfState(0, 0.2);
 
         System.out.println(bn);
 
@@ -71,13 +70,21 @@ public class Binomial {
 
             multinomialDist = bn.getConditionalDistribution(multinomialVar);
 
-            if (i%5==1) {
+            if (i>=30){
+                multinomialDist.setProbabilityOfState(0,0.5);
+                multinomialDist.setProbabilityOfState(0, 0.5);
+            } if (i>=60) {
+                multinomialDist.setProbabilityOfState(0,0.2);
+                multinomialDist.setProbabilityOfState(0, 0.8);
+            }
+
+            /*if (i%5==1) {
                 double m = i+1;
                 multinomialDist.setProbabilityOfState(0,m/(m+nStates));
                 for (int j = 1; j < nStates; j++) {
                     multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
                 }
-            }
+            }*/
 
             if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.DriftSVB")==0){
                 ((DriftSVB)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
@@ -86,7 +93,9 @@ public class Binomial {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
+                //System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
+                System.out.println(((DriftSVB)svb).getPlateuStructure().getPlateauNaturalParameterPrior().sum());
+
                 total+=log;
 
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
@@ -106,7 +115,9 @@ public class Binomial {
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0]);
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0]+"\t");
+
+                //System.out.println(((SVBFading)svb).getSVB().getPlateuStructure().getPlateauNaturalParameterPosterior().sum());
                 total+=log;
             }
 

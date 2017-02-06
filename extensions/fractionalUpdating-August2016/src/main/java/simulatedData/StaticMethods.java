@@ -11,6 +11,7 @@
 
 package simulatedData;
 
+import eu.amidst.core.conceptdrift.SVBFading;
 import eu.amidst.core.learning.parametric.bayesian.*;
 import eu.amidst.lda.core.MultiDriftLDAv1;
 import eu.amidst.lda.core.MultiDriftLDAv2;
@@ -21,8 +22,23 @@ import eu.amidst.lda.core.MultiDriftLDAv2;
 public class StaticMethods {
 
 
-    static int sampleSize = 10000;
-    static int totalITER = 10;
+    static int sampleSize = 100;
+    static int totalITER = 100;
+
+    public static BayesianParameterLearningAlgorithm initSVBFading(double fadingFactor){
+        SVBFading svb = new SVBFading();
+        //MultiDriftSVB svb = new MultiDriftSVB();
+        //StochasticVI svb = new StochasticVI();
+
+        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
+        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.1);
+        svb.setFadingFactor(fadingFactor);
+        svb.setWindowsSize(sampleSize);
+
+        return svb;
+    }
 
     public static BayesianParameterLearningAlgorithm initSVB(){
         SVB svb = new SVB();
@@ -30,9 +46,9 @@ public class StaticMethods {
         //StochasticVI svb = new StochasticVI();
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
         svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
 
         svb.setWindowsSize(sampleSize);
 
@@ -43,9 +59,9 @@ public class StaticMethods {
         DriftSVB svb = new DriftSVB();
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(1000);
-        svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setOutput(false);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
 
         svb.setWindowsSize(sampleSize);
 
@@ -56,9 +72,9 @@ public class StaticMethods {
         MultiDriftLDAv2 svb = new MultiDriftLDAv2();
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
         svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
 
         svb.setWindowsSize(sampleSize);
         return svb;
@@ -67,9 +83,9 @@ public class StaticMethods {
         MultiDriftLDAv1 svb = new MultiDriftLDAv1();
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
         svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
 
         svb.setWindowsSize(sampleSize);
         return svb;
@@ -79,29 +95,29 @@ public class StaticMethods {
         MultiDriftSVB svb = new MultiDriftSVB();
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
         svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
 
         svb.setWindowsSize(sampleSize);
         return svb;
     }
 
-    public static BayesianParameterLearningAlgorithm initSVI(){
+    public static BayesianParameterLearningAlgorithm initSVI(double learningFactor){
         StochasticVI svb = new StochasticVI();
 
         svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(100);
         svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.1);
 
-        svb.setLocalThreshold(0.01);
+        svb.setLocalThreshold(0.1);
         svb.setOutput(true);
         svb.setMaximumLocalIterations(100);
         svb.setBatchSize(sampleSize);
         svb.setDataSetSize(sampleSize*totalITER);
-        svb.setLearningFactor(1.0);
-        svb.setFixedStepSize(false);
+        svb.setLearningFactor(learningFactor);
+        svb.setFixedStepSize(true);
 
 
 
@@ -110,22 +126,21 @@ public class StaticMethods {
     }
 
 
-    public static BayesianParameterLearningAlgorithm initPopulation(){
+    public static BayesianParameterLearningAlgorithm initPopulation(double learningFactor){
         PopulationVI svb = new PopulationVI();
 
         svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(1000);
+        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(100);
         svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.00001);
+        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.1);
 
-        svb.setLocalThreshold(0.01);
+        svb.setLocalThreshold(0.1);
         svb.setOutput(true);
         svb.setMaximumLocalIterations(100);
         svb.setBatchSize(sampleSize);
-        svb.setDataSetSize(sampleSize);
-        svb.setLearningFactor(0.9);
+        svb.setDataSetSize(10*sampleSize);
+        svb.setLearningFactor(learningFactor);
         svb.setFixedStepSize(true);
-
 
 
 
