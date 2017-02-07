@@ -288,7 +288,7 @@ public class GaussianMixture extends UnivariateDistribution {
             termList.add(new WeightedTerm(coefficients[i],terms.get(i)));
         }
 
-        termList.sort((w1,w2) -> w1.getWeight() > w2.getWeight() ? 1 : -1);
+        termList.sort((w1,w2) -> w1.getWeight() > w2.getWeight() ? -1 : 1);
 
         List<Normal> newTerms = new ArrayList<>();
         double [] newCoeffs = new double[coefficients.length];
