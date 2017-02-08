@@ -14,13 +14,15 @@ import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.log4j.BasicConfigurator;
 
 import java.io.InvalidObjectException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Created by dario on 27/4/16.
@@ -45,12 +47,16 @@ public class DistributedImportanceSamplingCLG {
 
     private double logProbOfEvidence;
 
-    private List<Tuple2<List<UnivariateDistribution>,Double>> posteriors;
+    private List<Tuple3<List<UnivariateDistribution>,Double, Double>> posteriors;
 
 
     private double mixtureOfGaussiansInitialVariance = 50;
     private double mixtureOfGaussiansNoveltyRate = 0.0001;
 
+
+    Function<Double,Double> queryingFunction;
+    Variable queryingVariable;
+    double queryResult;
 
     public void setModel(BayesianNetwork model) {
 
@@ -121,13 +127,16 @@ public class DistributedImportanceSamplingCLG {
         System.out.println("Flink parallel nodes: " + numberOfFlinkNodes);
 
         posteriors = env.generateSequence(0,numberOfFlinkNodes-1)
-                .map(new LocalImportanceSampling(model, variablesOfInterest, evidence, sampleSize/numberOfFlinkNodes, seed, useGaussianMixtures, mixtureOfGaussiansInitialVariance, mixtureOfGaussiansNoveltyRate))
+                .map(new LocalImportanceSampling(model, variablesOfInterest, evidence, sampleSize/numberOfFlinkNodes, seed, useGaussianMixtures, mixtureOfGaussiansInitialVariance, mixtureOfGaussiansNoveltyRate, queryingVariable, queryingFunction))
                 .collect();
 
-        this.logProbOfEvidence = posteriors.stream().map(aux -> ((Double)aux.getField(1)).doubleValue() ).reduce(RobustOperations::robustSumOfLogarithms).get() - Math.log(numberOfFlinkNodes);
+        this.logProbOfEvidence = posteriors.stream().mapToDouble(aux -> aux.getField(1)).reduce(RobustOperations::robustSumOfLogarithms).getAsDouble() - Math.log(numberOfFlinkNodes);
+
+        this.queryResult = posteriors.stream().mapToDouble(aux -> aux.getField(2)).average().getAsDouble();
+
     }
 
-    static class LocalImportanceSampling implements MapFunction<Long, Tuple2<List<UnivariateDistribution>, Double>> {
+    static class LocalImportanceSampling implements MapFunction<Long, Tuple3<List<UnivariateDistribution>, Double, Double>> {
 
         private BayesianNetwork model;
         private List<Variable> variablesAPosteriori;
@@ -137,8 +146,10 @@ public class DistributedImportanceSamplingCLG {
         private boolean useGaussianMixtures;
         private double mixtureOfGaussiansInitialVariance;
         private double mixtureOfGaussiansNoveltyRate;
+        private Variable queryingVariable;
+        private Function<Double,Double> queryingFunction;
 
-        LocalImportanceSampling(BayesianNetwork model, List<Variable> variablesAPosteriori, Assignment evidence, int numberOfSamples, int seed, boolean useGaussianMixtures, double GMInitialVariance, double GMNoveltyRate) {
+        LocalImportanceSampling(BayesianNetwork model, List<Variable> variablesAPosteriori, Assignment evidence, int numberOfSamples, int seed, boolean useGaussianMixtures, double GMInitialVariance, double GMNoveltyRate, Variable queryingVariable, Function<Double,Double> queryingFunction) {
             this.model = model;
             this.variablesAPosteriori = variablesAPosteriori;
             this.evidence = evidence;
@@ -147,10 +158,12 @@ public class DistributedImportanceSamplingCLG {
             this.useGaussianMixtures = useGaussianMixtures;
             this.mixtureOfGaussiansInitialVariance = GMInitialVariance;
             this.mixtureOfGaussiansNoveltyRate = GMNoveltyRate;
+            this.queryingVariable=queryingVariable;
+            this.queryingFunction=queryingFunction;
         }
 
         @Override
-        public Tuple2<List<UnivariateDistribution>, Double> map(Long value) throws Exception {
+        public Tuple3<List<UnivariateDistribution>, Double, Double> map(Long value) throws Exception {
 
             ImportanceSamplingCLG_new localImportanceSampling = new ImportanceSamplingCLG_new();
             localImportanceSampling.setModel(model);
@@ -166,7 +179,11 @@ public class DistributedImportanceSamplingCLG {
 
             localImportanceSampling.setEvidence(evidence);
 
+            localImportanceSampling.setQuery(queryingVariable,queryingFunction);
+
             localImportanceSampling.runInference();
+
+            double queryResult = localImportanceSampling.getQueryResult();
 
             List<UnivariateDistribution> listPosteriors = new ArrayList<>();
             variablesAPosteriori.forEach(var -> listPosteriors.add(localImportanceSampling.getPosterior(var)));
@@ -174,12 +191,26 @@ public class DistributedImportanceSamplingCLG {
             //double logProbEvidence = localImportanceSampling.getLogProbabilityOfEvidence();
             double logSumWeights = localImportanceSampling.getLogSumWeights();
 
-            Tuple2<List<UnivariateDistribution>, Double> result = new Tuple2<>();
+            Tuple3<List<UnivariateDistribution>, Double, Double> result = new Tuple3<>();
             result.setField(listPosteriors,0);
             result.setField(logSumWeights,1);
+            result.setField(queryResult,2);
 
             return result;
         }
+    }
+
+    public void setQuery(Variable var, Function<Double,Double> function) {
+
+        if( !this.variablesOfInterest.contains(var) ) {
+            throw new UnsupportedOperationException("The querying variable must be a variable of interest");
+        }
+        this.queryingVariable = var;
+        this.queryingFunction = (Function<Double,Double> & Serializable)function;
+    }
+
+    public double getQueryResult() {
+        return queryResult;
     }
 
     public <E extends UnivariateDistribution> E getPosterior(Variable variable) {
