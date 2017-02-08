@@ -70,8 +70,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
     private double mixtureOfGaussiansInitialVariance = 50;
     private double mixtureOfGaussiansNoveltyRate = 0.0001;
 
-
-
+    private Function<Double,Double> queryingFunction;
+    private Variable queryingVariable;
+    private double queryResult;
 
     private class StreamingUpdateableRobustNormal {
 
@@ -669,6 +670,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             newSSposterior = RobustOperations.robustSumOfMultinomialLogSufficientStatistics(SSposterior, SSsample);
 
             SSOfMultinomialVariables.set(j,newSSposterior);
+
         });
 
 
@@ -688,6 +690,17 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
             }
 
         });
+
+
+        if(queryingVariable!=null) {
+            double queryingVariableValue = sample.getValue(queryingVariable);
+            double queryingValueResult = this.queryingFunction.apply(queryingVariableValue);
+
+            if (queryingValueResult != 0) {
+                this.queryResult = RobustOperations.robustSumOfLogarithms(this.queryResult, logWeight + Math.log(queryingValueResult));
+            }
+        }
+
 
 
 //        int nVarsAPosteriori = variablesAPosteriori.size();
@@ -741,6 +754,18 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //        });
     }
 
+    public void setQuery(Variable var, Function<Double,Double> function) {
+        if( var!=null && !this.variablesAPosteriori.contains(var) ) {
+            throw new UnsupportedOperationException("The querying variable must be a variable of interest");
+        }
+
+        this.queryingFunction = function;
+        this.queryingVariable = var;
+    }
+
+    public double getQueryResult() {
+        return queryResult;
+    }
 
     /**
      * {@inheritDoc}
@@ -1015,7 +1040,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         }
 
 
-
+        this.queryResult = Math.exp(this.queryResult - this.logSumWeights);
 
 
 
@@ -1093,6 +1118,9 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         else {
             this.logProbEvidence = 0;
         }
+
+
+        this.queryResult = Math.exp(this.queryResult - this.logSumWeights);
 
 //        if(saveDataOnMemory_) {
 //            weightedSampleList = weightedSampleStream.collect(Collectors.toList());

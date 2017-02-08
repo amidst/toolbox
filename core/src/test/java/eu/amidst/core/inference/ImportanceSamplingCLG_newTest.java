@@ -347,19 +347,25 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         importanceSampling.setGaussianMixturePosteriors(false);
         importanceSampling.setParallelMode(false);
 
-        importanceSampling.runInference();
+        importanceSampling.setQuery(varB, v -> (0 < v && v < 2) ? 1.0 : 0.0);
 
+        importanceSampling.runInference();
 
         Multinomial postA = importanceSampling.getPosterior(varA);
         Normal postB = importanceSampling.getPosterior(varB);
 
+        double queryResult = importanceSampling.getQueryResult();
 
         System.out.println("P(A) = " + postA.toString());
         System.out.println("P(B) = " + postB.toString());
+        System.out.println("P(0<B<2) = " + queryResult);
+
 
         assertEquals(0.333, postA.getProbabilities()[0], 0.01);
         assertEquals(0, postB.getMean(), 0.02);
         assertEquals(2.666, postB.getVariance(), 0.2);
+        assertEquals(0.384, queryResult, 0.02);
+
 
     }
 
@@ -408,6 +414,8 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         importanceSampling.setMixtureOfGaussiansInitialVariance(3);
         //importanceSampling.setMixtureOfGaussiansNoveltyRate(0.0001);
 
+        importanceSampling.setQuery(varB, v -> (0 < v && v < 2) ? 1.0 : 0.0);
+
 
         importanceSampling.runInference();
 
@@ -415,9 +423,11 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         Multinomial postA = importanceSampling.getPosterior(varA);
         GaussianMixture postB = importanceSampling.getPosterior(varB);
 
+        double queryResult = importanceSampling.getQueryResult();
 
         System.out.println("P(A) = " + postA.toString());
         System.out.println("P(B) = " + postB.toString());
+        System.out.println("P(0<B<2) = " + queryResult);
 
         assertEquals(0.333, postA.getProbabilities()[0], 0.02);
         assertEquals(0.666, postB.getParameters()[0], 0.02);
@@ -426,6 +436,9 @@ public class ImportanceSamplingCLG_newTest extends TestCase {
         assertEquals(0.333, postB.getParameters()[3], 0.02);
         assertEquals(0, postB.getParameters()[4], 0.02);
         assertEquals(1, postB.getParameters()[5], 0.02);
+        assertEquals(0.159, queryResult, 0.02);
+
+
 
     }
 
