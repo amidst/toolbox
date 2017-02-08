@@ -1,21 +1,18 @@
-import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.distribution.GaussianMixture;
 import eu.amidst.core.distribution.Normal;
-import eu.amidst.core.learning.parametric.bayesian.DataPosterior;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.flinklink.core.data.DataFlink;
 import eu.amidst.flinklink.core.inference.DistributedImportanceSamplingCLG;
-import eu.amidst.flinklink.core.learning.parametric.dVMP;
-import org.apache.flink.api.java.DataSet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -98,6 +95,10 @@ public class DistributedISPrecision {
 
 
 
+        /**********************************************************************************
+         *    EXPERIMENT 1: COMPARING LIKELIHOOD OF POSTERIOR DISTRIBUTIONS
+         *********************************************************************************/
+
 
         /*
          *  OBTAINING POSTERIORS WITH DISTRIBUTED IMPORTANCE SAMPLING
@@ -121,28 +122,6 @@ public class DistributedISPrecision {
         distributedIS.runInference();
         Normal varOfInterestGaussianDistribution = distributedIS.getPosterior(varOfInterest);
 
-
-
-
-        /*
-         *  OBTAINING POSTERIORS WITH DISTRIBUTED VMP
-         */
-
-        eu.amidst.flinklink.core.utils.BayesianNetworkSampler bnSamplerFlink = new eu.amidst.flinklink.core.utils.BayesianNetworkSampler(bn);
-
-        DataFlink<DataInstance> dataFlink = bnSamplerFlink.sampleToDataFlink(sampleSize);
-
-        dVMP dvmp = new dVMP();
-        dvmp.setDAG(bn.getDAG());
-        dvmp.setOutput(false);
-
-        dvmp.setSeed(236236);
-        dvmp.setDataFlink(dataFlink);
-        dvmp.runLearning();
-
-        DataSet<DataPosterior> posterior = dvmp.computePosterior(varsOfInterestList);
-
-        Normal varOfInterestGaussianDistributionDVMP = (Normal)posterior.collect().get(0).getPosterior(varOfInterest);
 
 
 
@@ -171,5 +150,43 @@ public class DistributedISPrecision {
 
 
 
+        /**********************************************************************************
+         *    EXPERIMENT 2: COMPARING PROBABILITIES OF QUERIES
+         *********************************************************************************/
+
+        double a = 0; // Lower endpoint of the interval
+        double b = 10000; // Upper endpoint of the interval
+
+        final double finalA=a;
+        final double finalB=b;
+
+        distributedIS = new DistributedImportanceSamplingCLG();
+
+        distributedIS.setSeed(seedIS);
+        distributedIS.setModel(bn);
+        distributedIS.setSampleSize(sampleSize);
+        distributedIS.setVariablesOfInterest(varsOfInterestList);
+
+
+        // OBTAIN THE POSTERIOR AS A GAUSSIAN MIXTURE
+        distributedIS.setGaussianMixturePosteriors(true);
+        distributedIS.setQuery(varOfInterest, (Function<Double,Double> & Serializable)(v -> (finalA < v && v < finalB) ? 1.0 : 0.0));
+
+        distributedIS.runInference();
+
+
+        double queryResult = distributedIS.getQueryResult();
+
+        System.out.println("Var: " + varOfInterest.getName() + ", conditional=" + bn.getConditionalDistribution(varOfInterest));
+
+        System.out.println("Gaussian posterior=" + varOfInterestGaussianDistribution.toString());
+        System.out.println("Gaussian likelihood= " + averageLikelihoodGaussian);
+
+
+        System.out.println("GaussianMixture posterior=" + varOfInterestGaussianMixtureDistribution.toString());
+        System.out.println("GaussianMixture likelihood= " + averageLikelihoodGaussianMixture);
+
+        System.out.println("Query: P(" + Double.toString(a) + " < " + varOfInterest.getName() + " < " + Double.toString(b) + ")");
+        System.out.println("Probability result: " + queryResult);
     }
 }
