@@ -137,14 +137,18 @@ public class RunDrift {
 
             Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
 
-            double lambda = 0;
+            double lambdaMoment = 0;
+            double lambdaNatural = 0;
             int n = 0;
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
-                lambda += svb.getLambdaMomentParameter();
+                lambdaMoment += svb.getLambdaMomentParameter();
+                lambdaNatural += svb.getLambdaNaturalParameter();
+
                 n++;
             }
-            lambda/=n;
+            lambdaMoment/=n;
+            lambdaNatural/=n;
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
@@ -154,9 +158,9 @@ public class RunDrift {
 
             double inst =test.getNumberOfDataInstances();
 
-            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambdaMoment+"\t"+lambdaNatural+"\n");
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambdaMoment+"\t"+lambdaNatural+"\n");
 
             fw.flush();
 

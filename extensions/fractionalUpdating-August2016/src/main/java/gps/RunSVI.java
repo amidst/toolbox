@@ -31,11 +31,11 @@ import java.util.Random;
 public class RunSVI {
 
     public static void main(String[] args) throws Exception{
-        //String model = "GPS0";
-        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
+        String model = "GPS0";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
 
-        String model = "BCC1";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
+        //String model = "BCC1";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
 
 
         int ntopics = 2;

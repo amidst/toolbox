@@ -170,18 +170,21 @@ public class RunMultiDrift {
 
             Iterator<DataOnMemory<DataInstance>> iteratorInner = train.streamOfBatches(finalDocsPerBatch).iterator();
 
-            double lambda = 0;
+            double lambdaMoment = 0;
             int n = 0;
-            double[] vals = null;
+            double[] valsMoments = null;
+            double[] valsNatural = null;
+
             while (iteratorInner.hasNext()){
                 svb.updateModelWithConceptDrift(iteratorInner.next());
-                vals =  svb.getLambdaMomentParameters();
-                for (int i = 0; i < vals.length; i++) {
-                    lambda +=vals[i];
+                valsMoments =  svb.getLambdaMomentParameters();
+                valsNatural =  svb.getLambdaNaturalParameters();
+                for (int i = 0; i < valsMoments.length; i++) {
+                    lambdaMoment +=valsMoments[i];
                     n++;
                 }
             }
-            lambda/=n;
+            lambdaMoment/=n;
 
             double log = 0;
             iteratorInner = test.streamOfBatches(finalDocsPerBatch).iterator();
@@ -191,12 +194,17 @@ public class RunMultiDrift {
 
             double inst =test.getNumberOfDataInstances();
 
-            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambda+"\n");
+            System.out.println("OUT"+(count)+"\t"+log/inst+"\t"+inst+"\t"+lambdaMoment+"\n");
 
-            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambda);
-            for (int i = 0; i < vals.length; i++) {
-                fw.write("\t"+vals[i]);
+            fw.write((count++)+"\t"+log/inst+"\t"+inst+"\t"+lambdaMoment);
+            for (int i = 0; i < valsMoments.length; i++) {
+                fw.write("\t"+valsMoments[i]);
             }
+
+            for (int i = 0; i < valsNatural.length; i++) {
+                fw.write("\t"+valsNatural[i]);
+            }
+
             fw.write("\n");
 
             fw.flush();
