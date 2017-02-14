@@ -7,6 +7,8 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.inference.DistributedImportanceSamplingCLG;
+import org.apache.commons.math.distribution.NormalDistribution;
+import org.apache.commons.math.distribution.NormalDistributionImpl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class DistributedISPrecision {
             seedIS = 111235236;
             sampleSize = 50000;
 
-            nSamplesForLikelihood = 100000;
+            nSamplesForLikelihood = 1000000;
 
         }
         else {
@@ -126,7 +128,7 @@ public class DistributedISPrecision {
 
 
         /*
-         *  HUGE SAMPLE FOR ESTIMATING THE LIKELIHOOD OF EACH POSTERIOR
+         *  LARGE SAMPLE FOR ESTIMATING THE LIKELIHOOD OF EACH POSTERIOR
          */
         BayesianNetworkSampler bnSampler = new BayesianNetworkSampler(bn);
         bnSampler.setSeed(12552);
@@ -154,8 +156,8 @@ public class DistributedISPrecision {
          *    EXPERIMENT 2: COMPARING PROBABILITIES OF QUERIES
          *********************************************************************************/
 
-        double a = 0; // Lower endpoint of the interval
-        double b = 10000; // Upper endpoint of the interval
+        double a = -10000; // Lower endpoint of the interval
+        double b = 10; // Upper endpoint of the interval
 
         final double finalA=a;
         final double finalB=b;
@@ -188,5 +190,20 @@ public class DistributedISPrecision {
 
         System.out.println("Query: P(" + Double.toString(a) + " < " + varOfInterest.getName() + " < " + Double.toString(b) + ")");
         System.out.println("Probability result: " + queryResult);
+
+        NormalDistribution auxNormal = new NormalDistributionImpl( varOfInterestGaussianDistribution.getMean(), varOfInterestGaussianDistribution.getSd() );
+        double probGaussian = auxNormal.cumulativeProbability(finalB) - auxNormal.cumulativeProbability(finalA);
+
+        double [] posteriorGaussianMixtureParameters = varOfInterestGaussianMixtureDistribution.getParameters();
+        double probGaussianMixture=0;
+        for (int i = 0; i < varOfInterestGaussianMixtureDistribution.getNumberOfComponents(); i++) {
+            NormalDistribution auxNormal1 = new NormalDistributionImpl( posteriorGaussianMixtureParameters[1 + i*3], Math.sqrt(posteriorGaussianMixtureParameters[2 + i*3]) );
+            probGaussianMixture += posteriorGaussianMixtureParameters[0 + i*3] * ( auxNormal1.cumulativeProbability(finalB) - auxNormal1.cumulativeProbability(finalA) );
+        }
+
+        System.out.println("Probability with posterior Gaussian: " + probGaussian);
+        System.out.println("Probability with posterior Gaussian Mixture: " + probGaussianMixture);
+
+        System.out.println("Probability estimate with large sample: " + Arrays.stream(varOfInterestSample).map(v -> (finalA < v && v < finalB) ? 1.0 : 0.0).sum()/varOfInterestSample.length);
     }
 }
