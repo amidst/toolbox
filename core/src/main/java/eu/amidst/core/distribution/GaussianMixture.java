@@ -366,6 +366,10 @@ public class GaussianMixture extends UnivariateDistribution {
         return 3*coefficients.length;
     };
 
+    public int getNumberOfComponents() {
+        return coefficients.length;
+    };
+
     /**
      * {@inheritDoc}
      */
