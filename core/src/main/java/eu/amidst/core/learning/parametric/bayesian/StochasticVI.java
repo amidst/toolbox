@@ -74,7 +74,6 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     private CompoundVector currentParam;
     private int iteration;
     private boolean fixedStepSize =false;
-    private boolean initBatch=true;
 
 
     public void setFixedStepSize(boolean fixedStepSize) {
@@ -157,30 +156,21 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
         this.svb.updateNaturalParameterPosteriors(initialPosterior);
 
-        currentParam =  Serialization.deepCopy(svb.getNaturalParameterPrior());
+        currentParam =  svb.getNaturalParameterPrior();
+
         iteration=0;
-        initBatch=true;
 
     }
 
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
-        if (initBatch) {
-            NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
-            newParam.multiplyBy(this.dataSetSize/(double)batch.getNumberOfDataInstances());
-            newParam.sum(prior);
-            this.svb.updateNaturalParameterPosteriors((CompoundVector)newParam);
-            currentParam =  Serialization.deepCopy((CompoundVector)newParam);
-            initBatch=false;
-        }
-
         NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
+
         newParam.multiplyBy(this.dataSetSize/(double)batch.getNumberOfDataInstances());
         newParam.sum(prior);
 
         double stepSize = 0;
-
         if (this.fixedStepSize){
             stepSize = learningFactor;
         }else {
@@ -252,8 +242,21 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
             if (!iterator.hasNext())
                 iterator = this.dataStream.iterableOverBatches(this.batchSize).iterator();
 
+            NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
-            this.updateModel(batch);
+            newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
+            newParam.sum(prior);
+
+            double stepSize = Math.pow(1+ iteration,-learningFactor);
+
+            newParam.multiplyBy(stepSize);
+
+            currentParam.multiplyBy((1-stepSize));
+            currentParam.sum(newParam);
+
+            this.svb.updateNaturalParameterPosteriors(currentParam);
+
+
 
 
             long startBatchELBO= System.nanoTime();
@@ -267,7 +270,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
             totalTime+=endBatch-startBatch;
 
 
-            System.out.println("SVI ELBO: "+ iteration +", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
+            System.out.println("SVI ELBO: "+ iteration +", "+stepSize+", "+totalTime/1e9+" seconds "+ totalTimeElbo/1e9 + " seconds" + (totalTime - totalTimeElbo)/1e9 + " seconds");
 
 
             if ((totalTime-totalTimeElbo)/1e9>timiLimit || iteration>this.maximumLocalIterations){
