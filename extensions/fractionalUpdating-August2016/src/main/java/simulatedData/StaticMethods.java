@@ -126,7 +126,7 @@ public class StaticMethods {
     }
 
 
-    public static BayesianParameterLearningAlgorithm initPopulation(double learningFactor){
+    public static BayesianParameterLearningAlgorithm initPopulation(double learningFactor, int populationSize){
         PopulationVI svb = new PopulationVI();
 
         svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
@@ -138,7 +138,7 @@ public class StaticMethods {
         svb.setOutput(true);
         svb.setMaximumLocalIterations(100);
         svb.setBatchSize(sampleSize);
-        svb.setDataSetSize(10*sampleSize);
+        svb.setDataSetSize(populationSize);
         svb.setLearningFactor(learningFactor);
         svb.setFixedStepSize(true);
 
