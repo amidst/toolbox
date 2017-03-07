@@ -1,3 +1,17 @@
+v0.6.2
+============
+This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
+
+Changes:
+- Fixed some bugs reported by @gunjanthesystem 
+
+
+**Release Date**: 07/03/2017
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.1/index.html)
+
+
+
+
 v0.6.1
 ============
 This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
