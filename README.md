@@ -1,5 +1,5 @@
 # AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
-v.0.6.1
+v.0.6.2
 
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
 [![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=develop)](https://travis-ci.org/amidst/toolbox)

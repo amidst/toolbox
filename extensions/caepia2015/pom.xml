@@ -14,14 +14,14 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.6.1</version> <!-- AmidstVersion -->
+        <version>0.6.2</version> <!-- AmidstVersion -->
 	<relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>caepia2015</artifactId>
-    <version>0.6.1</version> <!-- AmidstVersion -->
+    <version>0.6.2</version> <!-- AmidstVersion -->
 
     <url>http://amidst.github.io/toolbox/</url>
 
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.6.1</version> <!-- AmidstVersion -->
+            <version>0.6.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

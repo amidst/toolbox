@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>AmidstToolbox</artifactId>
+    <groupId>eu.amidst</groupId>
+    <version>0.6.1</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>eu.amidst</groupId>
+  <artifactId>latent-variable-models</artifactId>
+  <version>0.6.1</version>
+  <developers>
+    <developer>
+      <name>Andres R. Masegosa</name>
+      <email>andres.masegosa@idi.ntnu.no</email>
+      <organization>NTNU, Norway</organization>
+      <organizationUrl>https://github.com/andresmasegosa</organizationUrl>
+    </developer>
+    <developer>
+      <name>Hanen Borchani</name>
+      <email>hanen@cs.aau.dk</email>
+      <organization>Aalborg University, Denmark</organization>
+      <organizationUrl>https://github.com/HanenBorchani</organizationUrl>
+    </developer>
+    <developer>
+      <name>Ana M. Martinez</name>
+      <email>ana@cs.aau.dk</email>
+      <organization>Aalborg University, Denmark</organization>
+      <organizationUrl>https://github.com/anamf</organizationUrl>
+    </developer>
+    <developer>
+      <name>Dario Ramos Lopez</name>
+      <email>drl012@ual.es</email>
+      <organization>University of Almeria, Spain</organization>
+      <organizationUrl>https://github.com/dariorlual</organizationUrl>
+    </developer>
+    <developer>
+      <name>Antonio Fernandez Alvarez</name>
+      <email>afalvarez@bcc.es</email>
+      <organization>Banco Cooperativo de Credito, Spain</organization>
+      <organizationUrl>https://github.com/afalvarez</organizationUrl>
+    </developer>
+    <developer>
+      <name>Thomas Dyhre Nielsen</name>
+      <email>tdn@cs.aau.dk</email>
+      <organization>Aalborg University, Denmark</organization>
+      <organizationUrl>https://github.com/thomasdnielsen</organizationUrl>
+    </developer>
+    <developer>
+      <name>Helge Langseth</name>
+      <email>helgel@idi.ntnu.no</email>
+      <organization>NTNU, Norway</organization>
+      <organizationUrl>https://github.com/HelgeLangseth</organizationUrl>
+    </developer>
+    <developer>
+      <name>Antonio Salmeron</name>
+      <email>antonio.salmeron@ual.es</email>
+      <organization>University of Almeria, Spain</organization>
+      <organizationUrl>https://github.com/AntonioSalmeron</organizationUrl>
+    </developer>
+    <developer>
+      <name>Rafael Cabañas</name>
+      <email>rcabanas@cs.aau.dk</email>
+      <organization>Aalborg University, Denmark</organization>
+      <organizationUrl>https://github.com/rcabanasdepaz</organizationUrl>
+    </developer>
+  </developers>
+  <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-webdav</artifactId>
+        <version>1.0-beta-2</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <excludes>
+            <exclude>**/TANTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <minimizeJar>true</minimizeJar>
+              <filters>
+                <filter>
+                  <artifact>eu**</artifact>
+                  <includes>
+                    <include>**</include>
+                  </includes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>
+
