@@ -7,7 +7,7 @@ Changes:
 
 
 **Release Date**: 07/03/2017
-**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.1/index.html)
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.2/index.html)
 
 
 
