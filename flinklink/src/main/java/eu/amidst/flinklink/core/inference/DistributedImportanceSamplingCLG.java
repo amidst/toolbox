@@ -53,6 +53,7 @@ public class DistributedImportanceSamplingCLG {
     private double mixtureOfGaussiansInitialVariance = 50;
     private double mixtureOfGaussiansNoveltyRate = 0.0001;
 
+    private int numberOfCoresToUse = -1;
 
     Function<Double,Double> queryingFunction;
     Variable queryingVariable;
@@ -119,11 +120,27 @@ public class DistributedImportanceSamplingCLG {
     }
 
 
+    public void setNumberOfCores(int numberOfCoresToUse) {
+        this.numberOfCoresToUse = numberOfCoresToUse;
+    }
+
     public void runInference() throws Exception {
 
         BasicConfigurator.configure();
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-        final int numberOfFlinkNodes = env.getParallelism();
+        int maxParallelism = env.getParallelism();
+
+        int parallelism;
+        if(this.numberOfCoresToUse != -1) {
+            parallelism = this.numberOfCoresToUse;
+        }
+        else {
+            parallelism = maxParallelism;
+        }
+
+        final int numberOfFlinkNodes = parallelism;
+        env.setParallelism(numberOfFlinkNodes);
+
         System.out.println("Flink parallel nodes: " + numberOfFlinkNodes);
 
         posteriors = env.generateSequence(0,numberOfFlinkNodes-1)
