@@ -15,7 +15,7 @@
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
         <version>${AMIDSTver}</version>
-	<relativePath>../../pom.xml</relativePath>
+	    <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>

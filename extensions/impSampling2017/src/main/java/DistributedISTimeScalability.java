@@ -1,3 +1,6 @@
+package eu.amidst.impSampling2017;
+
+
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
