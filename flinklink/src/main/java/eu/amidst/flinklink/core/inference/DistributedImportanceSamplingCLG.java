@@ -125,21 +125,22 @@ public class DistributedImportanceSamplingCLG {
     }
 
     public void runInference() throws Exception {
-
+        BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
+
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         int maxParallelism = env.getParallelism();
 
-        int parallelism;
-        if(this.numberOfCoresToUse != -1) {
-            parallelism = this.numberOfCoresToUse;
-        }
-        else {
-            parallelism = maxParallelism;
-        }
+//        int parallelism;
+//        if(this.numberOfCoresToUse != -1) {
+//            parallelism = this.numberOfCoresToUse;
+//        }
+//        else {
+//            parallelism = maxParallelism;
+//        }
+        final int numberOfFlinkNodes = maxParallelism;
 
-        final int numberOfFlinkNodes = parallelism;
-        env.setParallelism(numberOfFlinkNodes);
+        //env.setParallelism(numberOfFlinkNodes);
 
         System.out.println("Flink parallel nodes: " + numberOfFlinkNodes);
 

@@ -34,9 +34,9 @@ public class DistributedISTimeScalability {
         // ARGS: sizeBayesianNetwork sampleSize repetitions
         if (args.length!=3) {
 
-            sizeBayesianNetwork = 3000;
+            sizeBayesianNetwork = 1000;
 
-            sampleSize = 20000;
+            sampleSize = 1000;
 
             numberOfRepetitions = 5;
         }
@@ -85,25 +85,25 @@ public class DistributedISTimeScalability {
         System.out.println("Samples size for IS: " + sampleSize);
 
 
-
         long timeStart;
         long timeStop;
         double execTime1, execTime2, execTime3;
 
 
-        int log2MaxParallelism = (int) ( Math.log(maxParallelism)/Math.log(2) );
+        //int log2MaxParallelism = (int) ( Math.log(maxParallelism)/Math.log(2) );
 
         // double[][] executionTimes_Queries = new double[log2MaxParallelism+1][numberOfRepetitions];
-        double[][] executionTimes_Gaussian = new double[log2MaxParallelism+1][numberOfRepetitions];
-        double[][] executionTimes_GaussianMixtures = new double[log2MaxParallelism+1][numberOfRepetitions];
-
-        for (int i = 1; i <= log2MaxParallelism; i++) {
-
-            int nCoresToUse = (int) Math.pow(2,i);
-            env.setParallelism(nCoresToUse);
+        double[] executionTimes_Gaussian = new double[numberOfRepetitions];
+        double[] executionTimes_GaussianMixtures = new double[numberOfRepetitions];
 
 
-            System.out.println("Computing execution times with " + nCoresToUse + " cores...");
+//        for (int i = 0; i <= log2MaxParallelism; i++) {
+
+//            int nCoresToUse = (int) Math.pow(2,i);
+//            env.setParallelism(maxParallelism);
+
+
+            System.out.println("Computing execution times with " + maxParallelism + " cores...");
 
 
             for (int j = 0; j < numberOfRepetitions; j++) {
@@ -175,11 +175,11 @@ public class DistributedISTimeScalability {
                  */
                 DistributedImportanceSamplingCLG distributedIS = new DistributedImportanceSamplingCLG();
 
-                distributedIS.setSeed(seedIS+i+j);
+                distributedIS.setSeed(seedIS+j);
                 distributedIS.setModel(bn);
                 distributedIS.setSampleSize(sampleSize);
                 distributedIS.setVariablesOfInterest(varsOfInterestList);
-                distributedIS.setNumberOfCores(nCoresToUse);
+                distributedIS.setNumberOfCores(maxParallelism);
 
                 // FIRST, RUN INFERENCE WITHOUT HEATING-UP
                 distributedIS.runInference();
@@ -226,25 +226,37 @@ public class DistributedISTimeScalability {
                 System.out.println("IS exec time with Gaussian Mixture: " + Double.toString(execTime2) + " seconds");
 //                System.out.println("IS exec time with Query: " + Double.toString(execTime3) + " seconds");
 
-                executionTimes_Gaussian[i][j]          = execTime1;
-                executionTimes_GaussianMixtures[i][j]  = execTime2;
+                executionTimes_Gaussian[j]          = execTime1;
+                executionTimes_GaussianMixtures[j]  = execTime2;
 //                executionTimes_Queries[i][j]           = execTime3;
 
 
             }
 
-        }
 
-        System.out.println(log2MaxParallelism);
 
-        for (int i = 0; i <= log2MaxParallelism; i++) {
-            System.out.println("Gaussian,        " + (int)Math.pow(2,i) + " cores: " + Arrays.toString(executionTimes_Gaussian[i]));
-            System.out.println("GaussianMixture, " + (int)Math.pow(2,i) + " cores: " + Arrays.toString(executionTimes_GaussianMixtures[i]));
 
-            System.out.println("Gausian,         mean execution time with " + (int)Math.pow(2,i) + " cores: " + Arrays.stream(executionTimes_Gaussian[i]).average().getAsDouble() );
-            System.out.println("GaussianMixture, mean execution time with " + (int)Math.pow(2,i) + " cores: " + Arrays.stream(executionTimes_GaussianMixtures[i]).average().getAsDouble() );
 
-        }
+        System.out.println(maxParallelism);
+
+//        for (int i = 0; i <= log2MaxParallelism; i++) {
+            System.out.println("Gaussian,        " + maxParallelism + " cores: " + Arrays.toString(executionTimes_Gaussian));
+            System.out.println("GaussianMixture, " + maxParallelism + " cores: " + Arrays.toString(executionTimes_GaussianMixtures));
+
+            System.out.println("Gausian,         mean execution time with " + maxParallelism+ " cores: " + Arrays.stream(executionTimes_Gaussian).average().getAsDouble() );
+            System.out.println("GaussianMixture, mean execution time with " + maxParallelism + " cores: " + Arrays.stream(executionTimes_GaussianMixtures).average().getAsDouble() );
+
+//        }
+
+
+
+
+
+
+
+
+
+
 //        DistributedImportanceSamplingCLG distributedIS = new DistributedImportanceSamplingCLG();
 //
 //
