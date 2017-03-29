@@ -71,7 +71,7 @@ public class DistributedISTimeScalability {
 
 
         System.out.println("DISTRIBUTED IMPORTANCE SAMPLING, TIME SCALABILITY EXPERIMENT");
-        System.out.println("Amount of cores available: " + maxParallelism);
+        System.out.println("Environment parallelism: " + maxParallelism);
         System.out.println("Parameters:");
         System.out.println("Bayesian Network size " + sizeBayesianNetwork + " with seed " + seedBN);
         System.out.println("(half discrete with 2 states and half Gaussians, number of links " + (int) (1.5 * sizeBayesianNetwork) + ")");
@@ -103,7 +103,7 @@ public class DistributedISTimeScalability {
 //            env.setParallelism(maxParallelism);
 
 
-            System.out.println("Computing execution times with " + maxParallelism + " cores...");
+            System.out.println("Computing execution times...");
 
 
             for (int j = 0; j < numberOfRepetitions; j++) {
@@ -240,11 +240,11 @@ public class DistributedISTimeScalability {
         System.out.println(maxParallelism);
 
 //        for (int i = 0; i <= log2MaxParallelism; i++) {
-            System.out.println("Gaussian,        " + maxParallelism + " cores: " + Arrays.toString(executionTimes_Gaussian));
-            System.out.println("GaussianMixture, " + maxParallelism + " cores: " + Arrays.toString(executionTimes_GaussianMixtures));
+            System.out.println("Gaussian:        " + Arrays.toString(executionTimes_Gaussian));
+            System.out.println("GaussianMixture: " + Arrays.toString(executionTimes_GaussianMixtures));
 
-            System.out.println("Gausian,         mean execution time with " + maxParallelism+ " cores: " + Arrays.stream(executionTimes_Gaussian).average().getAsDouble() );
-            System.out.println("GaussianMixture, mean execution time with " + maxParallelism + " cores: " + Arrays.stream(executionTimes_GaussianMixtures).average().getAsDouble() );
+            System.out.println("Gausian,         mean execution time: " + Arrays.stream(executionTimes_Gaussian).average().getAsDouble() );
+            System.out.println("GaussianMixture, mean execution time: " + Arrays.stream(executionTimes_GaussianMixtures).average().getAsDouble() );
 
 //        }
 
