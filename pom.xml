@@ -131,6 +131,9 @@
         <module>extensions/ecai2016</module>
         <module>extensions/uai2016</module>
         <module>extensions/reviewMeeting2016</module>
+        <module>extensions/pgm2016MAPflink</module>
+        <module>extensions/impSampling2017</module>
+
     </modules>
 
 
