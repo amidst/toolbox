@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -127,6 +128,7 @@ public class DistributedImportanceSamplingCLG {
     public void runInference() throws Exception {
         BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
+        akka.util.Timeout.apply(10, TimeUnit.MINUTES);
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         int maxParallelism = env.getParallelism();

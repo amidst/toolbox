@@ -181,8 +181,16 @@ public class DistributedISTimeScalability {
                 distributedIS.setVariablesOfInterest(varsOfInterestList);
                 distributedIS.setNumberOfCores(maxParallelism);
 
-                // FIRST, RUN INFERENCE WITHOUT HEATING-UP
+
+
+
+                // FIRST, RUN A COUPLE OF INFERENCES FOR HEATING-UP, WITHOUT MEASURING THE EXECUTION TIME
+                distributedIS.setGaussianMixturePosteriors(false);
                 distributedIS.runInference();
+                distributedIS.setGaussianMixturePosteriors(true);
+                distributedIS.runInference();
+
+
 
 
                 // OBTAIN THE POSTERIOR AS A SINGLE GAUSSIAN
@@ -223,7 +231,7 @@ public class DistributedISTimeScalability {
 
 
                 System.out.println("IS exec time with single Gaussian: " + Double.toString(execTime1) + " seconds");
-                System.out.println("IS exec time with Gaussian Mixture: " + Double.toString(execTime2) + " seconds");
+                System.out.println("IS exec time with GaussianMixture: " + Double.toString(execTime2) + " seconds");
 //                System.out.println("IS exec time with Query: " + Double.toString(execTime3) + " seconds");
 
                 executionTimes_Gaussian[j]          = execTime1;
