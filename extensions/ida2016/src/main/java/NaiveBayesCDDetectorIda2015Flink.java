@@ -29,7 +29,6 @@ public class NaiveBayesCDDetectorIda2015Flink {
 
     public static void learnIDAConceptDriftDetector(int NSETS) throws Exception {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
-
         DataFlink<DataInstance> data0 = DataFlinkLoader.loadDataFromFolder(env,
                 "/Users/ana/Documents/Amidst-MyFiles/CajaMar/dataWekaFolder.arff/MONTH0.arff", false);
 
