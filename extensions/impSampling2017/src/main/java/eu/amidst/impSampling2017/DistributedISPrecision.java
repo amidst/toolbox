@@ -2,15 +2,14 @@ package eu.amidst.impSampling2017;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
-import eu.amidst.core.distribution.*;
+import eu.amidst.core.distribution.GaussianMixture;
+import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.models.BayesianNetwork;
-import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
-import eu.amidst.core.variables.Variables;
 import eu.amidst.flinklink.core.inference.DistributedImportanceSamplingCLG;
 
 import java.io.Serializable;
@@ -38,18 +37,6 @@ public class DistributedISPrecision {
         double evidenceVarsRatio;
 
         int nSamplesForLikelihood;
-
-        ExpandedHiddenMarkovModel hmm = new ExpandedHiddenMarkovModel();
-        hmm.setnStates(5);
-        hmm.setnGaussians(3);
-        hmm.buildModel();
-
-        System.out.println(hmm.getModel());
-
-        Assignment hmm_evidence = hmm.generateEvidence();
-        System.out.println("EVIDENCE: ");
-        System.out.println(hmm_evidence.outputString(hmm.getVarsEvidence()));
-
 
         if (args.length!=7) {
 
@@ -363,173 +350,6 @@ public class DistributedISPrecision {
 
     }
 
-    private static class ExpandedHiddenMarkovModel {
-
-        private int nStates = 2;
-        private int nGaussians = 1;
-
-        private int nTimeSteps = 10;
-
-        private Variables variables;
-        private DAG dag;
-        private BayesianNetwork bn;
-
-        private Random random;
-        private List<Variable> varsEvidence;
-        private List<Variable> varsInterest;
-
-
-        public void setnStates(int nStates) {
-            this.nStates = nStates;
-        }
-
-        public void setnGaussians(int nGaussians) {
-            this.nGaussians = nGaussians;
-        }
-
-        public void setnTimeSteps(int nTimeSteps) {
-            this.nTimeSteps = nTimeSteps;
-        }
-
-        public int getnTimeSteps() {
-            return nTimeSteps;
-        }
-
-        public int getnGaussians() {
-            return nGaussians;
-        }
-
-        public int getnStates() {
-            return nStates;
-        }
-
-        public List<Variable> getVarsEvidence() {
-            return varsEvidence;
-        }
-
-        public List<Variable> getVarsInterest() {
-            return varsInterest;
-        }
-
-        public BayesianNetwork getModel() {
-            return bn;
-        }
-
-        public ExpandedHiddenMarkovModel() {
-            this.variables = new Variables();
-        }
-
-        public void buildModel() {
-
-            random = new Random(0);
-
-            double[] probs_discreteHiddenVar_0 = new double[nStates];
-            for (int i = 0; i < nStates; i++) {
-                probs_discreteHiddenVar_0[i]=(double)1/nStates;
-            }
-
-            double prob_keepState = 0.8;
-            double[][] probs_discreteHiddenVars = new double[nStates][nStates];
-            for (int i = 0; i < nStates; i++) {
-                for (int j = 0; j < nStates; j++) {
-                    if(i==j) {
-                        probs_discreteHiddenVars[i][j] = 0.8;
-                    }
-                    else {
-                        probs_discreteHiddenVars[i][j] = 0.2/(nStates-1);
-                    }
-                }
-            }
-
-            double[][] means = new double[nGaussians][nStates];
-            double[][] vars= new double[nGaussians][nStates];
-
-            for (int i = 0; i < nGaussians; i++) {
-                for (int j = 0; j < nStates; j++) {
-                    means[i][j] = -10+20*random.nextDouble();
-                    vars[i][j] = 3*random.nextDouble();
-                }
-            }
-
-
-            for (int i = 0; i < nTimeSteps; i++) {
-                Variable discreteHiddenVar = this.variables.newMultionomialVariable("discreteHiddenVar_t" + i, this.getnStates());
-                for (int j = 0; j < nGaussians; j++) {
-                    Variable gaussian = this.variables.newGaussianVariable("GaussianVar" + j + "_t" + i);
-                }
-            }
-
-            dag = new DAG(this.variables);
-
-            Variable discreteHiddenVar0 = this.dag.getVariables().getVariableByName("discreteHiddenVar_t0");
-
-            for (int i = 0; i < nTimeSteps; i++) {
-
-                Variable discreteHiddenVar_current = this.variables.getVariableByName("discreteHiddenVar_t" + i);
-
-                if(i>0) {
-                    Variable discreteHiddenVar_previous = this.variables.getVariableByName("discreteHiddenVar_t" + (i - 1));
-                    dag.getParentSet(discreteHiddenVar_current).addParent(discreteHiddenVar_previous);
-                }
-
-                for (int j = 0; j < nGaussians; j++) {
-                    Variable gaussian = this.variables.getVariableByName("GaussianVar" + j + "_t" + i);
-                    dag.getParentSet(gaussian).addParent(discreteHiddenVar_current);
-                }
-            }
-
-            bn = new BayesianNetwork(dag);
-            bn.randomInitialization(random);
-
-            ConditionalDistribution cdist = bn.getConditionalDistribution(discreteHiddenVar0);
-            ((Multinomial) cdist).setProbabilities(probs_discreteHiddenVar_0);
-
-            for (int i = 0; i < nTimeSteps; i++) {
-
-                if(i>0) {
-                    Variable discreteHiddenVar_current = this.variables.getVariableByName("discreteHiddenVar_t" + i);
-                    cdist = bn.getConditionalDistribution(discreteHiddenVar_current);
-                    for (int k = 0; k < nStates; k++) {
-                        Multinomial component = ((Multinomial_MultinomialParents) cdist).getMultinomial(k);
-                        component.setProbabilities(probs_discreteHiddenVars[k]);
-                    }
-                }
-
-                for (int j = 0; j < nGaussians; j++) {
-                    Variable gaussian = this.variables.getVariableByName("GaussianVar" + j + "_t" + i);
-                    cdist = bn.getConditionalDistribution(gaussian);
-
-                    for (int k = 0; k < nStates; k++) {
-                        ((Normal_MultinomialParents) cdist).getNormal(k).setMean(means[j][k]);
-                        ((Normal_MultinomialParents) cdist).getNormal(k).setVariance(vars[j][k]);
-                    }
-                }
-            }
-
-            varsEvidence = this.bn.getVariables().getListOfVariables()
-                    .stream()
-                    .filter(var -> !var.getName().contains("_t" + (nTimeSteps-1)) && var.isNormal())
-                    .collect(Collectors.toList());
-
-            varsInterest = this.bn.getVariables().getListOfVariables()
-                    .stream()
-                    .filter(var -> var.getName().contains("_t" + (nTimeSteps-1)) && var.isNormal())
-                    .collect(Collectors.toList());
-        }
-
-        public Assignment generateEvidence() {
-
-
-            BayesianNetworkSampler bayesianNetworkSampler = new BayesianNetworkSampler(bn);
-            bayesianNetworkSampler.setSeed(random.nextInt());
-            DataStream<DataInstance> fullSample = bayesianNetworkSampler.sampleToDataStream(1);
-
-            Assignment evidence = new HashMapAssignment(varsEvidence.size());
-            varsEvidence.forEach(variable -> evidence.setValue(variable, fullSample.stream().findFirst().get().getValue(variable)));
-
-            return evidence;
-        }
-    }
 }
 
 
