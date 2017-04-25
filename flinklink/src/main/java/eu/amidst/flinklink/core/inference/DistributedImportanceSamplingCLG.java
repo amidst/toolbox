@@ -15,6 +15,9 @@ import eu.amidst.core.variables.Variable;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.configuration.ConfigConstants;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.GlobalConfiguration;
 import org.apache.log4j.BasicConfigurator;
 
 import java.io.InvalidObjectException;
@@ -126,23 +129,32 @@ public class DistributedImportanceSamplingCLG {
     }
 
     public void runInference() throws Exception {
+
         BasicConfigurator.resetConfiguration();
         BasicConfigurator.configure();
-        akka.util.Timeout.apply(10, TimeUnit.MINUTES);
+
+        akka.util.Timeout.apply(100, TimeUnit.SECONDS);
 
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        env.getConfig().setTaskCancellationTimeout(100000L);
+
+        org.apache.flink.configuration.Configuration configuration = new Configuration();
+        configuration.setLong(ConfigConstants.AKKA_ASK_TIMEOUT,100000);
+        GlobalConfiguration.setDynamicProperties(configuration);
+
         int maxParallelism = env.getParallelism();
 
-//        int parallelism;
-//        if(this.numberOfCoresToUse != -1) {
-//            parallelism = this.numberOfCoresToUse;
-//        }
-//        else {
-//            parallelism = maxParallelism;
-//        }
-        final int numberOfFlinkNodes = maxParallelism;
+        int parallelism;
+        if(this.numberOfCoresToUse != -1) {
+            parallelism = this.numberOfCoresToUse;
+        }
+        else {
+            parallelism = maxParallelism;
+        }
 
-        //env.setParallelism(numberOfFlinkNodes);
+        final int numberOfFlinkNodes = parallelism;
+
+        env.setParallelism(numberOfFlinkNodes);
 
         System.out.println("Flink parallel nodes: " + numberOfFlinkNodes);
 

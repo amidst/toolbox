@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * Created by dario on 19/1/17.
  */
-public class DistributedISPrecision {
+public class DistributedISPrecisionHMM {
 
     public static void main(String[] args) throws Exception {
 

@@ -31,14 +31,18 @@ public class DistributedISTimeScalability {
 
         int numberOfRepetitions;
 
-        // ARGS: sizeBayesianNetwork sampleSize repetitions
-        if (args.length!=3) {
+        int coresToUse;
+
+        // ARGS: sizeBayesianNetwork sampleSize repetitions nCoresToUse
+        if (args.length!=4) {
 
             sizeBayesianNetwork = 1000;
 
             sampleSize = 1000;
 
             numberOfRepetitions = 5;
+
+            coresToUse = 4;
         }
         else {
 
@@ -47,6 +51,8 @@ public class DistributedISTimeScalability {
             sampleSize = Integer.parseInt(args[1]);
 
             numberOfRepetitions = Integer.parseInt(args[2]);
+
+            coresToUse = Integer.parseInt(args[3]);
         }
 
 
@@ -71,7 +77,8 @@ public class DistributedISTimeScalability {
 
 
         System.out.println("DISTRIBUTED IMPORTANCE SAMPLING, TIME SCALABILITY EXPERIMENT");
-        System.out.println("Environment parallelism: " + maxParallelism);
+        System.out.println("Environment max parallelism: " + maxParallelism);
+        System.out.println("Number of cores/nodes to parallelize: " + coresToUse);
         System.out.println("Parameters:");
         System.out.println("Bayesian Network size " + sizeBayesianNetwork + " with seed " + seedBN);
         System.out.println("(half discrete with 2 states and half Gaussians, number of links " + (int) (1.5 * sizeBayesianNetwork) + ")");
@@ -179,7 +186,7 @@ public class DistributedISTimeScalability {
                 distributedIS.setModel(bn);
                 distributedIS.setSampleSize(sampleSize);
                 distributedIS.setVariablesOfInterest(varsOfInterestList);
-                distributedIS.setNumberOfCores(maxParallelism);
+                distributedIS.setNumberOfCores(coresToUse);
 
 
 
@@ -245,7 +252,7 @@ public class DistributedISTimeScalability {
 
 
 
-        System.out.println(maxParallelism);
+        //System.out.println(maxParallelism);
 
 //        for (int i = 0; i <= log2MaxParallelism; i++) {
             System.out.println("Gaussian:        " + Arrays.toString(executionTimes_Gaussian));
