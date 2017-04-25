@@ -29,6 +29,8 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.variables.Variable;
+
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -38,7 +40,7 @@ import java.util.Random;
  * <p> <a href="http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample"> http://amidst.github.io/toolbox/CodeExamples.html#bnmodifyexample </a>  </p>
  *
  */
-public class Normal extends UnivariateDistribution {
+public class Normal extends UnivariateDistribution implements Serializable {
 
     private static final long serialVersionUID = -5498079146465770364L;
 
