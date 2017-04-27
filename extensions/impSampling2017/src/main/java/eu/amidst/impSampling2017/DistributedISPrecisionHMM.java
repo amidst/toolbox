@@ -3,9 +3,9 @@ package eu.amidst.impSampling2017;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.*;
+import eu.amidst.core.inference.ImportanceSamplingCLG_new;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
-import eu.amidst.core.utils.BayesianNetworkGenerator;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
@@ -40,6 +40,7 @@ public class DistributedISPrecisionHMM {
         int nSamplesForLikelihood;
 
         ExpandedHiddenMarkovModel hmm = new ExpandedHiddenMarkovModel();
+        hmm.setnTimeSteps(5);
         hmm.setnStates(5);
         hmm.setnGaussians(3);
         hmm.buildModel();
@@ -58,11 +59,11 @@ public class DistributedISPrecisionHMM {
             nContVars = 500;
 
             seedIS = 111235236;
-            minimumSampleSize = 100;
+            minimumSampleSize = 1000;
 
             evidenceVarsRatio = 0.3;
 
-            nSamplesForLikelihood = 1000000;
+            nSamplesForLikelihood = 10000;
 
         }
         else {
@@ -80,8 +81,8 @@ public class DistributedISPrecisionHMM {
 
         }
 
-        final int numberOfRepetitions = 5;
-        final int numberOfSampleSizes = 4;
+        final int numberOfRepetitions = 3;
+        final int numberOfSampleSizes = 3;
 
         int[] sampleSizes = new int[numberOfSampleSizes];
         sampleSizes[0]=minimumSampleSize;
@@ -124,62 +125,33 @@ public class DistributedISPrecisionHMM {
              *********************************************/
 
             /*
-             *  RANDOM GENERATION OF A BAYESIAN NETWORK
+             *  HIDDEN MARKOV MODEL
              */
-            BayesianNetworkGenerator.setSeed(seedBN);
-            BayesianNetworkGenerator.setNumberOfMultinomialVars(nDiscreteVars, 2);
-            BayesianNetworkGenerator.setNumberOfGaussianVars(nContVars);
-            BayesianNetworkGenerator.setNumberOfLinks((int) (link2VarsRatio*(nDiscreteVars + nContVars)));
-            BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+            BayesianNetwork bn = hmm.getModel();
             System.out.println(bn);
 
 
             /*
-             *  RANDOM CHOICE OF A CONTINUOUS VARIABLE OF INTEREST
+             *  CHOOSE VARIABLES OF INTEREST FOR HMM: LAST TIME STEP CONTINUOUS VARS
              */
-            Random variablesChoiceRandom = new Random(seedBN + 1000);
 
-            List<Variable> variableList = bn.getVariables().getListOfVariables();
-            List<Variable> normalVariablesList = variableList.stream().filter(Variable::isNormal).collect(Collectors.toList());
+            List<Variable> varsOfInterest = new ArrayList<>();
+            varsOfInterest.add(bn.getVariables().getVariableByName("discreteHiddenVar_t4"));
 
-            int indexVarOfInterest = variablesChoiceRandom.nextInt(normalVariablesList.size());
-            Variable varOfInterest = normalVariablesList.get(indexVarOfInterest);
-
-            System.out.println("VARIABLE OF INTEREST: " + varOfInterest.getName() + "\n");
-
-            List<Variable> varsOfInterestList = new ArrayList<>();
-            varsOfInterestList.add(varOfInterest);
+            System.out.println("VARIABLE OF INTEREST: ");
+            varsOfInterest.stream().forEach(var -> System.out.println(var.getName()));
 
 
             /*
-             *  RANDOM GENERATION OF AN EVIDENCE (EXCLUDING VARS OF INTEREST)
+             *  VARS IN THE EVIDENCE IN THE HMM MODEL (CONTINUOUS VARS EXCLUDING THE LAST TIME STEP)
              */
-            int nVarsEvidence = (int) (evidenceVarsRatio * bn.getNumberOfVars());
-            System.out.println("Number of variables in the evidence: " + nVarsEvidence);
-            List<Variable> varsEvidence = new ArrayList<>();
 
-            while (varsEvidence.size() < nVarsEvidence) {
-                int varIndex = variablesChoiceRandom.nextInt(bn.getNumberOfVars());
-                Variable variable = bn.getVariables().getVariableById(varIndex);
-                if (!varsEvidence.contains(variable) && !variable.equals(varOfInterest)) {
-                    varsEvidence.add(variable);
-                }
-            }
+            Assignment evidence = hmm.generateEvidence();
+            List<Variable> varsEvidence = hmm.getVarsEvidence();
 
-            varsEvidence.sort((variable1, variable2) -> (variable1.getVarID() > variable2.getVarID() ? 1 : -1));
-
-//            System.out.println("\nVARIABLES IN THE EVIDENCE: ");
-//            varsEvidence.forEach(variable -> System.out.println(variable.getName()));
-
-            BayesianNetworkSampler bayesianNetworkSampler = new BayesianNetworkSampler(bn);
-            bayesianNetworkSampler.setSeed(variablesChoiceRandom.nextInt());
-            DataStream<DataInstance> fullSample = bayesianNetworkSampler.sampleToDataStream(1);
-
-            Assignment evidence = new HashMapAssignment(nVarsEvidence);
-            varsEvidence.forEach(variable -> evidence.setValue(variable, fullSample.stream().findFirst().get().getValue(variable)));
-
+            //evidence = new HashMapAssignment();
             System.out.println("EVIDENCE: ");
-            System.out.println(evidence.outputString(varsEvidence));
+            //System.out.println(evidence.outputString(varsEvidence));
 
 
 
@@ -198,6 +170,9 @@ public class DistributedISPrecisionHMM {
              *********************************************************************************/
 
             for (int ss = 0; ss < numberOfSampleSizes; ss++) {
+
+                Variable varOfInterest = varsOfInterest.get(0);
+
                 int currentSampleSize = sampleSizes[ss];
 
                 /*
@@ -208,17 +183,20 @@ public class DistributedISPrecisionHMM {
                 distributedIS.setSeed(seedIS+ss+rep);
                 distributedIS.setModel(bn);
                 distributedIS.setSampleSize(currentSampleSize);
-                distributedIS.setVariablesOfInterest(varsOfInterestList);
+                distributedIS.setVariablesOfInterest(varsOfInterest);
 
+                distributedIS.setEvidence(evidence);
 
                 // OBTAIN THE POSTERIOR AS A SINGLE GAUSSIAN
                 distributedIS.setGaussianMixturePosteriors(false);
+
                 distributedIS.runInference();
-                Normal varOfInterestGaussianDistribution = distributedIS.getPosterior(varOfInterest);
+                Multinomial varOfInterestGaussianDistribution = distributedIS.getPosterior(varOfInterest);
 
 
                 // OBTAIN THE POSTERIOR AS A GAUSSIAN MIXTURE
                 distributedIS.setGaussianMixturePosteriors(true);
+                distributedIS.setMixtureOfGaussiansInitialVariance(5);
 
                 // AND ALSO QUERY THE PROBABILITY OF THE VARIABLE BEING IN A CERTAIN INTERVAL
 //
@@ -235,7 +213,7 @@ public class DistributedISPrecisionHMM {
                 // GET THE POSTERIOR AS A GAUSSIANMIXTURE AND THE QUERY RESULT
 
 //                double probQuery = distributedIS.getQueryResult();
-                GaussianMixture varOfInterestGaussianMixtureDistribution = distributedIS.getPosterior(varOfInterest);
+                Multinomial varOfInterestGaussianMixtureDistribution = distributedIS.getPosterior(varOfInterest);
 
 
                 Function<Double,Double> posteriorGaussianDensity = (Function<Double,Double> & Serializable) varOfInterestGaussianDistribution::getProbability;
@@ -261,6 +239,26 @@ public class DistributedISPrecisionHMM {
                 double averageLikelihoodGaussianMixture = distributedIS.getQueryResult();
 
 
+
+
+                /*
+                 *  ESTIMATE LIKELIHOOD OF EACH POSTERIOR
+                 */
+                ImportanceSamplingCLG_new importanceSamplingCLG_new = new ImportanceSamplingCLG_new();
+                importanceSamplingCLG_new.setModel(bn);
+                importanceSamplingCLG_new.setSeed(seedIS+ss+rep);
+                importanceSamplingCLG_new.setSampleSize(currentSampleSize);
+                importanceSamplingCLG_new.setSampleSize(nSamplesForLikelihood);
+                importanceSamplingCLG_new.setGaussianMixturePosteriors(true);
+                importanceSamplingCLG_new.setVariablesOfInterest(varsOfInterest);
+
+                importanceSamplingCLG_new.setEvidence(evidence);
+
+                importanceSamplingCLG_new.setQuery(varOfInterest, posteriorGaussianDensity);
+                importanceSamplingCLG_new.runInference();
+                double averageLikelihoodGaussianCLG = distributedIS.getQueryResult();
+
+
 //                double averageLikelihoodGaussian = Arrays.stream(varOfInterestSample).map(sample1 -> Math.exp(varOfInterestGaussianDistribution.getLogProbability(sample1))).average().getAsDouble();
 //                double averageLikelihoodGaussianMixture = Arrays.stream(varOfInterestSample).map(sample1 -> Math.exp(varOfInterestGaussianMixtureDistribution.getLogProbability(sample1))).average().getAsDouble();
 
@@ -278,7 +276,7 @@ public class DistributedISPrecisionHMM {
 
 
                 System.out.println("Gaussian likelihood=         " + averageLikelihoodGaussian);
-                System.out.println("GaussianMixture likelihood=  " + averageLikelihoodGaussianMixture);
+                System.out.println("GaussianMixture likelihood=  " + averageLikelihoodGaussianCLG);
 
 
 
@@ -433,10 +431,10 @@ public class DistributedISPrecisionHMM {
             for (int i = 0; i < nStates; i++) {
                 for (int j = 0; j < nStates; j++) {
                     if(i==j) {
-                        probs_discreteHiddenVars[i][j] = 0.8;
+                        probs_discreteHiddenVars[i][j] = prob_keepState;
                     }
                     else {
-                        probs_discreteHiddenVars[i][j] = 0.2/(nStates-1);
+                        probs_discreteHiddenVars[i][j] = (1-prob_keepState)/(nStates-1);
                     }
                 }
             }
@@ -447,7 +445,7 @@ public class DistributedISPrecisionHMM {
             for (int i = 0; i < nGaussians; i++) {
                 for (int j = 0; j < nStates; j++) {
                     means[i][j] = -10+20*random.nextDouble();
-                    vars[i][j] = 3*random.nextDouble();
+                    vars[i][j] = random.nextDouble()+2;
                 }
             }
 
@@ -508,12 +506,12 @@ public class DistributedISPrecisionHMM {
 
             varsEvidence = this.bn.getVariables().getListOfVariables()
                     .stream()
-                    .filter(var -> !var.getName().contains("_t" + (nTimeSteps-1)) && var.isNormal())
+                    .filter(var -> !var.getName().contains("_t" + (nTimeSteps-1)) && !var.getName().contains("_t" + (nTimeSteps-2)) && var.isNormal())
                     .collect(Collectors.toList());
 
             varsInterest = this.bn.getVariables().getListOfVariables()
                     .stream()
-                    .filter(var -> var.getName().contains("_t" + (nTimeSteps-1)) && var.isNormal())
+                    .filter(var -> ( var.getName().contains("_t" + (nTimeSteps-1)) || var.getName().contains("_t" + (nTimeSteps-2)) ) && var.isNormal())
                     .collect(Collectors.toList());
         }
 
