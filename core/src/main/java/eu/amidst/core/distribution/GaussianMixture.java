@@ -20,10 +20,7 @@ package eu.amidst.core.distribution;
 import eu.amidst.core.exponentialfamily.EF_Normal;
 import eu.amidst.core.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.DoubleStream;
 
 //import eu.amidst.corestatic.variables.StaticVariables;
@@ -149,7 +146,8 @@ public class GaussianMixture extends UnivariateDistribution {
             prob=prob + this.coefficients[index] * normal.getProbability(value);
             index++;
         }
-        return Math.log(prob);
+        double logProb = Math.log(prob);
+        return Math.min(logProb,0);
     }
 
     /**
@@ -443,7 +441,7 @@ public class GaussianMixture extends UnivariateDistribution {
     public String toString() {
         String text = "";
         for(int k=0; k<coefficients.length; k++) {
-            text = text + String.format("%.10f", coefficients[k]) + " " + terms.get(k).toString();
+            text = text + String.format(Locale.US, "%.10f", coefficients[k]) + " " + terms.get(k).toString();
             if (k<coefficients.length-1) {
                 text = text + " + ";
             }
@@ -451,6 +449,22 @@ public class GaussianMixture extends UnivariateDistribution {
         return text;
     }
 
+    public String toStringRCode() {
+        String text = "gaussianMixtureDensity <- function(x) { return( \n";
+        for(int k=0; k<coefficients.length; k++) {
+            String componentText = "";
+            if(k!=0) {
+                componentText = componentText + " + ";
+            }
+            componentText = componentText + String.format(Locale.US, "%.10f", coefficients[k]) + " * dnorm(x, mean = " + String.format(Locale.US, "%.10f", terms.get(k).getMean()) +
+                    " , sd = sqrt(" + String.format(Locale.US, "%.10f", terms.get(k).getVariance()) + ")) \n";
+
+            text = text + componentText;
+        }
+
+        text = text + ") } \n";
+        return text;
+    }
     /*
     public static void main(String[] args) {
         Locale.setDefault(Locale.US);

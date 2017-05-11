@@ -138,9 +138,11 @@ public class DistributedImportanceSamplingCLG {
         final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         env.getConfig().setTaskCancellationTimeout(100000L);
 
+
         org.apache.flink.configuration.Configuration configuration = new Configuration();
         configuration.setLong(ConfigConstants.AKKA_ASK_TIMEOUT,100000);
         GlobalConfiguration.setDynamicProperties(configuration);
+        env.getConfig().disableSysoutLogging();
 
         int maxParallelism = env.getParallelism();
 
@@ -155,6 +157,7 @@ public class DistributedImportanceSamplingCLG {
         final int numberOfFlinkNodes = parallelism;
 
         env.setParallelism(numberOfFlinkNodes);
+        env.getConfig().disableSysoutLogging();
 
         System.out.println("Flink parallel nodes: " + numberOfFlinkNodes);
 
@@ -207,7 +210,7 @@ public class DistributedImportanceSamplingCLG {
             localImportanceSampling.setGaussianMixturePosteriors(useGaussianMixtures);
             localImportanceSampling.setMixtureOfGaussiansInitialVariance(mixtureOfGaussiansInitialVariance);
             localImportanceSampling.setMixtureOfGaussiansNoveltyRate(mixtureOfGaussiansNoveltyRate);
-            localImportanceSampling.setParallelMode(true);
+            localImportanceSampling.setParallelMode(false);
 
             localImportanceSampling.setEvidence(evidence);
 

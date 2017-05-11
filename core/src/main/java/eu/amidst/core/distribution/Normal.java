@@ -31,6 +31,7 @@ import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.variables.Variable;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Random;
 
 /**
@@ -182,6 +183,13 @@ public class Normal extends UnivariateDistribution implements Serializable {
     public String toString() {
         //return "Normal ("+this.getVariable().getName()+") [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
         return "Normal [ mu = " + this.getMean() + ", var = "+ this.getVariance() +" ]";
+    }
+
+    public String toStringRCode() {
+        String text = "normalDensity <- function(x) { return( \n";
+        text = text + " dnorm(x, mean = " + String.format(Locale.US, "%.10f", this.getMean()) + " , sd = sqrt(" + String.format(Locale.US, "%.10f", this.getVariance()) + ")) )} \n";
+
+        return text;
     }
 
     /**

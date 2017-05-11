@@ -136,7 +136,7 @@ public class DistributedISPrecisionHMM {
              */
 
             List<Variable> varsOfInterest = new ArrayList<>();
-            varsOfInterest.add(bn.getVariables().getVariableByName("discreteHiddenVar_t4"));
+            varsOfInterest.add(bn.getVariables().getVariableByName("GaussianVar0_t4"));
 
             System.out.println("VARIABLE OF INTEREST: ");
             varsOfInterest.stream().forEach(var -> System.out.println(var.getName()));
@@ -191,7 +191,7 @@ public class DistributedISPrecisionHMM {
                 distributedIS.setGaussianMixturePosteriors(false);
 
                 distributedIS.runInference();
-                Multinomial varOfInterestGaussianDistribution = distributedIS.getPosterior(varOfInterest);
+                Normal varOfInterestGaussianDistribution = distributedIS.getPosterior(varOfInterest);
 
 
                 // OBTAIN THE POSTERIOR AS A GAUSSIAN MIXTURE
@@ -213,11 +213,11 @@ public class DistributedISPrecisionHMM {
                 // GET THE POSTERIOR AS A GAUSSIANMIXTURE AND THE QUERY RESULT
 
 //                double probQuery = distributedIS.getQueryResult();
-                Multinomial varOfInterestGaussianMixtureDistribution = distributedIS.getPosterior(varOfInterest);
+                GaussianMixture varOfInterestGaussianMixtureDistribution = distributedIS.getPosterior(varOfInterest);
 
 
-                Function<Double,Double> posteriorGaussianDensity = (Function<Double,Double> & Serializable) varOfInterestGaussianDistribution::getProbability;
-                Function<Double,Double> posteriorGaussianMixtureDensity = (Function<Double,Double> & Serializable) varOfInterestGaussianMixtureDistribution::getProbability;
+                Function<Double,Double> posteriorGaussianDensity = (Function<Double,Double> & Serializable) (varOfInterestGaussianDistribution::getLogProbability);
+                Function<Double,Double> posteriorGaussianMixtureDensity = (Function<Double,Double> & Serializable) varOfInterestGaussianMixtureDistribution::getLogProbability;
 
 
                 /**********************************************************************************
@@ -276,7 +276,7 @@ public class DistributedISPrecisionHMM {
 
 
                 System.out.println("Gaussian likelihood=         " + averageLikelihoodGaussian);
-                System.out.println("GaussianMixture likelihood=  " + averageLikelihoodGaussianCLG);
+                System.out.println("GaussianMixture likelihood=  " + averageLikelihoodGaussianMixture);
 
 
 
@@ -375,7 +375,6 @@ public class DistributedISPrecisionHMM {
         private Random random;
         private List<Variable> varsEvidence;
         private List<Variable> varsInterest;
-
 
         public void setnStates(int nStates) {
             this.nStates = nStates;
