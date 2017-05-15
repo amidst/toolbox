@@ -13,11 +13,9 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 import java.io.File;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -27,21 +25,33 @@ public class DistributedISPrecisionHMM_2 {
 
     public static void main(String[] args) throws Exception {
 
+        int nTimeSteps = 10;
+        int nTimesEvidence = 5;
+        int sampleSizeIS = 100000;
+
+
+        if (args.length==3) {
+            nTimeSteps = Integer.parseInt(args[0]);
+            nTimesEvidence = Integer.parseInt(args[1]);
+            sampleSizeIS = Integer.parseInt(args[2]);
+        }
+
         String sampleOutputFile = "/Users/dario/Desktop/salidaGaussian.csv";
-        String sampleOutputFileGM = "/Users/dario/Desktop/salidaGaussianMixture.csv";
+//        String sampleOutputFileGM = "/Users/dario/Desktop/salidaGaussianMixture.csv";
+
 
         File outputFile = new File(sampleOutputFile);
         outputFile.delete();
 
-        outputFile = new File(sampleOutputFileGM);
-        outputFile.delete();
+//        outputFile = new File(sampleOutputFileGM);
+//        outputFile.delete();
 
-        int sampleSizeIS;
 
-        int nSamplesForLikelihood;
+//        int nSamplesForLikelihood;
 
         ExpandedHiddenMarkovModel hmm = new ExpandedHiddenMarkovModel();
-        hmm.setnTimeSteps(10);
+        hmm.setnTimeSteps(nTimeSteps);
+        hmm.setnTimeStepsEvidence(nTimesEvidence);
         hmm.setnStates(3);
         hmm.setnGaussians(1);
         hmm.buildModel();
@@ -53,12 +63,11 @@ public class DistributedISPrecisionHMM_2 {
         System.out.println(hmm_evidence.outputString(hmm.getVarsEvidence()));
 
 
-        sampleSizeIS = 100000;
-        nSamplesForLikelihood = 100000;
-
-
-        double likelihood_Gaussian;
-        double likelihood_GaussianMixture;
+//        nSamplesForLikelihood = 100000;
+//
+//
+//        double likelihood_Gaussian;
+//        double likelihood_GaussianMixture;
 
 
 
@@ -115,7 +124,7 @@ public class DistributedISPrecisionHMM_2 {
         impSamplingLocal.setModel(bn);
         impSamplingLocal.setSampleSize(currentSampleSize);
         impSamplingLocal.setVariablesOfInterest(varsOfInterest);
-        impSamplingLocal.setParallelMode(false);
+        impSamplingLocal.setParallelMode(true);
         impSamplingLocal.setSaveSampleToFile(true, sampleOutputFile);
         impSamplingLocal.setEvidence(evidence);
 
@@ -127,20 +136,20 @@ public class DistributedISPrecisionHMM_2 {
 
 
         // OBTAIN THE POSTERIOR AS A GAUSSIAN MIXTURE AND THE QUERY RESULT
-        impSamplingLocal.setSeed(0);
-        impSamplingLocal.setGaussianMixturePosteriors(true);
-        impSamplingLocal.setMixtureOfGaussiansInitialVariance(50);
-        impSamplingLocal.setMixtureOfGaussiansNoveltyRate(0.005);
-        impSamplingLocal.setSaveSampleToFile(true, sampleOutputFileGM);
-        impSamplingLocal.runInference();
-        GaussianMixture varOfInterestGaussianMixtureDistribution = impSamplingLocal.getPosterior(varOfInterest);
-
-
-        impSamplingLocal.setSaveSampleToFile(false, "");
-
-
-        Function<Double,Double> posteriorGaussianDensity = (Function<Double,Double> & Serializable) ( x -> -varOfInterestGaussianDistribution.getLogProbability(x));
-        Function<Double,Double> posteriorGaussianMixtureDensity = (Function<Double,Double> & Serializable) ( x -> -varOfInterestGaussianMixtureDistribution.getLogProbability(x));
+//        impSamplingLocal.setSeed(0);
+//        impSamplingLocal.setGaussianMixturePosteriors(true);
+//        impSamplingLocal.setMixtureOfGaussiansInitialVariance(50);
+//        impSamplingLocal.setMixtureOfGaussiansNoveltyRate(0.005);
+//        impSamplingLocal.setSaveSampleToFile(true, sampleOutputFileGM);
+//        impSamplingLocal.runInference();
+//        GaussianMixture varOfInterestGaussianMixtureDistribution = impSamplingLocal.getPosterior(varOfInterest);
+//
+//
+//        impSamplingLocal.setSaveSampleToFile(false, "");
+//
+//
+//        Function<Double,Double> posteriorGaussianDensity = (Function<Double,Double> & Serializable) ( x -> -varOfInterestGaussianDistribution.getLogProbability(x));
+//        Function<Double,Double> posteriorGaussianMixtureDensity = (Function<Double,Double> & Serializable) ( x -> -varOfInterestGaussianMixtureDistribution.getLogProbability(x));
 
 
         /**********************************************************************************
@@ -150,32 +159,32 @@ public class DistributedISPrecisionHMM_2 {
         /*
          *  ESTIMATE LIKELIHOOD OF EACH POSTERIOR
          */
-        impSamplingLocal.setSampleSize(nSamplesForLikelihood);
-        impSamplingLocal.setGaussianMixturePosteriors(false);
-
-        impSamplingLocal.setQuery(varOfInterest, posteriorGaussianDensity);
-        impSamplingLocal.runInference();
-        likelihood_Gaussian = impSamplingLocal.getQueryResult();
-
-        impSamplingLocal.setQuery(varOfInterest, posteriorGaussianMixtureDensity);
-        impSamplingLocal.runInference();
-        likelihood_GaussianMixture = impSamplingLocal.getQueryResult();
-
-
-
-        System.out.println("\n\nVar: " + varOfInterest.getName() + ", conditional=" + bn.getConditionalDistribution(varOfInterest));
-
-        System.out.println("SAMPLE SIZE: " + sampleSizeIS);
-
-        varOfInterestGaussianMixtureDistribution.sortByWeight();
-        System.out.println("Gaussian posterior=        " + varOfInterestGaussianDistribution.toString());
-        System.out.println("GaussianMixture posterior= " + varOfInterestGaussianMixtureDistribution.toString());
-
-        System.out.println(varOfInterestGaussianDistribution.toStringRCode());
-        System.out.println(varOfInterestGaussianMixtureDistribution.toStringRCode());
-
-        System.out.println("Gaussian likelihood=         " + likelihood_Gaussian);
-        System.out.println("GaussianMixture likelihood=  " + likelihood_GaussianMixture);
+//        impSamplingLocal.setSampleSize(nSamplesForLikelihood);
+//        impSamplingLocal.setGaussianMixturePosteriors(false);
+//
+//        impSamplingLocal.setQuery(varOfInterest, posteriorGaussianDensity);
+//        impSamplingLocal.runInference();
+//        likelihood_Gaussian = impSamplingLocal.getQueryResult();
+//
+//        impSamplingLocal.setQuery(varOfInterest, posteriorGaussianMixtureDensity);
+//        impSamplingLocal.runInference();
+//        likelihood_GaussianMixture = impSamplingLocal.getQueryResult();
+//
+//
+//
+//        System.out.println("\n\nVar: " + varOfInterest.getName() + ", conditional=" + bn.getConditionalDistribution(varOfInterest));
+//
+//        System.out.println("SAMPLE SIZE: " + sampleSizeIS);
+//
+//        varOfInterestGaussianMixtureDistribution.sortByWeight();
+//        System.out.println("Gaussian posterior=        " + varOfInterestGaussianDistribution.toString());
+//        System.out.println("GaussianMixture posterior= " + varOfInterestGaussianMixtureDistribution.toString());
+//
+//        System.out.println(varOfInterestGaussianDistribution.toStringRCode());
+//        System.out.println(varOfInterestGaussianMixtureDistribution.toStringRCode());
+//
+//        System.out.println("Gaussian likelihood=         " + likelihood_Gaussian);
+//        System.out.println("GaussianMixture likelihood=  " + likelihood_GaussianMixture);
 
     }
 
@@ -185,6 +194,7 @@ public class DistributedISPrecisionHMM_2 {
         private int nGaussians = 1;
 
         private int nTimeSteps = 10;
+        private int nTimeStepsEvidence = 8;
 
         private Variables variables;
         private DAG dag;
@@ -205,6 +215,10 @@ public class DistributedISPrecisionHMM_2 {
 
         public void setnTimeSteps(int nTimeSteps) {
             this.nTimeSteps = nTimeSteps;
+        }
+
+        public void setnTimeStepsEvidence(int nTimeStepsEvidence) {
+            this.nTimeStepsEvidence = nTimeStepsEvidence;
         }
 
         public int getnTimeSteps() {
@@ -322,15 +336,16 @@ public class DistributedISPrecisionHMM_2 {
                 }
             }
 
-            varsEvidence = this.bn.getVariables().getListOfVariables()
+            List<Variable> varsContinuous;
+
+            varsContinuous = this.bn.getVariables().getListOfVariables()
                     .stream()
-                    .filter(var -> !var.getName().contains("_t" + (nTimeSteps-1)) && !var.getName().contains("_t" + (nTimeSteps-2)) && var.isNormal())
+                    .filter(var -> var.isNormal())
                     .collect(Collectors.toList());
 
-            varsInterest = this.bn.getVariables().getListOfVariables()
-                    .stream()
-                    .filter(var -> ( var.getName().contains("_t" + (nTimeSteps-1)) || var.getName().contains("_t" + (nTimeSteps-2)) ) && var.isNormal())
-                    .collect(Collectors.toList());
+            varsEvidence = varsContinuous.subList(0, nTimeStepsEvidence);
+
+            varsInterest = varsContinuous.subList(nTimeSteps-1, nTimeSteps);
         }
 
         public Assignment generateEvidence() {

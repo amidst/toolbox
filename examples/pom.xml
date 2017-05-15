@@ -121,6 +121,11 @@
             <artifactId>standardmodels</artifactId>
             <version>${AMIDSTver}</version>
         </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>standardmodels</artifactId>
+            <version>${AMIDSTver}</version>
+        </dependency>
 
     </dependencies>
 

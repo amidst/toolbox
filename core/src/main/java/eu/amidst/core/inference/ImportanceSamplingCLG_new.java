@@ -1134,7 +1134,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
         double logSumWeights = weightedSampleStream
 
                 .mapToObj( i -> generateSample(randomGenerator.current()))
-                .filter(w -> (maxLogWeight-w.getWeight())<100000)
+                .filter(w -> (maxLogWeight-w.getWeight())<10)
                 .mapToDouble(weightedSample ->{
                     updatePosteriorDistributions(weightedSample.getAssignment(),weightedSample.getWeight(),0);
                     return weightedSample.getWeight();
