@@ -27,13 +27,15 @@ public class DistributedISPrecisionHMM_2 {
 
         int nTimeSteps = 10;
         int nTimesEvidence = 5;
+        int nStatesHiddenVar = 3;
         int sampleSizeIS = 100000;
 
 
-        if (args.length==3) {
+        if (args.length==4) {
             nTimeSteps = Integer.parseInt(args[0]);
             nTimesEvidence = Integer.parseInt(args[1]);
-            sampleSizeIS = Integer.parseInt(args[2]);
+            nStatesHiddenVar = Integer.parseInt(args[2]);
+            sampleSizeIS = (int)Double.parseDouble(args[3]);
         }
 
         String sampleOutputFile = "/Users/dario/Desktop/salidaGaussian.csv";
@@ -50,10 +52,11 @@ public class DistributedISPrecisionHMM_2 {
 //        int nSamplesForLikelihood;
 
         ExpandedHiddenMarkovModel hmm = new ExpandedHiddenMarkovModel();
+        hmm.setnStates(nStatesHiddenVar);
+        hmm.setnGaussians(1);
         hmm.setnTimeSteps(nTimeSteps);
         hmm.setnTimeStepsEvidence(nTimesEvidence);
-        hmm.setnStates(3);
-        hmm.setnGaussians(1);
+
         hmm.buildModel();
 
         System.out.println(hmm.getModel());
@@ -79,7 +82,8 @@ public class DistributedISPrecisionHMM_2 {
          *  HIDDEN MARKOV MODEL
          */
         BayesianNetwork bn = hmm.getModel();
-        System.out.println(bn);
+        System.out.println("BN with " + nTimeSteps + " time steps");
+        //System.out.println(bn);
 
 
         /*

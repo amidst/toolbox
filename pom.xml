@@ -7,6 +7,33 @@
     <groupId>eu.amidst</groupId>
     <artifactId>AmidstToolbox</artifactId>
     <version>${AMIDSTver}</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-java</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>flinklink</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.amidst</groupId>
+            <artifactId>core</artifactId>
+            <version>0.5.0</version>
+        </dependency>
+    </dependencies>
 
     <name>AmidstToolbox</name>
 
