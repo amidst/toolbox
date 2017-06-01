@@ -1128,7 +1128,7 @@ public class ImportanceSamplingCLG_new extends ImportanceSampling {
 //                    .mapToObj(i -> generateSample(randomGenerator.current()));
 //        }
 
-        double maxLogWeight = IntStream.range(0, 1000).mapToObj(k -> generateSample(randomGenerator.current())).mapToDouble(w -> w.getWeight()).max().getAsDouble();
+        double maxLogWeight = IntStream.range(0, 10000).mapToObj(k -> generateSample(randomGenerator.current())).mapToDouble(w -> w.getWeight()).max().getAsDouble();
 
 
         double logSumWeights = weightedSampleStream

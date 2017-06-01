@@ -25,9 +25,11 @@
         <version>${AMIDSTver}</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>ida2016</artifactId>
+    <version>${AMIDSTver}</version>
+
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
