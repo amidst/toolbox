@@ -135,32 +135,30 @@ public interface DataStream<E extends DataInstance> extends Iterable<E> {
      */
     default <R extends DataInstance> DataStream<R> map(Function<? super E, ? extends R> mapper){
 
-        DataStream<E> initialStream = this;
-
         return new DataStream<R>() {
             @Override
             public Attributes getAttributes() {
-                return initialStream.getAttributes();
+                return DataStream.this.getAttributes();
             }
 
             @Override
             public void close() {
-                initialStream.close();
+                DataStream.this.close();
             }
 
             @Override
             public boolean isRestartable() {
-                return initialStream.isRestartable();
+                return DataStream.this.isRestartable();
             }
 
             @Override
             public void restart() {
-                initialStream.restart();
+                DataStream.this.restart();
             }
 
             @Override
             public Stream<R> stream() {
-                return ((Stream<E>)initialStream.stream()).map(mapper);
+                return ((Stream<E>)DataStream.this.stream()).map(mapper);
             }
         };
     }

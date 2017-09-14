@@ -80,7 +80,7 @@
         </developer>
         <developer>
             <name>Antonio Fernandez Alvarez</name>
-            <email>afalvarez@bcc.es</email>
+            <email>afalvarez@eu.amidst.dVMPJournalExtensionJuly2016.bcc.es</email>
             <organization>Banco Cooperativo de Credito, Spain</organization>
             <organizationUrl>https://github.com/afalvarez</organizationUrl>
         </developer>
@@ -112,7 +112,6 @@
 
 
     <modules>
-
         <module>module-all</module>
         <module>core</module>
         <module>core-dynamic</module>
@@ -140,8 +139,8 @@
         <module>extensions/reviewMeeting2016</module>
         <module>extensions/scai2015</module>
         <module>extensions/uai2016</module>
-
-
+        <module>extensions/dVMP-JournalExtension-July2016</module>
+        <module>extensions/fractionalUpdating-August2016</module>
     </modules>
 
 
@@ -164,7 +163,7 @@
             </plugin>
             
             
-            <!-- Uncomment this text to build without running unit tests.-->
+            <!-- Uncomment this text to build without running unit tests.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -172,7 +171,7 @@
                     <forkMode>pertest</forkMode>
                     <argLine>-Xms1g -Xmx2g</argLine>
                 </configuration>
-            </plugin>
+            </plugin>-->
 
             <!-- this plugin builds an executable jar with dependencies -->
             <plugin>

@@ -46,6 +46,9 @@ public class DataRowWeka implements DataRow{
         atts = atts_;
         data = new double[atts.getNumberOfAttributes()];
         String[] parts = line.split(",");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].trim();
+        }
         if (parts.length!=atts.getNumberOfAttributes()) {
             throw new IllegalStateException("The number of columns does not match the number of attributes.");
         }

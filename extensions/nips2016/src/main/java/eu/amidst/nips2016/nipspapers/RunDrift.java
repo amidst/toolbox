@@ -108,9 +108,9 @@ public class RunDrift {
 
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/";
-        String arrffName = "docword.nips.reduced.arff";
-        int ntopics = 2;
-        int niter = 1000;
+        String arrffName = "docword.nips.arff";
+        int ntopics = 5;
+        int niter = 100;
         double threshold = 0.01;
         int docsPerBatch = 150;
 
@@ -153,7 +153,7 @@ public class RunDrift {
 
             svb.updateModelWithConceptDrift(batch);
 
-            fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaValue()+"\n");
+            fw.write(log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaMomentParameter()+"\n");
             fw.flush();
         }
 */
@@ -169,7 +169,7 @@ public class RunDrift {
             double log = 0;
             int nwords = 0;
 
-            processBatch(batches.get(i));
+            //processBatch(batches.get(i));
             /*for (int j = i+1; j < (i+1+1) && j< batches.size(); j++) {
                 log += svb.predictedLogLikelihood(batches.get(j));
                 nwords +=nwords(batches.get(j));
@@ -177,7 +177,7 @@ public class RunDrift {
 
             svb.updateModelWithConceptDrift(batches.get(i));
 
-            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaValue()+"\t"+svb.getPlateuStructure().getPosteriorSampleSize()+"\n");
+            fw.write(log/nwords+"\t"+nwords+"\t"+svb.getLambdaMomentParameter()+"\t"+svb.getPlateuStructure().getPosteriorSampleSize()+"\n");
             fw.flush();
 
 
@@ -189,7 +189,7 @@ public class RunDrift {
             System.out.println();
             System.out.println();
 
-            System.out.println("ALPHA:" + svb.getLambdaValue());
+            System.out.println("ALPHA:" + svb.getLambdaMomentParameter());
 
             System.out.println("Sample Size:" + svb.getPlateuStructure().getPosteriorSampleSize());
 

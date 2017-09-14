@@ -103,7 +103,7 @@ public class EF_SparseMultinomial extends EF_UnivariateDistribution {
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics vec = this.createZeroSufficientStatistics();
-        vec.set((int) val, 1);
+        vec.set((int) val%this.var.getNumberOfStates(), 1);
         return vec;
     }
 

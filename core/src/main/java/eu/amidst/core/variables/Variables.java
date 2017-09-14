@@ -236,7 +236,7 @@ public class Variables implements Iterable<Variable>, Serializable {
         VariableBuilder variableBuilder = new VariableBuilder();
         variableBuilder.setAttribute(var.getAttribute());
         variableBuilder.setDistributionType(DistributionTypeEnum.INDICATOR);
-        String newVarName = var.getName()+"_INDICATOR";
+            String newVarName = var.getName()+"_INDICATOR";
         variableBuilder.setName(newVarName);
         variableBuilder.setObservable(true);
         variableBuilder.setStateSpaceType(new FiniteStateSpace(Arrays.asList("Zero","NonZero")));

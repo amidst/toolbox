@@ -17,7 +17,7 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.learning.parametric.bayesian.*;
+import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.utils.DataPosteriorAssignment;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
@@ -28,6 +28,7 @@ import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.flinklink.core.data.DataFlink;
+import eu.amidst.flinklink.core.learning.parametric.utils.GlobalvsLocalUpdate;
 import eu.amidst.flinklink.core.learning.parametric.utils.IdenitifableModelling;
 import eu.amidst.flinklink.core.learning.parametric.utils.ParameterIdentifiableModel;
 import eu.amidst.flinklink.core.learning.parametric.utils.VMPParameterv1;
@@ -50,7 +51,6 @@ import java.io.Serializable;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -70,6 +70,8 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
     public static String PRIOR="PRIOR";
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
+
+    private static boolean INITIALIZE = false;
 
     /**
      * Represents the directed acyclic graph {@link DAG}.
@@ -299,6 +301,8 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             this.svb.applyTransition();
 
         }catch(Exception ex){
+            System.out.println(ex.getMessage().toString());
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -433,22 +437,42 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0)
-                this.svb.getPlateuStructure().setVmp(new VMP());
+            if (INITIALIZE && superstep==0) {
+                VMP vmp = new VMP();
+                vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
+                vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
+                vmp.setTestELBO(this.svb.getPlateuStructure().getVMP().isOutput());
+                this.svb.getPlateuStructure().setVmp(vmp);
+            }
 
+            if (INITIALIZE && superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(true);
+            }
+
+            if (INITIALIZE && superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+                ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
+            }
+            
             svb.initLearning();
 
-            Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
+            CompoundVector newVector = (CompoundVector)getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName).iterator().next();
 
-            //if(updatedPosterior==null)
-                updatedPosterior = collection.iterator().next();
-            /*else{
-                double learningRate = 0.5;
-                updatedPosterior.multiplyBy(1-learningRate);
-                CompoundVector update= collection.iterator().next();
-                update.multiplyBy(learningRate);
-                updatedPosterior.sum(update);
-            }*/
+            if (superstep>1) {
+                final int[] count = new int[1];
+                count[0] = 0;
+
+                svb.getPlateuStructure()
+                        .getNonReplictedNodes()
+                        .peek(node ->
+                                count[0]++)
+                        .filter(node ->
+                                this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep-1))
+                        .forEach(node ->
+                                updatedPosterior.setVectorByPosition(count[0] - 1, newVector.getVectorByPosition(count[0]-1))
+                        );
+            }else{
+                updatedPosterior=newVector;
+            }
 
 
             if (prior!=null) {
@@ -562,12 +586,12 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
 
-
+/*
             if (iteration==1)
                 return false;
 
             iteration--;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 
@@ -636,7 +660,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
         public boolean isConverged(int iteration, DoubleValue value) {
 
 
-
+/*
             if (iteration==1)
                 return false;
 
@@ -646,7 +670,7 @@ public class dVMPv1 implements BayesianParameterLearningAlgorithm, Serializable 
                 return false;
 
             iteration= iteration/epochs;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 

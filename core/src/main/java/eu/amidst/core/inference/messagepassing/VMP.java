@@ -119,6 +119,7 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
 
 
         double percentage = 100*Math.abs(newelbo - local_elbo)/Math.abs(local_elbo);
+
         if ( percentage < threshold || local_iter>this.getMaxIter()) {
             convergence = true;
         }

@@ -186,7 +186,7 @@ public class CajaMarExperiments {
         writerMean.println(means);
 
 
-        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaValue());
+        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaMomentParameter());
 
     }
 
@@ -265,7 +265,7 @@ public class CajaMarExperiments {
         writerMean.flush();
 
 
-        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaValue());
+        writerLambda.println(currentMonth+"\t"+driftSVB.getLambdaMomentParameter());
         writerLambda.flush();
 
     }

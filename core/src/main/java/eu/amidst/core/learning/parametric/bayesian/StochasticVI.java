@@ -16,7 +16,6 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.distribution.UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.NaturalParameters;
-import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.learning.parametric.bayesian.utils.DataPosterior;
 import eu.amidst.core.learning.parametric.bayesian.utils.PlateuStructure;
 import eu.amidst.core.learning.parametric.bayesian.utils.TransitionMethod;
@@ -74,8 +73,12 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
     private CompoundVector initialPosterior;
     private CompoundVector currentParam;
     private int iteration;
+    private boolean fixedStepSize =false;
 
-    private boolean firstBatch = true;
+
+    public void setFixedStepSize(boolean fixedStepSize) {
+        this.fixedStepSize = fixedStepSize;
+    }
 
     public int getBatchSize() {
         return batchSize;
@@ -93,7 +96,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.timiLimit = seconds;
     }
 
-    public void setDataSetSize(long dataSetSize) {
+    public void setDataSetSize(int dataSetSize) {
         this.dataSetSize = dataSetSize;
     }
 
@@ -102,12 +105,16 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.svb.setNonSequentialModel(true);
     }
 
-    public void setVMPOnFirstBatch(boolean firstBatch) {
-        this.firstBatch = firstBatch;
-    }
-
     public void setPlateuStructure(PlateuStructure plateuStructure){
         this.svb.setPlateuStructure(plateuStructure);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void randomInitialize() {
+        this.svb.randomInitialize();
     }
 
     public void setTransitionMethod(TransitionMethod transitionMethod){
@@ -155,60 +162,20 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
 
     }
 
-    private void updateFirstBatch(DataOnMemory<DataInstance> firstBatch){
-
-        //We perform full VMP on the first batch
-        this.svb.getPlateuStructure().setVmp(new VMP());
-        this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
-        this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
-        this.svb.setDAG(this.dag);
-        this.svb.setWindowsSize(batchSize);
-        this.svb.initLearning(); //Init learning is peformed in each mapper.
-
-
-        initialPosterior = Serialization.deepCopy(this.svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
-        initialPosterior.sum(prior);
-
-        this.svb.updateNaturalParameterPosteriors(initialPosterior);
-
-        this.svb.updateModel(firstBatch);
-
-        currentParam =  Serialization.deepCopy(svb.getPlateuStructure().getPlateauNaturalParameterPosterior());
-
-
-        //We set new VMP
-
-        VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(this.svb.getPlateuStructure());
-        this.svb.getPlateuStructure().setVmp(vmpLocalUpdates);
-        this.svb.getPlateuStructure().getVMP().setMaxIter(this.maximumLocalIterations);
-        this.svb.getPlateuStructure().getVMP().setThreshold(this.localThreshold);
-        this.svb.setDAG(this.dag);
-        this.svb.setWindowsSize(batchSize);
-        this.svb.initLearning(); //Init learning is peformed in each mapper.
-
-        prior = svb.getNaturalParameterPrior();
-
-        this.svb.updateNaturalParameterPosteriors(currentParam);
-
-        iteration=0;
-    }
-
     @Override
     public double updateModel(DataOnMemory<DataInstance> batch) {
 
-        if (firstBatch) {
-            this.updateFirstBatch(batch);
-            firstBatch = false;
-        }
-
-
         NaturalParameters newParam = svb.updateModelOnBatchParallel(batch).getVector();
 
-        newParam.multiplyBy(this.dataSetSize/(double)this.batchSize);
+        newParam.multiplyBy(this.dataSetSize/(double)batch.getNumberOfDataInstances());
         newParam.sum(prior);
 
-        double stepSize = Math.pow(1+ iteration,-learningFactor);
-
+        double stepSize = 0;
+        if (this.fixedStepSize){
+            stepSize = learningFactor;
+        }else {
+            stepSize = Math.pow(1 + iteration, -learningFactor);
+        }
         newParam.multiplyBy(stepSize);
 
         currentParam.multiplyBy((1-stepSize));

@@ -62,7 +62,7 @@ public class StochasticVIExample {
 
         //Specific parameters for the algorithm
         ((StochasticVI)learningAlgorithmFlink).setLearningFactor(0.7);
-        ((StochasticVI)learningAlgorithmFlink).setDataSetSize(dataFlink.getDataSet().count());
+        ((StochasticVI)learningAlgorithmFlink).setDataSetSize((int) dataFlink.getDataSet().count());
 
 
         //Print the learnt BN

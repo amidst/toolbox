@@ -275,14 +275,31 @@ public class ParallelSVB implements BayesianParameterLearningAlgorithm{
         throw new UnsupportedOperationException("Method not implemented");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public double predictedLogLikelihood(DataOnMemory<DataInstance> batch) {
         return this.SVBEngine.predictedLogLikelihood(batch);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setPlateuStructure(PlateuStructure plateuStructure) {
         this.SVBEngine.setPlateuStructure(plateuStructure);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void randomInitialize() {
+        this.getSVBEngine().randomInitialize();
+        for (int i = 0; i < this.svbEngines.length; i++) {
+            this.svbEngines[i].randomInitialize();
+        }
     }
 
     /**

@@ -187,7 +187,7 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
      * @param logNormalizer, the logNormalizer of the Q distribution.
      * @return A positive double value
      */
-    public double kl(NaturalParameters naturalParameters, double logNormalizer){
+    public double  kl(NaturalParameters naturalParameters, double logNormalizer){
         double kl = 0;
         NaturalParameters copy = this.createZeroNaturalParameters();
         copy.copy(this.naturalParameters);

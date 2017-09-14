@@ -69,6 +69,7 @@ public class RunPopulationVB {
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
 
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        plateauLDA.setGlobalUpdate(false);
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
 
