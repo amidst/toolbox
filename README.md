@@ -1,8 +1,8 @@
 # AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
-v.0.6.2
+v.0.6.3
 
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
-[![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=develop)](https://travis-ci.org/amidst/toolbox)
+[![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=release-0.6.3)](https://travis-ci.org/amidst/toolbox)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/71e9ce7f576e473fa7f4c6846293e9d6)](https://www.codacy.com/app/rafacabanas/toolbox?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amidst/toolbox&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
