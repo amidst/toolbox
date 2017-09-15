@@ -94,7 +94,7 @@ public class RunDriftSVB {
 
                 svb.updateModelWithConceptDrift(batch);
 
-                fw.write(years[i]+"\t"+log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaValue()+"\n");
+                fw.write(years[i]+"\t"+log/nwords(batch)+"\t"+nwords(batch)+"\t"+svb.getLambdaMomentParameter()+"\n");
                 fw.flush();
 
             }

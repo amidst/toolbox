@@ -40,7 +40,7 @@ public class EF_Gamma extends EF_UnivariateDistribution {
     public static final int LOGX = 0;
     public static final int INVX = 1;
 
-    public static double PRECISION_LIMIT = 1000000;
+    public static double PRECISION_LIMIT = 10;
 
     /**
      * Creates a new EF_Gamma distribution, i.e., Gamma(1,1), for a given {@link Variable} object.
@@ -192,7 +192,9 @@ public class EF_Gamma extends EF_UnivariateDistribution {
      */
     @Override
     public void fixNumericalInstability() {
-        /*double alpha = this.naturalParameters.get(0) + 1;
+
+        /*
+        double alpha = this.naturalParameters.get(0) + 1;
         double beta = -this.naturalParameters.get(1);
 
 

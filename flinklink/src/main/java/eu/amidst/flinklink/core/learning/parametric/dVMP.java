@@ -76,6 +76,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
     public static String SVB="SVB";
     public static String LATENT_VARS="LATENT_VARS";
 
+
+    private static boolean INITIALIZE = false;
     /**
      * Represents the directed acyclic graph {@link DAG}.
      */
@@ -103,10 +105,15 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     Function2<DataFlink<DataInstance>,Integer,DataSet<DataOnMemory<DataInstance>>> batchConverter = ConversionToBatches::toBatches;
 
+    double learningRate = 1.0;
+
     public dVMP(){
         this.svb = new SVB();
     }
 
+    public void setLearningRate(double learningRate) {
+        this.learningRate = learningRate;
+    }
 
     public void setBatchConverter(Function2<DataFlink<DataInstance>, Integer, DataSet<DataOnMemory<DataInstance>>> batchConverter) {
         this.batchConverter = batchConverter;
@@ -316,6 +323,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             this.svb.applyTransition();
 
         }catch(Exception ex){
+            System.out.println(ex.getMessage().toString());
+            ex.printStackTrace();
             throw new RuntimeException(ex.getMessage());
         }
 
@@ -391,24 +400,32 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
         boolean randomStart;
 
+        double learningRate = 1.0;
+
         public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling) {
             this.randomStart = randomStart;
             this.idenitifableModelling = idenitifableModelling;
         }
 
+        public ParallelVBMap(boolean randomStart, IdenitifableModelling idenitifableModelling, double learningRate) {
+            this.randomStart = randomStart;
+            this.idenitifableModelling = idenitifableModelling;
+            this.learningRate = learningRate;
+        }
 
         @Override
         public CompoundVector map(DataOnMemory<DataInstance> dataBatch) throws Exception {
 
             if (dataBatch.getNumberOfDataInstances()==0){
                 elbo.aggregate(basedELBO);
+                System.out.println(basedELBO);
                 return prior;//this.svb.getNaturalParameterPrior();
             }else {
 
                 this.svb.updateNaturalParameterPosteriors(updatedPosterior);
 
                 svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
-                svb.setOutput(false);
+                svb.setOutput(true);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
                 svb.setOutput(true);
 
@@ -452,7 +469,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             bnName = parameters.getString(BN_NAME, "");
             svb = Serialization.deserializeObject(parameters.getBytes(SVB, null));
             int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-            if (superstep==0) {
+            if (INITIALIZE && superstep==0) {
                 VMP vmp = new VMP();
                 vmp.setMaxIter(this.svb.getPlateuStructure().getVMP().getMaxIter());
                 vmp.setThreshold(this.svb.getPlateuStructure().getVMP().getThreshold());
@@ -461,11 +478,11 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
             }
 
-            if (superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+            if (INITIALIZE && superstep==0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
                 ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(true);
             }
 
-            if (superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
+            if (INITIALIZE && superstep>0 && GlobalvsLocalUpdate.class.isAssignableFrom(this.svb.getPlateuStructure().getClass())){
                 ((GlobalvsLocalUpdate)this.svb.getPlateuStructure()).setGlobalUpdate(false);
             }
 
@@ -473,15 +490,14 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
             Collection<CompoundVector> collection = getRuntimeContext().getBroadcastVariable("VB_PARAMS_" + bnName);
 
-            //if(updatedPosterior==null)
+            if(updatedPosterior==null || learningRate==1.0)
                 updatedPosterior = collection.iterator().next();
-            /*else{
-                double learningRate = 0.5;
+            else{
                 updatedPosterior.multiplyBy(1-learningRate);
                 CompoundVector update= collection.iterator().next();
                 update.multiplyBy(learningRate);
                 updatedPosterior.sum(update);
-            }*/
+            }
 
 
             if (prior!=null) {
@@ -510,6 +526,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
 
             elbo = getIterationRuntimeContext().getIterationAggregator("ELBO_"+bnName);
+
+            this.svb.setNonSequentialModel(true);
 
         }
     }
@@ -595,12 +613,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
 
-
+/*
             if (iteration==1)
                 return false;
 
             iteration--;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 
@@ -622,8 +640,8 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
             }else if (percentage<0 && percentage < -threshold){
                 logger.info("Global bound is not monotonically increasing: {},{},{}<{}",iteration, df.format(
                         percentage), df.format(value.getValue()), df.format(previousELBO));
-                //throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
-                //        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
+//                throw new IllegalStateException("Global bound is not monotonically increasing: "+ iteration +","+
+//                        df.format(percentage) +"," + df.format(value.getValue()) +" < " + df.format(previousELBO));
                 System.out.println("Global bound is not monotonically increasing: "+ iteration +", "+ percentage +
                  ", "+ (value.getValue() +">" + previousELBO));
                 this.previousELBO=value.getValue();
@@ -666,12 +684,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
         @Override
         public boolean isConverged(int iteration, DoubleValue value) {
 
-
+/*
             if (iteration==1)
                 return false;
 
             iteration--;
-
+*/
             if (Double.isNaN(value.getValue()))
                 throw new IllegalStateException("A NaN elbo");
 

@@ -71,7 +71,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     protected int seed=0;
 
     /** Represents the maximum number of iterations. */
-    protected int maxIter = 1000;
+    protected int maxIter = 100;
 
     /** Represents a threshold. */
     protected double threshold = 0.000001;
@@ -175,7 +175,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
                 Message<E> selfMessage = newSelfMessage(node);
 
                 Optional<Message<E>> message = node.getChildren()
-                                .stream()
+                                .parallelStream()
                                 .filter(children -> children.isActive())
                                 .map(children -> newMessageToParent(children, node))
                                 .reduce(Message::combineNonStateless);

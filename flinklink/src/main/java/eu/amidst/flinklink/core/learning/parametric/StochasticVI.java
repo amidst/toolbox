@@ -72,7 +72,7 @@ public class StochasticVI implements BayesianParameterLearningAlgorithm, Seriali
         this.timiLimit = seconds;
     }
 
-    public void setDataSetSize(long dataSetSize) {
+    public void setDataSetSize(int dataSetSize) {
         this.svi.setDataSetSize(dataSetSize);
     }
 

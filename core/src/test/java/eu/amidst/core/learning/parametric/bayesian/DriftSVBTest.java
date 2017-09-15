@@ -62,13 +62,13 @@ public class DriftSVBTest extends TestCase {
 
             svb.updateModelWithConceptDrift(sampler.sampleToDataStream(batchSize).toDataOnMemory());
 
-            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
+            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaMomentParameter());
 
 
             if (i > 0 && i % 3 == 0) {
-                assertEquals(0.0, svb.getLambdaValue(), 0.1);
+                assertEquals(0.0, svb.getLambdaMomentParameter(), 0.1);
             } else if (i > 0 && i % 3 != 0) {
-                assertEquals(1.0, svb.getLambdaValue(), 0.1);
+                assertEquals(1.0, svb.getLambdaMomentParameter(), 0.1);
             }
         }
     }
@@ -120,13 +120,13 @@ public class DriftSVBTest extends TestCase {
 
             //if (Main.VERBOSE) System.out.println(svb.getLearntBayesianNetwork());
 
-            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaValue());
+            if (Main.VERBOSE) System.out.println("N Iter: " + i + ", " + svb.getLambdaMomentParameter());
 
 
             /*if (i > 0 && i % 3 == 0) {
-                assertEquals(0.0, svb.getLambdaValue(), 0.1);
+                assertEquals(0.0, svb.getLambdaMomentParameter(), 0.1);
             } else if (i > 0 && i % 3 != 0) {
-                assertEquals(1.0, svb.getLambdaValue(), 0.1);
+                assertEquals(1.0, svb.getLambdaMomentParameter(), 0.1);
             }*/
         }
 

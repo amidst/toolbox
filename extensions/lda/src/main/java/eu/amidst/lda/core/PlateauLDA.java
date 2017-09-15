@@ -31,6 +31,11 @@ import java.util.stream.Collectors;
  */
 public class PlateauLDA extends PlateuStructure {
 
+    boolean globalUpdate = true;
+
+    public static double TOPIC_PRIOR=0.01;
+    public static double MIXING_PRIOR=0.1;
+
     Variable word;
     Variable topicIndicator;
     Variable dirichletMixingTopics;
@@ -53,6 +58,14 @@ public class PlateauLDA extends PlateuStructure {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
         this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
+    }
+
+    public boolean isGlobalUpdate() {
+        return globalUpdate;
+    }
+
+    public void setGlobalUpdate(boolean globalUpdate) {
+        this.globalUpdate = globalUpdate;
     }
 
     public DAG getDagLDA() {
@@ -97,7 +110,7 @@ public class PlateauLDA extends PlateuStructure {
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a, b) -> a.getVarID() - b.getVarID()).collect(Collectors.toList());
 
         for (int i = 0; i < nTopics; i++) {
-            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, 0.1);
+            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, MIXING_PRIOR);
         }
 
 
@@ -108,7 +121,7 @@ public class PlateauLDA extends PlateuStructure {
             NaturalParameters vec = this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
 
             for (int i = 0; i < vec.size(); i++) {
-                vec.set(i, 0.01);
+                vec.set(i, TOPIC_PRIOR);
             }
         }
 
@@ -239,10 +252,74 @@ public class PlateauLDA extends PlateuStructure {
         });
     }
 
-    /**
-     * Runs inference.
-     */
-    public void runInference() {
+    public void runInferenceGlobal() {
+
+        boolean convergence = false;
+        local_elbo = Double.NEGATIVE_INFINITY;
+        local_iter = 0;
+        while (!convergence && (local_iter++) < this.vmp.getMaxIter()) {
+
+            long start = System.nanoTime();
+
+            this.replicatedNodes
+                    .parallelStream()
+                    .forEach(nodes -> {
+                        for (Node node : nodes) {
+
+
+                            if (!node.isActive() || node.isObserved())
+                                continue;
+
+                            Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                            Optional<Message<NaturalParameters>> message = node.getChildren()
+                                    .stream()
+                                    .filter(children -> children.isActive())
+                                    .map(children -> this.vmp.newMessageToParent(children, node))
+                                    .reduce(Message::combineNonStateless);
+
+                            if (message.isPresent())
+                                selfMessage.combine(message.get());
+
+                            //for (Node child: node.getChildren()){
+                            //    selfMessage = Message.combine(newMessageToParent(child, node), selfMessage);
+                            //}
+
+                            this.vmp.updateCombinedMessage(node, selfMessage);
+                        }
+                    });
+
+            this.nonReplictedNodes
+                    .parallelStream()
+                    .filter(node -> node.isActive() && !node.isObserved())
+                    .forEach(node -> {
+                        Message<NaturalParameters> selfMessage = this.vmp.newSelfMessage(node);
+
+                        Optional<Message<NaturalParameters>> message = node.getChildren()
+                                .stream()
+                                .filter(children -> children.isActive())
+                                .map(children -> this.vmp.newMessageToParent(children, node))
+                                .reduce(Message::combineNonStateless);
+
+                        if (message.isPresent())
+                            selfMessage.combine(message.get());
+
+
+                        this.vmp.updateCombinedMessage(node, selfMessage);
+                    });
+
+            convergence = this.testConvergence();
+
+            //System.out.println(local_iter + " " + local_elbo + " " + (System.nanoTime() - start) / (double) 1e09);
+
+        }
+
+        if (this.vmp.isOutput()) {
+            System.out.println("N Iter: " + local_iter + ", elbo:" + local_elbo);
+        }
+    }
+
+    public void runInferenceLocal() {
 
         boolean convergence = false;
         local_elbo = Double.NEGATIVE_INFINITY;
@@ -310,6 +387,18 @@ public class PlateauLDA extends PlateuStructure {
     }
 
     /**
+     * Runs inference.
+     */
+    public void runInference() {
+
+        if (this.globalUpdate)
+            this.runInferenceGlobal();
+        else
+            this.runInferenceLocal();
+
+    }
+
+    /**
      * Returns the log probability of the evidence.
      *
      * @return the log probability of the evidence.
@@ -356,7 +445,7 @@ public class PlateauLDA extends PlateuStructure {
                     double localELBO = 0;
 
                     MomentParameters topicMoments = momentParents.get(topicVariable);
-                    int wordIndex = (int) node.getAssignment().getValue(node.getMainVariable());
+                    int wordIndex = (int) node.getAssignment().getValue(node.getMainVariable())%node.getMainVariable().getNumberOfStates();
 
                     for (int i = 0; i < topicMoments.size(); i++) {
                         EF_SparseMultinomial_Dirichlet dist = (EF_SparseMultinomial_Dirichlet)base.getBaseEFConditionalDistribution(i);

@@ -38,10 +38,51 @@ public class VMPLocalUpdates extends VMP {
 
     PlateuStructure plateuStructure;
 
+    boolean firstTime = true;
     public VMPLocalUpdates(PlateuStructure plateuStructure) {
         this.plateuStructure = plateuStructure;
     }
 
+    public void init(){
+        CompoundVector posteriorOLD = this.plateuStructure.getPlateauNaturalParameterPosterior();
+        CompoundVector posteriorNew = this.plateuStructure.getPlateauNaturalParameterPosterior();
+
+        //Collect messages from active nodes to non-replicated nodes.
+        int count = 0;
+        for (Node node : nodes) {
+            if (node.isObserved() || plateuStructure.isReplicatedVar(node.getMainVariable()))
+                continue;
+
+            if(!node.isActive() && plateuStructure.isNonReplicatedVar(node.getMainVariable())) {
+                count++;
+                continue;
+            }
+
+            Message<NaturalParameters> selfMessage = newSelfMessage(node);
+
+            Optional<Message<NaturalParameters>> message = node.getChildren()
+                    .stream()
+                    .filter(children -> children.isActive())
+                    .map(children -> newMessageToParent(children, node))
+                    .reduce(Message::combineNonStateless);
+
+            if (message.isPresent())
+                selfMessage.combine(message.get());
+
+            updateCombinedMessage(node, selfMessage);
+
+
+            posteriorNew.setVectorByPosition(count,node.getQDist().getNaturalParameters());
+            node.getQDist().setNaturalParameters((NaturalParameters)posteriorOLD.getVectorByPosition(count));
+            node.getQDist().fixNumericalInstability();
+            node.getQDist().updateMomentFromNaturalParameters();
+
+            count++;
+        }
+
+        this.plateuStructure.updateNaturalParameterPosteriors(posteriorNew);
+
+    }
     /**
      * {@inheritDoc}
      */

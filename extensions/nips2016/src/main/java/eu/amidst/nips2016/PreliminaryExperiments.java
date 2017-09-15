@@ -182,7 +182,7 @@ public class PreliminaryExperiments {
 
         writerMean.println(means);
 
-        writerLambda.println(driftSVB.getLambdaValue());
+        writerLambda.println(driftSVB.getLambdaMomentParameter());
     }
 
     public static void introduceAbruptConceptDrift(){

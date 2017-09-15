@@ -54,7 +54,7 @@
         </developer>
         <developer>
             <name>Antonio Fernandez Alvarez</name>
-            <email>afalvarez@bcc.es</email>
+            <email>afalvarez@eu.amidst.dVMPJournalExtensionJuly2016.bcc.es</email>
             <organization>Banco Cooperativo de Credito, Spain</organization>
             <organizationUrl>https://github.com/afalvarez</organizationUrl>
         </developer>
@@ -131,6 +131,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/TANTest.java</exclude>
+                        <skipTests>true</skipTests>
                     </excludes>
                 </configuration>
             </plugin>
