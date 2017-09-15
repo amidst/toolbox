@@ -30,13 +30,13 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.6.2</version> <!-- AmidstVersion -->
+            <version>0.6.3</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>lda</artifactId>
-            <version>0.6.2</version> <!-- AmidstVersion -->
+            <version>0.6.3</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>

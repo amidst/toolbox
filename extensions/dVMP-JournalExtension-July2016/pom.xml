@@ -18,26 +18,26 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.6.2</version> <!-- AmidstVersion -->
+        <version>0.6.3</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <groupId>eu.amidst</groupId>
     <artifactId>dVMP-JournalExtension-July2016</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3</version> <!-- AmidstVersion -->
 
 
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.6.2</version> <!-- AmidstVersion -->
+            <version>0.6.3</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>lda</artifactId>
-            <version>0.6.2</version> <!-- AmidstVersion -->
+            <version>0.6.3</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.6.2</version> <!-- AmidstVersion -->
+            <version>0.6.3</version> <!-- AmidstVersion -->
         </dependency>
 
     </dependencies>
