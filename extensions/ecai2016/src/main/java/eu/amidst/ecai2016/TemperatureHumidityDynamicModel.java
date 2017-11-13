@@ -67,7 +67,7 @@ public class TemperatureHumidityDynamicModel {
         random = new Random(seed);
 
         try {
-            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/TemparatureHumidtyNetworks.dbn");
+            model = DynamicBayesianNetworkLoader.loadFromFile("/Users/dario/Desktop/AMIDSTtoolbox2/out/artifacts/impSampling2017_jar/networks/simulated/TemparatureHumidtyNetworks.dbn");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

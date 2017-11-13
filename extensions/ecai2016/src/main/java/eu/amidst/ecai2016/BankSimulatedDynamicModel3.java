@@ -67,7 +67,7 @@ public class BankSimulatedDynamicModel3 {
         random = new Random(seed);
 
         try {
-            model = DynamicBayesianNetworkLoader.loadFromFile("./networks/simulated/BankSimulatedNetwork4.dbn");
+            model = DynamicBayesianNetworkLoader.loadFromFile("/Users/dario/Desktop/AMIDSTtoolbox2/out/artifacts/impSampling2017_jar/networks/simulated/BankSimulatedNetwork4.dbn");
         }
         catch (Exception e) {
             System.out.println(e.getMessage());

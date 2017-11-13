@@ -2,15 +2,17 @@ package eu.amidst.impSampling2017;
 
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.inference.ImportanceSamplingCLG_new;
+import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.dynamic.inference.DynamicMAPInference;
 import eu.amidst.dynamic.models.DynamicBayesianNetwork;
 import eu.amidst.dynamic.variables.DynamicAssignment;
-import eu.amidst.ecai2016.TemperatureHumidityDynamicModel;
+import eu.amidst.ecai2016.BankSimulatedDynamicModel3;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,19 +22,20 @@ import java.util.stream.Collectors;
 /**
  * Created by dario on 19/1/17.
  */
-public class DistributedISPrecisionDynMAPModels {
+public class DistributedISPrecisionBankModel {
 
     public static void main(String[] args) throws Exception {
 
-        int nTimeSteps = 10;
-        int nTimesEvidence = 9;
-        int sampleSizeIS = 100000;
+        int nTimeSteps = 5;
+        int nTimesEvidence = nTimeSteps-1;
+        int sampleSizeIS = 1000;
+        int seed = 0;
 
-
-        if (args.length==3) {
+        if (args.length==4) {
             nTimeSteps = Integer.parseInt(args[0]);
             nTimesEvidence = Integer.parseInt(args[1]);
-            sampleSizeIS = (int)Double.parseDouble(args[2]);
+            seed = Integer.parseInt(args[2]);
+            sampleSizeIS = (int)Double.parseDouble(args[3]);
         }
 
         String sampleOutputFile = "/Users/dario/Desktop/salidaGaussian.csv";
@@ -52,18 +55,20 @@ public class DistributedISPrecisionDynMAPModels {
 
 
 
-        ExpandedSeasonChangeModel model = new ExpandedSeasonChangeModel();
+        ExpandedBankModel model = new ExpandedBankModel();
 
         model.setnTimeSteps(nTimeSteps);
         model.setnTimeStepsEvidence(nTimesEvidence);
 
+        model.setSeed(seed);
+
         model.buildModel();
-        System.out.println(model.getModel());
+        //System.out.println(model.getModel());
 
         BayesianNetwork bn = model.getModel();
 
         Assignment evidence = model.generateEvidence();
-        System.out.println(evidence.outputString(bn.getVariables().getListOfVariables()));
+        //System.out.println(evidence.outputString(bn.getVariables().getListOfVariables()));
 
         //System.out.println("EVIDENCE: ");
         //System.out.println(hmm_evidence.outputString(model.getVarsEvidence()));
@@ -127,7 +132,7 @@ public class DistributedISPrecisionDynMAPModels {
          */
         ImportanceSamplingCLG_new impSamplingLocal = new ImportanceSamplingCLG_new();
 
-        impSamplingLocal.setSeed(0);
+        impSamplingLocal.setSeed(seed);
         impSamplingLocal.setModel(bn);
         impSamplingLocal.setSampleSize(currentSampleSize);
         impSamplingLocal.setVariablesOfInterest(varsOfInterest);
@@ -140,6 +145,57 @@ public class DistributedISPrecisionDynMAPModels {
         impSamplingLocal.setGaussianMixturePosteriors(false);
         impSamplingLocal.runInference();
         Normal varOfInterestGaussianDistribution = impSamplingLocal.getPosterior(varOfInterest);
+
+
+
+
+        /*
+         *  OBTAINING POSTERIORS WITH VMP
+         */
+        VMP vmp = new VMP();
+        vmp.setModel(bn);
+        vmp.setEvidence(evidence);
+        vmp.runInference();
+        Normal VMP_posterior = vmp.getPosterior(varOfInterest);
+
+        String VMP_posterior_output = "/Users/dario/Desktop/VMP_posterior.R";
+        FileWriter fileWriter = new FileWriter(VMP_posterior_output, false);
+        String line = "VMP_Posterior_mean <- " + VMP_posterior.getMean() + " \nVMP_Posterior_var <- " + VMP_posterior.getVariance() + " \n";
+        fileWriter.write(line);
+        fileWriter.close();
+
+
+
+
+
+        /*
+         *  SAVE A LARGE SAMPLE FOR ESTIMATING THE LL
+         */
+        String sampleLL_OutputFile = "/Users/dario/Desktop/salidaLL.csv";
+
+        File outputFile2 = new File(sampleLL_OutputFile);
+        outputFile2.delete();
+
+
+        ImportanceSamplingCLG_new impSamplingLL = new ImportanceSamplingCLG_new();
+
+        impSamplingLL.setSeed(10);
+        impSamplingLL.setModel(bn);
+        impSamplingLL.setSampleSize(1000000);
+        impSamplingLL.setVariablesOfInterest(varsOfInterest);
+        impSamplingLL.setParallelMode(true);
+        impSamplingLL.setSaveSampleToFile(true, sampleLL_OutputFile);
+        impSamplingLL.setEvidence(evidence);
+
+
+        // OBTAIN THE POSTERIOR AS A SINGLE GAUSSIAN
+        impSamplingLL.setGaussianMixturePosteriors(false);
+        impSamplingLL.runInference();
+
+
+
+
+
 
 
         // OBTAIN THE POSTERIOR AS A GAUSSIAN MIXTURE AND THE QUERY RESULT
@@ -195,7 +251,10 @@ public class DistributedISPrecisionDynMAPModels {
 
     }
 
-    private static class ExpandedSeasonChangeModel {
+
+
+
+    private static class ExpandedBankModel {
 
         private int nTimeSteps = 10;
         private int nTimeStepsEvidence = 8;
@@ -231,7 +290,7 @@ public class DistributedISPrecisionDynMAPModels {
             return bn;
         }
 
-        public ExpandedSeasonChangeModel() {
+        public ExpandedBankModel() {
             random = new Random(0);
         }
 
@@ -241,10 +300,10 @@ public class DistributedISPrecisionDynMAPModels {
 
         public void buildModel() {
 
-            TemperatureHumidityDynamicModel model = new TemperatureHumidityDynamicModel();
+            BankSimulatedDynamicModel3 model = new BankSimulatedDynamicModel3();
 
             model.generateModel();
-            model.printDAG();
+            //model.printDAG();
 
             model.setSeed(random.nextInt());
             model.generateEvidence(nTimeSteps);
@@ -274,7 +333,7 @@ public class DistributedISPrecisionDynMAPModels {
                     .filter(var -> var.isNormal())
                     .collect(Collectors.toList());
 
-            varsEvidence = varsContinuous.stream().filter(variable -> variable.getName().contains("sensor")).collect(Collectors.toList());
+            varsEvidence = varsContinuous.stream().filter(variable -> variable.getName().contains("Local")).collect(Collectors.toList());
 
             List<Variable> varsEvidence2 = new ArrayList<>();
             for (int i = 0; i < varsEvidence.size(); i++) {
@@ -285,22 +344,21 @@ public class DistributedISPrecisionDynMAPModels {
                 String timeStep = stringTokenizer.nextToken();
                 timeStep = timeStep.substring(1);
                 int timeStep1 = Integer.parseInt(timeStep);
-                System.out.println(timeStep1);
                 if (timeStep1 < nTimeStepsEvidence) {
                     varsEvidence2.add(variable);
                 }
             }
             varsEvidence = varsEvidence2;
 
-            varsInterest = varsContinuous.stream().filter(variable -> variable.getName().equals("Temperature_t" + Integer.toString(nTimeSteps-1))).collect(Collectors.toList());
+            varsInterest = varsContinuous.stream().filter(variable -> variable.getName().equals("OveralIncomes_t" + Integer.toString(nTimeSteps-1))).collect(Collectors.toList());
         }
 
         public Assignment generateEvidence() {
 
-            TemperatureHumidityDynamicModel model = new TemperatureHumidityDynamicModel();
+            BankSimulatedDynamicModel3 model = new BankSimulatedDynamicModel3();
 
             model.generateModel();
-            model.printDAG();
+            //model.printDAG();
 
             model.setSeed(random.nextInt());
             model.generateEvidence(nTimeSteps);
