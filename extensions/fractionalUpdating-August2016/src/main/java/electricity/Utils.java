@@ -11,10 +11,7 @@
 
 package electricity;
 
-import eu.amidst.core.datastream.DataInstance;
-import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.datastream.DataOnMemoryListContainer;
-import eu.amidst.core.datastream.DataStream;
+import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 
@@ -60,7 +57,7 @@ public class Utils {
         }
     }
 
-    public static void main(String[] args) {
+    public static void countInstances(String[] args) {
 
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/DriftSets/electricityByMonth/";
 
@@ -77,5 +74,33 @@ public class Utils {
 
 
     }
+    public static void inputMissingToZero(String[] args) throws IOException {
 
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/DriftSets/electricityByMonth/";
+        String dataPathOutput = "/Users/andresmasegosa/Dropbox/Amidst/datasets/DriftSets/electricityByMonthToZero/";
+
+        String[] strings = new File(dataPath).list();
+        Arrays.sort(strings);
+        for (String string : strings) {
+            if (!string.endsWith(".arff"))
+                continue;
+
+            final DataOnMemory<DataInstance> batchFinal= DataStreamLoader.loadDataOnMemoryFromFile(dataPath+string);
+
+            DataStream<DataInstance> batch = batchFinal.map(d -> {
+                for (Attribute attribute : batchFinal.getAttributes()) {
+                    if (eu.amidst.core.utils.Utils.isMissingValue(d.getValue(attribute))){
+                        d.setValue(attribute,0.0);
+                    }
+                }
+                return d;
+            });
+
+            DataStreamWriter.writeDataToFile(batch,dataPathOutput+string);
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        Utils.inputMissingToZero(args);
+    }
 }

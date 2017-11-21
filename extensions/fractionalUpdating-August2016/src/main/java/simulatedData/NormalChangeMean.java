@@ -37,8 +37,7 @@ public class NormalChangeMean {
 
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
-
-        BayesianParameterLearningAlgorithm svb = initMultiDrift();
+        BayesianParameterLearningAlgorithm svb = initDrift();
 
         svb.setDAG(bn.getDAG());
 
@@ -51,8 +50,8 @@ public class NormalChangeMean {
         double total = 0;
 
         Normal normalDist = bn.getConditionalDistribution(normal);
-        normalDist.setMean(0);
-        normalDist.setVariance(10);
+        normalDist.setMean(-1);
+        normalDist.setVariance(1);
 
         System.out.println(bn);
 
@@ -63,9 +62,13 @@ public class NormalChangeMean {
 
             normalDist = bn.getConditionalDistribution(normal);
 
-            //if (i%5==1) {
-            //    normalDist.setMean(normalDist.getMean() + i);
-            //}
+
+            if (i>=totalITER/3){
+                normalDist.setMean(1);
+            } if (i>=totalITER*2/3) {
+                normalDist.setMean(-1);
+            }
+
 
             if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.DriftSVB")==0){
                 ((DriftSVB)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
@@ -75,6 +78,9 @@ public class NormalChangeMean {
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
                 System.out.println(log+"\t"+normalDist.getMean()+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(normal).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
+                //System.out.println(((DriftSVB)svb).getPlateuStructure().getPlateauNaturalParameterPrior().getVectorByPosition(0).get(3)*2);
+
+
                 total+=log;
 
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
