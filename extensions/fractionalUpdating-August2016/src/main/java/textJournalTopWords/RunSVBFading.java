@@ -34,24 +34,32 @@ public class RunSVBFading {
 
     public static void main(String[] args) throws Exception{
 
-        String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+        String[] yearsABSTRACT = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+        String[] yearsNIPS = {"0","1","2","3","4","5","6","7","8","9"};
+        String[] yearsNIPSjournal = {"1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015"};
 
-        String model = "TEXT";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        int docsPerBatch = 10000;
+        String model = "NIPSjournal";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
+        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+
+        boolean stemmed = true;
+        int numberOfTopWords = 100;
+
+        int docsPerBatch = 1000;
 
 
 /*        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
 */
-        int ntopics = 2;
+        int ntopics = 10;
         int niter = 100;
-        double threshold = 0.1;
+        double threshold = 0.01;
         double  fadingFactor  = 0.9;
 
         if (args.length>1){
-            int cont  = 0;
+            int cont=0;
             model = args[cont++];
             dataPath=args[cont++];
             ntopics= Integer.parseInt(args[cont++]);
@@ -60,18 +68,38 @@ public class RunSVBFading {
             docsPerBatch = Integer.parseInt(args[cont++]);
             fadingFactor = Double.parseDouble(args[cont++]);
 
+            numberOfTopWords = Integer.parseInt(args[cont++]);
+            stemmed = args[cont++].equals("stem");
+
             args[1]="";
         }
 
+        String[] years=null;
+
+        if (model.equals("ABSTRACRTS"))
+            years=yearsABSTRACT;
+        else if (model.equals("NIPS"))
+            years=yearsNIPS;
+        else if (model.equals("NIPSjournal")) {
+            years = yearsNIPSjournal;
+        }
+
+        String localPath=null;
+
+        if (model.equals("ABSTRACRTS"))
+            localPath="abstract_";
+        else if (model.equals("NIPS"))
+            localPath="nips_";
+        else if (model.equals("NIPSjournal"))
+            localPath="NIPS_1987-2015_" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "w_";
 
         SVBFading svb = new SVBFading();
 
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
-        plateauLDA.setGlobalUpdate(false);
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);
@@ -80,22 +108,21 @@ public class RunSVBFading {
 
         svb.setPlateuStructure(plateauLDA);
         svb.setOutput(true);
+
+        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(niter);
+        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
+        svb.getSVB().getPlateuStructure().getVMP().setThreshold(threshold);
         svb.setFadingFactor(fadingFactor);
 
-
-
-        svb.initLearning();
-
-
-        svb.getSVB().randomInitialize();
-
+        svb.setWindowsSize(docsPerBatch);
         svb.initLearning();
 
         svb.randomInitialize();
 
         //svb.setLowerInterval(0.5);
 
-        FileWriter fw = new FileWriter(dataPath+"Population_Output_"+Arrays.toString(args)+"_.txt");
+        FileWriter fw = new FileWriter(dataPath+"SVB_Fading_Output_"+Arrays.toString(args)+"_.txt");
 
 
         fw.write("\t\t\t\t");
@@ -117,7 +144,7 @@ public class RunSVBFading {
 
         for (int year = 0; year < years.length; year++) {
 
-            DataStream<DataInstance> batch= DataStreamLoader.open(dataPath+"abstract_"+years[year]+".arff");
+            DataStream<DataInstance> batch=DataStreamLoader.open(dataPath+localPath+years[year]+".arff");
 
 
             List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,1);

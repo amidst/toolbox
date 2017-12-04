@@ -44,7 +44,7 @@ public class RunSVB {
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
 
         boolean stemmed = true;
-        int numberOfTopWords = 2000;
+        int numberOfTopWords = 100;
 
         int docsPerBatch = 1000;
 
@@ -79,7 +79,6 @@ public class RunSVB {
         else if (model.equals("NIPS"))
             years=yearsNIPS;
         else if (model.equals("NIPSjournal")) {
-            dataPath = "/Users/dario/Downloads/NIPS_datos/" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "words/arff/";
             years = yearsNIPSjournal;
         }
 

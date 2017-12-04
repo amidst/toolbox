@@ -45,7 +45,6 @@ public class RunDrift {
 
         boolean stemmed = true;
         int numberOfTopWords = 2000;
-
         int docsPerBatch = 1000;
 
 
@@ -57,7 +56,7 @@ public class RunDrift {
         int niter = 100;
         double threshold = 0.01;
 
-        if (args.length>1){
+        if (args.length>1) {
             int cont=0;
             model = args[cont++];
             dataPath=args[cont++];
@@ -79,7 +78,6 @@ public class RunDrift {
         else if (model.equals("NIPS"))
             years=yearsNIPS;
         else if (model.equals("NIPSjournal")) {
-            dataPath = "/Users/dario/Downloads/NIPS_datos/" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "words/arff/";
             years = yearsNIPSjournal;
         }
 

@@ -79,7 +79,6 @@ public class RunMultiDrift {
         else if (model.equals("NIPS"))
             years=yearsNIPS;
         else if (model.equals("NIPSjournal")) {
-            dataPath = "/Users/dario/Downloads/NIPS_datos/" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "words/arff/";
             years = yearsNIPSjournal;
         }
 

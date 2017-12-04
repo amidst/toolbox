@@ -35,22 +35,27 @@ public class RunPopulation {
     public static void main(String[] args) throws Exception{
 
         String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
+        String[] yearsNIPSjournal = {"1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015"};
 
-        String model = "TEXT";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
-        int docsPerBatch = 10000;
+        String model = "NIPSjournal";
+        String dataPath = "/Users/dario/Downloads/NIPS_datos/stemmed_top100words/arff/";
+
+        int docsPerBatch = 1000;
 
 
 /*        String model = "BCC1";
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
 */
-        int ntopics = 2;
+        int ntopics = 10;
         int niter = 100;
         double threshold = 0.1;
         int setSIZE = 84000;
         double learningRate = 0.1;
         boolean fixedLearningRate = true;
+
+        boolean stemmed = true;
+        int numberOfTopWords = 100;
 
         if (args.length>1){
             int cont  = 0;
@@ -65,14 +70,19 @@ public class RunPopulation {
             learningRate = Double.parseDouble(args[cont++]);
             fixedLearningRate = Boolean.parseBoolean(args[cont++]);
 
+            numberOfTopWords = Integer.parseInt(args[cont++]);
+            stemmed = args[cont++].equals("stem");
+
             args[1]="";
         }
 
+        String localPath="NIPS_1987-2015_" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "w_";
+        years = yearsNIPSjournal;
 
         PopulationVI svb = new PopulationVI();
 
 
-        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
+        DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
         PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
@@ -129,7 +139,7 @@ public class RunPopulation {
 
         for (int year = 0; year < years.length; year++) {
 
-            DataStream<DataInstance> batch= DataStreamLoader.open(dataPath+"abstract_"+years[year]+".arff");
+            DataStream<DataInstance> batch= DataStreamLoader.open(dataPath+localPath+years[year]+".arff");
 
 
             List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,1);
