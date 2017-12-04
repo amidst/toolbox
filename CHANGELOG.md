@@ -1,3 +1,23 @@
+v0.6.3
+============
+This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
+
+Changes:
+
+- Fixed some bugs
+- Added functionality for handling concept drift as detailed in:
+
+Masegosa, A., Nielsen, T. D., Langseth, H., Ramos-Lopez, D., Salmerón, A., & Madsen, A. L. 
+(2017). Bayesian Models of Data Streams with Hierarchical Power Priors. Proceedings of 
+Thirty-fourth International Conference on Machine Learning (ICML’17). Sydney (Australia).
+
+
+**Release Date**: 15/09/2017
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.3/index.html)
+
+
+
+
 v0.6.2
 ============
 This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
