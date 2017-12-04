@@ -67,9 +67,11 @@ public class EF_TruncatedNormal extends EF_UnivariateDistribution {
         this.naturalParameters = new ArrayVectorParameter(2);
         this.momentParameters = new ArrayVector(2);
 
-        this.momentParameters.set(EXPECTED_MEAN, 0);
-        this.momentParameters.set(EXPECTED_SQUARE, 1);
-        this.setMomentParameters(momentParameters);
+        this.naturalParameters.set(INDEX_MEAN, 0);
+        this.naturalParameters.set(INDEX_PRECISION, 1);
+
+        this.setNaturalWithMeanPrecision(0,1);
+        this.updateMomentFromNaturalParameters();
     }
 
 
