@@ -63,22 +63,6 @@ public class TruncatedExponentialType extends DistributionType {
 
 
     /**
-     * Creates a new exponential family univariate distribution.
-     * @param args, a sequence with the initial natural parameters.
-     * @return an exponential family Gamma distribution.
-     */
-    @Override
-    public EF_TruncatedExponential newEFUnivariateDistribution(double... args) {
-        EF_TruncatedExponential ef_TruncatedExponential = new EF_TruncatedExponential(this.variable);
-        for (double a : args) {
-            ef_TruncatedExponential.getNaturalParameters().set(0, -a);
-        }
-        ef_TruncatedExponential.fixNumericalInstability();
-        ef_TruncatedExponential.updateMomentFromNaturalParameters();
-        return ef_TruncatedExponential;
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
