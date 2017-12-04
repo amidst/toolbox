@@ -48,7 +48,7 @@ public class Fading implements TransitionMethod, Serializable {
 
     @Override
     public EF_LearningBayesianNetwork transitionModel(EF_LearningBayesianNetwork ef_extendedBN, PlateuStructure plateuStructure) {
-        ef_extendedBN.getParametersVariables().getListOfParamaterVariables().stream().forEach(var -> {
+        plateuStructure.getNonReplicatedVariables().forEach(var -> {
             EF_UnivariateDistribution prior = ef_extendedBN.getDistribution(var);
             NaturalParameters naturalParameters = prior.getNaturalParameters();
             naturalParameters.multiplyBy(fadingFactor);
