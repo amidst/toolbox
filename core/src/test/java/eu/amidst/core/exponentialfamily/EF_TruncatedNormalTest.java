@@ -24,8 +24,8 @@ public class EF_TruncatedNormalTest extends TestCase {
     public static void test1() {
 
         Variables variables = new Variables();
-        Variable var = variables.newTruncatedExponential("A");
-        EF_TruncatedExponential dist = var.getDistributionType().newEFUnivariateDistribution(1);
+        Variable var = variables.newTruncatedNormal("A");
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
 
         assertEquals(dist.computeLogProbabilityOf(1),-0.5413249,0.001);
         assertEquals(dist.getNaturalParameters().get(0),-1.0);

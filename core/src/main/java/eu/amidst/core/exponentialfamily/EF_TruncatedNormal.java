@@ -61,10 +61,6 @@ public class EF_TruncatedNormal extends EF_UnivariateDistribution {
      * @param var1 a {@link Variable} object with a Normal distribution type.
      */
     public EF_TruncatedNormal(Variable var1) {
-        if (!var1.isNormal() && !var1.isParameterVariable()) {
-            throw new UnsupportedOperationException("Creating a Gaussian EF distribution for a non-gaussian variable.");
-        }
-
         this.parents = new ArrayList();
 
         this.var = var1;
