@@ -53,6 +53,9 @@ public enum DistributionTypeEnum {
     /** The truncated exponential distribution. */
     TRUNCATED_EXPONENTIAL,
 
+    /** The truncated exponential distribution. */
+    TRUNCATED_NORMAL,
+
     /** The sparse multinomial distribution**/
     SPARSE_MULTINOMIAL,
 
@@ -88,6 +91,8 @@ public enum DistributionTypeEnum {
                 return (E) new NormalGammaParameterType(var);
             case TRUNCATED_EXPONENTIAL:
                 return (E) new TruncatedExponentialType(var);
+            case TRUNCATED_NORMAL:
+                return (E) new TruncatedNormalType(var);
             case SPARSE_MULTINOMIAL:
                 return (E) new SparseMultinomialType(var);
             case SPARSE_DIRICHLET_PARAMETER:

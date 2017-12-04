@@ -83,6 +83,6 @@ public class TruncatedExponentialType extends DistributionType {
      */
     @Override
     public <E extends ConditionalDistribution> E newConditionalDistribution(List<Variable> parents) {
-        throw new UnsupportedOperationException("Inverse Gamma Parameter Type does not allow conditional distributions");
+        throw new UnsupportedOperationException("Truncated Exponential does not allow conditional distributions");
     }
 }
