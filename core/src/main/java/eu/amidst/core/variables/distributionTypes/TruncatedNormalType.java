@@ -64,7 +64,7 @@ public class TruncatedNormalType extends DistributionType{
 
     /**
      * Creates a new exponential family univariate distribution.
-     * @return an exponential family Gamma distribution.
+     * @return an exponential family Truncated Normal distribution.
      */
     @Override
     public EF_TruncatedNormal newEFUnivariateDistribution() {
@@ -75,4 +75,19 @@ public class TruncatedNormalType extends DistributionType{
         return ef_TruncatedNormal;
     }
 
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @param args, a sequence with the initial natural parameters.
+     * @return an exponential family Truncated Normal distribution.
+     */
+    @Override
+    public EF_TruncatedNormal newEFUnivariateDistribution(double... args) {
+        EF_TruncatedNormal ef_TruncatedNormal = new EF_TruncatedNormal(this.variable);
+        for (double a : args) {
+            ef_TruncatedNormal.getNaturalParameters().set(0, -a);
+        }
+        ef_TruncatedNormal.fixNumericalInstability();
+        ef_TruncatedNormal.updateMomentFromNaturalParameters();
+        return ef_TruncatedNormal;
+    }
 }
