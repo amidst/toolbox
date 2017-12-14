@@ -11,7 +11,6 @@
 
 package eu.amidst.core.exponentialfamily;
 
-import eu.amidst.core.Main;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import junit.framework.TestCase;
@@ -25,18 +24,102 @@ public class EF_TruncatedNormalTest extends TestCase {
 
         Variables variables = new Variables();
         Variable var = variables.newTruncatedNormal("A");
+
         EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
 
-        assertEquals(dist.computeLogProbabilityOf(1),-0.5413249,0.001);
-        assertEquals(dist.getNaturalParameters().get(0),-1.0);
-        assertEquals(dist.getMomentParameters().get(0),0.4166668,0.01);
-        assertEquals(dist.getMomentParameters().get(0),dist.getExpectedParameters().get(0),0.0);
+        /*
+         * MEAN=0
+         */
+        dist.setNaturalWithMeanPrecision(0, 1);
+        assertEquals(0.4598622, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.2911251, dist.getMomentParameters().get(1),0.001);
 
 
-        dist.getNaturalParameters().set(0,100);
-        dist.updateMomentFromNaturalParameters();
-        if (Main.VERBOSE) System.out.println(dist.getExpectedParameters().get(0));
+        /*
+         * MEAN=10
+         */
+        dist.setNaturalWithMeanPrecision(10,1);
+        assertEquals(0.8915437, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.806299, dist.getMomentParameters().get(1),0.001);
 
+
+
+
+        /*
+         * MEAN=100
+         */
+        dist.setNaturalWithMeanPrecision(100,1);
+        assertEquals(0.989901, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.9800061, dist.getMomentParameters().get(1),0.001);
+
+        dist.setNaturalWithMeanPrecision(100,0.01);
+        assertEquals(0.5815536, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.4175454, dist.getMomentParameters().get(1),0.001);
+
+
+        dist.setNaturalWithMeanPrecision(100,100);
+        assertEquals(0.999899, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.9997982, dist.getMomentParameters().get(1),0.001);
+
+
+        dist.setNaturalWithMeanPrecision(100,10000);
+        assertEquals(0.999999, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.9999949, dist.getMomentParameters().get(1),0.001);
+
+
+        /*
+         * MEAN=-100
+         */
+        dist.setNaturalWithMeanPrecision(-100,1);
+        assertEquals(0.009998001, dist.getExpectedParameters().get(0),0.000001);
+
+        dist.setNaturalWithMeanPrecision(-100,100);
+        assertEquals(0.000099995, dist.getExpectedParameters().get(0),0.000001);
+
+        /*
+         * MEAN=10000
+         */
+        dist.setNaturalWithMeanPrecision(10000,1);
+        assertEquals(0.99988, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.799998, dist.getMomentParameters().get(1),0.001);
+
+        dist.setNaturalWithMeanPrecision(10000,0.01);
+        assertEquals(0.989999, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.982746, dist.getMomentParameters().get(1),0.001);
+
+
+        /*
+         * MEAN=-10000
+         */
+        dist.setNaturalWithMeanPrecision(-10000,1);
+        assertEquals(0.0000869246, dist.getExpectedParameters().get(0),0.000001);
+
+        dist.setNaturalWithMeanPrecision(-10000,0.01);
+        assertEquals(0.0099995, dist.getExpectedParameters().get(0),0.000001);
+
+
+
+
+        /*
+         * OTHER TRUNCATION INTERVALS (NOT [0,1])
+         */
+        dist.setLowerInterval(0.2);
+        dist.setUpperInterval(0.8);
+
+        /*
+         * MEAN=0
+         */
+        dist.setNaturalWithMeanPrecision(0, 1);
+        assertEquals(0.485201, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.240985, dist.getMomentParameters().get(1),0.1);
+
+
+        /*
+         * MEAN=10
+         */
+        dist.setNaturalWithMeanPrecision(10,1);
+        assertEquals(0.695606, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.493807, dist.getMomentParameters().get(1),0.01);
     }
 
 }

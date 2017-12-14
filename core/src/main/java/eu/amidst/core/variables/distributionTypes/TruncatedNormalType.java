@@ -84,7 +84,7 @@ public class TruncatedNormalType extends DistributionType{
     public EF_TruncatedNormal newEFUnivariateDistribution(double... args) {
         EF_TruncatedNormal ef_TruncatedNormal = new EF_TruncatedNormal(this.variable);
         for (double a : args) {
-            ef_TruncatedNormal.getNaturalParameters().set(0, -a);
+            ef_TruncatedNormal.getNaturalParameters().set(0, a);
         }
         ef_TruncatedNormal.fixNumericalInstability();
         ef_TruncatedNormal.updateMomentFromNaturalParameters();
