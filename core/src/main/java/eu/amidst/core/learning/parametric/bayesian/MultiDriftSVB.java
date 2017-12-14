@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
  */
 public class MultiDriftSVB extends SVB{
 
+    public static int TRUNCATED_EXPONENTIAL = 0;
+    public static int TRUNCATED_NORMAL  = 1;
 
     EF_TruncatedExponential ef_TExpP;
     EF_TruncatedExponential[] ef_TExpQ;
@@ -49,6 +51,17 @@ public class MultiDriftSVB extends SVB{
 
     double delta = 0.1;
 
+    double[] hppVal = {-0.1};
+    int type = TRUNCATED_EXPONENTIAL;
+
+    //double[] hppVal = {0.1, 1};
+    //int type = TRUNCATED_NORMAL;
+
+    public void setPriorDistribution(int type, double[] val) {
+        this.type = type;
+        this.hppVal = val;
+    }
+
     public double getDelta() {
         return delta;
     }
@@ -60,8 +73,31 @@ public class MultiDriftSVB extends SVB{
     public void setUpperInterval(double val) {
         this.ef_TExpP.setUpperInterval(val);
     }
+
     public void setLowerInterval(double val) {
         this.ef_TExpP.setLowerInterval(val);
+    }
+
+
+
+    public void initHPP(int size){
+        if (type == TRUNCATED_EXPONENTIAL) {
+            truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
+            this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
+            this.ef_TExpQ = new EF_TruncatedExponential[size];
+            for (int i = 0; i < size; i++) {
+                this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
+            }
+        } else if (type == TRUNCATED_NORMAL) {
+            truncatedExpVar = new Variables().newTruncatedExponential("TruncatedNormalVar");
+            this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
+            this.ef_TExpQ = new EF_TruncatedExponential[size];
+            for (int i = 0; i < size; i++) {
+                this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
+            }
+        } else {
+            throw new IllegalArgumentException("No prior defined");
+        }
     }
 
     /**
@@ -70,16 +106,11 @@ public class MultiDriftSVB extends SVB{
     @Override
     public void initLearning() {
         super.initLearning();
-        truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
-        this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
 
         prior = this.plateuStructure.getPlateauNaturalParameterPrior();
 
-        int size = prior.getNumberOfBaseVectors();
-        this.ef_TExpQ = new EF_TruncatedExponential[size];
-        for (int i = 0; i < size; i++) {
-            this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
-        }
+        this.initHPP(prior.getNumberOfBaseVectors());
+
         firstBatch=true;
     }
 
@@ -117,13 +148,15 @@ public class MultiDriftSVB extends SVB{
         }
 
         //Restart Truncated-Exp
-        double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
-        this.ef_TExpP.getNaturalParameters().set(0,-delta);
-        this.ef_TExpP.updateMomentFromNaturalParameters();
+        for (int i = 0; i < this.hppVal.length; i++) {
+            this.ef_TExpP.getNaturalParameters().set(i,this.hppVal[i]);
+        }
 
         //Restart Truncated-Exp
         for (int i = 0; i < prior.getNumberOfBaseVectors(); i++) {
-            this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
+            for (int j = 0; j < this.hppVal.length; j++) {
+                this.ef_TExpQ[i].getNaturalParameters().set(j,this.hppVal[j]);
+            }
             this.ef_TExpQ[i].setUpperInterval(this.ef_TExpP.getUpperInterval());
             this.ef_TExpQ[i].setLowerInterval(this.ef_TExpP.getLowerInterval());
 
@@ -187,6 +220,9 @@ public class MultiDriftSVB extends SVB{
                 ef_TExpQ[i].getNaturalParameters().set(0,
                         - kl_q_pt_1[i] + kl_q_p0[i] +
                                 this.ef_TExpP.getNaturalParameters().get(0));
+                for (int j = 1; j < this.hppVal.length; j++) {
+                    this.ef_TExpQ[i].getNaturalParameters().set(j,this.ef_TExpP.getNaturalParameters().get(j));
+                }
                 ef_TExpQ[i].fixNumericalInstability();
                 ef_TExpQ[i].updateMomentFromNaturalParameters();
 

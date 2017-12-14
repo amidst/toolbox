@@ -45,7 +45,7 @@ public class Binomial {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
 
-        BayesianParameterLearningAlgorithm svb = initPopulation(0.01,100);
+        BayesianParameterLearningAlgorithm svb = initDrift();//initPopulation(0.01,100);
 
         svb.setDAG(bn.getDAG());
 
