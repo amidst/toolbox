@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.lda.core.BatchSpliteratorByID;
@@ -41,7 +42,8 @@ public class RunMultiDrift {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top100words/arff/";
 
         boolean stemmed = true;
         int numberOfTopWords = 2000;
@@ -92,6 +94,9 @@ public class RunMultiDrift {
             localPath="NIPS_1987-2015_" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "w_";
 
         MultiDriftSVB svb = new MultiDriftSVB();
+
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,1});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

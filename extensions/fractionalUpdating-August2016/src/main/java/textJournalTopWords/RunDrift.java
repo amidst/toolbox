@@ -41,10 +41,10 @@ public class RunDrift {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top100words/arff/";
 
         boolean stemmed = true;
-        int numberOfTopWords = 2000;
+        int numberOfTopWords = 100;
         int docsPerBatch = 1000;
 
 
@@ -92,6 +92,8 @@ public class RunDrift {
 
 
         DriftSVB svb = new DriftSVB();
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,1});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
