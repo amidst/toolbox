@@ -15,6 +15,7 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -39,8 +40,8 @@ public class DriftSVB extends SVB{
     public static int TRUNCATED_NORMAL  = 1;
 
 
-    EF_TruncatedExponential ef_TExpP;
-    EF_TruncatedExponential ef_TExpQ;
+    EF_UnivariateDistribution ef_TExpP;
+    EF_UnivariateDistribution ef_TExpQ;
 
     Variable truncatedExpVar;
 

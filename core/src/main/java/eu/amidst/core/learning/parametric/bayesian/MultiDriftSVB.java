@@ -14,6 +14,8 @@ package eu.amidst.core.learning.parametric.bayesian;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
+import eu.amidst.core.exponentialfamily.EF_TruncatedUnivariateDistribution;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
@@ -38,8 +40,8 @@ import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_NOR
  */
 public class MultiDriftSVB extends SVB{
 
-    EF_TruncatedExponential ef_TExpP;
-    EF_TruncatedExponential[] ef_TExpQ;
+    EF_TruncatedUnivariateDistribution ef_TExpP;
+    EF_TruncatedUnivariateDistribution[] ef_TExpQ;
 
     Variable truncatedExpVar;
 
@@ -89,9 +91,9 @@ public class MultiDriftSVB extends SVB{
                 this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
             }
         } else if (type == TRUNCATED_NORMAL) {
-            truncatedExpVar = new Variables().newTruncatedExponential("TruncatedNormalVar");
+            truncatedExpVar = new Variables().newTruncatedNormal("TruncatedNormalVar");
             this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
-            this.ef_TExpQ = new EF_TruncatedExponential[size];
+            this.ef_TExpQ = new EF_TruncatedUnivariateDistribution[size];
             for (int i = 0; i < size; i++) {
                 this.ef_TExpQ[i] = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
             }

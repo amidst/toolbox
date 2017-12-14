@@ -25,6 +25,9 @@ import eu.amidst.core.variables.Variable;
 
 import java.util.List;
 
+import static eu.amidst.core.exponentialfamily.EF_TruncatedNormal.INDEX_MEAN;
+import static eu.amidst.core.exponentialfamily.EF_TruncatedNormal.INDEX_PRECISION;
+
 /**
  * This class extends the abstract class {@link DistributionType} and defines the Normal distribution.
  */
@@ -69,7 +72,9 @@ public class TruncatedNormalType extends DistributionType{
     @Override
     public EF_TruncatedNormal newEFUnivariateDistribution() {
         EF_TruncatedNormal ef_TruncatedNormal = new EF_TruncatedNormal(this.variable);
-        ef_TruncatedNormal.getNaturalParameters().set(0, 1);
+        //Standard Normal(0,1) --> natural parameters (0,-0.5)
+        ef_TruncatedNormal.getNaturalParameters().set(INDEX_MEAN, 0);
+        ef_TruncatedNormal.getNaturalParameters().set(INDEX_PRECISION, 1);
         ef_TruncatedNormal.fixNumericalInstability();
         ef_TruncatedNormal.updateMomentFromNaturalParameters();
         return ef_TruncatedNormal;
@@ -83,8 +88,9 @@ public class TruncatedNormalType extends DistributionType{
     @Override
     public EF_TruncatedNormal newEFUnivariateDistribution(double... args) {
         EF_TruncatedNormal ef_TruncatedNormal = new EF_TruncatedNormal(this.variable);
+        int i = 0;
         for (double a : args) {
-            ef_TruncatedNormal.getNaturalParameters().set(0, a);
+            ef_TruncatedNormal.getNaturalParameters().set(i++, a);
         }
         ef_TruncatedNormal.fixNumericalInstability();
         ef_TruncatedNormal.updateMomentFromNaturalParameters();

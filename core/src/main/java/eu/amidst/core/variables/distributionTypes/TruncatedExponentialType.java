@@ -70,7 +70,7 @@ public class TruncatedExponentialType extends DistributionType {
     public EF_TruncatedExponential newEFUnivariateDistribution(double... args) {
         EF_TruncatedExponential ef_TruncatedExponential = new EF_TruncatedExponential(this.variable);
         for (double a : args) {
-            ef_TruncatedExponential.getNaturalParameters().set(0, -a);
+            ef_TruncatedExponential.getNaturalParameters().set(0, a);
         }
         ef_TruncatedExponential.fixNumericalInstability();
         ef_TruncatedExponential.updateMomentFromNaturalParameters();

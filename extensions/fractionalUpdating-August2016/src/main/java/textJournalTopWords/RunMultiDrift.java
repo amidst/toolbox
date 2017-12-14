@@ -46,7 +46,7 @@ public class RunMultiDrift {
         String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top100words/arff/";
 
         boolean stemmed = true;
-        int numberOfTopWords = 2000;
+        int numberOfTopWords = 100;
 
         int docsPerBatch = 1000;
 
@@ -95,8 +95,8 @@ public class RunMultiDrift {
 
         MultiDriftSVB svb = new MultiDriftSVB();
 
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,1});
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,0.01});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

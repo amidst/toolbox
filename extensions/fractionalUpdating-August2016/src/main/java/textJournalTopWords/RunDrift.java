@@ -92,8 +92,8 @@ public class RunDrift {
 
 
         DriftSVB svb = new DriftSVB();
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,1});
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,0.01});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

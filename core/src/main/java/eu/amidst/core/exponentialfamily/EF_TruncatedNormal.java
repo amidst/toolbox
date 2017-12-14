@@ -38,7 +38,7 @@ import java.util.Random;
  * <i>Representation, Inference and Learning of Bayesian Networks as Conjugate Exponential Family Models. Technical Report.</i>
  * (<a href="http://amidst.github.io/toolbox/docs/ce-BNs.pdf">pdf</a>) </p>
  */
-public class EF_TruncatedNormal extends EF_UnivariateDistribution {
+public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
 
     public static final int EXPECTED_MEAN = 0;
@@ -48,12 +48,6 @@ public class EF_TruncatedNormal extends EF_UnivariateDistribution {
     public static final int INDEX_PRECISION = 1;
 
     private static final double LIMIT = 100000;
-
-    //It defines the interval upper endpoint of the distribution
-    private double upperInterval = 1;
-
-    //It defines the interval lower endpoint of the distribution
-    private double lowerInterval = 0;
 
     /**
      * Creates a new EF_Normal distribution for a given variable.
@@ -81,30 +75,6 @@ public class EF_TruncatedNormal extends EF_UnivariateDistribution {
 
     public double getPrecision() {
         return this.naturalParameters.get(INDEX_PRECISION);
-    }
-
-    public double getUpperInterval() {
-        return upperInterval;
-    }
-
-    public double getLowerInterval() {
-        return lowerInterval;
-    }
-
-    /**
-     * Set the interval upper endpoint of the truncated distribution.
-     * @param upperInterval
-     */
-    public void setUpperInterval(double upperInterval) {
-        this.upperInterval = upperInterval;
-    }
-
-    /**
-     * Set the interval lower endpoint of the truncated distribution.
-     * @param lowerInterval
-     */
-    public void setLowerInterval(double lowerInterval) {
-        this.lowerInterval = lowerInterval;
     }
 
     public void setNaturalWithMeanPrecision(double mean, double precision) {
@@ -366,13 +336,13 @@ public class EF_TruncatedNormal extends EF_UnivariateDistribution {
         double newExpectedX = expectedXOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
         this.momentParameters.set(EXPECTED_MEAN, newExpectedX);
 
-        double newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+        double newExpectedXSquared = Double.NaN; //expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
 
-        if (newExpectedXSquared <= 0)
-            throw new IllegalStateException("Zero or Negative expected square value");
+        //if (newExpectedXSquared <= 0)
+        //    throw new IllegalStateException("Zero or Negative expected square value");
 
-        if (Double.isNaN(newExpectedXSquared))
-            throw new IllegalStateException("NaN expected square value");
+        //if (Double.isNaN(newExpectedXSquared))
+        //    throw new IllegalStateException("NaN expected square value");
 
         this.momentParameters.set(EXPECTED_SQUARE, newExpectedXSquared);
     }
