@@ -30,13 +30,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_EXPONENTIAL;
+import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_NORMAL;
+
 /**
  * Created by andresmasegosa on 14/4/16.
  */
 public class MultiDriftSVB extends SVB{
-
-    public static int TRUNCATED_EXPONENTIAL = 0;
-    public static int TRUNCATED_NORMAL  = 1;
 
     EF_TruncatedExponential ef_TExpP;
     EF_TruncatedExponential[] ef_TExpQ;

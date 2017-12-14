@@ -67,7 +67,7 @@ public class DriftSVB extends SVB{
             this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
             this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
         } else if (type == TRUNCATED_NORMAL) {
-            truncatedExpVar = new Variables().newTruncatedExponential("TruncatedNormalVar");
+            truncatedExpVar = new Variables().newTruncatedNormal("TruncatedNormalVar");
             this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
             this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
         } else {
