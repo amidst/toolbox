@@ -65,7 +65,7 @@ public class CajaMarExperiments {
         driftSVB = new DriftSVB();
         driftSVB.setWindowsSize(batchSize);
         driftSVB.setSeed(0);
-        driftSVB.setDelta(deltaValue);
+        //driftSVB.setDelta(deltaValue);
         driftSVB.setOutput(true);
         VMP vmp = driftSVB.getPlateuStructure().getVMP();
         //vmp.setOutput(true);
