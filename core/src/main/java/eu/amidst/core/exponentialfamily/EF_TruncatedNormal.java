@@ -44,11 +44,6 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
     public static final int EXPECTED_MEAN = 0;
     public static final int EXPECTED_SQUARE = 1;
 
-    public static final int INDEX_MEAN = 0;
-    public static final int INDEX_PRECISION = 1;
-
-    private static final double LIMIT = 100000;
-
     /**
      * Creates a new EF_Normal distribution for a given variable.
      *
@@ -58,48 +53,26 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         this.parents = new ArrayList();
 
         this.var = var1;
-        this.naturalParameters = new ArrayVectorParameter(2);
+        this.naturalParameters = new ArrayVector(2);
         this.momentParameters = new ArrayVector(2);
 
-        this.naturalParameters.set(INDEX_MEAN, 0);
-        this.naturalParameters.set(INDEX_PRECISION, 1);
-
         this.setNaturalWithMeanPrecision(0,1);
-        //this.updateMomentFromNaturalParameters();
     }
 
 
     public double getMean() {
-        return this.naturalParameters.get(INDEX_MEAN);
+        return this.naturalParameters.get(0)/this.getPrecision();
     }
 
     public double getPrecision() {
-        return this.naturalParameters.get(INDEX_PRECISION);
+        return -2*this.naturalParameters.get(1);
     }
 
     public void setNaturalWithMeanPrecision(double mean, double precision) {
-        this.naturalParameters.set(INDEX_MEAN, mean);
-        this.naturalParameters.set(INDEX_PRECISION, precision);
+        this.naturalParameters.set(0, mean * precision);
+        this.naturalParameters.set(1, -0.5 * precision);
 
         this.updateMomentFromNaturalParameters();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void fixNumericalInstability() {
-
-        /*
-        if (this.getPrecision()>LIMIT) {
-            this.naturalParameters.set(INDEX_PRECISION,LIMIT);
-        }
-
-        if (this.naturalParameters.get(1)<(-0.5*LIMIT)){ //To avoid numerical problems!
-            double x = -0.5*this.naturalParameters.get(0)/this.getNaturalParameters().get(1);
-            this.naturalParameters.set(0,x*LIMIT);
-            this.naturalParameters.set(1,-0.5*LIMIT);
-        }*/
     }
 
     /**
@@ -141,7 +114,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
      */
     @Override
     public NaturalParameters createZeroNaturalParameters() {
-        return new ArrayVectorParameter(2);
+        return new ArrayVector(2);
     }
 
     /**
@@ -178,9 +151,14 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
      */
     @Override
     public Vector getExpectedParameters() {
-        Vector vec = new ArrayVectorParameter(1);
+        Vector vec = new ArrayVector(1);
         vec.set(0, this.momentParameters.get(0));
         return vec;
+    }
+
+    @Override
+    public void fixNumericalInstability() {
+
     }
 
     /**
@@ -412,7 +390,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
      */
     @Override
     public NaturalParameters getExpectedNaturalFromParents(Map<Variable, MomentParameters> momentParents) {
-        NaturalParameters out = new ArrayVectorParameter(2);
+        NaturalParameters out = new ArrayVector(2);
         out.copy(this.getNaturalParameters());
         return out;
     }
@@ -424,8 +402,8 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
      */
     @Override
     public double kl(NaturalParameters naturalParameters, double logNormalizer) {
-        double meanQ = naturalParameters.get(INDEX_MEAN);
-        double precisionQ = naturalParameters.get(INDEX_PRECISION);
+        double precisionQ = -2*naturalParameters.get(1);
+        double meanQ = naturalParameters.get(0)/precisionQ;
 
         double kl =  0.5*Math.log(this.getPrecision()) - 0.5*Math.log(precisionQ) + 0.5*precisionQ/this.getPrecision()
                 + 0.5*precisionQ*Math.pow(this.getMean()-meanQ,2) -0.5;
@@ -443,174 +421,6 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
 
         return kl;
-    }
-
-    /**
-         * This class implements the interfaces {@link MomentParameters}, {@link NaturalParameters}, and {@link SufficientStatistics}.
-         * It handles some array vector utility methods.
-         */
-    public static class ArrayVectorParameter implements MomentParameters, NaturalParameters, SufficientStatistics, Serializable {
-
-        /** Represents the serial version ID for serializing the object. */
-        private static final long serialVersionUID = -3436599636425587512L;
-
-        /** Represents an array of {@code double}. */
-        private double[] array;
-
-        /**
-         * Creates a new array vector given an {@code int} size.
-         * @param size the size of the array vector.
-         */
-        public ArrayVectorParameter(int size){
-            this.array = new double[size];
-        }
-
-        /**
-         * Creates a new array vector given an array of {@code double}.
-         * @param vec an array of {@code double}.
-         */
-        public ArrayVectorParameter(double[] vec){
-            this.array=vec;
-        }
-
-
-        /**
-         * Converts this ArrayVector to an array of {@code double}.
-         * @return an array of {@code double}.
-         */
-        public double[] toArray(){
-            return this.array;
-        }
-
-        /**
-         * Copies the input source vector to this ArrayVector.
-         * @param vector an input source ArrayVector object.
-         */
-        public void copy(ArrayVectorParameter vector){
-            if (vector.size()!=vector.size())
-                throw new IllegalArgumentException("Vectors with different sizes");
-            System.arraycopy(vector.toArray(),0,this.array,0,vector.toArray().length);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public double get(int i){
-            return this.array[i];
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void set(int i, double val){
-            this.array[i]=val;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int size(){
-            return this.array.length;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void sum(Vector vector) {
-            if (this.size()!=vector.size())
-                throw new IllegalArgumentException("Vectors has different sizes");
-
-            double mean1 = this.array[INDEX_MEAN];
-            double precision1 = this.array[INDEX_PRECISION];
-
-            double mean2 = vector.get(INDEX_MEAN);
-            double precision2 = vector.get(INDEX_PRECISION);
-
-            if (precision1+precision2!=0) {
-
-                double newmean = (precision1 / (precision1 + precision2)) * mean1 + (precision2 / (precision1 + precision2)) * mean2;
-
-                double newprecision = precision1 + precision2;
-
-                this.array[INDEX_MEAN] = newmean;
-                this.array[INDEX_PRECISION] = newprecision;
-            }
-
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void substract(Vector vector) {
-            if (this.size()!=vector.size())
-                throw new IllegalArgumentException("Vectors has different sizes");
-
-            double mean1 = this.array[INDEX_MEAN];
-            double precision1 = this.array[INDEX_PRECISION];
-
-            double mean2 = vector.get(INDEX_MEAN);
-            double precision2 = vector.get(INDEX_PRECISION);
-
-            if (precision1-precision2!=0) {
-                double newmean = (precision1 / (precision1 - precision2)) * mean1 - (precision2 / (precision1 - precision2)) * mean2;
-
-                double newprecision = precision1 - precision2;
-
-                this.array[INDEX_MEAN] = newmean;
-                this.array[INDEX_PRECISION] = newprecision;
-            }else{
-                this.array[INDEX_MEAN] = 0;
-                this.array[INDEX_PRECISION] = 0;
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void copy(Vector vector){
-            if (this.size()!=vector.size())
-                throw new IllegalArgumentException("Vectors has different sizes");
-
-            if (!vector.getClass().isAssignableFrom(ArrayVectorParameter.class))
-                throw new IllegalArgumentException("Not compatible class");
-
-            this.copy((ArrayVectorParameter)vector);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void divideBy(double val){
-            throw new UnsupportedOperationException("");
-        }
-
-        /**
-         /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void multiplyBy(double val){
-            this.array[INDEX_PRECISION] *= val;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public double dotProduct(Vector vector) {
-            double mean1 = this.array[INDEX_MEAN];
-            double precision1 = this.array[INDEX_PRECISION];
-
-            return precision1*mean1*vector.get(0) - 0.5*precision1*vector.get(1);
-        }
-
     }
 
 /*    public static void main(String[] args) throws IOException {

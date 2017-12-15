@@ -122,9 +122,9 @@ public class DriftSVB extends SVB{
 
         //Restart Truncated-Exp
         for (int i = 0; i < this.hppVal.length; i++) {
-            this.ef_TExpP.getNaturalParameters().set(i,this.hppVal[i]);
-            this.ef_TExpQ.getNaturalParameters().set(i,this.hppVal[i]);
+            this.ef_TExpQ.getNaturalParameters().set(i,this.ef_TExpP.getNaturalParameters().get(i));
         }
+
         this.ef_TExpP.updateMomentFromNaturalParameters();
         this.ef_TExpQ.updateMomentFromNaturalParameters();
 

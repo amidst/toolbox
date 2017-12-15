@@ -43,10 +43,10 @@ public class RunMultiDrift {
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
-        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top100words/arff/";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top1000words/arff/";
 
         boolean stemmed = true;
-        int numberOfTopWords = 100;
+        int numberOfTopWords = 1000;
 
         int docsPerBatch = 1000;
 
@@ -57,7 +57,7 @@ public class RunMultiDrift {
 */
         int ntopics = 10;
         int niter = 100;
-        double threshold = 0.01;
+        double threshold = 0.1;
 
         if (args.length>1){
             int cont=0;
@@ -96,7 +96,7 @@ public class RunMultiDrift {
         MultiDriftSVB svb = new MultiDriftSVB();
 
         svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,0.01});
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1000});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

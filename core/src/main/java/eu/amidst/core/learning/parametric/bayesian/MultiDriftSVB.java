@@ -150,18 +150,12 @@ public class MultiDriftSVB extends SVB{
         }
 
         //Restart Truncated-Exp
-        for (int i = 0; i < this.hppVal.length; i++) {
-            this.ef_TExpP.getNaturalParameters().set(i,this.hppVal[i]);
-        }
-
-        //Restart Truncated-Exp
         for (int i = 0; i < prior.getNumberOfBaseVectors(); i++) {
             for (int j = 0; j < this.hppVal.length; j++) {
-                this.ef_TExpQ[i].getNaturalParameters().set(j,this.hppVal[j]);
+                this.ef_TExpQ[i].getNaturalParameters().set(j,this.ef_TExpP.getNaturalParameters().get(j));
             }
             this.ef_TExpQ[i].setUpperInterval(this.ef_TExpP.getUpperInterval());
             this.ef_TExpQ[i].setLowerInterval(this.ef_TExpP.getLowerInterval());
-
         }
 
         boolean convergence = false;

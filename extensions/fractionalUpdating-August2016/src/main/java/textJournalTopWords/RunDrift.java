@@ -54,7 +54,7 @@ public class RunDrift {
 */
         int ntopics = 10;
         int niter = 100;
-        double threshold = 0.01;
+        double threshold = 0.1;
 
         if (args.length>1) {
             int cont=0;
@@ -93,7 +93,7 @@ public class RunDrift {
 
         DriftSVB svb = new DriftSVB();
         //svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0,0.01});
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
