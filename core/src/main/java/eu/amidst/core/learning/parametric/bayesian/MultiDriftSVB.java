@@ -156,6 +156,7 @@ public class MultiDriftSVB extends SVB{
             }
             this.ef_TExpQ[i].setUpperInterval(this.ef_TExpP.getUpperInterval());
             this.ef_TExpQ[i].setLowerInterval(this.ef_TExpP.getLowerInterval());
+            this.ef_TExpQ[i].updateMomentFromNaturalParameters();
         }
 
         boolean convergence = false;

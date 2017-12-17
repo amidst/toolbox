@@ -125,7 +125,6 @@ public class DriftSVB extends SVB{
             this.ef_TExpQ.getNaturalParameters().set(i,this.ef_TExpP.getNaturalParameters().get(i));
         }
 
-        this.ef_TExpP.updateMomentFromNaturalParameters();
         this.ef_TExpQ.updateMomentFromNaturalParameters();
 
         boolean convergence = false;
