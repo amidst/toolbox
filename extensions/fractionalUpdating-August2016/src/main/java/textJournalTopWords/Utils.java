@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
+    public static int SEED = 0;
+
     public static <T extends DataInstance> List<DataOnMemory<T>> splitTrainTest(DataStream<T> data, int seed){
 
         List<DataOnMemory<T>> out = BatchSpliteratorByID.streamOverDocuments(data,1).collect(Collectors.toList());

@@ -27,6 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import static textJournalTopWords.Utils.SEED;
+
 /**
  * Created by andresmasegosa on 4/5/16.
  */
@@ -92,8 +94,8 @@ public class RunDrift {
 
 
         DriftSVB svb = new DriftSVB();
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1});
+        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
+        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1500});
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
@@ -136,8 +138,6 @@ public class RunDrift {
 
 
 
-        Random random = new Random(1);
-
         double totalLog = 0;
 
         for (int year = 0; year < years.length; year++) {
@@ -145,7 +145,7 @@ public class RunDrift {
             DataStream<DataInstance> batch=DataStreamLoader.open(dataPath+localPath+years[year]+".arff");
 
 
-            List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,1);
+            List<DataOnMemory<DataInstance>> trainTest =  Utils.splitTrainTest(batch,SEED);
 
             DataOnMemory<DataInstance> train = trainTest.get(0);
             DataOnMemory<DataInstance> test = trainTest.get(1);
