@@ -44,11 +44,11 @@ public class RunMultiDrift {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsTFIDFByYear/";
-        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/stemmed_top1000words/arff/";
+        String dataPath = "/Users/dario/Desktop/stemmed100words/";
+
 
         boolean stemmed = true;
-        int numberOfTopWords = 1000;
+        int numberOfTopWords = 100;
 
         int docsPerBatch = 1000;
 
@@ -61,6 +61,9 @@ public class RunMultiDrift {
         int niter = 100;
         double threshold = 0.1;
 
+        boolean priorTruncatedNormal=false;
+        double priorTruncatedNormalPrecision=1;
+
         if (args.length>1){
             int cont=0;
             model = args[cont++];
@@ -72,6 +75,10 @@ public class RunMultiDrift {
 
             numberOfTopWords = Integer.parseInt(args[cont++]);
             stemmed = args[cont++].equals("stem");
+
+            priorTruncatedNormal = args[cont++].equals("tnorm");
+            if(priorTruncatedNormal)
+                priorTruncatedNormalPrecision = Integer.parseInt(args[cont++]);
 
             args[1]="";
         }
@@ -97,8 +104,14 @@ public class RunMultiDrift {
 
         MultiDriftSVB svb = new MultiDriftSVB();
 
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1500});
+        if(!priorTruncatedNormal) {
+            System.out.println("Truncated Exponential");
+            svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL, new double[]{-0.1});
+        }
+        else {
+            System.out.println("Truncated Normal with precision " + priorTruncatedNormalPrecision);
+            svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL, new double[]{0.5, priorTruncatedNormalPrecision});
+        }
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 

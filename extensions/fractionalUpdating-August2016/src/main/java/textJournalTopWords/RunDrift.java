@@ -25,7 +25,6 @@ import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 import static textJournalTopWords.Utils.SEED;
 
@@ -58,6 +57,9 @@ public class RunDrift {
         int niter = 100;
         double threshold = 0.1;
 
+        boolean priorTruncatedNormal=false;
+        double priorTruncatedNormalPrecision=1;
+
         if (args.length>1) {
             int cont=0;
             model = args[cont++];
@@ -69,6 +71,10 @@ public class RunDrift {
 
             numberOfTopWords = Integer.parseInt(args[cont++]);
             stemmed = args[cont++].equals("stem");
+
+            priorTruncatedNormal = args[cont++].equals("tnorm");
+            if(priorTruncatedNormal)
+                priorTruncatedNormalPrecision = Integer.parseInt(args[cont++]);
 
             args[1]="";
         }
@@ -94,8 +100,14 @@ public class RunDrift {
 
 
         DriftSVB svb = new DriftSVB();
-        svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{-0.1});
-        //svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL,new double[]{0.5,1500});
+        if(!priorTruncatedNormal) {
+            System.out.println("Truncated Exponential");
+            svb.setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL, new double[]{-0.1});
+        }
+        else {
+            System.out.println("Truncated Normal with precision " + priorTruncatedNormalPrecision);
+            svb.setPriorDistribution(DriftSVB.TRUNCATED_NORMAL, new double[]{0.5, priorTruncatedNormalPrecision});
+        }
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
