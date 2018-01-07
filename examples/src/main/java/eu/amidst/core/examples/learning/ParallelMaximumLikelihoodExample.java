@@ -37,7 +37,7 @@ public class ParallelMaximumLikelihoodExample {
         //We set the batch size which will be employed to learn the model in parallel
         parameterLearningAlgorithm.setWindowsSize(100);
 
-        //We set the data which is going to be used for leaning the parameters
+        //We set the data which is going to be used for learning the parameters
         parameterLearningAlgorithm.setDataStream(data);
 
         //We perform the learning
