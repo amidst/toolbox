@@ -22,13 +22,8 @@ import java.util.Random;
 /**
  * Created by andresmasegosa on 14/4/16.
  */
-public class EF_TruncatedExponential extends EF_UnivariateDistribution {
+public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution {
 
-    //It defines the upper interval of the distribution
-    double upperInterval = 1;
-
-    //It defines the lower interval of the distribution
-    double lowerInterval = 0;
 
     /**
      * Creates a new EF_TruncatedExponential distribution, for a given {@link Variable} object.
@@ -61,30 +56,6 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
         this.setNaturalParameters(naturalParameters);
     }
 
-
-    public double getUpperInterval() {
-        return upperInterval;
-    }
-
-    public double getLowerInterval() {
-        return lowerInterval;
-    }
-
-    /**
-     * Set the upper interval of the truncated.
-     * @param upperInterval
-     */
-    public void setUpperInterval(double upperInterval) {
-        this.upperInterval = upperInterval;
-    }
-
-    /**
-     * Set the lower interval interval of the truncated.
-     * @param lowerInterval
-     */
-    public void setLowerInterval(double lowerInterval) {
-        this.lowerInterval = lowerInterval;
-    }
 
     @Override
     public double computeLogBaseMeasure(double val) {
@@ -142,12 +113,12 @@ public class EF_TruncatedExponential extends EF_UnivariateDistribution {
     @Override
     public void updateMomentFromNaturalParameters() {
         double delta =this.getNaturalParameters().get(0);
+        double width = (this.upperInterval - this.lowerInterval);
 
-        if (Math.exp(delta)>Double.MAX_VALUE){
-            this.momentParameters.set(0, 1.0 - 1/delta);
-        }else {
+        if (Math.exp(width*delta)>Double.MAX_VALUE) {
+            this.momentParameters.set(0, this.upperInterval - 1/delta);
+        } else {
 
-            double width = (this.upperInterval - this.lowerInterval);
             double val = this.upperInterval -
                     width/(1 - Math.exp(delta*width))
                     - 1/delta;

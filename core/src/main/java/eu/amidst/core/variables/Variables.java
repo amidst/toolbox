@@ -228,6 +228,15 @@ public class Variables implements Iterable<Variable>, Serializable {
     }
 
     /**
+     * Creates a new Truncated ([0,1]) Normal variable from a given name.
+     * @param name a given name.
+     * @return a new Truncated Normal Variable.
+     */
+    public Variable newTruncatedNormal(String name) {
+        return this.newVariable(name, DistributionTypeEnum.TRUNCATED_NORMAL, new RealStateSpace(0,1));
+    }
+
+    /**
      * Creates a new Indicator Variable from a given Variable.
      * @param var a given Variable.
      * @return a new indicator Variable.

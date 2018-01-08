@@ -55,7 +55,7 @@ public class ParallelMaximumLikelihood implements ParameterLearningAlgorithm {
     protected EF_DynamicBayesianNetwork efBayesianNetwork;
 
     /** Represents if the class is in debug mode*/
-    protected boolean debug = true;
+    protected boolean debug = false;
 
     /** Represents whether Laplace correction (i.e. MAP estimation) is used*/
     protected boolean laplace = true;

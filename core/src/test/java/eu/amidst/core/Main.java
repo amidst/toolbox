@@ -15,5 +15,5 @@ package eu.amidst.core;
  * Created by andresmasegosa on 5/7/16.
  */
 public class Main {
-    public static boolean VERBOSE = true;
+    public static boolean VERBOSE = false;
 }

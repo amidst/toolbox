@@ -56,7 +56,7 @@ public class PreliminaryExperiments {
         driftSVB = new DriftSVB();
         driftSVB.setWindowsSize(batchSize);
         driftSVB.setSeed(0);
-        driftSVB.setDelta(deltaValue);
+        //driftSVB.setDelta(deltaValue);
         VMP vmp = driftSVB.getPlateuStructure().getVMP();
         vmp.setOutput(false);
         vmp.setTestELBO(true);

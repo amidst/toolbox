@@ -14,6 +14,7 @@ package eu.amidst.core.learning.parametric.bayesian;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
@@ -34,8 +35,12 @@ import java.util.Random;
 public class DriftSVB extends SVB{
 
 
-    EF_TruncatedExponential ef_TExpP;
-    EF_TruncatedExponential ef_TExpQ;
+    public static int TRUNCATED_EXPONENTIAL = 0;
+    public static int TRUNCATED_NORMAL  = 1;
+
+
+    EF_UnivariateDistribution ef_TExpP;
+    EF_UnivariateDistribution ef_TExpQ;
 
     Variable truncatedExpVar;
 
@@ -45,14 +50,29 @@ public class DriftSVB extends SVB{
 
     CompoundVector prior=null;
 
-    double delta = 0.1;
+    double[] hppVal = {-0.1};
+    int type = TRUNCATED_EXPONENTIAL;
 
-    public double getDelta() {
-        return delta;
+    //double[] hppVal = {0.1, 1};
+    //int type = TRUNCATED_NORMAL;
+
+    public void setPriorDistribution(int type, double[] val) {
+        this.type = type;
+        this.hppVal = val;
     }
 
-    public void setDelta(double delta) {
-        this.delta = delta;
+    public void initHPP(){
+        if (type == TRUNCATED_EXPONENTIAL) {
+            truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
+            this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
+            this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0]);
+        } else if (type == TRUNCATED_NORMAL) {
+            truncatedExpVar = new Variables().newTruncatedNormal("TruncatedNormalVar");
+            this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
+            this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.hppVal[0], this.hppVal[1]);
+        } else {
+            throw new IllegalArgumentException("No prior defined");
+        }
     }
 
     /**
@@ -61,12 +81,8 @@ public class DriftSVB extends SVB{
     @Override
     public void initLearning() {
         super.initLearning();
-        truncatedExpVar = new Variables().newTruncatedExponential("TruncatedExponentialVar");
-        this.ef_TExpP = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
-
+        this.initHPP();
         prior = this.plateuStructure.getPlateauNaturalParameterPrior();
-
-        this.ef_TExpQ = truncatedExpVar.getDistributionType().newEFUnivariateDistribution(this.getDelta());
         firstBatch=true;
     }
 
@@ -104,11 +120,10 @@ public class DriftSVB extends SVB{
         }
 
         //Restart Truncated-Exp
-        double delta = this.getDelta();//-this.plateuStructure.getPosteriorSampleSize()*0.1;
-        this.ef_TExpP.getNaturalParameters().set(0,-delta);
-        this.ef_TExpP.updateMomentFromNaturalParameters();
+        for (int i = 0; i < this.hppVal.length; i++) {
+            this.ef_TExpQ.getNaturalParameters().set(i,this.ef_TExpP.getNaturalParameters().get(i));
+        }
 
-        this.ef_TExpQ.getNaturalParameters().set(0,-delta);
         this.ef_TExpQ.updateMomentFromNaturalParameters();
 
         boolean convergence = false;
@@ -132,8 +147,8 @@ public class DriftSVB extends SVB{
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
-            if (niter==0)
-                this.plateuStructure.resetQs();
+            //if (niter==0)
+            //    this.plateuStructure.resetQs();
 
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
@@ -163,6 +178,10 @@ public class DriftSVB extends SVB{
             ef_TExpQ.getNaturalParameters().set(0,
                     - kl_q_pt_1 + kl_q_p0 +
                     this.ef_TExpP.getNaturalParameters().get(0));
+            for (int i = 1; i < this.hppVal.length; i++) {
+                ef_TExpQ.getNaturalParameters().set(i,this.ef_TExpP.getNaturalParameters().get(i));
+
+            }
             ef_TExpQ.fixNumericalInstability();
             ef_TExpQ.updateMomentFromNaturalParameters();
 

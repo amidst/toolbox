@@ -28,7 +28,7 @@ import eu.amidst.core.variables.Variable;
  *  It extends the {@link DataInstance} and {@link DynamicAssignment} interfaces.
  *  Hence, it can be also interpreted as a dynamic assignment to a set of {@link Variable} objects.
  *
- * <p> An example of use of the DynamicDataInstance interface can be found in {@see eu.amidst.dynamic.examples.datastream} </p>
+ * <p> An example of use of the DynamicDataInstance interface can be found in eu.amidst.dynamic.examples.datastream </p>
  */
 
 public interface DynamicDataInstance extends DataInstance, DynamicAssignment{

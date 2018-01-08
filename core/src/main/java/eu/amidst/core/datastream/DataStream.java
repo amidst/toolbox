@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * <p> For further details about the implementation of this class using Java 8 functional-style programming look at the following paper: </p>
  *
  * <i> Masegosa et al. Probabilistic Graphical Models on Multi-Core CPUs using Java 8. IEEE-CIM (2015). </i>
- *<
+ *
  */
 public interface DataStream<E extends DataInstance> extends Iterable<E> {
 
