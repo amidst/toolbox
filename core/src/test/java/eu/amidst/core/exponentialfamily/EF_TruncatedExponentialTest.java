@@ -25,7 +25,7 @@ public class EF_TruncatedExponentialTest extends TestCase {
 
         Variables variables = new Variables();
         Variable var = variables.newTruncatedExponential("A");
-        EF_TruncatedExponential dist = var.getDistributionType().newEFUnivariateDistribution(1);
+        EF_TruncatedExponential dist = var.getDistributionType().newEFUnivariateDistribution(-1);
 
         assertEquals(dist.computeLogProbabilityOf(1),-0.5413249,0.001);
         assertEquals(dist.getNaturalParameters().get(0),-1.0);

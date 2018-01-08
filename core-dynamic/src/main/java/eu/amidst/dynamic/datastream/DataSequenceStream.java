@@ -29,8 +29,8 @@ public final class DataSequenceStream {
 
     /**
      * Returns a {@link Stream} of {@link DataSequence}.
-     * @param dataStream a DataStream<DynamicDataInstance> object.
-     * @return a Stream<DataSequence> object.
+     * @param dataStream a DataStream object.
+     * @return a Stream object.
      */
     public static Stream<DataSequence> streamOfDataSequences(DataStream<DynamicDataInstance> dataStream){
         return DataSequenceSpliterator.toDataSequenceStream(dataStream);
@@ -38,8 +38,8 @@ public final class DataSequenceStream {
 
     /**
      * Returns a parallel {@link Stream} of {@link DataSequence}.
-     * @param dataStream a DataStream<DynamicDataInstance> object.
-     * @return a Stream<DataSequence> object.
+     * @param dataStream a DataStream object.
+     * @return a Stream object.
      */
     public static Stream<DataSequence> parallelStreamOfDataSequences(DataStream<DynamicDataInstance> dataStream){
         return FixedBatchParallelSpliteratorWrapper.toFixedBatchStream(DataSequenceStream.streamOfDataSequences(dataStream), 1);

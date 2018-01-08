@@ -26,9 +26,9 @@ public class Utils {
 
     /**
      * Commands for arff preprocessing
-     * > find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/DOWN/0.0/g"
-     * > find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/UP/1.0/g"
-     * > find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/@attribute class {1.0, 0.0}/@attribute class numeric/g"
+     *  find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/DOWN/0.0/g"
+     *  find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/UP/1.0/g"
+     *  find . -name '*.arff' -print0 | xargs -0 sed -i "" "s/@attribute class {1.0, 0.0}/@attribute class numeric/g"
      */
 
     public static void splitByMonth(String[] args) throws IOException {

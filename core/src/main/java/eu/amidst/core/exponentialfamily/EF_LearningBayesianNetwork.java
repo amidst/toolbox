@@ -122,13 +122,13 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
 
     /**
      * Returns the list of parameter variables included in this EF_LearningBayesianNetwork model.
-     * @return A {@link List} of {@list Variable} objects.
+     * @return A {@link java.util.List} of {@link Variable} objects.
      */
     public List<Variable> getListOfParametersVariables(){ return this.parametersVariables.getListOfParamaterVariables();}
 
     /**
      * Returns the list of non parameter variables included in this EF_LearningBayesianNetwork model.
-     * @return A {@link List} of {@list Variable} objects.
+     * @return A {@link java.util.List} of {@link Variable} objects.
      */
     public List<Variable> getListOfNonParameterVariables() {
         return this.distributionList.stream()
@@ -140,7 +140,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
     /**
      * Converts the distributions of this EF_LearningBayesianNetwork model into a list of {@link ConditionalDistribution} objects.
      * This conversion also removes the parameter variables by replacing them with their expected value.
-     * @return a {@code List} of {@link ConditionalDistribution} objects.
+     * @return a {@code java.util.List} of {@link ConditionalDistribution} objects.
      */
     public List<ConditionalDistribution> toConditionalDistribution(){
         List<ConditionalDistribution> condDistList = new ArrayList<>();
@@ -172,7 +172,7 @@ public class EF_LearningBayesianNetwork extends EF_Distribution {
 
     /**
      * Returns the list of {@link EF_ConditionalDistribution} objects.
-     * @return a {@code List} of {@link EF_ConditionalDistribution} objects.
+     * @return a {@code java.util.List} of {@link EF_ConditionalDistribution} objects.
      */
     public List<EF_ConditionalDistribution> getDistributionList() {
         return distributionList;

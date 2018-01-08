@@ -49,7 +49,7 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
 
     /**
      * Creates a new DataSequenceSpliterator.
-     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param dataStream_ a DataStream object.
      * @param est the estimated size
      * @param batchSize
      */
@@ -64,7 +64,7 @@ public class BatchSpliteratorByID<T extends DataInstance> implements Spliterator
 
     /**
      * Creates a new DataSequenceSpliterator.
-     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param dataStream_ a DataStream object.
      * @param batchSize
      */
     public BatchSpliteratorByID(DataStream<T> dataStream_, int batchSize) {

@@ -24,7 +24,7 @@ import eu.amidst.core.variables.Variable;
 
 /**
  * This interface handles and defines the algorithm used to run inference in {@link DynamicBayesianNetwork} models.
- * For examples {@see eu.amidst.dynamic.examples.inference}.
+ * For examples see eu.amidst.dynamic.examples.inference.
  */
 public interface InferenceAlgorithmForDBN {
 

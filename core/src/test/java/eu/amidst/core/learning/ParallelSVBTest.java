@@ -240,7 +240,7 @@ public class ParallelSVBTest extends TestCase {
 
             if (Main.VERBOSE) System.out.println(normalVarBN.toString());
             if (Main.VERBOSE) System.out.println(learntNormalVarBN.toString());
-            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.2));
+            assertTrue(normalVarBN.equalBNs(learntNormalVarBN, 0.3));
 
         }
     }

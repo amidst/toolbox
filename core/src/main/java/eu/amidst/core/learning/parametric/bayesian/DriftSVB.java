@@ -11,7 +11,6 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;

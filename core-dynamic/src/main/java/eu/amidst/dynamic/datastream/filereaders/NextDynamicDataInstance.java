@@ -74,7 +74,7 @@ public final class NextDynamicDataInstance {
 
     /**
      * Returns a {@link DynamicDataInstance} object in case no SequenceID or TimeID are provided.
-     * @param reader an Iterator<DataRow> object.
+     * @param reader an Iterator object.
      * @return a {@link DynamicDataInstance} object.
      */
     public DynamicDataInstance nextDataInstance_NoTimeID_NoSeq(Iterator<DataRow> reader){
@@ -91,7 +91,7 @@ public final class NextDynamicDataInstance {
 
     /**
      * Returns a {@link DynamicDataInstance} object in case only a TimeID is provided.
-     * @param reader an Iterator<DataRow> object.
+     * @param reader an Iterator object.
      * @param attTimeID an {@link Attribute} object that represents the time ID.
      * @return a {@link DynamicDataInstance} object.
      */
@@ -125,7 +125,7 @@ public final class NextDynamicDataInstance {
 
     /**
      * Returns a {@link DynamicDataInstance} object in case only a SequenceID is provided.
-     * @param reader an Iterator<DataRow> object.
+     * @param reader an Iterator object.
      * @param attSequenceID an {@link Attribute} object that represents the sequence ID.
      * @return a {@link DynamicDataInstance} object.
      */
@@ -157,7 +157,7 @@ public final class NextDynamicDataInstance {
 
     /**
      * Returns a {@link DynamicDataInstance} object in case both a SequenceID  and a TimeID are provided.
-     * @param reader an Iterator<DataRow> object.
+     * @param reader an Iterator object.
      * @param attSequenceID an {@link Attribute} object that represents the sequence ID.
      * @param attTimeID an {@link Attribute} object that represents the time ID.
      * @return a {@link DynamicDataInstance} object.

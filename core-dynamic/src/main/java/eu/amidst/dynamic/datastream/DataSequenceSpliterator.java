@@ -49,7 +49,7 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
 
     /**
      * Creates a new DataSequenceSpliterator.
-     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param dataStream_ a DataStream object.
      * @param est the estimated size
      */
     public DataSequenceSpliterator(DataStream<DynamicDataInstance> dataStream_, long est) {
@@ -62,16 +62,16 @@ public class DataSequenceSpliterator implements Spliterator<DataSequence> {
 
     /**
      * Creates a new DataSequenceSpliterator.
-     * @param dataStream_ a DataStream<DynamicDataInstance> object.
+     * @param dataStream_ a DataStream object.
      */
     public DataSequenceSpliterator(DataStream<DynamicDataInstance> dataStream_) {
         this(dataStream_, dataStream_.stream().spliterator().estimateSize());
     }
 
     /**
-     * Returns a {@link Stream} of {@link DataSequence} from a given a DataStream<DynamicDataInstance>.
-     * @param dataStream_ a DataStream<DynamicDataInstance> object.
-     * @return a Stream<DataSequence> object.
+     * Returns a {@link Stream} of {@link DataSequence} from a given a DataStream.
+     * @param dataStream_ a DataStream object.
+     * @return a Stream object.
      */
     public static Stream<DataSequence> toDataSequenceStream(DataStream<DynamicDataInstance> dataStream_) {
         return stream(new DataSequenceSpliterator(dataStream_), true);

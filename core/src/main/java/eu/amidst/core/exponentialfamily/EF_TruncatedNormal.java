@@ -314,7 +314,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         double newExpectedX = expectedXOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
         this.momentParameters.set(EXPECTED_MEAN, newExpectedX);
 
-        double newExpectedXSquared = Double.NaN; //expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+        double newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
 
         //if (newExpectedXSquared <= 0)
         //    throw new IllegalStateException("Zero or Negative expected square value");

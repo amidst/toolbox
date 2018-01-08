@@ -108,7 +108,7 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
     /**
      * Returns a {@link Stream} of {@link DynamicDataInstance} given a valid {@link DataFileReader} object.
      * @param reader a valid {@link DataFileReader} object.
-     * @return a Stream<DynamicDataInstance> object.
+     * @return a Stream object.
      */
     public static Stream<DynamicDataInstance> toDynamicDataInstanceStream(DataFileReader reader) {
         return stream(new DynamicDataInstanceSpliterator(reader), false);
