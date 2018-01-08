@@ -76,7 +76,7 @@ public class NaiveBayesVirtualConceptDriftDetectorExample {
 
             //We update the model by invoking this method. The output
             // is an array with a value associated
-            // to each fo the global hidden variables
+            // to each of the global hidden variables
             double[] out = virtualDriftDetector.updateModel(batch);
 
             //We print the output
