@@ -27,7 +27,7 @@ public class DynamicModelInference {
 
         //Testing dataset
         String filenamePredict = "datasets/simulated/cajamar.arff";
-        DataStream<DynamicDataInstance> dataPredict = DynamicDataStreamLoader.loadFromFile(filenamePredict);
+        DataStream<DynamicDataInstance> dataPredict = DynamicDataStreamLoader.open(filenamePredict);
 
         //Select the inference algorithm
         InferenceAlgorithmForDBN infer = new FactoredFrontierForDBN(new ImportanceSampling()); // new ImportanceSampling(),  new VMP(),
@@ -40,6 +40,8 @@ public class DynamicModelInference {
         //Classify each instance
         int t = 0;
         for (DynamicDataInstance instance : dataPredict) {
+            if (instance.getSequenceID()>0)
+                break;
 
             infer.addDynamicEvidence(instance);
             infer.runInference();
