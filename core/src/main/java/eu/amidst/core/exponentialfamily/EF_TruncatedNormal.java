@@ -23,8 +23,8 @@ import eu.amidst.core.utils.RobustOperations;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
+import eu.amidst.core.variables.Variables;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -240,7 +240,15 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
         double log_PHI_alpha, log_PHI_beta, log_PHI_diff;
 
-        if (alpha>10 && beta>10) {
+        if (alpha>5000 || beta>5000) {
+            return(0);
+        }
+
+        if (alpha< -5000 || beta< -5000) {
+            return(1);
+        }
+
+        if (alpha>3 && beta>3) {
             log_PHI_alpha = auxNormal.logpnorm(-alpha, 0, 1);
             log_PHI_beta = auxNormal.logpnorm(-beta, 0, 1);
             log_PHI_diff = RobustOperations.robustDifferenceOfLogarithms(log_PHI_alpha, log_PHI_beta);
@@ -275,7 +283,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
         double log_PHI_alpha, log_PHI_beta, log_PHI_diff;
 
-        if (alpha>10 && beta >10) {
+        if (alpha>3 && beta >3) {
             log_PHI_alpha = auxNormal.logpnorm(-alpha, 0, 1);
             log_PHI_beta = auxNormal.logpnorm(-beta, 0, 1);
             log_PHI_diff = RobustOperations.robustDifferenceOfLogarithms(log_PHI_alpha, log_PHI_beta);
@@ -740,6 +748,22 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
         }
 
+    public static void main(String[] args) {
+        Variables variables = new Variables();
+        Variable var = variables.newTruncatedNormal("A");
 
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
+
+        /*
+         * MEAN=0
+         */
+        dist.setNaturalWithMeanPrecision(-75000, 1);
+
+        System.out.println(dist.getExpectedParameters().get(0));
+        System.out.println(dist.getMomentParameters().get(0));
+        System.out.println(dist.getMomentParameters().get(1));
+
+        System.out.println(dist.getMomentParameters().get(1) - dist.getMomentParameters().get(0)*dist.getMomentParameters().get(0));
+    }
 
 }

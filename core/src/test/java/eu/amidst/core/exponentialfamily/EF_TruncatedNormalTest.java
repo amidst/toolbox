@@ -63,7 +63,7 @@ public class EF_TruncatedNormalTest extends TestCase {
 
 
         dist.setNaturalWithMeanPrecision(100,10000);
-        assertEquals(0.999999, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.999999, dist.getExpectedParameters().get(0),0.00001);
         assertEquals(0.9999949, dist.getMomentParameters().get(1),0.001);
 
 
@@ -80,7 +80,7 @@ public class EF_TruncatedNormalTest extends TestCase {
          * MEAN=10000
          */
         dist.setNaturalWithMeanPrecision(10000,1);
-        assertEquals(0.99988, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.99988, dist.getExpectedParameters().get(0),0.001);
         assertEquals(0.799998, dist.getMomentParameters().get(1),0.001);
 
         dist.setNaturalWithMeanPrecision(10000,0.01);
@@ -92,7 +92,7 @@ public class EF_TruncatedNormalTest extends TestCase {
          * MEAN=-10000
          */
         dist.setNaturalWithMeanPrecision(-10000,1);
-        assertEquals(0.0000869246, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.0000869246, dist.getExpectedParameters().get(0),0.001);
 
         dist.setNaturalWithMeanPrecision(-10000,0.01);
         assertEquals(0.0099995, dist.getExpectedParameters().get(0),0.000001);
@@ -122,4 +122,16 @@ public class EF_TruncatedNormalTest extends TestCase {
         assertEquals(0.493807, dist.getMomentParameters().get(1),0.01);
     }
 
+    public static void test2() {
+        Variables variables = new Variables();
+        Variable var = variables.newTruncatedNormal("A");
+
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
+
+        for (int i = -1000; i < 1000; i++) {
+            dist.setNaturalWithMeanPrecision(i, 0.01);
+            System.out.println(dist.getExpectedParameters().get(0));
+        }
+
+    }
 }
