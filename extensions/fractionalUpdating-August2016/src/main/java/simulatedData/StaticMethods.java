@@ -30,10 +30,10 @@ public class StaticMethods {
         //MultiDriftSVB svb = new MultiDriftSVB();
         //StochasticVI svb = new StochasticVI();
 
-        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(0.1);
+        svb.getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setOutput(true);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
         svb.setFadingFactor(fadingFactor);
         svb.setWindowsSize(sampleSize);
 

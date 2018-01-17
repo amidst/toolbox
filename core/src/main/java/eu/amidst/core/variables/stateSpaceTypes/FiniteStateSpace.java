@@ -118,6 +118,9 @@ public class FiniteStateSpace extends StateSpaceType implements Iterable<String>
      */
     @Override
     public String stringValue(double value) {
-        return statesNames.get((int)value);
+        if (Double.isNaN(value))
+            return "?";
+        else
+            return statesNames.get((int)value);
     }
 }

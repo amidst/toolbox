@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
@@ -30,7 +24,6 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.HashMapAssignment;
 import eu.amidst.core.variables.Variable;
 
-import javax.sql.rowset.Predicate;
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,7 +67,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      */
     public BayesianNetworkSampler(BayesianNetwork network1){
         network=network1;
-        this.causalOrder=Utils.getTopologicalOrder(network.getDAG());
+        this.causalOrder= Utils.getTopologicalOrder(network.getDAG());
     }
 
     /**
@@ -121,10 +114,10 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      * @return a filtered {@link Assignment}.
      */
     private Assignment filter(Assignment assignment){
-        hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var,Utils.missingValue()));
+        hiddenVars.keySet().stream().forEach(var -> assignment.setValue(var, Utils.missingValue()));
         marNoise.entrySet().forEach(e -> {
             if (random.nextDouble()<e.getValue())
-                assignment.setValue(e.getKey(),Utils.missingValue());
+                assignment.setValue(e.getKey(), Utils.missingValue());
         });
 
         return assignment;
@@ -179,9 +172,15 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
             TemporalDataStream(BayesianNetworkSampler sampler1, int nSamples1){
                 this.sampler=sampler1;
                 this.nSamples = nSamples1;
-                List<Attribute> list = this.sampler.network.getVariables().getListOfVariables().stream()
+                List<Variable> vars = this.sampler.network.getVariables().getListOfVariables().stream()
                         .filter(var -> !BayesianNetworkSampler.this.latentVars.containsKey(var))
-                        .map(var -> new Attribute(var.getVarID(), var.getName(), var.getStateSpaceType())).collect(Collectors.toList());
+                        .collect(Collectors.toList());
+                List<Attribute> list = new ArrayList<>();
+                for (int i = 0; i < vars.size(); i++) {
+                    Variable var = vars.get(i);
+                    list.add(new Attribute(i, var.getName(), var.getStateSpaceType()));
+                }
+
                 this.atts= new Attributes(list);
             }
 
@@ -204,7 +203,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
                     TemporalDataInstance(Assignment assignment1, Attributes atts){
                         this.assignment=assignment1;
                         this.attributes = atts;
-                        this.variables = sampler.network.getVariables().getListOfVariables();
+                        this.variables = atts.getListOfNonSpecialAttributes().stream().map(att -> sampler.network.getVariables().getVariableByName(att.getName())).collect(Collectors.toList());
                     }
                     @Override
                     public double getValue(Variable var) {
@@ -287,14 +286,20 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      */
     private Assignment sample(BayesianNetwork network, List<Variable> causalOrder, Random random) {
 
-        HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars() - this.latentVars.size());
+        HashMapAssignment assignment = new HashMapAssignment(network.getNumberOfVars());
         for (Variable var : causalOrder) {
-            if(!this.latentVars.containsKey(var)) {
                 double sampledValue = network.getConditionalDistribution(var).getUnivariateDistribution(assignment).sample(random);
                 assignment.setValue(var, sampledValue);
+        }
+
+        HashMapAssignment finalAssignment = new HashMapAssignment(network.getNumberOfVars() - this.latentVars.size());
+        for (Variable var : causalOrder) {
+            if(!this.latentVars.containsKey(var)) {
+                finalAssignment.setValue(var, assignment.getValue(var));
             }
         }
-        return assignment;
+
+        return finalAssignment;
     }
 
     /**

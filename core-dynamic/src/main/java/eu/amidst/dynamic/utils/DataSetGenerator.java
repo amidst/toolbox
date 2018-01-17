@@ -54,6 +54,21 @@ public final class DataSetGenerator {
     }
 
 
+    public static DataStream<DynamicDataInstance> generate(int seed, int nSquences, int nSamplesPerSequence, int nDiscreteAtts, int nContinuousAttributes){
+        DynamicBayesianNetworkGenerator.setSeed(seed);
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(nContinuousAttributes);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(nDiscreteAtts);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        int nTotal = nDiscreteAtts+nContinuousAttributes;
+        int nLinksMin = nTotal-1;
+        int nLinksMax = nTotal*(nTotal-1)/2;
+        DynamicBayesianNetworkGenerator.setNumberOfLinks((int)(0.8*nLinksMin + 0.2*nLinksMax));
+
+        DynamicBayesianNetwork dbn = DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();
+        DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbn);
+        sampler.setSeed(seed);
+        return sampler.sampleToDataBase(nSquences,nSamplesPerSequence);
+    }
 
     public static DataStream<DynamicDataInstance> generate(int seed, int nSamples, int[] nDiscreteStates, int nContinuousAttributes){
         DynamicBayesianNetworkGenerator.setSeed(seed);

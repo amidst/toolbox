@@ -73,6 +73,11 @@ public class DataFlinkLoader implements Serializable{
         this.normalize = normalize;
     }
 
+    public static DataFlink<DataInstance> open(ExecutionEnvironment env, String pathFileData) throws FileNotFoundException {
+        if(isArffFolder(pathFileData))
+            return loadDataFromFolder(env,pathFileData,false);
+        return loadDataFromFile(env,pathFileData,false);
+    }
 
     public static DataFlink<DataInstance> open(ExecutionEnvironment env, String pathFileData, boolean normalize) throws FileNotFoundException {
         if(isArffFolder(pathFileData))

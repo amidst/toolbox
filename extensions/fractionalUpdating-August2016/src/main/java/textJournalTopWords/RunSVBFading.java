@@ -111,10 +111,10 @@ public class RunSVBFading {
         svb.setPlateuStructure(plateauLDA);
         svb.setOutput(true);
 
-        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(niter);
-        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(threshold);
+        svb.getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getPlateuStructure().getVMP().setMaxIter(niter);
+        svb.getPlateuStructure().getVMP().setOutput(true);
+        svb.getPlateuStructure().getVMP().setThreshold(threshold);
         svb.setFadingFactor(fadingFactor);
 
         svb.setWindowsSize(docsPerBatch);
@@ -128,7 +128,7 @@ public class RunSVBFading {
 
 
         fw.write("\t\t\t\t");
-        for (Variable var : svb.getSVB().getPlateuStructure().getNonReplicatedVariables()) {
+        for (Variable var : svb.getPlateuStructure().getNonReplicatedVariables()) {
             fw.write(var.getName() + "\t");
         }
         fw.write("\n");

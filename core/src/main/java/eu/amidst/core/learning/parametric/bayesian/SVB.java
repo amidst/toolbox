@@ -17,6 +17,8 @@
 
 package eu.amidst.core.learning.parametric.bayesian;
 
+import eu.amidst.core.constraints.Constraint;
+import eu.amidst.core.constraints.Constraints;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -97,6 +99,12 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     /** Represents the natural vector posterior. */
     BatchOutput naturalVectorPosterior = null;
     private boolean activateOutput = false;
+
+    /** Introduce Parameter Constraints**/
+    Constraints constraints = new Constraints();
+
+    /** Store weather parallel message passing will be employed or not.**/
+    private boolean parallelMode = false;
 
     /**
      * Returns the window size.
@@ -455,6 +463,14 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
     }
 
     /**
+     * Add a parameter constraint
+     * @param constraint, a well defined object constraint.
+     */
+    public void addParameterConstraint(Constraint constraint){
+        this.constraints.addConstraint(constraint);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -465,6 +481,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
         this.getPlateuStructure().getVMP().setOutput(activateOutput);
         this.getPlateuStructure().getVMP().setTestELBO(activateOutput);
+        this.getPlateuStructure().getVMP().setParallelMode(parallelMode);
 
         plateuStructure.setNRepetitions(windowsSize);
 
@@ -474,10 +491,16 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
         plateuStructure.setDAG(dag);
         plateuStructure.replicateModel();
         this.plateuStructure.resetQs();
+
+
         this.ef_extendedBN = this.plateuStructure.getEFLearningBN();
+
 
         if (transitionMethod!=null)
            this.ef_extendedBN = this.transitionMethod.initModel(this.ef_extendedBN, plateuStructure);
+
+        this.constraints.setPlateuStructure(this.plateuStructure);
+        this.constraints.buildConstrains();
     }
 
     @Override
@@ -579,7 +602,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
      */
     @Override
     public void setParallelMode(boolean parallelMode) {
-        throw new UnsupportedOperationException("Non Parallel Mode Supported. Use class ParallelSVB");
+        this.parallelMode = parallelMode;
     }
 
     /**

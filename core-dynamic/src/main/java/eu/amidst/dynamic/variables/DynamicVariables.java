@@ -235,6 +235,15 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     /**
+     * Creates a new multinomial dynamic Variable from a given Attribute.
+     * @param att a given {@link Attribute}.
+     * @return a new multinomial {@link Variable} object.
+     */
+    public Variable newMultinomialDynamicVariable(Attribute att) {
+        return this.newDynamicVariable(att, DistributionTypeEnum.MULTINOMIAL);
+    }
+
+    /**
      * Creates a new gaussian dynamic Variable from a given Attribute.
      * @param att a given {@link Attribute}.
      * @return a new gaussian {@link Variable} object.

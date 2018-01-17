@@ -77,7 +77,7 @@ public abstract class DynamicModel<T extends DynamicModel> {
         SVB svb = new SVB();
         svb.setDynamicDAG(this.getDynamicDAG());
         svb.setWindowsSize(windowSize);
-        svb.setOutput(false);
+        svb.setOutput(true);
         svb.setMaxIter(100);
         svb.setThreshold(0.001);
         svb.initLearning();

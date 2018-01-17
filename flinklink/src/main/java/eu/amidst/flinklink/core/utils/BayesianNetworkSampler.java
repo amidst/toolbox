@@ -62,6 +62,16 @@ public class BayesianNetworkSampler {
 
 
     /**
+     * Sets a given {@link Variable} object as latent. A latent variable doesn't contain an attribute and therefore
+     * doesn't generate a sampling value.
+     * @param var a given {@link Variable} object.
+     */
+    public void setLatentVar(Variable var){
+        this.localSampler.setLatentVar(var);
+    }
+
+
+    /**
      * Sets a given {@link Variable} object as hidden.
      * @param var a given {@link Variable} object.
      */

@@ -10,6 +10,8 @@
  */
 package eu.amidst.dynamic.learning.parametric.bayesian;
 
+import eu.amidst.dynamic.constraints.Constraint;
+import eu.amidst.dynamic.constraints.Constraints;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.exponentialfamily.EF_LearningBayesianNetwork;
@@ -56,6 +58,17 @@ public class SVB implements BayesianLearningAlgorithm {
 
     /** Represents the seed, initialized to 0. */
     int seed = 0;
+
+    /** Introduce Parameter Constraints**/
+    Constraints constraints = new Constraints();
+
+    /**
+     * Add a parameter constraint
+     * @param constraint, a well defined object constraint.
+     */
+    public void addParameterConstraint(Constraint constraint){
+        this.constraints.addConstraint(constraint);
+    }
 
     /**
      * Returns the dynamic plateu structure of this DynamicSVB.
@@ -235,6 +248,10 @@ public class SVB implements BayesianLearningAlgorithm {
         this.plateauStructure.resetQs();
         this.ef_extendedBNTime0 = this.plateauStructure.getEFLearningBNTime0();
         this.ef_extendedBNTimeT = this.plateauStructure.getEFLearningBNTimeT();
+
+        this.constraints.setPlateuStructure(this.plateauStructure);
+        this.constraints.buildConstrains();
+
     }
 
     /**

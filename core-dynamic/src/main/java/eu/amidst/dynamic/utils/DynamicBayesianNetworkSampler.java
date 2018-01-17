@@ -64,6 +64,9 @@ public class DynamicBayesianNetworkSampler {
     /** Represents a {@code Map} containing the noisy variables. */
     private Map<Variable, Double> marNoise = new HashMap();
 
+    /** Represents a {@code Map} containing the latent variables. */
+    private Map<Variable, Boolean> latentVars = new HashMap();
+
     /**
      * Creates a new DynamicBayesianNetworkSampler given an input {@link DynamicBayesianNetwork} object.
      * @param network1 an input {@link DynamicBayesianNetwork} object.
@@ -72,6 +75,23 @@ public class DynamicBayesianNetworkSampler {
         network=network1;
         this.causalOrderTime0 = eu.amidst.dynamic.utils.Utils.getCausalOrderTime0(network.getDynamicDAG());
         this.causalOrderTimeT = eu.amidst.dynamic.utils.Utils.getCausalOrderTimeT(network.getDynamicDAG());
+    }
+
+    /**
+     * Sets a given {@link Variable} object as latent. A latent variable doesn't contain an attribute and therefore
+     * doesn't generate a sampling value.
+     * @param var a given {@link Variable} object.
+     */
+    public void setLatentVar(Variable var){
+        this.latentVars.put(var, true);
+    }
+
+    /**
+     * Gets the set of latent variables. A latent variable doesn't contain an attribute and therefore
+     * doesn't generate a sampling value.
+     */
+    public Set<Variable> getLatentVars() {
+        return latentVars.keySet();
     }
 
     /**
@@ -107,6 +127,15 @@ public class DynamicBayesianNetworkSampler {
             if (random.nextDouble()<e.getValue())
                 assignment.setValue(e.getKey(),Utils.missingValue());
         });
+
+        if (!latentVars.isEmpty()){
+            HashMapAssignment newassignment = new HashMapAssignment();
+            for (Variable variable : assignment.getVariables()) {
+                if (!this.latentVars.containsKey(variable))
+                    newassignment.setValue(variable,assignment.getValue(variable));
+            }
+        }
+
         return assignment;
     }
 
@@ -227,6 +256,7 @@ public class DynamicBayesianNetworkSampler {
             list.add(new Attribute(0,Attributes.SEQUENCE_ID_ATT_NAME, new RealStateSpace()));
             list.add(new Attribute(1,Attributes.TIME_ID_ATT_NAME, new RealStateSpace()));
             list.addAll(this.sampler.network.getDynamicVariables().getListOfDynamicVariables().stream()
+                    .filter(var -> !sampler1.getLatentVars().contains(var))
                     .map(var -> new Attribute(var.getVarID() + 2, var.getName(), var.getStateSpaceType())).collect(Collectors.toList()));
             this.atts= new Attributes(list);
         }

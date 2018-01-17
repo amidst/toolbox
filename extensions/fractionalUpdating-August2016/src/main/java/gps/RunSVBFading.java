@@ -72,10 +72,10 @@ public class RunSVBFading {
                 .stream()
                 .filter(string -> string.endsWith(".arff")).findFirst().get());
 
-        svb.getSVB().getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getSVB().getPlateuStructure().getVMP().setMaxIter(niter);
-        svb.getSVB().getPlateuStructure().getVMP().setOutput(true);
-        svb.getSVB().getPlateuStructure().getVMP().setThreshold(threshold);
+        svb.getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getPlateuStructure().getVMP().setMaxIter(niter);
+        svb.getPlateuStructure().getVMP().setOutput(true);
+        svb.getPlateuStructure().getVMP().setThreshold(threshold);
         svb.setFadingFactor(fadingFactor);
 
         svb.setWindowsSize(docsPerBatch);

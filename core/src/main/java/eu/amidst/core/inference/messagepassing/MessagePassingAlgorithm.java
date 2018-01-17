@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class implements the interface {@link InferenceAlgorithm} and defines the Message Passing algorithm.
@@ -88,6 +89,9 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     /** Represents the number of local iterations. */
     protected int local_iter = 0;
 
+    /** Store weather parallel message passing will be employed or not.**/
+    private boolean parallelMode = false;
+
     /**
      * Sets the output for this MessagePassingAlgorithm.
      * @param output a {@code boolean} that represents the output value to be set.
@@ -140,7 +144,7 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
      * Resets the exponential family distributions of all nodes.
      */
     public void resetQs(){
-        this.nodes.stream().forEach(node -> {node.resetQDist(random);});
+        this.nodes.stream().filter(node -> node.isActive()).forEach(node -> {node.resetQDist(random);});
     }
 
     /**
@@ -150,6 +154,14 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
     public void setSeed(int seed) {
         this.seed=seed;
         random = new Random(seed);
+    }
+
+    /**
+     * Sets the parallel processing mode.
+     * @param parallelMode {@code true} if the learning is performed in parallel, {@code false} otherwise.
+     */
+    public void setParallelMode(boolean parallelMode){
+        this.parallelMode = parallelMode;
     }
 
     /**
@@ -174,8 +186,9 @@ public abstract class MessagePassingAlgorithm<E extends Vector> implements Infer
 
                 Message<E> selfMessage = newSelfMessage(node);
 
-                Optional<Message<E>> message = node.getChildren()
-                                .parallelStream()
+                Stream<Node> streamChildren = (this.parallelMode)? node.getChildren().parallelStream() : node.getChildren().stream();
+
+                Optional<Message<E>> message = streamChildren
                                 .filter(children -> children.isActive())
                                 .map(children -> newMessageToParent(children, node))
                                 .reduce(Message::combineNonStateless);

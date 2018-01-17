@@ -17,6 +17,7 @@
 package eu.amidst.flinklink.core.learning.parametric;
 
 
+import eu.amidst.core.constraints.Constraint;
 import eu.amidst.core.datastream.Attribute;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
@@ -109,6 +110,15 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
     public dVMP(){
         this.svb = new SVB();
+    }
+
+
+    /**
+     * Add a parameter constraint
+     * @param constraint, a well defined object constraint.
+     */
+    public void addParameterConstraint(Constraint constraint){
+        this.svb.addParameterConstraint(constraint);
     }
 
     public void setLearningRate(double learningRate) {
@@ -424,7 +434,7 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
 
                 this.svb.updateNaturalParameterPosteriors(updatedPosterior);
 
-                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
+/*                svb.getPlateuStructure().getNonReplictedNodes().forEach(node -> node.setActive(false));
                 svb.setOutput(true);
                 SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
                 svb.setOutput(true);
@@ -433,17 +443,18 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                     throw new IllegalStateException("NaN elbo");
 
                 elbo.aggregate(outElbo.getElbo());
-
+*/
 
 
 
                 //Set Active Parameters
                 int superstep = getIterationRuntimeContext().getSuperstepNumber() - 1;
-                svb.getPlateuStructure()
+                /*svb.getPlateuStructure()
                         .getNonReplictedNodes()
                         .forEach(node ->
                                 node.setActive(this.idenitifableModelling.isActiveAtEpoch(node.getMainVariable(), superstep))
                         );
+                */
 
                 if (superstep == 0){
                     this.svb.getPlateuStructure().setSeed(this.svb.getSeed());
@@ -451,8 +462,12 @@ public class dVMP implements BayesianParameterLearningAlgorithm, Serializable {
                     this.svb.updateNaturalParameterPosteriors(updatedPosterior);
                 }
 
-                outElbo = svb.updateModelOnBatchParallel(dataBatch);
+                SVB.BatchOutput outElbo = svb.updateModelOnBatchParallel(dataBatch);
 
+                elbo.aggregate(outElbo.getElbo());
+
+
+                //System.out.println(svb.getLearntBayesianNetwork());
 
                 if (Double.isNaN(outElbo.getElbo()))
                     throw new IllegalStateException("NaN elbo");

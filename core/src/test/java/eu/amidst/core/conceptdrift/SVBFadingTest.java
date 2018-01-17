@@ -56,7 +56,7 @@ public class SVBFadingTest {
             //Parameter Learning
             SVBFading svbFading = new SVBFading();
             svbFading.setFadingFactor(1.0);
-            VMP vmp = svbFading.getSVB().getPlateuStructure().getVMP();
+            VMP vmp = svbFading.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
             vmp.setMaxIter(500);
             vmp.setThreshold(0.0001);
@@ -100,7 +100,7 @@ public class SVBFadingTest {
         //Parameter Learning
         SVBFading svbFading = new SVBFading();
         svbFading.setFadingFactor(0.95);
-        VMP vmp = svbFading.getSVB().getPlateuStructure().getVMP();
+        VMP vmp = svbFading.getPlateuStructure().getVMP();
         vmp.setTestELBO(true);
         vmp.setMaxIter(500);
         vmp.setThreshold(0.0001);
