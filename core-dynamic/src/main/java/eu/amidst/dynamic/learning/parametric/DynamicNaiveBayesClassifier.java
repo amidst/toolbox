@@ -111,7 +111,7 @@ public class DynamicNaiveBayesClassifier {
         DynamicVariables dynamicVariables = new DynamicVariables(dataStream.getAttributes());
         Variable classVar = dynamicVariables.getVariableById(this.getClassVarID());
         DynamicDAG dag = new DynamicDAG(dynamicVariables);
-
+        
         dag.getParentSetsTimeT().stream()
                 .filter(w -> w.getMainVar().getVarID() != classVar.getVarID())
                 .forEach(w -> {

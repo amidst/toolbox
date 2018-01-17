@@ -78,7 +78,8 @@ public class InferenceDemo {
         System.out.println("Traning Data: 4000 clients, 1000 days of records for each client, 10 profile variables.");
 
         DynamicNaiveBayesClassifier model = new DynamicNaiveBayesClassifier();
-        model.setClassVarID(data.getAttributes().getNumberOfAttributes() - 3);//We set -3 to account for time id and seq_id
+        //model.setClassVarID(data.getAttributes().getNumberOfAttributes()-3);//We set -3 to account for time id and seq_id
+        model.setClassVarID(data.getAttributes().getAttributeByName("DEFAULT").getIndex() + 2);
         model.setParallelMode(true);
         model.learn(data);
         DynamicBayesianNetwork amidstDBN = model.getDynamicBNModel();
@@ -132,6 +133,7 @@ public class InferenceDemo {
                  }
                  dataInstance= iterator.next();
              }
+             System.out.println("T"+timeSlices + ".DEFAULT");
              lastDefault =  (LabelledDCNode)domainObject.getNodeByName("T"+timeSlices + ".DEFAULT");
              domainObject.triangulateDBN(Domain.H_TM_TOTAL_WEIGHT);
              domainObject.compile();
