@@ -180,8 +180,10 @@ public class MultiDriftSVB extends SVB{
             newPrior.sum(newPosterior);
             this.plateuStructure.updateNaturalParameterPrior(newPrior);
 
-            //if (niter==0)
-            //    this.plateuStructure.resetQs();
+            if (niter==0) {
+                Random random = new Random(0);
+                this.plateuStructure.getReplicatedNodes().filter(node -> !node.isObserved()).forEach(node -> node.resetQDist(random));
+            }
 
             //Standard Messages
             //this.plateuStructure.getVMP().setMaxIter(10);
