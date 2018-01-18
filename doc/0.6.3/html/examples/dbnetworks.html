@@ -1,0 +1,794 @@
+<h1 id="sec:dbns">Dynamic Bayesian Networks: Code Examples</h1>
+<ul>
+<li><p><a href="#sec:dbns:datastreams">Data Streams</a></p></li>
+<li><p><a href="#sec:dbns:variables">Dynamic Random Variables</a></p></li>
+<li><p><a href="#sec:dbns:dbns">Dynamic Bayesian networks</a></p>
+<ul>
+<li><p><a href="#sec:dbns:dbns:creating">Creating Dynamic Bayesian networks</a></p></li>
+<li><p><a href="#sec:dbns:dbns:creatingLatent">Creating Dynamic Bayesian Networks with Latent Variables</a></p></li>
+<li><p><a href="#sec:dbns:dbns:modif">Modifying Dynamic Bayesian Networks</a></p></li>
+</ul></li>
+<li><p><a href="#sec:dbns:sampling">Sampling from Dynamic Bayesian Networks</a></p></li>
+<li><p><a href="#sec:dbns:inference">Inference Algorithms for Dynamic Bayesian Networks</a></p>
+<ul>
+<li><p><a href="#sec:dbns:inference:dmap">The Dynamic MAP Inference</a></p></li>
+<li><p><a href="#sec:dbns:inference:dvmp">The Dynamic Variational Message Passing</a></p></li>
+<li><p><a href="#sec:dbns:inference:dis">The Dynamic Importance Sampling</a></p></li>
+</ul></li>
+<li><p><a href="#sec:dbns:learning">Dynamic Learning Algorithms</a></p>
+<ul>
+<li><p><a href="#sec:dbns:learning:ml">Maximum Likelihood for DBNs</a></p></li>
+<li><p><a href="#sec:dbns:learning:sv">Streaming Variational Bayes for DBNs</a></p></li>
+</ul></li>
+</ul>
+<h2 id="sec:dbns:datastreams">Data Streams</h2>
+<p>In this example we show how to use the main features of a <em>DataStream</em> object. More precisely, we show how to load a dynamic data stream and how to iterate over the <em>DynamicDataInstance</em> objects.</p>
+<pre><code>public class DataStreamsExample {
+    public static void main(String[] args) throws Exception {
+
+        //Open the data stream using the class DynamicDataStreamLoader
+        DataStream&lt;DynamicDataInstance&gt; data = DynamicDataStreamLoader.loadFromFile(&quot;datasets/simulated/exampleDS_d2_c3.arff&quot;);
+
+
+        //Access the attributes defining the data stream
+        System.out.println(&quot;Attributes defining the data set&quot;);
+        for (Attribute attribute : data.getAttributes()) {
+            System.out.println(attribute.getName());
+        }
+        Attribute discreteVar0 = data.getAttributes().getAttributeByName(&quot;DiscreteVar0&quot;);
+
+        //Iterate over dynamic data instances
+        System.out.println(&quot;1. Iterating over samples using a for loop&quot;);
+        for (DynamicDataInstance dataInstance : data) {
+            System.out.println(&quot;SequenceID = &quot;+dataInstance.getSequenceID()+&quot;, TimeID = &quot;+dataInstance.getTimeID());
+            System.out.println(&quot;The value of attribute discreteVar0 for the current data instance is: &quot; +
+                    dataInstance.getValue(discreteVar0));
+        }
+
+    }
+}</code></pre>
+<h2 id="sec:dbns:variables">Dynamic Random Variables</h2>
+<p>This example show the basic functionalities related to dynamic variables.</p>
+<pre><code>public class DynamicVariablesExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //Create an empty DynamicVariables object
+        DynamicVariables variables = new DynamicVariables();
+
+        //Invoke the &quot;new&quot; methods of the object DynamicVariables to create new dynamic variables.
+
+        //Create a Gaussian dynamic variables
+        Variable gaussianVar = variables.newGaussianDynamicVariable(&quot;GaussianVar&quot;);
+
+        //Create a Multinomial dynamic variable with two states
+        Variable multinomialVar = variables.newMultinomialDynamicVariable(&quot;MultinomialVar&quot;, 2);
+
+        //Create a Multinomial dynamic variable with two states: TRUE and FALSE
+        Variable multinomialVar2 = variables.newMultinomialDynamicVariable(&quot;MultinomialVar2&quot;, Arrays.asList(&quot;TRUE, FALSE&quot;));
+
+        //We must block the object before we start to query.
+        variables.block();
+
+        //All dynamic Variables have an interface variable
+        Variable gaussianVarInt = gaussianVar.getInterfaceVariable();
+        Variable multinomialVarInt = multinomialVar.getInterfaceVariable();
+
+        //Get the &quot;main&quot; Variable associated with each interface variable through the DynamicVariable object
+        Variable mainMultinomialVar = variables.getVariableFromInterface(multinomialVarInt);
+
+        //Check whether a variable is an interface variable
+        System.out.println(&quot;Is Variable &quot;+gaussianVar.getName()+&quot; an interface variable? &quot;
+                +gaussianVar.isInterfaceVariable());
+        System.out.println(&quot;Is Variable &quot;+gaussianVarInt.getName()+&quot; an interface variable? &quot;
+                +gaussianVarInt.isInterfaceVariable());
+
+        //Check whether a variable is a dynamic variable
+        System.out.println(&quot;Is Variable &quot;+multinomialVar.getName()+&quot; a dynamic variable? &quot;
+                +gaussianVar.isDynamicVariable());
+    }
+}</code></pre>
+<h2 id="sec:dbns:dbns">Dynamic Bayesian networks</h2>
+<h3 id="sec:dbns:dbns:creating">Creating Dynamic Bayesian networks</h3>
+<p>This example creates a dynamic BN, from a dynamic data stream, with randomly generated probability distributions, then saves it to a file.</p>
+<pre><code>public class CreatingDBNs {
+
+    public static void main(String[] args) throws Exception{
+
+        //Open the data stream using the static class DynamicDataStreamLoader
+        DataStream&lt;DynamicDataInstance&gt; data = DynamicDataStreamLoader.loadFromFile(
+                &quot;datasets/simulated/syntheticDataDiscrete.arff&quot;);
+
+        /**
+         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
+         * in our data.
+         *
+         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable
+         * has a different ID number and make it transparent for the user. Each random variable has an associated
+         * interface variable.
+         *
+         * 3. We can extract the Variable objects by using the method getVariableByName();
+         */
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        Variable A = dynamicVariables.getVariableByName(&quot;A&quot;);
+        Variable B = dynamicVariables.getVariableByName(&quot;B&quot;);
+        Variable C = dynamicVariables.getVariableByName(&quot;C&quot;);
+        Variable D = dynamicVariables.getVariableByName(&quot;D&quot;);
+        Variable E = dynamicVariables.getVariableByName(&quot;E&quot;);
+        Variable G = dynamicVariables.getVariableByName(&quot;G&quot;);
+
+        Variable A_Interface = dynamicVariables.getInterfaceVariable(A);
+        Variable B_Interface = dynamicVariables.getInterfaceVariable(B);
+
+        //Note that C_Interface and D_Interface are also created although they will not be used
+        //(we will not add temporal dependencies)
+
+        Variable E_Interface = dynamicVariables.getInterfaceVariable(E);
+        Variable G_Interface = dynamicVariables.getInterfaceVariable(G);
+
+        // Example of the dynamic DAG structure
+        // Time 0: Parents at time 0 are automatically created when adding parents at time T
+        dynamicDAG.getParentSetTimeT(B).addParent(A);
+        dynamicDAG.getParentSetTimeT(C).addParent(A);
+        dynamicDAG.getParentSetTimeT(D).addParent(A);
+        dynamicDAG.getParentSetTimeT(E).addParent(A);
+        dynamicDAG.getParentSetTimeT(G).addParent(A);
+        dynamicDAG.getParentSetTimeT(A).addParent(A_Interface);
+        dynamicDAG.getParentSetTimeT(B).addParent(B_Interface);
+        dynamicDAG.getParentSetTimeT(E).addParent(E_Interface);
+        dynamicDAG.getParentSetTimeT(G).addParent(G_Interface);
+
+        System.out.println(dynamicDAG.toString());
+
+        /**
+         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.
+         *
+         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type
+         * of each variable and their parents to initialize the Distributions objects that are stored
+         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
+         * properly initialized.
+         *
+         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.
+         */
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        System.out.printf(dbn.toString());
+
+        /**
+         * Finally teh Bayesian network is saved to a file.
+         */
+        DynamicBayesianNetworkWriter.save(dbn, &quot;networks/simulated/DBNExample.dbn&quot;);
+    }
+
+}</code></pre>
+<h3 id="sec:dbns:dbns:creatingLatent">Creating Dynamic Bayesian Networks with Latent Variables</h3>
+<p>This example shows how to create a BN model with hidden variables. We simply create a BN for clustering, i.e., a naive Bayes like structure with a single hidden variable acting as parant of all the remaining observable variables.</p>
+<pre><code>public class CreatingDBNsWithLatentVariables {
+
+    public static void main(String[] args) throws Exception{
+
+        //We can open the data stream using the static class DynamicDataStreamLoader
+        DataStream&lt;DynamicDataInstance&gt; data = DynamicDataStreamLoader.loadFromFile(
+                &quot;datasets/simulated/syntheticDataDiscrete.arff&quot;);
+
+        /**
+         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
+         * in our data.
+         *
+         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable
+         * has a different ID number and make it transparent for the user. Each random variable has an associated
+         * interface variable.
+         *
+         * 3. We can extract the Variable objects by using the method getVariableByName();
+         */
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
+
+        Variable A = dynamicVariables.getVariableByName(&quot;A&quot;);
+        Variable B = dynamicVariables.getVariableByName(&quot;B&quot;);
+        Variable C = dynamicVariables.getVariableByName(&quot;C&quot;);
+        Variable D = dynamicVariables.getVariableByName(&quot;D&quot;);
+        Variable E = dynamicVariables.getVariableByName(&quot;E&quot;);
+        Variable G = dynamicVariables.getVariableByName(&quot;G&quot;);
+
+        Variable A_Interface = dynamicVariables.getInterfaceVariable(A);
+        Variable B_Interface = dynamicVariables.getInterfaceVariable(B);
+
+        //Note that C_Interface and D_Interface are also created although they will not be used
+        //(we will not add temporal dependencies)
+
+        Variable E_Interface = dynamicVariables.getInterfaceVariable(E);
+        Variable G_Interface = dynamicVariables.getInterfaceVariable(G);
+
+        /*
+         * We add a hidden multinomial variable (with 2 states) as parent of all variables except A
+         */
+
+        Variable H = dynamicVariables.newMultinomialDynamicVariable(&quot;H&quot;, 2);
+        Variable H_Interface = dynamicVariables.getInterfaceVariable(H);
+
+        /**
+         * 1. Once we have defined your {@link DynamicVariables} object, including the latent variable,
+         * the next step is to create a DynamicDAG structure over this set of variables.
+         *
+         */
+
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        // EXAMPLE OF THE DAG STRUCTURE
+
+        /*
+
+        DAG Time 0
+        H : {  }
+        A : {  }
+        B : { A, H }
+        C : { A, H }
+        D : { A, H }
+        E : { A, H }
+        G : { A, H }
+
+        DAG Time T
+        H : { H_Interface }
+        A : { A_Interface }
+        B : { H, A, B_Interface }
+        C : { H, A }
+        D : { H, A }
+        E : { H, A, E_Interface }
+        G : { H, A, G_Interface }
+
+        */
+
+        /*
+         * 1. To add parents to each variable, we first recover the ParentSet object by the method
+         * getParentSet(Variable var) and then call the method addParent(Variable var).
+         *
+         * 2. We just put the hidden variable as parent of all the other variables (except A), and
+         * link it temporally.
+         *
+         */
+
+        // Time 0: Parents at time 0 are automatically created when adding parents at time T
+        // Time t
+        dynamicDAG.getParentSetsTimeT().stream()
+                .filter(pset -&gt; pset.getMainVar().getVarID() != A.getVarID())
+                .filter(pset -&gt; pset.getMainVar().getVarID() != H.getVarID())
+                .forEach(pset -&gt; {
+                    pset.addParent(A);
+                    pset.addParent(H);
+                });
+        dynamicDAG.getParentSetTimeT(A).addParent(A_Interface);
+        dynamicDAG.getParentSetTimeT(B).addParent(B_Interface);
+        dynamicDAG.getParentSetTimeT(E).addParent(E_Interface);
+        dynamicDAG.getParentSetTimeT(G).addParent(G_Interface);
+        dynamicDAG.getParentSetTimeT(H).addParent(H_Interface);
+
+        System.out.println(dynamicDAG.toString());
+
+        /**
+         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.
+         *
+         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type
+         * of each variable and their parents to initialize the Distributions objects that are stored
+         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
+         * properly initialized.
+         *
+         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.
+         */
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        System.out.printf(dbn.toString());
+
+        /**
+         * Finally teh Bayesian network is saved to a file.
+         */
+        DynamicBayesianNetworkWriter.save(dbn, &quot;networks/simulated/DBNExample.dbn&quot;);
+    }
+}</code></pre>
+<h3 id="sec:dbns:dbns:modif">Modifying Dynamic Bayesian Networks</h3>
+<p>This example shows how to create a BN model with hidden variables. We This example shows how to access and modify the conditional probabilities of a Dynamic Bayesian network model.</p>
+<pre><code>public class ModifyingDBNs {
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DynamicDataStreamLoader
+        DataStream&lt;DynamicDataInstance&gt; data = DynamicDataStreamLoader.loadFromFile(
+                &quot;datasets/simulated/syntheticDataDiscrete.arff&quot;);
+
+        /**
+         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
+         * in our data.
+         *
+         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable
+         * has a different ID number and make it transparent for the user. Each random variable has an associated
+         * interface variable.
+         *
+         * 3. We can extract the Variable objects by using the method getVariableByName();
+         */
+        DynamicVariables dynamicVariables = new DynamicVariables(data.getAttributes());
+        DynamicDAG dynamicDAG = new DynamicDAG(dynamicVariables);
+
+        Variable A = dynamicVariables.getVariableByName(&quot;A&quot;);
+        Variable B = dynamicVariables.getVariableByName(&quot;B&quot;);
+        Variable C = dynamicVariables.getVariableByName(&quot;C&quot;);
+        Variable D = dynamicVariables.getVariableByName(&quot;D&quot;);
+        Variable E = dynamicVariables.getVariableByName(&quot;E&quot;);
+        Variable G = dynamicVariables.getVariableByName(&quot;G&quot;);
+
+        Variable A_Interface = dynamicVariables.getInterfaceVariable(A);
+        Variable B_Interface = dynamicVariables.getInterfaceVariable(B);
+
+        //Note that C_Interface and D_Interface are also created although they will not be used
+        //(we will not add temporal dependencies)
+
+        Variable E_Interface = dynamicVariables.getInterfaceVariable(E);
+        Variable G_Interface = dynamicVariables.getInterfaceVariable(G);
+
+        // EXAMPLE OF THE DAG STRUCTURE
+
+        /*
+
+        DAG Time 0
+        A : {  }
+        B : { A }
+        C : { A }
+        D : { A }
+        E : { A }
+        G : { A }
+
+        DAG Time T
+        A : { A_Interface }
+        B : { A, B_Interface }
+        C : { A }
+        D : { A }
+        E : { A, E_Interface }
+        G : { A, G_Interface }
+
+        */
+
+        // Time 0: Parents at time 0 are automatically created when adding parents at time T
+        // Time t
+        dynamicDAG.getParentSetTimeT(B).addParent(A);
+        dynamicDAG.getParentSetTimeT(C).addParent(A);
+        dynamicDAG.getParentSetTimeT(D).addParent(A);
+        dynamicDAG.getParentSetTimeT(E).addParent(A);
+        dynamicDAG.getParentSetTimeT(G).addParent(A);
+        dynamicDAG.getParentSetTimeT(A).addParent(A_Interface);
+        dynamicDAG.getParentSetTimeT(B).addParent(B_Interface);
+        dynamicDAG.getParentSetTimeT(E).addParent(E_Interface);
+        dynamicDAG.getParentSetTimeT(G).addParent(G_Interface);
+
+        /**
+         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.
+         *
+         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type
+         * of each variable and their parents to initialize the Distributions objects that are stored
+         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
+         * properly initialized.
+         *
+         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.
+         */
+        DynamicBayesianNetwork dbn = new DynamicBayesianNetwork(dynamicDAG);
+        System.out.printf(dbn.toString());
+
+        /*
+         * We now modify the conditional probability distributions to assigned the values we want
+         */
+
+        /* IMPORTANT: The parents are indexed according to Koller (Chapter 10. Pag. 358). Example:
+           Parents: A = {A0,A1} and B = {B0,B1,B2}.
+           NumberOfPossibleAssignments = 6
+
+           Index   A    B
+             0     A0   B0
+             1     A1   B1
+             2     A0   B2
+             3     A1   B0
+             4     A0   B1
+             5     A1   B2
+        */
+
+        // ********************************************************************************************
+        // ************************************** TIME 0 **********************************************
+        // ********************************************************************************************
+
+        // Variable A
+        Multinomial distA_Time0 = dbn.getConditionalDistributionTime0(A);
+        distA_Time0.setProbabilities(new double[]{0.3, 0.7});
+
+        // Variable B
+        Multinomial_MultinomialParents distB_Time0 = dbn.getConditionalDistributionTime0(B);
+        distB_Time0.getMultinomial(0).setProbabilities(new double[]{0.4, 0.1, 0.5});
+        distB_Time0.getMultinomial(1).setProbabilities(new double[]{0.2, 0.5, 0.3});
+
+        // Variable C
+        Multinomial_MultinomialParents distC_Time0 = dbn.getConditionalDistributionTime0(C);
+        distC_Time0.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+        distC_Time0.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
+
+        // Variable D
+        Multinomial_MultinomialParents distD_Time0 = dbn.getConditionalDistributionTime0(D);
+        distD_Time0.getMultinomial(0).setProbabilities(new double[]{0.7, 0.3});
+        distD_Time0.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        // Variable E
+        Multinomial_MultinomialParents distE_Time0 = dbn.getConditionalDistributionTime0(E);
+        distE_Time0.getMultinomial(0).setProbabilities(new double[]{0.8, 0.2});
+        distE_Time0.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        // Variable G
+        Multinomial_MultinomialParents distG_Time0 = dbn.getConditionalDistributionTime0(G);
+        distG_Time0.getMultinomial(0).setProbabilities(new double[]{0.6, 0.4});
+        distG_Time0.getMultinomial(1).setProbabilities(new double[]{0.7, 0.3});
+
+        // ********************************************************************************************
+        // ************************************** TIME T **********************************************
+        // ********************************************************************************************
+
+        // Variable A
+        Multinomial_MultinomialParents distA_TimeT = dbn.getConditionalDistributionTimeT(A);
+        distA_TimeT.getMultinomial(0).setProbabilities(new double[]{0.15, 0.85});
+        distA_TimeT.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        // Variable B
+        Multinomial_MultinomialParents distB_TimeT = dbn.getConditionalDistributionTimeT(B);
+        distB_TimeT.getMultinomial(0).setProbabilities(new double[]{0.1, 0.2, 0.7});
+        distB_TimeT.getMultinomial(1).setProbabilities(new double[]{0.6, 0.1, 0.3});
+        distB_TimeT.getMultinomial(2).setProbabilities(new double[]{0.3, 0.4, 0.3});
+        distB_TimeT.getMultinomial(3).setProbabilities(new double[]{0.2, 0.1, 0.7});
+        distB_TimeT.getMultinomial(4).setProbabilities(new double[]{0.5, 0.1, 0.4});
+        distB_TimeT.getMultinomial(5).setProbabilities(new double[]{0.1, 0.1, 0.8});
+
+        // Variable C: equals to the distribution at time 0 (C does not have temporal clone)
+        Multinomial_MultinomialParents distC_TimeT = dbn.getConditionalDistributionTimeT(C);
+        distC_TimeT.getMultinomial(0).setProbabilities(new double[]{0.4, 0.6});
+        distC_TimeT.getMultinomial(1).setProbabilities(new double[]{0.2, 0.8});
+
+        // Variable D: equals to the distribution at time 0 (D does not have temporal clone)
+        Multinomial_MultinomialParents distD_TimeT = dbn.getConditionalDistributionTimeT(D);
+        distD_TimeT.getMultinomial(0).setProbabilities(new double[]{0.7, 0.3});
+        distD_TimeT.getMultinomial(1).setProbabilities(new double[]{0.1, 0.9});
+
+        // Variable E
+        Multinomial_MultinomialParents distE_TimeT = dbn.getConditionalDistributionTimeT(E);
+        distE_TimeT.getMultinomial(0).setProbabilities(new double[]{0.3, 0.7});
+        distE_TimeT.getMultinomial(1).setProbabilities(new double[]{0.6, 0.4});
+        distE_TimeT.getMultinomial(2).setProbabilities(new double[]{0.7, 0.3});
+        distE_TimeT.getMultinomial(3).setProbabilities(new double[]{0.9, 0.1});
+
+        // Variable G
+        Multinomial_MultinomialParents distG_TimeT = dbn.getConditionalDistributionTimeT(G);
+        distG_TimeT.getMultinomial(0).setProbabilities(new double[]{0.2, 0.8});
+        distG_TimeT.getMultinomial(1).setProbabilities(new double[]{0.5, 0.5});
+        distG_TimeT.getMultinomial(2).setProbabilities(new double[]{0.3, 0.7});
+        distG_TimeT.getMultinomial(3).setProbabilities(new double[]{0.8, 0.2});
+
+        /*
+         * We print the new DBN
+         */
+        System.out.println(dbn.toString());
+
+    }
+}</code></pre>
+<h2 id="sec:dbns:sampling">Sampling from Dynamic Bayesian Networks</h2>
+<p>This example shows how to use the <em>DynamicBayesianNetworkSampler</em> class to randomly generate a dynamic data stream from a given Dynamic Bayesian network.</p>
+<pre><code>public class DynamicBayesianNetworkSamplerExample {
+    public static void main(String[] args) throws Exception{
+
+        //We first generate a DBN with 3 continuous and 3 discrete variables with 2 states
+        DynamicBayesianNetworkGenerator dbnGenerator = new DynamicBayesianNetworkGenerator();
+        dbnGenerator.setNumberOfContinuousVars(3);
+        dbnGenerator.setNumberOfDiscreteVars(3);
+        dbnGenerator.setNumberOfStates(2);
+
+        //Create a NB-like structure with temporal links in the children (leaves) and 2 states for
+        //the class variable
+        DynamicBayesianNetwork network = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(
+                new Random(0), 2, true);
+
+        //Create the sampler from this network
+        DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(network);
+        sampler.setSeed(0);
+
+        //Sample a dataStream of 3 sequences of 1000 samples each
+        DataStream&lt;DynamicDataInstance&gt; dataStream = sampler.sampleToDataBase(3,1000);
+
+        //Save the created data sample in a file
+        DataStreamWriter.writeDataToFile(dataStream, &quot;./datasets/simulated/dnb-samples.arff&quot;);
+    }
+}</code></pre>
+<h2 id="sec:dbns:inference">Inference Algorithms for Dynamic Bayesian Networks</h2>
+<h3 id="sec:dbns:inference:dmap">The Dynamic MAP Inference</h3>
+<p>This example shows how to use the Dynamic MAP Inference algorithm.</p>
+<pre><code>public class DynamicMAPInference {
+
+    public static void main(String[] arguments) throws IOException, ClassNotFoundException {
+
+        /*
+         * LOADS THE DYNAMIC NETWORK AND PRINTS IT
+         */
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(3);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(2);
+        DynamicBayesianNetworkGenerator.setNumberOfLinks(5);
+
+        DynamicBayesianNetwork dynamicBayesianNetwork = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(new Random(0), 2, true);
+
+
+        /*
+         *  INITIALIZE THE DYNAMIC MAP OBJECT
+         */
+        int nTimeSteps = 6;
+        eu.amidst.dynamic.inference.DynamicMAPInference dynMAP = new eu.amidst.dynamic.inference.DynamicMAPInference();
+        dynMAP.setModel(dynamicBayesianNetwork);
+        dynMAP.setNumberOfTimeSteps(nTimeSteps);
+
+        Variable mapVariable = dynamicBayesianNetwork.getDynamicVariables().getVariableByName(&quot;ClassVar&quot;);
+        dynMAP.setMAPvariable(mapVariable);
+
+
+        /*
+         * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1
+         */
+        List&lt;Variable&gt; varsDynamicModel = dynamicBayesianNetwork.getDynamicVariables().getListOfDynamicVariables();
+
+        System.out.println(&quot;DYNAMIC VARIABLES:&quot;);
+        varsDynamicModel.forEach(var -&gt; System.out.println(&quot;Var ID &quot; + var.getVarID() + &quot;: &quot; + var.getName()));
+        System.out.println();
+        int indexVarEvidence1 = 2;
+        int indexVarEvidence2 = 3;
+        int indexVarEvidence3 = 4;
+        Variable varEvidence1 = varsDynamicModel.get(indexVarEvidence1);
+        Variable varEvidence2 = varsDynamicModel.get(indexVarEvidence2);
+        Variable varEvidence3 = varsDynamicModel.get(indexVarEvidence3);
+
+        List&lt;Variable&gt; varsEvidence = new ArrayList&lt;&gt;(3);
+        varsEvidence.add(0,varEvidence1);
+        varsEvidence.add(1,varEvidence2);
+        varsEvidence.add(2,varEvidence3);
+
+        double varEvidenceValue;
+
+        Random random = new Random(4634);
+
+        List&lt;DynamicAssignment&gt; evidence = new ArrayList&lt;&gt;(nTimeSteps);
+
+        for (int t = 0; t &lt; nTimeSteps; t++) {
+            HashMapDynamicAssignment dynAssignment = new HashMapDynamicAssignment(varsEvidence.size());
+
+            for (int i = 0; i &lt; varsEvidence.size(); i++) {
+
+                dynAssignment.setSequenceID(12302253);
+                dynAssignment.setTimeID(t);
+                Variable varEvidence = varsEvidence.get(i);
+
+                if (varEvidence.isMultinomial()) {
+                    varEvidenceValue = random.nextInt(varEvidence1.getNumberOfStates());
+                } else {
+                    varEvidenceValue = -5 + 10 * random.nextDouble();
+                }
+                dynAssignment.setValue(varEvidence, varEvidenceValue);
+            }
+            evidence.add(dynAssignment);
+        }
+        System.out.println(&quot;EVIDENCE:&quot;);
+        evidence.forEach(evid -&gt; {
+            System.out.println(&quot;Evidence at time &quot; + evid.getTimeID());
+            evid.getVariables().forEach(variable -&gt; System.out.println(variable.getName() + &quot;: &quot; + Integer.toString((int) evid.getValue(variable))));
+            System.out.println();
+        });
+
+        /*
+         *  SET THE EVIDENCE AND MAKE INFERENCE
+         */
+        dynMAP.setEvidence(evidence);
+        dynMAP.runInference(eu.amidst.dynamic.inference.DynamicMAPInference.SearchAlgorithm.IS);
+
+        /*
+         *  SHOW RESULTS
+         */
+        Assignment MAPestimate = dynMAP.getMAPestimate();
+        double MAPestimateProbability = dynMAP.getMAPestimateProbability();
+
+        System.out.println(&quot;MAP sequence over &quot; + mapVariable.getName() + &quot;:&quot;);
+        List&lt;Variable&gt; MAPvarReplications = MAPestimate.getVariables().stream().sorted((var1,var2) -&gt; (var1.getVarID()&gt;var2.getVarID()? 1 : -1)).collect(Collectors.toList());
+
+        StringBuilder sequence = new StringBuilder();
+        MAPvarReplications.stream().forEachOrdered(var -&gt; sequence.append(Integer.toString((int) MAPestimate.getValue(var)) + &quot;, &quot;));
+        //System.out.println(MAPestimate.outputString(MAPvarReplications));
+        System.out.println(sequence.toString());
+        System.out.println(&quot;with probability prop. to: &quot; + MAPestimateProbability);
+
+    }
+}</code></pre>
+<h3 id="sec:dbns:inference:dvmp">The Dynamic Variational Message Passing</h3>
+<p>This example shows how to use the Factored Frontier algorithm with Variational Message Passing for running inference on dynamic Bayesian networks.</p>
+<pre><code>public class DynamicVMP_FactoredFrontier {
+    public static void main(String[] args) throws IOException {
+
+        Random random = new Random(1);
+
+        //We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,true);
+
+        System.out.println(extendedDBN.toString());
+
+        //We select the target variable for inference, in this case the class variable
+        Variable classVar = extendedDBN.getDynamicVariables().getVariableByName(&quot;ClassVar&quot;);
+
+
+        //We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.
+        DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
+        dynamicSampler.setHiddenVar(classVar);
+        DataStream&lt;DynamicDataInstance&gt; dataPredict = dynamicSampler.sampleToDataBase(1,10);
+
+
+        //We select VMP with the factored frontier algorithm as the Inference Algorithm
+        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(new VMP());
+        InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
+
+        //Then, we set the DBN model
+        InferenceEngineForDBN.setModel(extendedDBN);
+
+        int time = 0 ;
+        UnivariateDistribution posterior = null;
+        for (DynamicDataInstance instance : dataPredict) {
+            //The InferenceEngineForDBN must be reset at the begining of each Sequence.
+            if (instance.getTimeID()==0 &amp;&amp; posterior != null) {
+                InferenceEngineForDBN.reset();
+                time=0;
+            }
+            //We also set the evidence.
+            InferenceEngineForDBN.addDynamicEvidence(instance);
+
+            //Then we run inference
+            InferenceEngineForDBN.runInference();
+
+            //Then we query the posterior of the target variable
+            posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
+
+            //We show the output
+            System.out.println(&quot;P(ClassVar|e[0:&quot;+(time++)+&quot;]) = &quot;+posterior);
+        }
+    }
+}</code></pre>
+<h3 id="sec:dbns:inference:dis">The Dynamic Importance Sampling</h3>
+<p>This example shows how to use the Factored Frontier algorithm with Importance Sampling for running inference in dynamic Bayesian networks.</p>
+<pre><code>public class DynamicIS_FactoredFrontier {
+    public static void main(String[] args) throws IOException {
+
+        Random random = new Random(1);
+
+        //We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetwork extendedDBN = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random, 2, true);
+
+        System.out.println(extendedDBN.toString());
+
+        //We select the target variable for inference, in this case the class variable
+        Variable classVar = extendedDBN.getDynamicVariables().getVariableByName(&quot;ClassVar&quot;);
+
+        //We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.
+        DynamicBayesianNetworkSampler dynamicSampler = new DynamicBayesianNetworkSampler(extendedDBN);
+        dynamicSampler.setHiddenVar(classVar);
+        DataStream&lt;DynamicDataInstance&gt; dataPredict = dynamicSampler.sampleToDataBase(1, 10);
+
+        //We select IS with the factored frontier algorithm as the Inference Algorithm
+        ImportanceSampling importanceSampling = new ImportanceSampling();
+        importanceSampling.setKeepDataOnMemory(true);
+        FactoredFrontierForDBN FFalgorithm = new FactoredFrontierForDBN(importanceSampling);
+        InferenceEngineForDBN.setInferenceAlgorithmForDBN(FFalgorithm);
+
+        //Then, we set the DBN model
+        InferenceEngineForDBN.setModel(extendedDBN);
+
+        int time = 0;
+        UnivariateDistribution posterior = null;
+        for (DynamicDataInstance instance : dataPredict) {
+            //The InferenceEngineForDBN must be reset at the begining of each Sequence.
+            if (instance.getTimeID() == 0 &amp;&amp; posterior != null) {
+                InferenceEngineForDBN.reset();
+                time = 0;
+            }
+
+            //We also set the evidence.
+            InferenceEngineForDBN.addDynamicEvidence(instance);
+
+            //Then we run inference
+            InferenceEngineForDBN.runInference();
+
+            //Then we query the posterior of the target variable
+            posterior = InferenceEngineForDBN.getFilteredPosterior(classVar);
+
+
+            //We show the output
+            System.out.println(&quot;P(ClassVar|e[0:&quot; + (time++) + &quot;]) = &quot; + posterior);
+        }
+    }
+}</code></pre>
+<h2 id="sec:dbns:learning">Dynamic Learning Algorithms</h2>
+<h3 id="sec:dbns:learning:ml">Maximum Likelihood for DBNs</h3>
+<p>This example shows how to learn the parameters of a dynamic Bayesian network using maximum likelihood from a randomly sampled data stream.</p>
+<pre><code>public class MLforDBNsampling {
+
+    public static void main(String[] args) throws IOException {
+        Random random = new Random(1);
+
+        //We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetwork dbnRandom = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,true);
+
+        //Sample dynamic data from the created dbn with random parameters
+        DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbnRandom);
+        sampler.setSeed(0);
+        //Sample 3 sequences of 100K instances
+        DataStream&lt;DynamicDataInstance&gt; data = sampler.sampleToDataBase(3,10000);
+
+        /*Parameter Learning with ML*/
+
+        //We fix the DAG structure, the data and learn the DBN
+        ParameterLearningAlgorithm parallelMaximumLikelihood = new ParallelMaximumLikelihood();
+        parallelMaximumLikelihood.setWindowsSize(1000);
+        parallelMaximumLikelihood.setDynamicDAG(dbnRandom.getDynamicDAG());
+        parallelMaximumLikelihood.initLearning();
+        parallelMaximumLikelihood.updateModel(data);
+
+        DynamicBayesianNetwork dbnLearnt = parallelMaximumLikelihood.getLearntDBN();
+
+        //We print the model
+        System.out.println(dbnLearnt.toString());
+    }
+
+}</code></pre>
+<h3 id="sec:dbns:learning:sv">Streaming Variational Bayes for DBNs</h3>
+<p>This example shows how to learn the parameters of a dynamic Bayesian network using streaming variational Bayes from a randomly sampled data stream.</p>
+<pre><code>public class SVBforDBN {
+    public static void main(String[] args) throws IOException {
+        Random random = new Random(1);
+
+        //We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)
+        DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+        DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+        DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+        DynamicBayesianNetwork dbnRandom = DynamicBayesianNetworkGenerator.generateDynamicNaiveBayes(random,2,true);
+
+        //Sample dynamic data from the created dbn with random parameters
+        DynamicBayesianNetworkSampler sampler = new DynamicBayesianNetworkSampler(dbnRandom);
+        sampler.setSeed(0);
+        //Sample 3 sequences of 100K instances
+        DataStream&lt;DynamicDataInstance&gt; data = sampler.sampleToDataBase(3,10000);
+
+        /*Parameter Learning with Streaming variational Bayes VMP*/
+        SVB svb = new SVB();
+        //We set the desired options for the svb
+        svb.setWindowsSize(100);
+        svb.setSeed(0);
+        //If desired, we also set some options for the VMP
+        VMP vmp = svb.getPlateauStructure().getVMPTimeT();
+        vmp.setOutput(false);
+        vmp.setTestELBO(true);
+        vmp.setMaxIter(1000);
+        vmp.setThreshold(0.0001);
+
+        //We set the dynamicDAG, the data and start learning
+        svb.setDynamicDAG(dbnRandom.getDynamicDAG());
+        svb.setDataStream(data);
+        svb.runLearning();
+
+        //We get the learnt DBN
+        DynamicBayesianNetwork dbnLearnt = svb.getLearntDBN();
+
+        //We print the model
+        System.out.println(dbnLearnt.toString());
+    }
+
+}</code></pre>
+

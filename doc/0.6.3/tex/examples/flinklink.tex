@@ -1,0 +1,144 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+
+
+\section{Flinklink: Code Examples}\label{sec:flinklink}
+
+\begin{itemize}
+	\item \hyperref[sec:flinklink:io]{Input/output}
+	\begin{itemize}
+		\item \hyperref[sec:flinklink:io:read]{Reading data}
+		\item \hyperref[sec:flinklink:io:write]{Write data}
+	\end{itemize}
+		\item \hyperref[sec:flinklink:learning]{Parametric Learning}
+
+		
+	\begin{itemize}
+		\item \hyperref[sec:flinklink:learning:pml]{Parallel Maximum Likelihood}
+		\item \hyperref[sec:flinklink:learning:dvmp]{Distributed Variational Message Pasing}
+		\item \hyperref[sec:flinklink:learning:dvi]{Distributed VI}
+		\item \hyperref[sec:flinklink:learning:svi]{Stochastic VI}
+	\end{itemize}
+	\item \hyperref[sec:flinklink:ext]{ Extensions and applications}
+	\begin{itemize}
+			\item \hyperref[sec:flinklink:ext:models]{ Latent variable models with Flink}
+			\item \hyperref[sec:flinklink:ext:conceptdrift]{Concept drift}
+	\end{itemize}
+\end{itemize}
+
+
+\subsection{Input/output}\label{sec:flinklink:io}
+
+
+
+
+\subsubsection{Reading data}\label{sec:flinklink:io:read}
+
+In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/io/DataStreamLoaderExample.java}
+
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Writing data}\label{sec:flinklink:io:write}
+
+
+Below we generate a random Flink dataset with 1000 instances, 2 discrete variables and 3 continuous ones. The seed used is 1234. Eventually, we save it as a distributed dataset (format ARFF folder).
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/io/DataStreamWriterExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+
+
+\subsection{Parametric learning}\label{sec:flinklink:learning}
+
+Here give examples of the provided algorithms by AMiDST for learning the probability distributions from a Flink data set. For shake of simplicity, we will consider the Naive Bayes DAG structure. Note that the code is almost the same of each of the algoritms, they only differ on the constructor used (e.g. \textit{new ParallelMaximumLikelihood()}, \textit{new dVMP()}, etc.)
+
+
+\subsubsection{Parallel Maximum Likelihood}\label{sec:flinklink:learning:pml}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/ParallelMLExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Distributed Variational Message Passing}\label{sec:flinklink:learning:dvmp}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/dVMPExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+\subsubsection{Distributed VI}\label{sec:flinklink:learning:dvi}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/DistributedVIExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+\subsubsection{Stochastic VI}\label{sec:flinklink:learning:svi}
+
+An example of the learning algorithm Stochastic VI is given below. Note that two specific parameters must be set, namely the \textit{learning factor} and the \textit{data size}.
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/learning/StochasticVIExample.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+%\subsection{Inference}\label{sec:flinklink:inference}
+
+%\subsection{Dynamic Bayesian networks with Flink}\label{sec:flinklink:dbn}
+
+\subsection{Extensions and applications}\label{sec:flinklink:ext}
+\subsubsection{Latent variable models with Flink}\label{sec:flinklink:ext:models}
+
+The module \textit{latent-variable-models} contains a large set of classes that allow to easily learn some of the standard models with latent variables. These models can be learnt from not only from local datasets (e.g. a single ARFF file) but also from distributed ones (e.g. ARFF folder). These last ones are managed using Flink. In code example shown below the model \textit{Factor Analysis} is learnt from a distributed dataset.  
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/extensions/LatentModelsFlink.java}
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+
+
+\subsubsection{Concept drift detection}\label{sec:flinklink:ext:conceptdrift}
+
+A salient aspect of streaming data is that the domain
+being modeled is often \emph{non-stationary}. That is, the distribution governing the data changes over time.
+This situation is known as \textit{concept drift} and if not carefully taken into account, the
+result can be a failure to capture and
+interpret intrinsic properties of the data during data exploration. The AMIDST toolbox can be used for detecting this situation as shown in the example below.\newline 
+
+
+
+
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/flinklink/examples/reviewMeeting2015/ConceptDriftDetector.java}
+
+
+\hyperref[sec:flinklink]{[Back to Top]}\newline 
+
+
+
+
+
+
+
+\end{document}

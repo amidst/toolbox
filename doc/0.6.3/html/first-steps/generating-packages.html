@@ -1,0 +1,27 @@
+<h1 id="generating-the-packages-for-each-module-and-for-its-dependencies">Generating the packages for each module and for its dependencies</h1>
+<p>Here we explain how can we generate the packages (i.e. jar files) for each module and also those corresponding to the dependencies. This will allow to use AMIDST toolbox in any java project. Alternatively, you can watch this <a href="https://www.youtube.com/watch?v=6iLG17UPzX0">video-tutorial</a>. First, you can download the source code using the following command:</p>
+<pre><code>$ git clone https://github.com/amidst/toolbox.git      </code></pre>
+<p>Once the download has finished, enter into the downloaded folder:</p>
+<pre><code>$ cd toolbox     </code></pre>
+<p>For generating the packages for all the modules, use the following command:</p>
+<pre><code>$ mvn clean dependency:copy-dependencies package -Dmaven.test.skip=true    </code></pre>
+<p>Note that the argument <strong>-Dmaven.test.skip=true</strong> is optional (its default value is false). If omitted, maven will run the unitary tests and hence the process will take much more time. If everything goes right, you will eventually obtain an output similar to the following one:</p>
+<pre><code>[INFO] Reactor Summary:
+[INFO] 
+[INFO] AmidstToolbox ...................................... SUCCESS [  1.177 s]
+[INFO] core ............................................... SUCCESS [ 11.891 s]
+[INFO] core-dynamic ....................................... SUCCESS [  5.081 s]
+[INFO] huginlink .......................................... SUCCESS [  3.031 s]
+[INFO] standardmodels ..................................... SUCCESS [  2.976 s]
+[INFO] examples ........................................... SUCCESS [  4.563 s]
+[INFO] moalink ............................................ SUCCESS [  2.609 s]
+[INFO] wekalink ........................................... SUCCESS [  2.515 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 34.504 s
+[INFO] Finished at: 2016-05-10T16:41:23+02:00
+[INFO] Final Memory: 68M/670M
+[INFO] ------------------------------------------------------------------------  </code></pre>
+<p>Now, at each module folder, a new folder called <strong>target</strong> containing the generated packages has been created. In addition the sub-folder <span><strong>target/dependency</strong> </span>contains the dependencies for the given package. Now simply copy all these packages into a folder of your classpath and you will be able to use the functionality provided by AMIDST.</p>
+
