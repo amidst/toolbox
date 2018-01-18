@@ -1,6 +1,25 @@
+v0.7.0
+============
+This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
+
+If you want to try the toolbox, visit [https://github.com/amidst/example-project](https://github.com/amidst/example-project).
+
+Changes:
+
+- Fixed some bugs (#93)
+- Added functionality to fix prior constraints to the parameters. A new tutorial on that coming soon.  
+
+
+**Release Date**: 18/01/2018
+**Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.7.0/index.html)
+
+
+
 v0.6.3
 ============
 This toolbox aims to offers a collection of scalable and parallel algorithms for inference and learning with probabilistic graphical models from local and distributed (streaming) data.
+
+If you want to try the toolbox, visit [https://github.com/amidst/example-project](https://github.com/amidst/example-project).
 
 Changes:
 
@@ -14,7 +33,6 @@ Thirty-fourth International Conference on Machine Learning (ICML’17). Sydney (
 
 **Release Date**: 15/09/2017
 **Further Information**: [Project Web Page](https://www.amidsttoolbox.com/),[JavaDoc](http://javadoc.amidsttoolbox.com/0.6.3/index.html)
-
 
 
 
