@@ -30,7 +30,7 @@ public class Constraints implements Serializable{
     private static final long serialVersionUID = 4107783324901370839L;
 
     protected Map<Variable, List<Constraint>> constraintMap = new HashMap();
-    protected List<Node> nodes = new ArrayList<>();
+    transient protected List<Node> nodes = new ArrayList<>();
 
     public void addConstraint(Constraint constraint){
         if (constraintMap.containsKey(constraint.getVariable()))
