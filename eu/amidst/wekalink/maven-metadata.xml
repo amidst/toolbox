@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>wekalink</artifactId>
   <versioning>
-    <release>0.6.3</release>
+    <release>0.7.0</release>
     <versions>
-      <version>0.6.3</version>
+      <version>0.7.0</version>
     </versions>
-    <lastUpdated>20170915122405</lastUpdated>
+    <lastUpdated>20180118110406</lastUpdated>
   </versioning>
 </metadata>
