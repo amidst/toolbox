@@ -25,10 +25,7 @@ import eu.amidst.core.variables.Assignment;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  *
@@ -268,6 +265,43 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         return newExpectedX;
     }
 
+    private double expectedXOfTruncatedNormal_newApproximation(double mu, double sigma, double lowerEndpoint, double upperEndpoint) {
+        double newExpectedX = 0;
+
+        double [] log_densities = new double[1001];
+        double [] x_values = new double[1001];
+
+        for (int i = 0; i < x_values.length; i++) {
+            x_values[i] = i/1000.0;
+            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu)/(Math.pow(sigma,2)),2);
+        }
+
+        for (int i = 0; i < x_values.length; i++) {
+            final int final_i = i;
+            double sum_exp_log = Arrays.stream(log_densities).map(ld -> Math.exp(ld-log_densities[final_i])).sum();
+            newExpectedX = newExpectedX + x_values[i] * 1.0/sum_exp_log;
+        }
+        return newExpectedX;
+    }
+
+    private double expectedXSquaredOfTruncatedNormal_newApproximation(double mu, double sigma, double lowerEndpoint, double upperEndpoint) {
+        double newExpectedXSquared = 0;
+
+        double [] log_densities = new double[1001];
+        double [] x_values = new double[1001];
+
+        for (int i = 0; i < x_values.length; i++) {
+            x_values[i] = i/1000.0;
+            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu)/(Math.pow(sigma,2)),2);
+        }
+
+        for (int i = 0; i < x_values.length; i++) {
+            final int final_i = i;
+            double sum_exp_log = Arrays.stream(log_densities).map(ld -> Math.exp(ld-log_densities[final_i])).sum();
+            newExpectedXSquared = newExpectedXSquared + Math.pow(x_values[i],2) * 1.0/sum_exp_log;
+        }
+        return newExpectedXSquared;
+    }
     private double expectedXSquaredOfTruncatedNormal(double mu, double sigma, double lowerEndpoint, double upperEndpoint) {
 
         double beta = (upperEndpoint - mu) / sigma;
@@ -318,11 +352,19 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         double mu = this.getMean();
         double sigma = Math.sqrt(1.0/this.getPrecision());
 
+        double newExpectedX, newExpectedXSquared;
 
-        double newExpectedX = expectedXOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+        if (mu >= lowerInterval && mu <= upperInterval) {
+            newExpectedX = expectedXOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+            newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+        }
+        else {
+            newExpectedX = expectedXOfTruncatedNormal_newApproximation(mu, sigma, lowerInterval, upperInterval);
+            newExpectedXSquared = expectedXSquaredOfTruncatedNormal_newApproximation(mu, sigma, lowerInterval, upperInterval);
+        }
+
         this.momentParameters.set(EXPECTED_MEAN, newExpectedX);
-
-        double newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
+        this.momentParameters.set(EXPECTED_SQUARE, newExpectedXSquared);
 
         //if (newExpectedXSquared <= 0)
         //    throw new IllegalStateException("Zero or Negative expected square value");
@@ -330,7 +372,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         //if (Double.isNaN(newExpectedXSquared))
         //    throw new IllegalStateException("NaN expected square value");
 
-        this.momentParameters.set(EXPECTED_SQUARE, newExpectedXSquared);
+
     }
 
     /**
