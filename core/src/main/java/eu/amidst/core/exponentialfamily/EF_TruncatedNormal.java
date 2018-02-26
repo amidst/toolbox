@@ -303,8 +303,10 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         double newExpectedXSquared = newVariance + Math.pow(newExpectedX,2);
 
         double maxAbsEndpoints = Math.max(Math.abs(lowerEndpoint),Math.abs(upperEndpoint));
-        if(newExpectedXSquared>Math.pow(maxAbsEndpoints,2)) newExpectedXSquared = Math.pow(maxAbsEndpoints,2);
-        if(newExpectedXSquared<0) newExpectedXSquared = 0;
+        if(newExpectedXSquared>Math.pow(maxAbsEndpoints,2))
+            throw new IllegalStateException("1 or greater than 1 expected square value");
+        if(newExpectedXSquared<0)
+            throw new IllegalStateException("Zero or Negative expected square value");
 
         return newExpectedXSquared;
     }
@@ -324,11 +326,8 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
         double newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
 
-        //if (newExpectedXSquared <= 0)
-        //    throw new IllegalStateException("Zero or Negative expected square value");
-
-        //if (Double.isNaN(newExpectedXSquared))
-        //    throw new IllegalStateException("NaN expected square value");
+        if (Double.isNaN(newExpectedXSquared))
+            throw new IllegalStateException("NaN expected square value");
 
         this.momentParameters.set(EXPECTED_SQUARE, newExpectedXSquared);
     }
