@@ -35,8 +35,8 @@ public class RunDrift {
     public static void main(String[] args) throws Exception{
 
         String model = "GPS0";
-        String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_hour_100/";
-        int docsPerBatch = 8000;
+        String dataPath = "/Users/dario/Desktop/dataHPPJournal/data/out_hour_10/";
+        int docsPerBatch = 90000;
 
         //String model = "BCC1";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
@@ -48,7 +48,7 @@ public class RunDrift {
         boolean priorTruncatedNormal=false;
         double priorTruncatedNormalPrecision=1;
 
-        if (args.length>1){
+        if (args.length>1) {
             int cont=0;
             model = args[cont++];
             dataPath=args[cont++];
@@ -186,7 +186,7 @@ public class RunDrift {
 
             totalLog+=log/inst;
 
-            System.out.println(svb.getLearntBayesianNetwork());
+            //System.out.println(svb.getLearntBayesianNetwork());
 
 
         }
