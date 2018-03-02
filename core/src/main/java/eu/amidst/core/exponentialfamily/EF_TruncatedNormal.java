@@ -87,7 +87,14 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
     public double computeLogNormalizer() {
         double beta = (this.upperInterval - this.getMean()) * this.getPrecision();
         double alpha = (this.lowerInterval - this.getMean()) * this.getPrecision();
-        double normalization_constant = 0.5 * org.apache.commons.math3.special.Erf.erf(alpha/Math.sqrt(2), beta/Math.sqrt(2));
+        //double normalization_constant = 0.5 * org.apache.commons.math3.special.Erf.erf(alpha/Math.sqrt(2), beta/Math.sqrt(2));
+
+        AuxiliaryNormalDistribution aux = new AuxiliaryNormalDistribution();
+        double logpnorm_alpha = aux.logpnorm(alpha,0,1);
+        double logpnorm_beta = aux.logpnorm(beta,0,1);
+
+        double log_normalization_constant = RobustOperations.robustDifferenceOfLogarithms(logpnorm_beta,logpnorm_alpha);
+
         //normalization_constant = 0.5 * (1.0+org.apache.commons.math3.special.Erf.erf(beta/Math.sqrt(2))) - 0.5 * (1.0+org.apache.commons.math3.special.Erf.erf(alpha/Math.sqrt(2)));
 
         //System.out.println(0.5*(1.0+org.apache.commons.math3.special.Erf.erf(beta/Math.sqrt(2))));
@@ -95,7 +102,8 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
 
         //System.out.println(this.upperInterval + ", " + this.lowerInterval + "," + this.getMean() + ", " + this.getPrecision());
         //System.out.println(beta + ", " + alpha + ", " + normalization_constant);
-        return -0.5 * Math.log(this.getPrecision()) + 0.5 * this.getPrecision() * Math.pow(this.getMean(), 2) - Math.log(normalization_constant);
+
+        return -0.5 * Math.log(this.getPrecision()) + 0.5 * this.getPrecision() * Math.pow(this.getMean(), 2) - log_normalization_constant; //Math.log(normalization_constant);
     }
 
     /**
