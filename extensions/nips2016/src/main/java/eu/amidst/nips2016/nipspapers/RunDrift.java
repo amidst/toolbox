@@ -20,7 +20,7 @@ import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 import eu.amidst.core.utils.ArrayVector;
 import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.lda.core.BatchSpliteratorByID;
-import eu.amidst.lda.core.PlateauLDA;
+import eu.amidst.lda.core.PlateauLDAReduced;
 
 
 import java.io.FileWriter;
@@ -131,7 +131,7 @@ public class RunDrift {
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+arrffName);
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);

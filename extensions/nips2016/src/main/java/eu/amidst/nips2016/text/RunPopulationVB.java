@@ -17,7 +17,7 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.PopulationVI;
 import eu.amidst.lda.core.BatchSpliteratorByID;
-import eu.amidst.lda.core.PlateauLDA;
+import eu.amidst.lda.core.PlateauLDAReduced;
 
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class RunPopulationVB {
 
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+"abstract_"+years[0]+".arff");
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setGlobalUpdate(false);
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);

@@ -19,7 +19,7 @@ import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.lda.core.BatchSpliteratorByID;
-import eu.amidst.lda.core.PlateauLDA;
+import eu.amidst.lda.core.PlateauLDAReduced;
 
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -84,7 +84,7 @@ public class RunSVB {
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);

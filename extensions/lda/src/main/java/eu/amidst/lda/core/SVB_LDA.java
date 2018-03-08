@@ -28,7 +28,7 @@ public class SVB_LDA {
 
         SVB svb = new SVB();
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word","count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(),"word","count");
         plateauLDA.setNTopics(10);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(10);

@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * Created by andresmasegosa on 13/5/16.
  */
-public class PlateauLDATest extends TestCase {
+public class PlateauLDAReducedTest extends TestCase {
 
     public static void test1() {
 
@@ -35,7 +35,7 @@ public class PlateauLDATest extends TestCase {
                 BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());
 
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word","count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(),"word","count");
         plateauLDA.setDAG(null);
         plateauLDA.setNTopics(2);
         plateauLDA.replicateModel();
@@ -92,7 +92,7 @@ public class PlateauLDATest extends TestCase {
                 BatchSpliteratorByID.streamOverDocuments(dataInstances, 2).collect(Collectors.toList());
 
 
-        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(),"word", "count");
+        PlateauLDAReduced plateauLDA = new PlateauLDAReduced(dataInstances.getAttributes(),"word", "count");
         plateauLDA.setDAG(null);
         plateauLDA.setNTopics(2);
 

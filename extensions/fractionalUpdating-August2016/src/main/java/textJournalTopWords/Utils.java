@@ -12,7 +12,6 @@
 package textJournalTopWords;
 
 import eu.amidst.core.datastream.*;
-import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
 import eu.amidst.core.utils.*;

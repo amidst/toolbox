@@ -15,7 +15,7 @@ import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 import eu.amidst.lda.core.BatchSpliteratorByID;
-import eu.amidst.lda.core.PlateauLDAFull;
+import eu.amidst.lda.core.PlateauLDA;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -116,7 +116,7 @@ public class RunMultiDriftFullData {
         DataStream<DataInstance> dataInstances = DataStreamLoader.open(dataPath+localPath+years[0]+".arff");
 
         Attribute wordCountAtt = dataInstances.getAttributes().getAttributeByName("count");
-        PlateauLDAFull plateauLDA = new PlateauLDAFull(dataInstances.getAttributes(), "word", "count");
+        PlateauLDA plateauLDA = new PlateauLDA(dataInstances.getAttributes(), "word", "count");
         plateauLDA.setNTopics(ntopics);
         plateauLDA.getVMP().setTestELBO(true);
         plateauLDA.getVMP().setMaxIter(niter);
@@ -189,7 +189,7 @@ public class RunMultiDriftFullData {
 
 
             Utils.printTopicsTopWordsProbMass(ntopicsWords, svb.getNaturalParameterPrior(), mapWords, vals);
-            Utils.printTopicsProportions((PlateauLDAFull)svb.getPlateuStructure());
+            Utils.printTopicsProportions((PlateauLDA)svb.getPlateuStructure());
             System.out.println();
 
             if (reversed && year <= 0)
