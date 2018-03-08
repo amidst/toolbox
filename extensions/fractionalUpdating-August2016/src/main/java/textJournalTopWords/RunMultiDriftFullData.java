@@ -34,11 +34,11 @@ public class RunMultiDriftFullData {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top100words/arff/";
-        String dataWords = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top100words/NIPS_dict_top100words.csv";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top200words/arff/";
+        String dataWords = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top200words/NIPS_dict_top200words.csv";
 
         boolean stemmed = false;
-        int numberOfTopWords = 100;
+        int numberOfTopWords = 200;
 
         int docsPerBatch = 10000;
 
@@ -48,12 +48,12 @@ public class RunMultiDriftFullData {
         int docsPerBatch = 35000;
 */
         int ntopics = 5;
-        int niter = 10;
+        int niter = 20;
         double threshold = 0.0001;
 
-        boolean reversed = true;
-        boolean priorTruncatedNormal=true;
-        double priorTruncatedNormalPrecision=100;
+        boolean reversed = false;
+        boolean priorTruncatedNormal=false;
+        double priorTruncatedNormalPrecision=1;
 
         int ntopicsWords = 100;
         if (args.length>1){

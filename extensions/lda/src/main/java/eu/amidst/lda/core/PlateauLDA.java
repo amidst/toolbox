@@ -33,7 +33,7 @@ public class PlateauLDA extends PlateuStructure {
 
     boolean globalUpdate = true;
 
-    public static double TOPIC_PRIOR=0.01;
+    public double TOPIC_PRIOR=0.01;
     public static double MIXING_PRIOR=0.1;
 
     Variable word;
@@ -58,6 +58,7 @@ public class PlateauLDA extends PlateuStructure {
         this.attributes = attributes;
         this.wordDocumentName = wordDocumentName;
         this.wordCountAtt = this.attributes.getAttributeByName(wordCountName);
+        this.TOPIC_PRIOR = 1.0/this.attributes.getAttributeByName(wordDocumentName).getNumberOfStates();
     }
 
     public boolean isGlobalUpdate() {
@@ -143,7 +144,7 @@ public class PlateauLDA extends PlateuStructure {
     }
 
 
-    private void replicateModelForDocs() {
+    protected void replicateModelForDocs() {
         replicatedNodes = new ArrayList<>();
         Attribute seqIDAtt = this.attributes.getSeq_id();
         double currentID = 0;

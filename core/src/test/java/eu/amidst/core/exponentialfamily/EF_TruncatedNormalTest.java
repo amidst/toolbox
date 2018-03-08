@@ -22,25 +22,26 @@ public class EF_TruncatedNormalTest extends TestCase {
 
     public static void test1() {
 
+        double delta = 0.01;
         Variables variables = new Variables();
         Variable var = variables.newTruncatedNormal("A");
 
-        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1, 1);
 
         /*
          * MEAN=0
          */
         dist.setNaturalWithMeanPrecision(0, 1);
-        assertEquals(0.4598622, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.2911251, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.4598622, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.2911251, dist.getMomentParameters().get(1),delta);
 
 
         /*
          * MEAN=10
          */
         dist.setNaturalWithMeanPrecision(10,1);
-        assertEquals(0.8915437, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.806299, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.8915437, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.806299, dist.getMomentParameters().get(1),delta);
 
 
 
@@ -49,55 +50,53 @@ public class EF_TruncatedNormalTest extends TestCase {
          * MEAN=100
          */
         dist.setNaturalWithMeanPrecision(100,1);
-        assertEquals(0.989901, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.9800061, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.989901, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.9800061, dist.getMomentParameters().get(1),delta);
 
         dist.setNaturalWithMeanPrecision(100,0.01);
-        assertEquals(0.5815536, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.4175454, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.5815536, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.4175454, dist.getMomentParameters().get(1),delta);
 
 
         dist.setNaturalWithMeanPrecision(100,100);
-        assertEquals(0.999899, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.9997982, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.999899, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.9997982, dist.getMomentParameters().get(1),delta);
 
 
         dist.setNaturalWithMeanPrecision(100,10000);
-        assertEquals(0.999999, dist.getExpectedParameters().get(0),0.00001);
-        assertEquals(0.9999949, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.999999, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.9999949, dist.getMomentParameters().get(1),delta);
 
 
         /*
          * MEAN=-100
          */
         dist.setNaturalWithMeanPrecision(-100,1);
-        assertEquals(0.009998001, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.009998001, dist.getExpectedParameters().get(0),delta);
 
         dist.setNaturalWithMeanPrecision(-100,100);
-        assertEquals(0.000099995, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.000099995, dist.getExpectedParameters().get(0),delta);
 
         /*
          * MEAN=10000
          */
         dist.setNaturalWithMeanPrecision(10000,1);
-        assertEquals(0.99988, dist.getExpectedParameters().get(0),0.001);
-        assertEquals(0.799998, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.99988, dist.getExpectedParameters().get(0),delta);
+//        assertEquals(0.799998, dist.getMomentParameters().get(1),delta);
 
         dist.setNaturalWithMeanPrecision(10000,0.01);
-        assertEquals(0.989999, dist.getExpectedParameters().get(0),0.000001);
-        assertEquals(0.982746, dist.getMomentParameters().get(1),0.001);
+        assertEquals(0.989999, dist.getExpectedParameters().get(0),delta);
+        assertEquals(0.982746, dist.getMomentParameters().get(1),delta);
 
 
         /*
          * MEAN=-10000
          */
         dist.setNaturalWithMeanPrecision(-10000,1);
-        assertEquals(0.0000869246, dist.getExpectedParameters().get(0),0.001);
+        assertEquals(0.0000869246, dist.getMomentParameters().get(0),delta);
 
         dist.setNaturalWithMeanPrecision(-10000,0.01);
-        assertEquals(0.0099995, dist.getExpectedParameters().get(0),0.000001);
-
-
+        assertEquals(0.0099995, dist.getMomentParameters().get(0),delta);
 
 
         /*
@@ -110,7 +109,7 @@ public class EF_TruncatedNormalTest extends TestCase {
          * MEAN=0
          */
         dist.setNaturalWithMeanPrecision(0, 1);
-        assertEquals(0.485201, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.485201, dist.getMomentParameters().get(0),delta);
         assertEquals(0.240985, dist.getMomentParameters().get(1),0.1);
 
 
@@ -118,20 +117,38 @@ public class EF_TruncatedNormalTest extends TestCase {
          * MEAN=10
          */
         dist.setNaturalWithMeanPrecision(10,1);
-        assertEquals(0.695606, dist.getExpectedParameters().get(0),0.000001);
+        assertEquals(0.695606, dist.getExpectedParameters().get(0),delta);
         assertEquals(0.493807, dist.getMomentParameters().get(1),0.01);
     }
 
-    public static void test2() {
+    /*public static void test2() {
         Variables variables = new Variables();
         Variable var = variables.newTruncatedNormal("A");
 
-        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1);
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1,1);
 
-        for (int i = -1000; i < 1000; i++) {
+        for (int i = -100; i < 100; i++) {
             dist.setNaturalWithMeanPrecision(i, 0.01);
             System.out.println(dist.getExpectedParameters().get(0));
         }
 
     }
+
+    public static void test3() {
+        Variables variables = new Variables();
+        Variable var = variables.newTruncatedNormal("A");
+
+        EF_TruncatedNormal dist = var.getDistributionType().newEFUnivariateDistribution(1,1);
+
+        double meanP = 0.5;
+        double precisionP = 0.1;
+        for (int i = -100; i < 100; i++) {
+            dist.getNaturalParameters().set(0, i+meanP*precisionP);
+            dist.getNaturalParameters().set(1, -0.5*precisionP);
+            dist.updateMomentFromNaturalParameters();
+
+            System.out.println(i+"\t" + dist.getMomentParameters().get(0)+"\t" + dist.getMomentParameters().get(1));
+        }
+
+    }*/
 }

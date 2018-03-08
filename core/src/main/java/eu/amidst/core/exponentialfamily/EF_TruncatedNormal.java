@@ -280,8 +280,8 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         double [] x_values = new double[1001];
 
         for (int i = 0; i < x_values.length; i++) {
-            x_values[i] = i/1000.0;
-            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu)/(Math.pow(sigma,2)),2);
+            x_values[i] = lowerEndpoint + (upperEndpoint-lowerEndpoint)*i/1000.0;
+            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu),2)/(Math.pow(sigma,2));
         }
 
         for (int i = 0; i < x_values.length; i++) {
@@ -299,8 +299,8 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         double [] x_values = new double[1001];
 
         for (int i = 0; i < x_values.length; i++) {
-            x_values[i] = i/1000.0;
-            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu)/(Math.pow(sigma,2)),2);
+            x_values[i] = lowerEndpoint + (upperEndpoint-lowerEndpoint)*i/1000.0;
+            log_densities[i] = Math.log(1.0/Math.sqrt(2.0*Math.PI*Math.pow(sigma,2))) - 0.5 * Math.pow( (x_values[i]-mu),2)/(Math.pow(sigma,2));
         }
 
         for (int i = 0; i < x_values.length; i++) {
@@ -367,8 +367,7 @@ public class EF_TruncatedNormal extends EF_TruncatedUnivariateDistribution {
         if (mu >= lowerInterval && mu <= upperInterval) {
             newExpectedX = expectedXOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
             newExpectedXSquared = expectedXSquaredOfTruncatedNormal(mu, sigma, lowerInterval, upperInterval);
-        }
-        else {
+        }else {
             newExpectedX = expectedXOfTruncatedNormal_newApproximation(mu, sigma, lowerInterval, upperInterval);
             newExpectedXSquared = expectedXSquaredOfTruncatedNormal_newApproximation(mu, sigma, lowerInterval, upperInterval);
         }

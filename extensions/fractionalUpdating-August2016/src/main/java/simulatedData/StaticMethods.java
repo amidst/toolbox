@@ -13,8 +13,6 @@ package simulatedData;
 
 import eu.amidst.core.conceptdrift.SVBFading;
 import eu.amidst.core.learning.parametric.bayesian.*;
-import eu.amidst.lda.core.MultiDriftLDAv1;
-import eu.amidst.lda.core.MultiDriftLDAv2;
 
 /**
  * Created by andresmasegosa on 10/11/16.
@@ -65,29 +63,6 @@ public class StaticMethods {
 
         svb.setWindowsSize(sampleSize);
 
-        return svb;
-    }
-
-    public static BayesianParameterLearningAlgorithm initMultiDriftLDAv2(){
-        MultiDriftLDAv2 svb = new MultiDriftLDAv2();
-
-        svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.1);
-
-        svb.setWindowsSize(sampleSize);
-        return svb;
-    }
-    public static BayesianParameterLearningAlgorithm initMultiDriftLDAv1(){
-        MultiDriftLDAv1 svb = new MultiDriftLDAv1();
-
-        svb.getPlateuStructure().getVMP().setTestELBO(true);
-        svb.getPlateuStructure().getVMP().setMaxIter(100);
-        svb.getPlateuStructure().getVMP().setOutput(true);
-        svb.getPlateuStructure().getVMP().setThreshold(0.1);
-
-        svb.setWindowsSize(sampleSize);
         return svb;
     }
 

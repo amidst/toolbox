@@ -14,6 +14,7 @@ package textJournalTopWords;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
+import eu.amidst.core.exponentialfamily.EF_TruncatedNormal;
 import eu.amidst.core.exponentialfamily.EF_TruncatedUnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.Node;
@@ -244,26 +245,28 @@ public class MultiDriftSVB_EB extends SVB {
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.println("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease +", "+ lambda[0]);
+            System.out.print("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
+            if (this.type == TRUNCATED_NORMAL){
+                for (int i = 0; i < lambda.length; i++) {
+                    System.out.print(", "+ lambda[i] + " - " + ((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision());
+                }
+            }
 
+            System.out.println();
+            System.out.print("KL: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
+            for (int i = 0; i < lambda.length; i++) {
+                System.out.print(", "+ kl_q_p0[i] + " - " + kl_q_pt_1[i]);
+            }
+            System.out.println();
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
             }
 
             elbo=newELBO;
             niter++;
-            
-            if (this.type==TRUNCATED_NORMAL){
-                double learningRate=0.1;
 
-                for (int i = 0; i < 10; i++) {
-                    for (int j = 0; j < ef_TExpP.length; j++) {
-                        double val = ef_TExpP[j].getNaturalParameters().get(1) + learningRate*(ef_TExpQ[j].getMomentParameters().get(1) - ef_TExpP[j].getMomentParameters().get(1));
-                        ef_TExpP[j].getNaturalParameters().set(1,val);
-                        ef_TExpP[j].updateMomentFromNaturalParameters();
-                    }
-                }
-            }
+            if (this.type == TRUNCATED_NORMAL) if (niter>0) learningP_Precision(kl_q_p0,kl_q_pt_1);
+
         }
 
         //System.out.println("end");
@@ -275,7 +278,159 @@ public class MultiDriftSVB_EB extends SVB {
 
         return elbo;
     }
+    private void learningP_Natural(double[] kl_q_p0, double[] kl_q_pt_1){
+        for (int i = 0; i < ef_TExpP.length; i++) {
+            double learningRate=1;
+            double mean = ((EF_TruncatedNormal)ef_TExpP[i]).getMean();
+            double precision = ((EF_TruncatedNormal)ef_TExpP[i]).getPrecision();
 
+            double kl = ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) - ef_TExpP[i].computeLogNormalizer();
+
+            System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
+
+            boolean local_convergence = false;
+            for (int iter = 0; iter < 1000 && !local_convergence; iter++) {
+
+                //double gradient =  -0.5*(ef_TExpQ[i].getMomentParameters().get(1) - ef_TExpP[i].getMomentParameters().get(1)) + mean*(ef_TExpQ[i].getMomentParameters().get(0) - ef_TExpP[i].getMomentParameters().get(0));
+                double gradient = ef_TExpQ[i].getMomentParameters().get(1) - ef_TExpP[i].getMomentParameters().get(1);
+                while (precision+learningRate*gradient<=0.0){
+                    learningRate/=2;
+                }
+                precision += learningRate*gradient;
+                ((EF_TruncatedNormal)ef_TExpP[i]).getNaturalParameters().set(1,precision);
+                ef_TExpP[i].updateMomentFromNaturalParameters();
+
+                double kl_new = ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) - ef_TExpP[i].computeLogNormalizer();
+
+
+
+                if (learningRate<0.00001) {
+                    local_convergence = true;
+                }else if (kl_new<kl){
+                    precision -= learningRate*gradient;
+                    ((EF_TruncatedNormal)ef_TExpP[i]).setNaturalWithMeanPrecision(mean,precision);
+                    ef_TExpP[i].updateMomentFromNaturalParameters();
+
+                    learningRate/=2;
+                }else {
+                    kl = kl_new;
+                }
+            }
+            ef_TExpQ[i].getNaturalParameters().set(0,
+                    - kl_q_pt_1[i] + kl_q_p0[i] +
+                            this.ef_TExpP[i].getNaturalParameters().get(0));
+            ef_TExpQ[i].getNaturalParameters().set(1,this.ef_TExpP[i].getNaturalParameters().get(1));
+            ef_TExpQ[i].fixNumericalInstability();
+            ef_TExpQ[i].updateMomentFromNaturalParameters();
+            System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
+
+        }
+    }
+
+    private void learningP_Precision(double[] kl_q_p0, double[] kl_q_pt_1){
+        for (int i = 0; i < ef_TExpP.length; i++) {
+            double learningRate=1;
+            double mean = ((EF_TruncatedNormal)ef_TExpP[i]).getMean();
+            double precision = ((EF_TruncatedNormal)ef_TExpP[i]).getPrecision();
+
+            double kl = ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) - ef_TExpP[i].computeLogNormalizer();
+
+            System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
+
+            boolean local_convergence = false;
+            for (int iter = 0; iter < 1000 && !local_convergence; iter++) {
+
+                double gradient =  -0.5*(ef_TExpQ[i].getMomentParameters().get(1) - ef_TExpP[i].getMomentParameters().get(1)) + mean*(ef_TExpQ[i].getMomentParameters().get(0) - ef_TExpP[i].getMomentParameters().get(0));
+                while (precision+learningRate*gradient<=0.0){
+                    learningRate/=2;
+                }
+                precision += learningRate*gradient;
+                ((EF_TruncatedNormal)ef_TExpP[i]).setNaturalWithMeanPrecision(mean,precision);
+                ef_TExpP[i].updateMomentFromNaturalParameters();
+
+                double kl_new = ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) - ef_TExpP[i].computeLogNormalizer();
+
+
+
+                if (learningRate<0.01) {
+                    local_convergence = true;
+                }else if (kl_new<kl){
+                    precision -= learningRate*gradient;
+                    ((EF_TruncatedNormal)ef_TExpP[i]).setNaturalWithMeanPrecision(mean,precision);
+                    ef_TExpP[i].updateMomentFromNaturalParameters();
+
+                    learningRate/=2;
+                }else {
+                    kl = kl_new;
+                }
+            }
+            ef_TExpQ[i].getNaturalParameters().set(0,
+                    - kl_q_pt_1[i] + kl_q_p0[i] +
+                            this.ef_TExpP[i].getNaturalParameters().get(0));
+            ef_TExpQ[i].getNaturalParameters().set(1,this.ef_TExpP[i].getNaturalParameters().get(1));
+            ef_TExpQ[i].fixNumericalInstability();
+            ef_TExpQ[i].updateMomentFromNaturalParameters();
+            System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
+
+        }
+    }
+
+    private void learningPandQ(double[] kl_q_p0, double[] kl_q_pt_1){
+        for (int i = 0; i < ef_TExpP.length; i++) {
+            double learningRate=100;
+            double mean = ((EF_TruncatedNormal)ef_TExpP[i]).getMean();
+            double precision = ((EF_TruncatedNormal)ef_TExpP[i]).getPrecision();
+
+            double local_elbo = - ef_TExpQ[i].getMomentParameters().get(0)*kl_q_pt_1[i] - (1-ef_TExpQ[i].getMomentParameters().get(0))*kl_q_p0[i];
+            double kl = ef_TExpQ[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters())-ef_TExpQ[i].computeLogNormalizer() - ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) + ef_TExpP[i].computeLogNormalizer();
+            local_elbo-=kl;
+
+            boolean local_convergence = false;
+            for (int iter = 0; iter < 1000 && !local_convergence; iter++) {
+                double gradient =  -0.5*(ef_TExpQ[i].getMomentParameters().get(1) - ef_TExpP[i].getMomentParameters().get(1)) + mean*(ef_TExpQ[i].getMomentParameters().get(0) - ef_TExpP[i].getMomentParameters().get(0));
+                precision += learningRate*gradient;
+                ((EF_TruncatedNormal)ef_TExpP[i]).setNaturalWithMeanPrecision(mean,precision);
+                ef_TExpP[i].updateMomentFromNaturalParameters();
+
+                ef_TExpQ[i].getNaturalParameters().set(0,
+                        - kl_q_pt_1[i] + kl_q_p0[i] +
+                                this.ef_TExpP[i].getNaturalParameters().get(0));
+                ef_TExpQ[i].getNaturalParameters().set(1,this.ef_TExpP[i].getNaturalParameters().get(1));
+                ef_TExpQ[i].fixNumericalInstability();
+                ef_TExpQ[i].updateMomentFromNaturalParameters();
+
+
+                double local_elbo_new = - ef_TExpQ[i].getMomentParameters().get(0)*kl_q_pt_1[i] - (1-ef_TExpQ[i].getMomentParameters().get(0))*kl_q_p0[i];
+                kl = ef_TExpQ[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters())-ef_TExpQ[i].computeLogNormalizer() - ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) + ef_TExpP[i].computeLogNormalizer();
+                local_elbo_new-=kl;
+
+                System.out.println(precision + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + gradient + " : " + local_elbo_new + " : " + learningRate);
+
+                if (Double.isInfinite(local_elbo_new)) {
+                    System.out.println();
+                    System.out.println(ef_TExpQ[i].computeLogNormalizer());
+                }
+                if (local_elbo_new<local_elbo){
+                    precision -= learningRate*gradient;
+                    ((EF_TruncatedNormal)ef_TExpP[i]).setNaturalWithMeanPrecision(mean,precision);
+                    ef_TExpP[i].updateMomentFromNaturalParameters();
+                    ef_TExpQ[i].getNaturalParameters().set(0,
+                            - kl_q_pt_1[i] + kl_q_p0[i] +
+                                    this.ef_TExpP[i].getNaturalParameters().get(0));
+                    ef_TExpQ[i].getNaturalParameters().set(1,this.ef_TExpP[i].getNaturalParameters().get(1));
+                    ef_TExpQ[i].fixNumericalInstability();
+                    ef_TExpQ[i].updateMomentFromNaturalParameters();
+
+                    learningRate/=2;
+                }else if (Math.abs(gradient)<0.001) {
+                    local_convergence = true;
+                }
+
+                local_elbo = local_elbo_new;
+            }
+
+        }
+    }
 
     public double[] getLambdaMomentParameters(){
 

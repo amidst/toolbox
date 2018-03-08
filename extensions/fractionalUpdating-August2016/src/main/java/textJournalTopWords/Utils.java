@@ -12,11 +12,13 @@
 package textJournalTopWords;
 
 import eu.amidst.core.datastream.*;
+import eu.amidst.core.exponentialfamily.SufficientStatistics;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.io.DataStreamWriter;
-import eu.amidst.core.utils.ArrayVector;
-import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.*;
+import eu.amidst.core.utils.Vector;
 import eu.amidst.lda.core.BatchSpliteratorByID;
+import eu.amidst.lda.core.PlateauLDA;
 import gps.Main;
 
 import java.io.IOException;
@@ -24,8 +26,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static eu.amidst.core.utils.Serialization.deepCopy;
 
 /**
  * Created by andresmasegosa on 20/1/17.
@@ -81,6 +86,136 @@ public class Utils {
 
         }
     }
+
+    public static Map<Integer,String> loadWords(String filename) throws IOException {
+        return Files.lines(Paths.get(filename)).map( line -> Arrays.asList(line.split(","))).collect(Collectors.toConcurrentMap(item -> Integer.parseInt(item.get(1)), item -> item.get(0)));
+    }
+
+    public static void printTopics(CompoundVector vector, Map<Integer, String> mapWords) {
+        DecimalFormat formateador = new DecimalFormat("#.###");
+
+        for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
+
+            ArrayVector arrayVector = (ArrayVector)vector.getVectorByPosition(j);
+            double[] array = deepCopy(arrayVector.toArray());
+
+
+            int[] index = weka.core.Utils.sort(array);
+            weka.core.Utils.normalize(array);
+
+            System.out.print("Topic "+j+": ");
+            for (int i = index.length-1; i > index.length-100 && i>=0; i--) {
+                System.out.print("("+mapWords.get(index[i])+", "+formateador.format(array[index[i]])+"), ");
+            }
+
+            System.out.println();
+
+        }
+    }
+
+
+    public static void printTopicsTopWord(int ntop, CompoundVector vector, Map<Integer, String> mapWords) {
+        DecimalFormat formateador = new DecimalFormat("#.###");
+
+        for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
+
+            ArrayVector arrayVector = (ArrayVector)vector.getVectorByPosition(j);
+            double[] array = deepCopy(arrayVector.toArray());
+
+
+            int[] index = weka.core.Utils.sort(array);
+            weka.core.Utils.normalize(array);
+
+            System.out.print("Topic "+j+": ");
+            for (int i = index.length-1; i > index.length-ntop-1 && i>=0; i--) {
+                //System.out.print("("+mapWords.get(index[i]+1)+", "+formateador.format(array[index[i]])+"), ");
+                System.out.print(mapWords.get(index[i])+",");
+            }
+
+            System.out.println();
+
+        }
+    }
+
+    public static void printTopicsTopWordsProbMass(int ntop, CompoundVector vector, Map<Integer, String> mapWords, double[] vals) {
+        DecimalFormat formateador = new DecimalFormat("#.###");
+
+        for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
+
+            ArrayVector arrayVector = (ArrayVector)vector.getVectorByPosition(j);
+            double[] array = deepCopy(arrayVector.toArray());
+
+
+            int[] index = weka.core.Utils.sort(array);
+            weka.core.Utils.normalize(array);
+
+            double massProb = 0;
+            System.out.print("Topic "+j+" "+formateador.format(vals[j])+" ");
+            for (int i = index.length-1; i > index.length-ntop-1 && i>=0; i--) {
+                System.out.print(mapWords.get(index[i])+" ");
+                massProb+=array[index[i]];
+                if (massProb>0.95)
+                    break;
+            }
+            massProb = 0;
+            System.out.print("Topic "+j+" "+formateador.format(vals[j])+" ");
+            for (int i = index.length-1; i > index.length-ntop-1 && i>=0; i--) {
+                System.out.print(formateador.format(array[index[i]])+" ");
+                massProb+=array[index[i]];
+                if (massProb>0.95)
+                    break;
+            }
+
+            System.out.println();
+
+        }
+    }
+
+    public static void printTopicsTopWord(int ntop, CompoundVector vector, Map<Integer, String> mapWords, double[] vals) {
+        DecimalFormat formateador = new DecimalFormat("#.##");
+
+        for (int j = 0; j < vector.getNumberOfBaseVectors(); j++) {
+
+            ArrayVector arrayVector = (ArrayVector)vector.getVectorByPosition(j);
+            double[] array = deepCopy(arrayVector.toArray());
+
+
+            int[] index = weka.core.Utils.sort(array);
+            weka.core.Utils.normalize(array);
+
+            System.out.print("Topic "+j+" ("+formateador.format(vals[j])+"): ");
+            for (int i = index.length-1; i > index.length-ntop-1 && i>=0; i--) {
+                //System.out.print("("+mapWords.get(index[i]+1)+", "+formateador.format(array[index[i]])+"), ");
+                System.out.print(mapWords.get(index[i])+",");
+            }
+
+            System.out.println();
+
+        }
+    }
+
+
+    public static void printTopicsProportions(PlateauLDA plateauLDA) {
+        DecimalFormat formateador = new DecimalFormat("#.##");
+
+        Vector sum = plateauLDA.getVMP().getNodes().stream()
+                    .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
+                    .map(node -> node.getQDist().getNaturalParameters()).reduce((a, b) -> {
+                        ((Vector) b).sum((Vector) a);
+                        return b;
+                    }).get();
+        int totalDocs =  plateauLDA.getReplicatedNodes()
+                .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
+                .mapToInt(node -> 1).sum();
+
+        System.out.print("Topics proportions\t");
+        for (int j = 0; j < sum.size(); j++) {
+            System.out.print(j+" "+ formateador.format(sum.get(j)/totalDocs)+ " ");
+        }
+        System.out.println();
+        System.out.println();
+    }
+
     public static void reduceVocab(String[] args) throws IOException {
 
         String[] years = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
