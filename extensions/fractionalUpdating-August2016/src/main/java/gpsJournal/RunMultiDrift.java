@@ -21,6 +21,7 @@ import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.variables.Variable;
 import gps.DAGsGeneration;
 import gps.Main;
+import textJournalTopWords.MultiDriftSVB_EB;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -78,7 +79,7 @@ public class RunMultiDrift {
 
 
 
-        MultiDriftSVB svb = new MultiDriftSVB();
+        MultiDriftSVB_EB svb = new MultiDriftSVB_EB();
 
         if(!priorTruncatedNormal) {
             System.out.println("Truncated Exponential");

@@ -102,7 +102,7 @@ public class RunMultiDrift {
         else if (model.equals("NIPSjournal"))
             localPath="NIPS_1987-2015_" + (stemmed ? "stemmed_" : "") + "top" + Integer.toString(numberOfTopWords) + "w_";
 
-        MultiDriftSVB svb = new MultiDriftSVB();
+        MultiDriftSVB_EB svb = new MultiDriftSVB_EB();
 
         if(!priorTruncatedNormal) {
             System.out.println("Truncated Exponential");
