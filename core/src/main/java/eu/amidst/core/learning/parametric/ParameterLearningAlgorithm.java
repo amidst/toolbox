@@ -24,6 +24,9 @@ import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * This interface defines the Algorithm for learning the {@link eu.amidst.core.models.BayesianNetwork} parameters.
  *
@@ -53,7 +56,22 @@ public interface ParameterLearningAlgorithm {
      * stream. Or Double.NaN if this log-probability can not be estimated.
      */
     default double updateModel(DataStream<DataInstance> dataStream){
-        return dataStream.streamOfBatches(this.getWindowsSize()).sequential().mapToDouble(this::updateModel).sum();
+
+        AtomicLong batchCount = new AtomicLong(0);
+        AtomicLong instCount = new AtomicLong(0);
+
+        return dataStream.streamOfBatches(this.getWindowsSize())
+                .sequential().mapToDouble(b -> {
+
+
+                    System.out.println("Processing batch "+batchCount.addAndGet(1)+":");
+                    System.out.println("\tTotal instance count: "+ instCount.addAndGet(b.getNumberOfDataInstances()));
+
+                    System.out.print("\t");
+                    double ret =  this.updateModel(b);
+                    return ret;
+
+                }).sum();
     }
 
     /**
