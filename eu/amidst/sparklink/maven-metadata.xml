@@ -3,10 +3,10 @@
   <groupId>eu.amidst</groupId>
   <artifactId>sparklink</artifactId>
   <versioning>
-    <release>0.7.0</release>
+    <release>0.7.1</release>
     <versions>
-      <version>0.7.0</version>
+      <version>0.7.1</version>
     </versions>
-    <lastUpdated>20180118120503</lastUpdated>
+    <lastUpdated>20180425161145</lastUpdated>
   </versioning>
 </metadata>
