@@ -190,7 +190,6 @@
                     </archive>
                 </configuration>
             </plugin>
-
     <plugin>
       <groupId>org.apache.maven.plugins</groupId>
       <artifactId>maven-javadoc-plugin</artifactId>
@@ -198,9 +197,6 @@
         <additionalparam>-Xdoclint:none</additionalparam>
       </configuration>
     </plugin>
-
-
-
             <!-- maven-deploy plugin -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
