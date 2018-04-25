@@ -117,7 +117,7 @@
         <module>core-dynamic</module>
         
         <module>huginlink</module>
-        <!--module>examples</module-->
+        <module>examples</module>
         <module>moalink</module>
         <module>latent-variable-models</module>
 
