@@ -16,20 +16,20 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.7.0</version> <!-- AmidstVersion -->
+        <version>0.7.1</version> <!-- AmidstVersion -->
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.amidst</groupId>
     <artifactId>lda</artifactId>
-    <version>0.7.0</version> <!-- AmidstVersion -->
+    <version>0.7.1</version> <!-- AmidstVersion -->
 
 
     <dependencies>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.7.0</version> <!-- AmidstVersion -->
+            <version>0.7.1</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.7.0</version> <!-- AmidstVersion -->
+            <version>0.7.1</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 

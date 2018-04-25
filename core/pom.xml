@@ -13,13 +13,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.7.0</version> <!-- AmidstVersion -->
+        <version>0.7.1</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>core</artifactId>
-    <version>0.7.0</version> <!-- AmidstVersion -->
+    <version>0.7.1</version> <!-- AmidstVersion -->
 
 
     <properties>
