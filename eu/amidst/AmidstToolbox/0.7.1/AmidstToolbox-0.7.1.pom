@@ -113,13 +113,13 @@
 
     <modules>
         <module>module-all</module>
+        <module>latent-variable-models</module>
         <module>core</module>
         <module>core-dynamic</module>
         
         <module>huginlink</module>
         <module>examples</module>
         <module>moalink</module>
-        <module>latent-variable-models</module>
 
         <module>wekalink</module>
         <module>flinklink</module>
