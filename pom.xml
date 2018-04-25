@@ -113,13 +113,13 @@
 
     <modules>
         <module>module-all</module>
+        <module>latent-variable-models</module>
         <module>core</module>
         <module>core-dynamic</module>
         
         <module>huginlink</module>
         <module>examples</module>
         <module>moalink</module>
-        <module>latent-variable-models</module>
 
         <module>wekalink</module>
         <module>flinklink</module>
@@ -190,11 +190,22 @@
                     </archive>
                 </configuration>
             </plugin>
-
-
-
-
-
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-javadoc-plugin</artifactId>
+    <version>2.10.2</version>
+    <executions>
+        <execution>
+            <id>attach-javadocs</id>
+            <goals>
+                <goal>jar</goal>
+            </goals>
+            <configuration> <!-- add this to disable checking -->
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
             <!-- maven-deploy plugin -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -205,7 +216,7 @@
             </plugin>
 
             
-            <!--plugin>
+            <plugin>
                 <groupId>com.github.github</groupId>
                 <artifactId>site-maven-plugin</artifactId>
                 <version>0.11</version>
@@ -246,7 +257,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin-->
+      </plugin>
             
         </plugins>
     </build>
