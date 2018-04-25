@@ -1,0 +1,99 @@
+<h1 id="sec:sparklink">Sparklink: Code Examples</h1>
+<h2 id="sec:sparklink:io">Input/output</h2>
+<h3 id="sec:sparklink:io:read">Reading data</h3>
+<p>In this example we show how can we read a dataset using sparklink. This module supports reading files in formats <em>json</em> and <em>parquet</em>. Note that the method <em>DataSparkLoader::open</em> automatically detects the format of the file (the indicated path should contain the extension). Finally all the instances in the data set are printed.</p>
+<pre><code>public class DataStreamLoaderExample {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf().setAppName(&quot;SLink!&quot;).setMaster(&quot;local&quot;);
+        SparkContext sc = new SparkContext(conf);
+        SQLContext sqlContext = new SQLContext(sc);
+
+        //Path to dataset
+        String path =&quot;datasets/simulated/WI_samples.json&quot;;
+
+        //Create an AMIDST object for managing the data
+        DataSpark dataSpark = DataSparkLoader.open(sqlContext, path);
+
+
+        //Print all the instances in the dataset
+        dataSpark.collectDataStream()
+                .forEach(
+                        dataInstance -&gt; System.out.println(dataInstance)
+                );
+
+
+    }
+}</code></pre>
+<h3 id="sec:sparklink:io:write">Writing data</h3>
+<p>Here we show how can we save spark data into a file. First a random data set is generated using the method <em>DataSetGenerator::generate</em>. Afterwards, such data is save using the method <em>DataSparkWriter::writeDataToFolder</em></p>
+<pre><code>public class DataStreamWriterExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //Setting up spark
+        SparkConf conf = new SparkConf().setAppName(&quot;SparkLink!&quot;).setMaster(&quot;local&quot;);
+        JavaSparkContext jsc = new JavaSparkContext(conf);
+        SQLContext sqlContext = new SQLContext(jsc);
+
+
+        //Generate random data
+        int seed = 1234;
+        int nInstances = 1000;
+        int nDiscreteAtts=3;
+        int nContinuousAttributes = 2;
+
+        DataSpark data = DataSetGenerator
+                .generate(  jsc,
+                            seed,
+                            nInstances,
+                            nDiscreteAtts,
+                            nContinuousAttributes );
+
+
+        // Save it as a json and parquet file
+        DataSparkWriter.writeDataToFolder(data, &quot;datasets/simulated/randomData.json&quot;, sqlContext);
+        DataSparkWriter.writeDataToFolder(data, &quot;datasets/simulated/randomData.parquet&quot;, sqlContext);
+
+    }
+
+
+
+}</code></pre>
+<h2 id="sec:sparklink:learning">Parameter learning</h2>
+<p>AMIDST provides parameter learning using spark with the <em>Maximum Likelihood</em> algorithm. In the following example, we load a data set in format json and we use it for learning a simple naive bayes (more complex DAGs can also be learnt).</p>
+<pre><code>public class MaximumLikelihoodLearningExample {
+    public static void main(String[] args) throws Exception {
+        SparkConf conf = new SparkConf().setAppName(&quot;SparkLink!&quot;).setMaster(&quot;local&quot;);;
+        SparkContext sc = new SparkContext(conf);
+        SQLContext sqlContext = new SQLContext(sc);
+
+        //Path to dataset
+        String path =&quot;datasets/simulated/WI_samples.json&quot;;
+
+        //Create an AMIDST object for managing the data
+        DataSpark dataSpark = DataSparkLoader.open(sqlContext, path);
+
+        //Learning algorithm
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+
+
+        //We fix the BN structure
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataSpark.getAttributes(), &quot;W&quot;);
+
+        parameterLearningAlgorithm.setDAG(dag);
+
+        //We set the batch size which will be employed to learn the model in parallel
+        parameterLearningAlgorithm.setBatchSize(100);
+        //We set the data which is going to be used for leaning the parameters
+        parameterLearningAlgorithm.setDataSpark(dataSpark);
+        //We perform the learning
+        parameterLearningAlgorithm.runLearning();
+        //And we get the model
+        BayesianNetwork bn = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        System.out.println(bn);
+
+
+    }
+}</code></pre>
+

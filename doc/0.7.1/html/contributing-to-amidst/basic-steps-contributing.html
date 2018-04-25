@@ -1,0 +1,85 @@
+<h1 id="basic-steps-for-contributing">Basic steps for contributing</h1>
+<p>Here we will explain the basic github commands for modifying the AMIDST source code and for uploading such changes to the server. Alternatively, you can watch this <a href="https://www.youtube.com/watch?v=HegfZZyQ8u4">video-tutorial</a>. The general scheme to follow for contributing to the AMIDST source code is shown below:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/scheme_contributing.png" alt="Scheme for contributing to AMIDST toolbox." width="453" /><p class="caption" style="text-align:center">Scheme for contributing to AMIDST toolbox.<span data-label="fig:scheme_contributing"></span></p>
+</div>
+<p>Now we will explain each of these steps and the involved commands.</p>
+<h2 id="clone-the-repository">Clone the repository</h2>
+<p>First, you can download the source code from github using the following command:</p>
+<pre><code>$ git clone https://github.com/amidst/toolbox.git      </code></pre>
+<p>Once the download has finished, enter into the downloaded folder:</p>
+<pre><code>$ cd toolbox     </code></pre>
+<h2 id="create-a-new-branch-from-develop">Create a new branch from develop </h2>
+<p>All the new development will be done in the branch develop. <strong>Do not modify the master branch</strong> because it should always contain the source of the very last release. Thus we change into the develop branch with the following command:</p>
+<pre><code>$ git checkout develop    </code></pre>
+<p>The terminal replies with the following output:</p>
+<pre><code>Checking out files: 100% (469/469), done.
+Branch develop set up to track remote branch develop from origin.
+Switched to a new branch &#39;develop&#39;</code></pre>
+<p>To avoid overlapping, we advise you to perform all your developments or changes in a new branch created from develop. The name of this new branch will be newfeature and it can be created with the following command</p>
+<pre><code>$ git branch newfeature  </code></pre>
+<p>We move into the recently created branch:</p>
+<pre><code>$ git checkout newfeature  </code></pre>
+<pre><code>Switched to branch &#39;newfeature&#39;</code></pre>
+<p>At any moment, we can verify which is the current branch with the command show below. Make sure that your current branch is always the one you have created.</p>
+<pre><code>$ git branch</code></pre>
+<p>Previous command shows a list with all the local branches, being the current branch the one with the symbol *, for example:</p>
+<pre><code>develop
+master
+* newfeature</code></pre>
+<p>The new branch is not yet a remote branch. For uploading it to the server, we will use the following command:</p>
+<pre><code>$ git push --set-upstream origin newfeature</code></pre>
+<pre><code>Total 0 (delta 0), reused 0 (delta 0)
+To https://github.com/amidst/toolbox.git
+* [new branch]      newfeature -&gt; newfeature
+Branch newfeature set up to track remote branch newfeature from origin.</code></pre>
+<h2 id="modify-the-code-and-upload-your-changes">Modify the code and upload your changes </h2>
+<p>As an example, we will simply create a new text file and upload it to the server. For creating such file run:</p>
+<pre><code>$ echo &quot;file to be deleted&quot; &gt; newfile.txt</code></pre>
+<p>Now, we have to set the new file as a tracked file, for that purpose:</p>
+<pre><code>$ git add newfile.txt </code></pre>
+<p>Which generates the output shown below indicating which of the tracked files contain changes to be committed</p>
+<pre><code>$ git status</code></pre>
+<p>that generates the following output:</p>
+<pre><code>On branch newfeature
+Your branch is up-to-date with &#39;origin/newfeature&#39;.
+Changes to be committed:
+(use &quot;git reset HEAD &lt;file&gt;...&quot; to unstage)
+
+new file:   newfile.txt
+
+Untracked files:
+(use &quot;git add &lt;file&gt;...&quot; to include in what will be committed)
+
+...</code></pre>
+<p>Now we will do a commit including the message “added newfile.txt” with the following command:<br />
+</p>
+<pre><code>$ git commit -m &quot;added newfile.txt&quot;</code></pre>
+<pre><code>[newfeature f256d1e] added newfile.txt
+1 file changed, 1 insertion(+)
+create mode 100644 newfile.txt</code></pre>
+<p>Finally, we have upload all the changes to the server:<br />
+</p>
+<pre><code>$ git push</code></pre>
+<h2 id="merge-the-new-branch-with-develop">Merge the new branch with develop </h2>
+<p>Until now, the changes done are only present in the branch newfeature. However, we should integrate these changes with the develop branch. Thus, we first change to the branch develop:<br />
+</p>
+<pre><code>$ git checkout develop</code></pre>
+<p>Now, we will merge both branches:<br />
+</p>
+<pre><code>$ git merge newfeature</code></pre>
+<p>If there is not conflicts, an output similar to the following one will be generated:<br />
+</p>
+<pre><code>Updating 20ff914..f256d1e
+Fast-forward
+newfile.txt | 1 +
+1 file changed, 1 insertion(+)
+create mode 100644 newfile.txt</code></pre>
+<p>Finally, we will upload the result of merging both branches to the server:<br />
+</p>
+<pre><code>$ git push</code></pre>
+<p>Now, if we go to the AMIDST github website (<a href="https://github.com/amidst/toolbox" class="uri">https://github.com/amidst/toolbox</a>), we can verify that the branch develop contains the changes in the code:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/merge_result.png" alt="View of the result of the contribution in the github website." width="377" /><p class="caption" style="text-align:center">View of the result of the contribution in the github website.<span data-label="fig:merge_result"></span></p>
+</div>
+

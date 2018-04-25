@@ -1,0 +1,440 @@
+<h1 id="sec:flinklink">Flinklink: Code Examples</h1>
+<ul>
+<li><p><a href="#sec:flinklink:io">Input/output</a></p>
+<ul>
+<li><p><a href="#sec:flinklink:io:read">Reading data</a></p></li>
+<li><p><a href="#sec:flinklink:io:write">Write data</a></p></li>
+</ul></li>
+<li><p><a href="#sec:flinklink:learning">Parametric Learning</a></p>
+<ul>
+<li><p><a href="#sec:flinklink:learning:pml">Parallel Maximum Likelihood</a></p></li>
+<li><p><a href="#sec:flinklink:learning:dvmp">Distributed Variational Message Pasing</a></p></li>
+<li><p><a href="#sec:flinklink:learning:dvi">Distributed VI</a></p></li>
+<li><p><a href="#sec:flinklink:learning:svi">Stochastic VI</a></p></li>
+</ul></li>
+<li><p><a href="#sec:flinklink:ext"> Extensions and applications</a></p>
+<ul>
+<li><p><a href="#sec:flinklink:ext:models"> Latent variable models with Flink</a></p></li>
+<li><p><a href="#sec:flinklink:ext:conceptdrift">Concept drift</a></p></li>
+</ul></li>
+</ul>
+<h2 id="sec:flinklink:io">Input/output</h2>
+<h3 id="sec:flinklink:io:read">Reading data</h3>
+<p>In this example we show how can we read a dataset using Flink. Note that the process is the same regardless being a single or a distributed file.</p>
+<pre><code>public class DataStreamLoaderExample {
+    public static void main(String[] args) throws Exception {
+
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+        //Paths to datasets
+        String simpleFile = &quot;datasets/simulated/syntheticData.arff&quot;;
+        String distriFile = &quot;datasets/simulated/distributed.arff&quot;;
+
+        //Load the data
+        DataFlink&lt;DataInstance&gt; dataSimple = DataFlinkLoader.open(env, simpleFile, false);
+        DataFlink&lt;DataInstance&gt; dataDistri = DataFlinkLoader.open(env,distriFile, false);
+
+        //Print the number of data samples
+        System.out.println(dataSimple.getDataSet().count());
+        System.out.println(dataDistri.getDataSet().count());
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:io:write">Writing data</h3>
+<p>Below we generate a random Flink dataset with 1000 instances, 2 discrete variables and 3 continuous ones. The seed used is 1234. Eventually, we save it as a distributed dataset (format ARFF folder).</p>
+<pre><code>public class DataStreamWriterExample {
+    public static void main(String[] args) throws Exception {
+
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+
+        //generate a random dataset
+        DataFlink&lt;DataInstance&gt; dataFlink = new DataSetGenerator().generate(env,1234,1000,2,3);
+
+        //Saves it as a distributed arff file
+        DataFlinkWriter.writeDataToARFFFolder(dataFlink, &quot;datasets/simulated/distributed.arff&quot;);
+    }
+}
+
+
+//TODO: Write to standard arff --&gt; convert to datastream??</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h2 id="sec:flinklink:learning">Parametric learning</h2>
+<p>Here give examples of the provided algorithms by AMiDST for learning the probability distributions from a Flink data set. For shake of simplicity, we will consider the Naive Bayes DAG structure. Note that the code is almost the same of each of the algoritms, they only differ on the constructor used (e.g. <em>new ParallelMaximumLikelihood()</em>, <em>new dVMP()</em>, etc.)</p>
+<h3 id="sec:flinklink:learning:pml">Parallel Maximum Likelihood</h3>
+<pre><code>public class ParallelMLExample {
+    public static void main(String[] args) throws Exception {
+
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+
+
+        //generate a random dataset
+        DataFlink&lt;DataInstance&gt; dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);
+
+        //Creates a DAG with the NaiveBayes structure for the random dataset
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataFlink.getAttributes(), &quot;DiscreteVar4&quot;);
+        System.out.println(dag.toString());
+
+
+        //Create the  Learner object
+        ParameterLearningAlgorithm learningAlgorithmFlink =
+                new ParallelMaximumLikelihood();
+
+        //Learning parameters
+        learningAlgorithmFlink.setBatchSize(10);
+        learningAlgorithmFlink.setDAG(dag);
+
+        //Initialize the learning process
+        learningAlgorithmFlink.initLearning();
+
+        //Learn from the flink data
+        learningAlgorithmFlink.updateModel(dataFlink);
+
+        //Print the learnt BN
+        BayesianNetwork bn = learningAlgorithmFlink.getLearntBayesianNetwork();
+        System.out.println(bn);
+
+
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:learning:dvmp">Distributed Variational Message Passing</h3>
+<pre><code>public class dVMPExample {
+    public static void main(String[] args) throws Exception {
+
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+        //generate a random dataset
+        DataFlink&lt;DataInstance&gt; dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);
+
+        //Creates a DAG with the NaiveBayes structure for the random dataset
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataFlink.getAttributes(), &quot;DiscreteVar4&quot;);
+        System.out.println(dag.toString());
+
+
+        //Create the  Learner object
+        ParameterLearningAlgorithm learningAlgorithmFlink =
+                 new dVMP();
+
+        //Learning parameters
+        learningAlgorithmFlink.setBatchSize(10);
+        learningAlgorithmFlink.setDAG(dag);
+
+        //Initialize the learning process
+        learningAlgorithmFlink.initLearning();
+
+        //Learn from the flink data
+        learningAlgorithmFlink.updateModel(dataFlink);
+
+        //Print the learnt BN
+        BayesianNetwork bn = learningAlgorithmFlink.getLearntBayesianNetwork();
+        System.out.println(bn);
+
+
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:learning:dvi">Distributed VI</h3>
+<pre><code>public class DistributedVIExample {
+    public static void main(String[] args) throws Exception {
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+        //generate a random dataset
+        DataFlink&lt;DataInstance&gt; dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);
+
+        //Creates a DAG with the NaiveBayes structure for the random dataset
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataFlink.getAttributes(), &quot;DiscreteVar4&quot;);
+        System.out.println(dag.toString());
+
+
+        //Create the  Learner object
+        ParameterLearningAlgorithm learningAlgorithmFlink =
+                 new DistributedVI();
+
+        //Learning parameters
+        learningAlgorithmFlink.setBatchSize(10);
+        learningAlgorithmFlink.setDAG(dag);
+
+        //Initialize the learning process
+        learningAlgorithmFlink.initLearning();
+
+        //Learn from the flink data
+        learningAlgorithmFlink.updateModel(dataFlink);
+
+        //Print the learnt BN
+        BayesianNetwork bn = learningAlgorithmFlink.getLearntBayesianNetwork();
+        System.out.println(bn);
+
+
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:learning:svi">Stochastic VI</h3>
+<p>An example of the learning algorithm Stochastic VI is given below. Note that two specific parameters must be set, namely the <em>learning factor</em> and the <em>data size</em>.</p>
+<pre><code>public class StochasticVIExample {
+    public static void main(String[] args) throws Exception {
+
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+        //generate a random dataset
+        DataFlink&lt;DataInstance&gt; dataFlink = new DataSetGenerator().generate(env,1234,1000,5,0);
+
+        //Creates a DAG with the NaiveBayes structure for the random dataset
+        DAG dag = DAGGenerator.getNaiveBayesStructure(dataFlink.getAttributes(), &quot;DiscreteVar4&quot;);
+        System.out.println(dag.toString());
+
+
+        //Create the  Learner object
+        ParameterLearningAlgorithm learningAlgorithmFlink =
+                new StochasticVI();
+
+        //Learning parameters
+        learningAlgorithmFlink.setBatchSize(10);
+        learningAlgorithmFlink.setDAG(dag);
+
+        //Initialize the learning process
+        learningAlgorithmFlink.initLearning();
+
+        //Learn from the flink data
+        learningAlgorithmFlink.updateModel(dataFlink);
+
+        //Specific parameters for the algorithm
+        ((StochasticVI)learningAlgorithmFlink).setLearningFactor(0.7);
+        ((StochasticVI)learningAlgorithmFlink).setDataSetSize((int) dataFlink.getDataSet().count());
+
+
+        //Print the learnt BN
+        BayesianNetwork bn = learningAlgorithmFlink.getLearntBayesianNetwork();
+        System.out.println(bn);
+
+
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h2 id="sec:flinklink:ext">Extensions and applications</h2>
+<h3 id="sec:flinklink:ext:models">Latent variable models with Flink</h3>
+<p>The module <em>latent-variable-models</em> contains a large set of classes that allow to easily learn some of the standard models with latent variables. These models can be learnt from not only from local datasets (e.g. a single ARFF file) but also from distributed ones (e.g. ARFF folder). These last ones are managed using Flink. In code example shown below the model <em>Factor Analysis</em> is learnt from a distributed dataset.</p>
+<pre><code>public class LatentModelsFlink {
+    public static void main(String[] args) throws FileNotFoundException {
+        boolean hadoop_cluster = false;
+
+        if (args.length&gt;1){
+            hadoop_cluster = Boolean.parseBoolean(args[0]);
+        }
+
+        final ExecutionEnvironment env;
+
+        //Set-up Flink session.
+        if(hadoop_cluster){
+            env = ExecutionEnvironment.getExecutionEnvironment();
+            env.getConfig().disableSysoutLogging();
+        }else{
+            Configuration conf = new Configuration();
+            conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+            conf.setInteger(&quot;taskmanager.numberOfTaskSlots&quot;,Main.PARALLELISM);
+            env = ExecutionEnvironment.createLocalEnvironment(conf);
+            env.setParallelism(Main.PARALLELISM);
+            env.getConfig().disableSysoutLogging();
+        }
+        //Load the datastream
+        String filename = &quot;datasets/simulated/exampleDS_d0_c5.arff&quot;;
+        DataFlink&lt;DataInstance&gt; data = DataFlinkLoader.loadDataFromFile(env, filename, false);
+
+        //Learn the model
+        Model model = new FactorAnalysis(data.getAttributes());
+        ((FactorAnalysis)model).setNumberOfLatentVariables(3);
+        model.updateModel(data);
+        BayesianNetwork bn = model.getModel();
+
+        System.out.println(bn);
+
+    }
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+<h3 id="sec:flinklink:ext:conceptdrift">Concept drift detection</h3>
+<p>A salient aspect of streaming data is that the domain being modeled is often <em>non-stationary</em>. That is, the distribution governing the data changes over time. This situation is known as <em>concept drift</em> and if not carefully taken into account, the result can be a failure to capture and interpret intrinsic properties of the data during data exploration. The AMIDST toolbox can be used for detecting this situation as shown in the example below.</p>
+<pre><code>public class ConceptDriftDetector {
+
+    //public int NSETS = 15;
+
+
+    public static void learnIDAConceptDriftDetector(int NSETS) throws Exception {
+        //Set-up Flink session.
+        Configuration conf = new Configuration();
+        conf.setInteger(&quot;taskmanager.network.numberOfBuffers&quot;, 12000);
+        final ExecutionEnvironment env = ExecutionEnvironment.createLocalEnvironment(conf);
+        env.getConfig().disableSysoutLogging();
+        env.setParallelism(Main.PARALLELISM);
+
+      //  DataFlink&lt;DataInstance&gt; data0 = DataFlinkLoader.loadDataFromFolder(env,
+      //          &quot;hdfs:///tmp_conceptdrift_data0.arff&quot;, false);
+
+          DataFlink&lt;DataInstance&gt; data0 = DataFlinkLoader.open(env,
+                  &quot;./datasets/simulated/tmp_conceptdrift_data0.arff&quot;, false);
+
+        long start = System.nanoTime();
+        IDAConceptDriftDetector learn = new IDAConceptDriftDetector();
+        learn.setBatchSize(1000);
+        learn.setClassIndex(0);
+        learn.setAttributes(data0.getAttributes());
+        learn.setNumberOfGlobalVars(1);
+        learn.setTransitionVariance(0.1);
+        learn.setSeed(0);
+
+        learn.initLearning();
+
+        System.out.println(learn.getGlobalDAG().toString());
+
+        double[] output = new double[NSETS];
+
+        System.out.println(&quot;--------------- LEARNING DATA &quot; + 0 + &quot; --------------------------&quot;);
+        double[] out = learn.updateModelWithNewTimeSlice(data0);
+        //System.out.println(learn.getLearntDynamicBayesianNetwork());
+        output[0] = out[0];
+
+        for (int i = 1; i &lt; NSETS; i++) {
+            System.out.println(&quot;--------------- LEARNING DATA &quot; + i + &quot; --------------------------&quot;);
+            DataFlink&lt;DataInstance&gt; dataNew = DataFlinkLoader.open(env,
+                    &quot;./datasets/simulated/tmp_conceptdrift_data&quot;+i+&quot;.arff&quot;, false);
+            out = learn.updateModelWithNewTimeSlice(dataNew);
+            //System.out.println(learn.getLearntDynamicBayesianNetwork());
+            output[i] = out[0];
+
+        }
+        long duration = (System.nanoTime() - start) / 1;
+        double seconds = duration / 1000000000.0;
+
+        System.out.println(&quot;Running time&quot; + seconds + &quot; seconds&quot;);
+
+        //System.out.println(learn.getLearntDynamicBayesianNetwork());
+
+        for (int i = 0; i &lt; NSETS; i++) {
+            System.out.println(&quot;E(H_&quot;+i+&quot;) =\t&quot; + output[i]);
+        }
+
+    }
+
+    public static void main(String[] args) throws Exception {
+
+        int NSETS = Integer.parseInt(args[0]);
+
+        learnIDAConceptDriftDetector(NSETS);
+    }
+
+}</code></pre>
+<p><a href="#sec:flinklink">[Back to Top]</a></p>
+

@@ -1,0 +1,927 @@
+<h1 id="sec:bns">Bayesian Networks: Code Examples</h1>
+<ul>
+<li><p><a href="#sec:bns:datastreams">Data Streams</a></p></li>
+<li><p><a href="#sec:bns:randomvars">Data Streams</a></p></li>
+<li><p><a href="#sec:bns:models">Models</a></p>
+<ul>
+<li><p><a href="#sec:bns:models:creating">Creating BNs</a></p></li>
+<li><p><a href="#sec:bns:models:creatinglatent">Creating Bayesian networks with latent variables</a></p></li>
+<li><p><a href="#sec:bns:models:modif">Modifiying Bayesian networks</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:io">Input/Output</a></p>
+<ul>
+<li><p><a href="#sec:bns:io:iods">I/O of data streams</a></p></li>
+<li><p><a href="#sec:bns:io:iobn">I/O of BNs</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:inference">Inference</a></p>
+<ul>
+<li><p><a href="#sec:bns:inference:engine">The inference engine</a></p></li>
+<li><p><a href="#sec:bns:inference:vmp">Variational Message Passing</a></p></li>
+<li><p><a href="#sec:bns:inference:sampling">Importance Sampling</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:learning">Learning Algorithms</a></p>
+<ul>
+<li><p><a href="#sec:bns:learning:batchml">Maximum Likelihood</a></p></li>
+<li><p><a href="#sec:bns:learning:parallelml">Parallel Maximum Likelihood</a></p></li>
+<li><p><a href="#sec:bns:learning:svb">Streaming Variational Bayes</a></p></li>
+<li><p><a href="#sec:bns:learning:parallelsvb">Parallel Streaming Variational Bayes</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:conceptdrift">Concept Drift Methods</a></p>
+<ul>
+<li><p><a href="#sec:bns:conceptdrift:nbayes">Naive Bayes with Virtual Concept Drift Detection</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:huginlink">HuginLink</a></p>
+<ul>
+<li><p><a href="#sec:bns:huginlink:conversion">Models conversion between AMiDST and Hugin</a></p></li>
+<li><p><a href="#sec:bns:huginlink:io">I/O of Bayesian Networks with Hugin net format</a></p></li>
+<li><p><a href="#sec:bns:huginlink:inference">Invoking Hugin’s inference engine</a></p></li>
+<li><p><a href="#sec:bns:huginlink:huginTAN">Invoking Hugin’s Parallel TAN</a></p></li>
+</ul></li>
+<li><p><a href="#sec:bns:moalink">MoaLink</a></p>
+<ul>
+<li><p><a href="#sec:bns:moalink:moaclass">AMIDST Classifiers from MOA</a></p></li>
+<li><p><a href="#sec:bns:moalink:moareg">AMIDST Classifiers from MOA</a></p></li>
+</ul></li>
+</ul>
+<h2 id="sec:bns:datastreams">Data Streams</h2>
+<p>In this example we show how to use the main features of a DataStream object. More precisely, we show six different ways of iterating over the data samples of a DataStream object.</p>
+<pre><code>public class DataStreamsExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        //DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasetsTests/data.arff&quot;);
+
+        //Generate the data stream using the class DataSetGenerator
+        DataStream&lt;DataInstance&gt; data = DataSetGenerator.generate(1,10,5,5);
+
+
+        //Access to the attributes defining the data set
+        System.out.println(&quot;Attributes defining the data set&quot;);
+        for (Attribute attribute : data.getAttributes()) {
+            System.out.println(attribute.getName());
+        }
+        Attribute discreteVar0 = data.getAttributes().getAttributeByName(&quot;DiscreteVar0&quot;);
+
+        //1. Iterating over samples using a for loop
+        System.out.println(&quot;1. Iterating over samples using a for loop&quot;);
+        for (DataInstance dataInstance : data) {
+            System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0));
+        }
+
+
+        //2. Iterating using streams. We need to restart the data again as a DataStream can only be used once.
+        System.out.println(&quot;2. Iterating using streams.&quot;);
+        data.restart();
+        data.stream().forEach(dataInstance -&gt;
+                        System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0))
+        );
+
+
+        //3. Iterating using parallel streams.
+        System.out.println(&quot;3. Iterating using parallel streams.&quot;);
+        data.restart();
+        data.parallelStream(10).forEach(dataInstance -&gt;
+                        System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0))
+        );
+
+        //4. Iterating over a stream of data batches.
+        System.out.println(&quot;4. Iterating over a stream of data batches.&quot;);
+        data.restart();
+        data.streamOfBatches(10).forEach(batch -&gt; {
+            for (DataInstance dataInstance : batch)
+                System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0));
+        });
+
+        //5. Iterating over a parallel stream of data batches.
+        System.out.println(&quot;5. Iterating over a parallel stream of data batches.&quot;);
+        data.restart();
+        data.parallelStreamOfBatches(10).forEach(batch -&gt; {
+            for (DataInstance dataInstance : batch)
+                System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0));
+        });
+
+
+        //6. Iterating over data batches using a for loop
+        System.out.println(&quot;6. Iterating over data batches using a for loop.&quot;);
+        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(10)) {
+            for (DataInstance dataInstance : batch)
+                System.out.println(&quot;The value of attribute A for the current data instance is: &quot; + dataInstance.getValue(discreteVar0));
+        }
+    }
+
+}</code></pre>
+<h2 id="sec:bns:randomvars">Data Streams</h2>
+<p>This example show the basic functionality of the classes Variables and Variable.</p>
+<pre><code>public class VariablesExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We first create an empty Variables object
+        Variables variables = new Variables();
+
+        //We invoke the &quot;new&quot; methods of the object Variables to create new variables.
+        //Now we create a Gaussian variables
+        Variable gaussianVar = variables.newGaussianVariable(&quot;Gaussian&quot;);
+
+        //Now we create a Multinomial variable with two states
+        Variable multinomialVar = variables.newMultinomialVariable(&quot;Multinomial&quot;, 2);
+
+        //Now we create a Multinomial variable with two states: TRUE and FALSE
+        Variable multinomialVar2 = variables.newMultinomialVariable(&quot;Multinomial2&quot;, Arrays.asList(&quot;TRUE, FALSE&quot;));
+
+        //For Multinomial variables we can iterate over their different states
+        FiniteStateSpace states = multinomialVar2.getStateSpaceType();
+        states.getStatesNames().forEach(System.out::println);
+
+        //Variable objects can also be used, for example, to know if one variable can be set as parent of some other variable
+        System.out.println(&quot;Can a Gaussian variable be parent of Multinomial variable? &quot; +
+                (multinomialVar.getDistributionType().isParentCompatible(gaussianVar)));
+
+        System.out.println(&quot;Can a Multinomial variable be parent of Gaussian variable? &quot; +
+                (gaussianVar.getDistributionType().isParentCompatible(multinomialVar)));
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:models">Models</h2>
+<h3 id="sec:bns:models:creating">Creating BNs</h3>
+<p>In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples of this data set. The numbers defining the probability distributions of the BN are randomly fixed.</p>
+<pre><code>public class CreatingBayesianNetworks {
+
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/syntheticData.arff&quot;);
+
+
+        /**
+         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
+         * in our data.
+         *
+         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using Variables class to guarantee that each variable
+         * has a different ID number and make it transparent for the user.
+         *
+         * 3. We can extract the Variable objects by using the method getVariableByName();
+         */
+        Variables variables = new Variables(data.getAttributes());
+
+        Variable a = variables.getVariableByName(&quot;A&quot;);
+        Variable b = variables.getVariableByName(&quot;B&quot;);
+        Variable c = variables.getVariableByName(&quot;C&quot;);
+        Variable d = variables.getVariableByName(&quot;D&quot;);
+        Variable e = variables.getVariableByName(&quot;E&quot;);
+        Variable g = variables.getVariableByName(&quot;G&quot;);
+        Variable h = variables.getVariableByName(&quot;H&quot;);
+        Variable i = variables.getVariableByName(&quot;I&quot;);
+
+        /**
+         * 1. Once you have defined your {@link Variables} object, the next step is to create
+         * a DAG structure over this set of variables.
+         *
+         * 2. To add parents to each variable, we first recover the ParentSet object by the method
+         * getParentSet(Variable var) and then call the method addParent().
+         */
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(e).addParent(a);
+        dag.getParentSet(e).addParent(b);
+
+        dag.getParentSet(h).addParent(a);
+        dag.getParentSet(h).addParent(b);
+
+        dag.getParentSet(i).addParent(a);
+        dag.getParentSet(i).addParent(b);
+        dag.getParentSet(i).addParent(c);
+        dag.getParentSet(i).addParent(d);
+
+        dag.getParentSet(g).addParent(c);
+        dag.getParentSet(g).addParent(d);
+
+        /**
+         * 1. We first check if the graph contains cycles.
+         *
+         * 2. We print out the created DAG. We can check that everything is as expected.
+         */
+        if (dag.containCycles()) {
+            try {
+            } catch (Exception ex) {
+                throw new IllegalArgumentException(ex);
+            }
+        }
+
+        System.out.println(dag.toString());
+
+
+        /**
+         * 1. We now create the Bayesian network from the previous DAG.
+         *
+         * 2. The BN object is created from the DAG. It automatically looks at the distribution tye
+         * of each variable and their parents to initialize the Distributions objects that are stored
+         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
+         * properly initialized.
+         *
+         * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.
+         */
+        BayesianNetwork bn = new BayesianNetwork(dag);
+        System.out.println(bn.toString());
+
+
+        /**
+         * 1. We iterate over the data set sample by sample.
+         *
+         * 2. For each sample or DataInstance object, we compute the log of the probability that the BN object
+         * assigns to this observation.
+         *
+         * 3. We accumulate these log-probs and finally we print the log-prob of the data set.
+         */
+        double logProb = 0;
+        for (DataInstance instance : data) {
+            logProb += bn.getLogProbabiltyOf(instance);
+        }
+        System.out.println(logProb);
+
+        BayesianNetworkWriter.save(bn, &quot;networks/simulated/BNExample.bn&quot;);
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:models:creatinglatent">Creating Bayesian networks with latent variables</h3>
+<p>In this example, we simply show how to create a BN model with hidden variables. We simply create a BN for clustering, i.e., a naive-Bayes like structure with a single common hidden variable acting as parant of all the observable variables.</p>
+<pre><code>public class CreatingBayesianNetworksWithLatentVariables {
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/syntheticData.arff&quot;);
+
+        /**
+         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)
+         * in our data.
+         *
+         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates
+         * all the variables. We create the variables using Variables class to guarantee that each variable
+         * has a different ID number and make it transparent for the user.
+         *
+         * 3. We can extract the Variable objects by using the method getVariableByName();
+         */
+        Variables variables = new Variables(data.getAttributes());
+
+        Variable a = variables.getVariableByName(&quot;A&quot;);
+        Variable b = variables.getVariableByName(&quot;B&quot;);
+        Variable c = variables.getVariableByName(&quot;C&quot;);
+        Variable d = variables.getVariableByName(&quot;D&quot;);
+        Variable e = variables.getVariableByName(&quot;E&quot;);
+        Variable g = variables.getVariableByName(&quot;G&quot;);
+        Variable h = variables.getVariableByName(&quot;H&quot;);
+        Variable i = variables.getVariableByName(&quot;I&quot;);
+
+        /**
+         * 1. We create the hidden variable. For doing that we make use of the method &quot;newMultinomialVariable&quot;. When
+         * a variable is created from an Attribute object, it contains all the information we need (e.g.
+         * the name, the type, etc). But hidden variables does not have an associated attribute
+         * and, for this reason, we use now this to provide this information.
+         *
+         * 2. Using the &quot;newMultinomialVariable&quot; method, we define a variable called HiddenVar, which is
+         * not associated to any attribute and, then, it is a latent variable, its state space is a finite set with two elements, and its
+         * distribution type is multinomial.
+         *
+         * 3. We finally create the hidden variable using the method &quot;newVariable&quot;.
+         */
+
+        Variable hidden = variables.newMultinomialVariable(&quot;HiddenVar&quot;, Arrays.asList(&quot;TRUE&quot;, &quot;FALSE&quot;));
+
+        /**
+         * 1. Once we have defined your {@link Variables} object, including the latent variable,
+         * the next step is to create a DAG structure over this set of variables.
+         *
+         * 2. To add parents to each variable, we first recover the ParentSet object by the method
+         * getParentSet(Variable var) and then call the method addParent(Variable var).
+         *
+         * 3. We just put the hidden variable as parent of all the other variables. Following a naive-Bayes
+         * like structure.
+         */
+        DAG dag = new DAG(variables);
+
+        dag.getParentSet(a).addParent(hidden);
+        dag.getParentSet(b).addParent(hidden);
+        dag.getParentSet(c).addParent(hidden);
+        dag.getParentSet(d).addParent(hidden);
+        dag.getParentSet(e).addParent(hidden);
+        dag.getParentSet(g).addParent(hidden);
+        dag.getParentSet(h).addParent(hidden);
+        dag.getParentSet(i).addParent(hidden);
+
+        /**
+         * We print the graph to see if is properly created.
+         */
+        System.out.println(dag.toString());
+
+        /**
+         * 1. We now create the Bayesian network from the previous DAG.
+         *
+         * 2. The BN object is created from the DAG. It automatically looks at the distribution type
+         * of each variable and their parents to initialize the Distributions objects that are stored
+         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are
+         * properly initialized.
+         *
+         * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.
+         */
+        BayesianNetwork bn = new BayesianNetwork(dag);
+        System.out.println(bn.toString());
+
+        /**
+         * Finally the Bayesian network is saved to a file.
+         */
+        BayesianNetworkWriter.save(bn, &quot;networks/simulated/BNHiddenExample.bn&quot;);
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:models:modif">Modifiying Bayesian networks</h3>
+<p>In this example we show how to access and modify the conditional probabilities of a Bayesian network model.</p>
+<pre><code>public class ModifiyingBayesianNetworks {
+
+    public static void main (String[] args){
+
+        //We first generate a Bayesian network with one multinomial, one Gaussian variable and one link
+        BayesianNetworkGenerator.setNumberOfGaussianVars(1);
+        BayesianNetworkGenerator.setNumberOfMultinomialVars(1,2);
+        BayesianNetworkGenerator.setNumberOfLinks(1);
+
+        BayesianNetwork bn = BayesianNetworkGenerator.generateBayesianNetwork();
+
+        //We print the randomly generated Bayesian networks
+        System.out.println(bn.toString());
+
+        //We first access the variable we are interested in
+        Variable multiVar = bn.getVariables().getVariableByName(&quot;DiscreteVar0&quot;);
+
+        //Using the above variable we can get the associated distribution and modify it
+        Multinomial multinomial = bn.getConditionalDistribution(multiVar);
+        multinomial.setProbabilities(new double[]{0.2, 0.8});
+
+        //Same than before but accessing the another variable
+        Variable normalVar = bn.getVariables().getVariableByName(&quot;GaussianVar0&quot;);
+
+        //In this case, the conditional distribtuion is of the type &quot;Normal given Multinomial Parents&quot;
+        Normal_MultinomialParents normalMultiDist = bn.getConditionalDistribution(normalVar);
+        normalMultiDist.getNormal(0).setMean(1.0);
+        normalMultiDist.getNormal(0).setVariance(1.0);
+
+        normalMultiDist.getNormal(1).setMean(0.0);
+        normalMultiDist.getNormal(1).setVariance(1.0);
+
+        //We print modified Bayesian network
+        System.out.println(bn.toString());
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:io">Input/Output</h2>
+<h3 id="sec:bns:io:iods">I/O of data streams</h3>
+<p>In this example we show how to load and save data sets from .arff files.</p>
+<pre><code>public class DataStreamIOExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/syntheticData.arff&quot;);
+
+        //We can save this data set to a new file using the static class DataStreamWriter
+        DataStreamWriter.writeDataToFile(data, &quot;datasets/simulated/tmp.arff&quot;);
+
+
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:io:iobn">I/O of BNs</h3>
+<p>In this example we show how to load and save Bayesian networks models for a binary file with “.bn” extension. In this toolbox Bayesian networks models are saved as serialized objects.</p>
+<pre><code>public class BayesianNetworkIOExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We can load a Bayesian network using the static class BayesianNetworkLoader
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //Now we print the loaded model
+        System.out.println(bn.toString());
+
+        //Now we change the parameters of the model
+        bn.randomInitialization(new Random(0));
+
+        //We can save this Bayesian network to using the static class BayesianNetworkWriter
+        BayesianNetworkWriter.save(bn, &quot;networks/simulated/tmp.bn&quot;);
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:inference">Inference</h2>
+<h3 id="sec:bns:inference:engine">The inference engine</h3>
+<p>This example show how to perform inference in a Bayesian network model using the InferenceEngine static class. This class aims to be a straigthfoward way to perform queries over a Bayesian network model. By the default the <em>VMP</em> inference method is invoked.</p>
+<pre><code>public class InferenceEngineExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
+        Variable varMout = bn.getVariables().getVariableByName(&quot;Mout&quot;);
+        Variable varW = bn.getVariables().getVariableByName(&quot;W&quot;);
+
+        //Set the evidence.
+        Assignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varW,0);
+
+        //Then we query the posterior of
+        System.out.println(&quot;P(Mout|W=0) = &quot; + InferenceEngine.getPosterior(varMout, bn, assignment));
+
+        //Or some more refined queries
+        System.out.println(&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot; + InferenceEngine.getExpectedValue(varMout, bn, v -&gt; (0.7 &lt; v &amp;&amp; v &lt; 6.59) ? 1.0 : 0.0 ));
+
+    }
+
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:inference">Inference</h2>
+<h3 id="sec:bns:inference:vmp">Variational Message Passing</h3>
+<p>This example we show how to perform inference on a general Bayesian network using the Variational Message Passing (VMP) algorithm detailed in</p>
+<blockquote>
+<p>Winn, J. M., Bishop, C. M. (2005). Variational message passing. In Journal of Machine Learning Research (pp. 661-694).</p>
+</blockquote>
+<pre><code>public class VMPExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
+        Variable varMout = bn.getVariables().getVariableByName(&quot;Mout&quot;);
+        Variable varW = bn.getVariables().getVariableByName(&quot;W&quot;);
+
+        //First we create an instance of a inference algorithm. In this case, we use the VMP class.
+        InferenceAlgorithm inferenceAlgorithm = new VMP();
+        //Then, we set the BN model
+        inferenceAlgorithm.setModel(bn);
+
+        //If exists, we also set the evidence.
+        Assignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varW,0);
+        inferenceAlgorithm.setEvidence(assignment);
+
+        //Then we run inference
+        inferenceAlgorithm.runInference();
+
+        //Then we query the posterior of
+        System.out.println(&quot;P(Mout|W=0) = &quot; + inferenceAlgorithm.getPosterior(varMout));
+
+        //Or some more refined queries
+        System.out.println(&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot; + inferenceAlgorithm.getExpectedValue(varMout, v -&gt; (0.7 &lt; v &amp;&amp; v &lt; 6.59) ? 1.0 : 0.0 ));
+
+        //We can also compute the probability of the evidence
+        System.out.println(&quot;P(W=0) = &quot;+Math.exp(inferenceAlgorithm.getLogProbabilityOfEvidence()));
+
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:inference:sampling">Importance Sampling</h3>
+<p>This example we show how to perform inference on a general Bayesian network using an importance sampling algorithm detailed in</p>
+<blockquote>
+<p>Fung, R., Chang, K. C. (2013). Weighing and integrating evidence for stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504.</p>
+</blockquote>
+<pre><code>public class ImportanceSamplingExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.
+        Variable varMout = bn.getVariables().getVariableByName(&quot;Mout&quot;);
+        Variable varW = bn.getVariables().getVariableByName(&quot;W&quot;);
+
+        //First we create an instance of a inference algorithm. In this case, we use the ImportanceSampling class.
+        ImportanceSampling inferenceAlgorithm = new ImportanceSampling();
+        //Then, we set the BN model
+        inferenceAlgorithm.setModel(bn);
+
+        System.out.println(bn.toString());
+
+        //If it exists, we also set the evidence.
+        Assignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varW,0);
+        inferenceAlgorithm.setEvidence(assignment);
+
+        //We can also set to be run in parallel on multicore CPUs
+        inferenceAlgorithm.setParallelMode(true);
+
+        //To perform more than one operation, data should be keep in memory
+        inferenceAlgorithm.setKeepDataOnMemory(true);
+
+        //Then we run inference
+        inferenceAlgorithm.runInference();
+
+        //Then we query the posterior of
+        System.out.println(&quot;P(Mout|W=0) = &quot; + inferenceAlgorithm.getPosterior(varMout));
+
+        //Or some more refined queries
+        System.out.println(&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot; + inferenceAlgorithm.getExpectedValue(varMout, v -&gt; (0.7 &lt; v &amp;&amp; v &lt; 6.59) ? 1.0 : 0.0 ));
+
+        //We can also compute the probability of the evidence
+        System.out.println(&quot;P(W=0) = &quot;+Math.exp(inferenceAlgorithm.getLogProbabilityOfEvidence()));
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:learning">Learning Algorithms</h2>
+<h3 id="sec:bns:learning:batchml">Maximum Likelihood</h3>
+<p>This other example shows how to learn incrementally the parameters of a Bayesian network using data batches,</p>
+<pre><code>public class MaximimumLikelihoodByBatchExample {
+
+
+    /**
+     * This method returns a DAG object with naive Bayes structure for the attributes of the passed data stream.
+     * @param dataStream object of the class DataStream&lt;DataInstance&gt;
+     * @param classIndex integer value indicating the position of the class
+     * @return object of the class DAG
+     */
+    public static DAG getNaiveBayesStructure(DataStream&lt;DataInstance&gt; dataStream, int classIndex){
+
+        //We create a Variables object from the attributes of the data stream
+        Variables modelHeader = new Variables(dataStream.getAttributes());
+
+        //We define the predicitive class variable
+        Variable classVar = modelHeader.getVariableById(classIndex);
+
+        //Then, we create a DAG object with the defined model header
+        DAG dag = new DAG(modelHeader);
+
+        //We set the linkds of the DAG.
+        dag.getParentSets().stream().filter(w -&gt; w.getMainVar() != classVar).forEach(w -&gt; w.addParent(classVar));
+
+        return dag;
+    }
+
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/WasteIncineratorSample.arff&quot;);
+
+        //We create a ParameterLearningAlgorithm object with the MaximumLikehood builder
+        ParameterLearningAlgorithm parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+
+        //We fix the DAG structure
+        parameterLearningAlgorithm.setDAG(getNaiveBayesStructure(data,0));
+
+        //We should invoke this method before processing any data
+        parameterLearningAlgorithm.initLearning();
+
+
+        //Then we show how we can perform parameter learnig by a sequential updating of data batches.
+        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(100)){
+            parameterLearningAlgorithm.updateModel(batch);
+        }
+
+        //And we get the model
+        BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        //We print the model
+        System.out.println(bnModel.toString());
+
+    }
+
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:learning:parallelml">Parallel Maximum Likelihood</h3>
+<p>This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum likelihood.</p>
+<pre><code>public class ParallelMaximumLikelihoodExample {
+
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/WasteIncineratorSample.arff&quot;);
+
+        //We create a ParallelMaximumLikelihood object with the MaximumLikehood builder
+        ParallelMaximumLikelihood parameterLearningAlgorithm = new ParallelMaximumLikelihood();
+
+        //We activate the parallel mode.
+        parameterLearningAlgorithm.setParallelMode(true);
+
+        //We desactivate the debug mode.
+        parameterLearningAlgorithm.setDebug(false);
+
+        //We fix the DAG structure
+        parameterLearningAlgorithm.setDAG(MaximimumLikelihoodByBatchExample.getNaiveBayesStructure(data, 0));
+
+        //We set the batch size which will be employed to learn the model in parallel
+        parameterLearningAlgorithm.setWindowsSize(100);
+
+        //We set the data which is going to be used for leaning the parameters
+        parameterLearningAlgorithm.setDataStream(data);
+
+        //We perform the learning
+        parameterLearningAlgorithm.runLearning();
+
+        //And we get the model
+        BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        //We print the model
+        System.out.println(bnModel.toString());
+
+    }
+
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:learning:svb">Streaming Variational Bayes</h3>
+<p>This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian approach using the following algorithm,</p>
+<blockquote>
+<p>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes. In Advances in Neural Information Processing Systems (pp. 1727-1735).</p>
+</blockquote>
+<p>In this second example we show a alternative implementation which explicitly updates the model by batches by using the class SVB.</p>
+<pre><code>public class SVBByBatchExample {
+
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/WasteIncineratorSample.arff&quot;);
+
+        //We create a SVB object
+        SVB parameterLearningAlgorithm = new SVB();
+
+        //We fix the DAG structure
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(),&quot;H&quot;,2));
+
+        //We fix the size of the window, which must be equal to the size of the data batches we use for learning
+        parameterLearningAlgorithm.setWindowsSize(100);
+
+        //We can activate the output
+        parameterLearningAlgorithm.setOutput(true);
+
+        //We should invoke this method before processing any data
+        parameterLearningAlgorithm.initLearning();
+
+
+        //Then we show how we can perform parameter learning by a sequential updating of data batches.
+        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(100)){
+            double log_likelhood_of_batch = parameterLearningAlgorithm.updateModel(batch);
+            System.out.println(&quot;Log-Likelihood of Batch: &quot;+ log_likelhood_of_batch);
+        }
+
+        //And we get the model
+        BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        //We print the model
+        System.out.println(bnModel.toString());
+
+    }
+
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:learning:parallelsvb">Parallel Streaming Variational Bayes</h3>
+<p>This example shows how to learn in the parameters of a Bayesian network from a stream of data with a Bayesian approach using the parallel version of the SVB algorithm,</p>
+<blockquote>
+<p>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes. In Advances in Neural Information Processing Systems (pp. 1727-1735).</p>
+</blockquote>
+<pre><code>public class ParallelSVBExample {
+
+    public static void main(String[] args) throws Exception {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasets/simulated/WasteIncineratorSample.arff&quot;);
+
+        //We create a ParallelSVB object
+        ParallelSVB parameterLearningAlgorithm = new ParallelSVB();
+
+        //We fix the number of cores we want to exploit
+        parameterLearningAlgorithm.setNCores(4);
+
+        //We fix the DAG structure, which is a Naive Bayes with a global latent binary variable
+        parameterLearningAlgorithm.setDAG(DAGGenerator.getHiddenNaiveBayesStructure(data.getAttributes(), &quot;H&quot;, 2));
+
+        //We fix the size of the window
+        parameterLearningAlgorithm.getSVBEngine().setWindowsSize(100);
+
+        //We can activate the output
+        parameterLearningAlgorithm.setOutput(true);
+
+        //We set the data which is going to be used for leaning the parameters
+        parameterLearningAlgorithm.setDataStream(data);
+
+        //We perform the learning
+        parameterLearningAlgorithm.runLearning();
+
+        //And we get the model
+        BayesianNetwork bnModel = parameterLearningAlgorithm.getLearntBayesianNetwork();
+
+        //We print the model
+        System.out.println(bnModel.toString());
+
+    }
+
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:conceptdrift">Concept Drift Methods</h2>
+<h3 id="sec:bns:conceptdrift:nbayes">Naive Bayes with Virtual Concept Drift Detection</h3>
+<p>This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift detector detailed in</p>
+<blockquote>
+<p>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</p>
+</blockquote>
+<pre><code>public class NaiveBayesVirtualConceptDriftDetectorExample {
+    public static void main(String[] args) {
+
+        //We can open the data stream using the static class DataStreamLoader
+        DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;./datasets/DriftSets/sea.arff&quot;);
+
+        //We create a NaiveBayesVirtualConceptDriftDetector object
+        NaiveBayesVirtualConceptDriftDetector virtualDriftDetector = new NaiveBayesVirtualConceptDriftDetector();
+
+        //We set class variable as the last attribute
+        virtualDriftDetector.setClassIndex(-1);
+
+        //We set the data which is going to be used
+        virtualDriftDetector.setData(data);
+
+        //We fix the size of the window
+        int windowSize = 1000;
+        virtualDriftDetector.setWindowsSize(windowSize);
+
+        //We fix the so-called transition variance
+        virtualDriftDetector.setTransitionVariance(0.1);
+
+        //We fix the number of global latent variables
+        virtualDriftDetector.setNumberOfGlobalVars(1);
+
+        //We should invoke this method before processing any data
+        virtualDriftDetector.initLearning();
+
+        //Some prints
+        System.out.print(&quot;Batch&quot;);
+        for (Variable hiddenVar : virtualDriftDetector.getHiddenVars()) {
+            System.out.print(&quot;\t&quot; + hiddenVar.getName());
+        }
+        System.out.println();
+
+
+        //Then we show how we can perform the sequential processing of
+        // data batches. They must be of the same value than the window
+        // size parameter set above.
+        int countBatch = 0;
+        for (DataOnMemory&lt;DataInstance&gt; batch : data.iterableOverBatches(windowSize)){
+
+            //We update the model by invoking this method. The output
+            // is an array with a value associated
+            // to each fo the global hidden variables
+            double[] out = virtualDriftDetector.updateModel(batch);
+
+            //We print the output
+            System.out.print(countBatch + &quot;\t&quot;);
+            for (int i = 0; i &lt; out.length; i++) {
+                System.out.print(out[i]+&quot;\t&quot;);
+            }
+            System.out.println();
+            countBatch++;
+        }
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:huginlink">HuginLink</h2>
+<h3 id="sec:bns:huginlink:conversion">Models conversion between AMiDST and Hugin</h3>
+<p>This example shows how to use the class BNConverterToAMIDST and BNConverterToHugin to convert a Bayesian network models between Hugin and AMIDST formats</p>
+<pre><code>public class HuginConversionExample {
+    public static void main(String[] args) throws ExceptionHugin {
+        //We load from Hugin format
+        Domain huginBN = BNLoaderFromHugin.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //Then, it is converted to AMIDST BayesianNetwork object
+        BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+
+        //Then, it is converted to Hugin Bayesian Network object
+        huginBN = BNConverterToHugin.convertToHugin(amidstBN);
+
+        System.out.println(amidstBN.toString());
+        System.out.println(huginBN.toString());
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:huginlink:io">I/O of Bayesian Networks with Hugin net format</h3>
+<p>This example shows how to use the class BNLoaderFromHugin and BNWriterToHugin classes to load and write Bayesian networks in Hugin format</p>
+<pre><code>public class HuginIOExample {
+    public static void main(String[] args) throws ExceptionHugin {
+        //We load from Hugin format
+        Domain huginBN = BNLoaderFromHugin.loadFromFile(&quot;networks/asia.net&quot;);
+
+        //We save a AMIDST BN to Hugin format
+        BayesianNetwork amidstBN = BNConverterToAMIDST.convertToAmidst(huginBN);
+        BayesianNetworkWriterToHugin.save(amidstBN,&quot;networks/tmp.net&quot;);
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:huginlink:inference">Invoking Hugin’s inference engine</h3>
+<p>This example we show how to perform inference using <a href="http://www.hugin.com">Hugin</a> inference engine within the AMiDST toolbox</p>
+<pre><code>public class HuginInferenceExample {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        //We first load the WasteIncinerator bayesian network
+        //which has multinomial and Gaussian variables.
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //We recover the relevant variables for this example:
+        //Mout which is normally distributed, and W which is multinomial.
+        Variable varMout = bn.getVariables().getVariableByName(&quot;Mout&quot;);
+        Variable varW = bn.getVariables().getVariableByName(&quot;W&quot;);
+
+        //First we create an instance of a inference algorithm.
+        //In this case, we use the ImportanceSampling class.
+        InferenceAlgorithm inferenceAlgorithm = new HuginInference();
+
+        //Then, we set the BN model
+        inferenceAlgorithm.setModel(bn);
+
+        //If exists, we also set the evidence.
+        Assignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varW, 0);
+        inferenceAlgorithm.setEvidence(assignment);
+
+        //Then we run inference
+        inferenceAlgorithm.runInference();
+
+        //Then we query the posterior of
+        System.out.println(&quot;P(Mout|W=0) = &quot; + inferenceAlgorithm.getPosterior(varMout));
+
+        //Or some more refined queries
+        System.out.println(&quot;P(0.7&lt;Mout&lt;3.5 | W=0) = &quot;
+                + inferenceAlgorithm.getExpectedValue(varMout, v -&gt; (0.7 &lt; v &amp;&amp; v &lt; 3.5) ? 1.0 : 0.0));
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:huginlink:huginTAN">Invoking Hugin’s Parallel TAN</h3>
+<p>This example we show how to perform inference using <a href="http://www.hugin.com">Hugin</a> inference engine within the AMIDST toolbox.</p>
+<p>This example shows how to use <a href="http://www.hugin.com">Hugin</a>’s functionality to learn in parallel a TAN model. An important remark is that Hugin only allows to learn the TAN model for a data set completely loaded into RAM memory. The case where our data set does not fit into memory, it solved in AMIDST in the following way. We learn the structure using a smaller data set produced by Reservoir sampling and, then, we use AMIDST’s ParallelMaximumLikelihood to learn the parameters of the TAN model over the whole data set.</p>
+<p>For further details about the implementation of the parallel TAN algorithm look at the following paper:</p>
+<blockquote>
+<p>Madsen, A.L. et al. A New Method for Vertical Parallelisation of TAN Learning Based on Balanced Incomplete Block Designs. Probabilistic Graphical Models. Lecture Notes in Computer Science Volume 8754, 2014, pp 302-317.</p>
+</blockquote>
+<pre><code>public class HuginInferenceExample {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        //We first load the WasteIncinerator bayesian network
+        //which has multinomial and Gaussian variables.
+        BayesianNetwork bn = BayesianNetworkLoader.loadFromFile(&quot;./networks/simulated/WasteIncinerator.bn&quot;);
+
+        //We recover the relevant variables for this example:
+        //Mout which is normally distributed, and W which is multinomial.
+        Variable varMout = bn.getVariables().getVariableByName(&quot;Mout&quot;);
+        Variable varW = bn.getVariables().getVariableByName(&quot;W&quot;);
+
+        //First we create an instance of a inference algorithm.
+        //In this case, we use the ImportanceSampling class.
+        InferenceAlgorithm inferenceAlgorithm = new HuginInference();
+
+        //Then, we set the BN model
+        inferenceAlgorithm.setModel(bn);
+
+        //If exists, we also set the evidence.
+        Assignment assignment = new HashMapAssignment(1);
+        assignment.setValue(varW, 0);
+        inferenceAlgorithm.setEvidence(assignment);
+
+        //Then we run inference
+        inferenceAlgorithm.runInference();
+
+        //Then we query the posterior of
+        System.out.println(&quot;P(Mout|W=0) = &quot; + inferenceAlgorithm.getPosterior(varMout));
+
+        //Or some more refined queries
+        System.out.println(&quot;P(0.7&lt;Mout&lt;3.5 | W=0) = &quot;
+                + inferenceAlgorithm.getExpectedValue(varMout, v -&gt; (0.7 &lt; v &amp;&amp; v &lt; 3.5) ? 1.0 : 0.0));
+
+    }
+}</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h2 id="sec:bns:moalink">MoaLink</h2>
+<h3 id="sec:bns:moalink:moaclass">AMIDST Classifiers from MOA</h3>
+<p>The following command can be used to learn a Bayesian model with a latent Gaussian variable (HG) and a multinomial with 2 states (HM), as displayed in figure below. The VMP algorithm is used to learn the parameters of these two non-observed variables and make predictions over the class variable.</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/HODE.jpg" alt="HODE example" width="377" /><p class="caption" style="text-align:center">HODE example<span data-label="fig:bns:moalink:HODE"></span></p>
+</div>
+<pre><code>java -Xmx512m -cp &quot;../lib/*&quot; -javaagent:../lib/sizeofag-1.0.0.jar 
+moa.DoTask EvaluatePrequential -l \(bayes.AmidstClassifier -g 1 
+-m 2\) -s generators.RandomRBFGenerator -i 10000 -f 1000 -q 1000</code></pre>
+<p><a href="#sec:bns">[Back to Top]</a></p>
+<h3 id="sec:bns:moalink:moareg">AMIDST Classifiers from MOA</h3>
+<p>It is possible to learn an enriched naive Bayes model for regression if the class label is of a continuous nature. The following command uses the model in Figure [fig:bns:moalink:HODEreg] on a toy dataset from WEKA’s collection of <a href="http://prdownloads.sourceforge.net/weka/datasets-numeric.jar">regression problems</a>.</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/regressionHODE.jpg" alt="HODE regression example" width="377" /><p class="caption" style="text-align:center">HODE regression example<span data-label="fig:bns:moalink:HODEreg"></span></p>
+</div>
+<pre><code>java -Xmx512m -cp &quot;../lib/*&quot; -javaagent:../lib/sizeofag-1.0.0.jar 
+moa.DoTask EvaluatePrequentialRegression -l bayes.AmidstRegressor
+-s (ArffFileStream -f ./quake.arff)</code></pre>
+<p>Note that the simpler the dataset the less complex the model should be. In this case, <code>quake.arff</code> is a very simple and small dataset that should probably be learn with a more simple classifier, that is, a high-bias-low-variance classifier, in order to avoid overfitting. This aims at providing a simple running example. <a href="#sec:bns">[Back to Top]</a></p>
+
