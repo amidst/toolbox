@@ -198,14 +198,45 @@ public class Utils {
         DecimalFormat formateador = new DecimalFormat("#.##");
 
         Vector sum = plateauLDA.getVMP().getNodes().stream()
-                    .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
-                    .map(node -> node.getQDist().getNaturalParameters()).reduce((a, b) -> {
-                        ((Vector) b).sum((Vector) a);
-                        return b;
-                    }).get();
+                .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
+                .map(node -> node.getQDist().getNaturalParameters())
+                .reduce((a, b) -> {
+                    ((Vector) b).sum((Vector) a);
+                    return b;
+                }).get();
         int totalDocs =  plateauLDA.getReplicatedNodes()
                 .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
                 .mapToInt(node -> 1).sum();
+
+        System.out.print("Topics proportions\t");
+        for (int j = 0; j < sum.size(); j++) {
+            System.out.print(j+" "+ formateador.format(sum.get(j)/totalDocs)+ " ");
+        }
+        System.out.println();
+        System.out.println();
+    }
+
+
+    public static void printTopicsProportionsNormalized(PlateauLDA plateauLDA) {
+        DecimalFormat formateador = new DecimalFormat("#.##");
+
+
+
+        Vector sum = plateauLDA.getVMP().getNodes().stream()
+                    .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
+                    .map(node -> node.getQDist().getNaturalParameters())
+                    .map(vector -> {
+                        Vector newVector = deepCopy(vector);
+                        double sumLocal = newVector.sum();
+                        newVector.divideBy(sumLocal);
+                        return newVector;
+                    }).reduce((a, b) -> {
+                        ((Vector) b).sum((Vector) a);
+                        return b;
+                    }).get();
+        long totalDocs =  plateauLDA.getReplicatedNodes()
+                .filter(node -> node.getMainVariable().getName().contains("TopicIndicator_DirichletParameter_"))
+                .count();
 
         System.out.print("Topics proportions\t");
         for (int j = 0; j < sum.size(); j++) {

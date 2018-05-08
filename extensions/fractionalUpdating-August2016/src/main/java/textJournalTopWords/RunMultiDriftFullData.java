@@ -34,11 +34,11 @@ public class RunMultiDriftFullData {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top200words/arff/";
-        String dataWords = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top200words/NIPS_dict_top200words.csv";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top100words/arff/";
+        String dataWords = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top100words/NIPS_dict_top100words.csv";
 
         boolean stemmed = false;
-        int numberOfTopWords = 200;
+        int numberOfTopWords = 100;
 
         int docsPerBatch = 10000;
 
@@ -47,7 +47,7 @@ public class RunMultiDriftFullData {
         String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/cajamarData/IDA2015Data/splittedByMonths/dataWeka/";
         int docsPerBatch = 35000;
 */
-        int ntopics = 5;
+        int ntopics = 10;
         int niter = 20;
         double threshold = 0.0001;
 
@@ -55,7 +55,7 @@ public class RunMultiDriftFullData {
         boolean priorTruncatedNormal=false;
         double priorTruncatedNormalPrecision=1;
 
-        int ntopicsWords = 100;
+        int ntopicsWords = 20;
         if (args.length>1){
             int cont=0;
             model = args[cont++];
@@ -189,7 +189,7 @@ public class RunMultiDriftFullData {
 
 
             Utils.printTopicsTopWordsProbMass(ntopicsWords, svb.getNaturalParameterPrior(), mapWords, vals);
-            Utils.printTopicsProportions((PlateauLDA)svb.getPlateuStructure());
+            Utils.printTopicsProportionsNormalized((PlateauLDA)svb.getPlateuStructure());
             System.out.println();
 
             if (reversed && year <= 0)
