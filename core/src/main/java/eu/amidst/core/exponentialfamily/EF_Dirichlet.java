@@ -1,17 +1,11 @@
 /*
+ * Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  You may obtain a copy of the License at
  *
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
- *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.
- *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.
- *    The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use
- *    this file except in compliance with the License.  You may obtain a copy of the License at
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *
- *            http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software distributed under the License is
- *    distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and limitations under the License.
- *
+ * See the License for the specific language governing permissions and limitations under the License.
  *
  */
 
@@ -96,8 +90,13 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
      */
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
+        if (val<0 || val>1)
+            throw new IllegalArgumentException("Error");
+        if (this.nOfStates>2)
+            throw new IllegalStateException("Error");
         SufficientStatistics vec = this.createZeroSufficientStatistics();
-        vec.set((int)val, Math.log(val));
+        vec.set(0, Math.log(val));
+        vec.set(1, Math.log(1-val));
         return vec;
     }
 

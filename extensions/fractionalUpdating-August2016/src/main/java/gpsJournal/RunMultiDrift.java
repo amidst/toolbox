@@ -17,11 +17,10 @@ import eu.amidst.core.datastream.DataOnMemoryListContainer;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
-import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.variables.Variable;
 import gps.DAGsGeneration;
 import gps.Main;
-import textJournalTopWords.MultiDriftSVB_EB;
+import hpp.MultiDriftSVB_EB;
 
 import java.io.File;
 import java.io.FileWriter;

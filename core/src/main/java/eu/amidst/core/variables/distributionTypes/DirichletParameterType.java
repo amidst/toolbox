@@ -20,6 +20,7 @@ package eu.amidst.core.variables.distributionTypes;
 import eu.amidst.core.distribution.ConditionalDistribution;
 import eu.amidst.core.distribution.Normal;
 import eu.amidst.core.exponentialfamily.EF_Dirichlet;
+import eu.amidst.core.exponentialfamily.EF_TruncatedExponential;
 import eu.amidst.core.variables.DistributionType;
 import eu.amidst.core.variables.Variable;
 import java.util.List;
@@ -60,6 +61,22 @@ public class DirichletParameterType extends DistributionType {
     @Override
     public EF_Dirichlet newEFUnivariateDistribution() {
          return new EF_Dirichlet(this.variable,2);
+    }
+
+    /**
+     * Creates a new exponential family univariate distribution.
+     * @param args, a sequence with the initial natural parameters.
+     * @return an exponential family Gamma distribution.
+     */
+    @Override
+    public EF_Dirichlet newEFUnivariateDistribution(double... args) {
+        EF_Dirichlet ef_Dirichlet = new EF_Dirichlet(this.variable);
+        for (double a : args) {
+            ef_Dirichlet.getNaturalParameters().set(0, a);
+        }
+        ef_Dirichlet.fixNumericalInstability();
+        ef_Dirichlet.updateMomentFromNaturalParameters();
+        return ef_Dirichlet;
     }
 
     /**

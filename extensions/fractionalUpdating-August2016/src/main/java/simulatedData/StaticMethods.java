@@ -13,6 +13,9 @@ package simulatedData;
 
 import eu.amidst.core.conceptdrift.SVBFading;
 import eu.amidst.core.learning.parametric.bayesian.*;
+import hpp.MultiDriftSVB_BlackBox;
+
+import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_EXPONENTIAL;
 
 /**
  * Created by andresmasegosa on 10/11/16.
@@ -21,7 +24,7 @@ public class StaticMethods {
 
 
     static int sampleSize = 100;
-    static int totalITER = 100;
+    static int totalITER = 20;
 
     public static BayesianParameterLearningAlgorithm initSVBFading(double fadingFactor){
         SVBFading svb = new SVBFading();
@@ -68,6 +71,20 @@ public class StaticMethods {
 
     public static BayesianParameterLearningAlgorithm initMultiDrift(){
         MultiDriftSVB svb = new MultiDriftSVB();
+
+        svb.getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setOutput(true);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
+
+        svb.setWindowsSize(sampleSize);
+        return svb;
+    }
+
+    public static BayesianParameterLearningAlgorithm initMultiDriftBlackBox(int type, double[] val){
+        MultiDriftSVB_BlackBox svb = new MultiDriftSVB_BlackBox();
+
+        svb.setPriorDistribution(type, val);
 
         svb.getPlateuStructure().getVMP().setTestELBO(true);
         svb.getPlateuStructure().getVMP().setMaxIter(100);

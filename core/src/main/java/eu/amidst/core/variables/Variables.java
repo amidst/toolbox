@@ -217,6 +217,14 @@ public class Variables implements Iterable<Variable>, Serializable {
         return this.newVariable(name, DistributionTypeEnum.NORMAL, new RealStateSpace());
     }
 
+    /**
+     * Creates a new Beta variable from a given name.
+     * @param name a given name.
+     * @return a new Beta Variable.
+     */
+    public Variable newBeta(String name) {
+        return this.newVariable(name, DistributionTypeEnum.DIRICHLET_PARAMETER, new FiniteStateSpace(2));
+    }
 
     /**
      * Creates a new Truncated ([0,1]) Exponential variable from a given name.

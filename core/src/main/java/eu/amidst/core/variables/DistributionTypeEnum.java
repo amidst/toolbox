@@ -49,6 +49,8 @@ public enum DistributionTypeEnum {
     /** The normal-gamma parameter distribution. */
     NORMAL_GAMMA_PARAMETER,
 
+    /** Beta Distribution**/
+    BETA,
 
     /** The truncated exponential distribution. */
     TRUNCATED_EXPONENTIAL,

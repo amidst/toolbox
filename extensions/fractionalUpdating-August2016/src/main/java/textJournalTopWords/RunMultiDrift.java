@@ -17,10 +17,10 @@ import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
-import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.lda.core.BatchSpliteratorByID;
 import eu.amidst.lda.core.PlateauLDA;
+import hpp.MultiDriftSVB_EB;
 
 import java.io.FileWriter;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class RunMultiDrift {
         String model = "NIPSjournal";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/NFSAbstracts/abstractByYear/";
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/uci-text/nipsByYear/";
-        String dataPath = "/Users/dario/Desktop/stemmed100words/";
+        String dataPath = "/Users/andresmasegosa/Google Drive/Amidst/svn/AMIDST-public/HPP_journal/NIPS2017_data/top100words/arff/";
 
 
         boolean stemmed = true;

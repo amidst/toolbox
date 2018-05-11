@@ -9,7 +9,7 @@
  *
  */
 
-package textJournalTopWords;
+package hpp;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;

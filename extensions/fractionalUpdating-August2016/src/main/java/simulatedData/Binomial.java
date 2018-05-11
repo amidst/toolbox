@@ -20,9 +20,11 @@ import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
+import hpp.MultiDriftSVB_BlackBox;
 
 import java.util.Random;
 
+import static hpp.MultiDriftSVB_BlackBox.BETA;
 import static simulatedData.StaticMethods.*;
 
 /**
@@ -45,7 +47,11 @@ public class Binomial {
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
 
-        BayesianParameterLearningAlgorithm svb = initDrift();//initPopulation(0.01,100);
+        //
+        //BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( DriftSVB.TRUNCATED_EXPONENTIAL, new double[]{-0.1});//initPopulation(0.01,100);
+        BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( MultiDriftSVB_BlackBox.BETA, new double[]{100.0, 100.0});//initPopulation(0.01,100);
+
+        //BayesianParameterLearningAlgorithm svb = initMultiDrift();//initPopulation(0.01,100);
 
         svb.setDAG(bn.getDAG());
 
@@ -64,28 +70,48 @@ public class Binomial {
         System.out.println(bn);
 
         System.out.println("LogLikelihood\t RealParameter \t Learnt Parameter \t [Lambda(s)]");
+        int k = 0;
+
+        Random rand = new Random(0);
 
         for (int i = 0; i < totalITER; i++) {
-            sampler.setSeed(i);
 
             multinomialDist = bn.getConditionalDistribution(multinomialVar);
 
-            if (i>=30){
+            /*if (i>=30){
                 multinomialDist.setProbabilityOfState(1,0.5);
                 multinomialDist.setProbabilityOfState(0, 0.5);
             } if (i>=60) {
                 multinomialDist.setProbabilityOfState(1,0.2);
                 multinomialDist.setProbabilityOfState(0, 0.8);
-            }
+            }*/
 
             /*if (i%5==1) {
-                double m = i+1;
-                multinomialDist.setProbabilityOfState(0,m/(m+nStates));
-                for (int j = 1; j < nStates; j++) {
+                System.out.println("CHANGE!!");
+                double m = 10*rand.nextDouble();
+
+                k = i%nStates;
+                multinomialDist.setProbabilityOfState(k,m/(m+nStates));
+                for (int j = 0; j < nStates; j++) {
+                    if (k==j)
+                        continue;
                     multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
                 }
             }*/
 
+ /*           if (i%5==1) {
+                System.out.println("CHANGE!!");
+                double m = 100*rand.nextDouble()+10;
+
+                k = 0;
+                multinomialDist.setProbabilityOfState(k,m/(m+nStates));
+                for (int j = 0; j < nStates; j++) {
+                    if (k==j)
+                        continue;
+                    multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
+                }
+            }
+*/
             if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.DriftSVB")==0){
 //                if (i<10){
 //                    ((DriftSVB)svb).updateModel(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
@@ -97,12 +123,9 @@ public class Binomial {
 //                }
                 ((DriftSVB)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-
-                sampler.setSeed(10*i);
-
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(k)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[k] +"\t"+((DriftSVB)svb).getLambdaMomentParameter());
                 //System.out.println(((DriftSVB)svb).getPlateuStructure().getPlateauNaturalParameterPrior().sum());
 
                 total+=log;
@@ -110,17 +133,20 @@ public class Binomial {
             }else if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB")==0){
                 ((MultiDriftSVB)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                sampler.setSeed(10*i);
+                double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
+
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(k)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[k] +"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
+                total+=log;
+            }else if (svb.getClass().isAssignableFrom(MultiDriftSVB_BlackBox.class)){
+                ((MultiDriftSVB_BlackBox)svb).updateModelWithConceptDrift(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(0)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[0] +"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
+                System.out.println(log+"\t"+multinomialDist.getProbabilityOfState(k)+"\t"+svb.getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[k] +"\t"+((MultiDriftSVB_BlackBox)svb).getLambdaMomentParameters()[0]);//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
                 total+=log;
-
             }else{
                 svb.updateModel(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 
-                sampler.setSeed(10*i);
 
                 double log=svb.predictedLogLikelihood(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
 

@@ -14,8 +14,11 @@ package textJournalTopWords;
 import eu.amidst.core.datastream.*;
 import eu.amidst.core.io.DataStreamLoader;
 import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
+import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
 import eu.amidst.lda.core.BatchSpliteratorByID;
 import eu.amidst.lda.core.PlateauLDA;
+import hpp.MultiDriftSVB_BlackBox;
+import hpp.MultiDriftSVB_EB;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,7 +54,7 @@ public class RunMultiDriftFullData {
         int niter = 20;
         double threshold = 0.0001;
 
-        boolean reversed = false;
+        boolean reversed = true;
         boolean priorTruncatedNormal=false;
         double priorTruncatedNormalPrecision=1;
 
@@ -102,7 +105,8 @@ public class RunMultiDriftFullData {
 
         Map<Integer,String> mapWords = Utils.loadWords(dataWords);
 
-        MultiDriftSVB_EB svb = new MultiDriftSVB_EB();
+        //MultiDriftSVB_BlackBox svb = new MultiDriftSVB_BlackBox();
+        MultiDriftSVB svb = new MultiDriftSVB();
 
         if(!priorTruncatedNormal) {
             System.out.println("Truncated Exponential");

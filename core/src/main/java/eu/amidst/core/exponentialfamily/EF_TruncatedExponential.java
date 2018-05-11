@@ -27,6 +27,7 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
 
     /**
      * Creates a new EF_TruncatedExponential distribution, for a given {@link Variable} object.
+     *
      * @param var1 a {@link Variable} object with a Gamma distribution type.
      */
     public EF_TruncatedExponential(Variable var1) {
@@ -36,13 +37,14 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
         this.var = var1;
         this.naturalParameters = this.createZeroNaturalParameters();
         this.momentParameters = this.createZeroMomentParameters();
-        this.naturalParameters.set(0, 0.1 );
+        this.naturalParameters.set(0, 0.1);
         this.setNaturalParameters(naturalParameters);
     }
 
     /**
      * Creates a new EF_TruncatedExponential distribution, for a given {@link Variable} object.
-     * @param var1 a {@link Variable} object with a Gamma distribution type.
+     *
+     * @param var1         a {@link Variable} object with a Gamma distribution type.
      * @param initialDelta the initial delta value of the truncated exponential.
      */
     public EF_TruncatedExponential(Variable var1, double initialDelta) {
@@ -65,7 +67,7 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
         SufficientStatistics sufficientStatistics = this.createZeroSufficientStatistics();
-        sufficientStatistics.set(0,val);
+        sufficientStatistics.set(0, val);
         return sufficientStatistics;
     }
 
@@ -90,7 +92,7 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
     @Override
     public EF_UnivariateDistribution randomInitialization(Random rand) {
 
-        double randomDelta = rand.nextGaussian()*rand.nextInt(100);
+        double randomDelta = rand.nextGaussian() * rand.nextInt(100);
 
         this.getNaturalParameters().set(0, randomDelta);
         this.fixNumericalInstability();
@@ -112,21 +114,9 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
 
     @Override
     public void updateMomentFromNaturalParameters() {
-        double delta =this.getNaturalParameters().get(0);
-        double width = (this.upperInterval - this.lowerInterval);
-
-        if (Math.exp(width*delta)>Double.MAX_VALUE) {
-            this.momentParameters.set(0, this.upperInterval - 1/delta);
-        } else {
-
-            double val = this.upperInterval -
-                    width/(1 - Math.exp(delta*width))
-                    - 1/delta;
-
-            this.momentParameters.set(0, val);
-
-//            this.momentParameters.set(0, Math.exp(delta) / (Math.exp(delta) - 1) - 1 / delta);
-        }
+        double delta = this.getNaturalParameters().get(0);
+        double val = 1.0 / (1-Math.exp(-delta)) - 1 / delta;
+        this.momentParameters.set(0, val);
     }
 
     @Override
@@ -136,17 +126,19 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
 
     @Override
     public double computeLogNormalizer() {
-        double delta =this.getNaturalParameters().get(0);
+        double delta = this.getNaturalParameters().get(0);
 
-        //return Mt(Math.exp(delta*this.upperInterval)/this.upperInterval - Math.exp(delta*this.lowerInterval)/this.lowerInterval)
 
-        if (delta>100){
-            return this.upperInterval*delta - Math.log(delta);
-        }else {
-            return Math.log((Math.exp(delta * this.upperInterval) - Math.exp(delta * this.lowerInterval)) / delta);
+        if (delta > 100) {
+            return delta - Math.log(delta);
+        } else {
+            if (delta > 0)
+                return Math.log(Math.exp(delta) - 1) - Math.log(delta);
+            else
+                return Math.log(1 - Math.exp(delta)) - Math.log(-delta);
+
         }
 
-//        return Math.log((Math.exp(delta)-1)/delta);
 
     }
 
@@ -158,7 +150,33 @@ public class EF_TruncatedExponential extends EF_TruncatedUnivariateDistribution 
     @Override
     public SufficientStatistics createInitSufficientStatistics() {
         SufficientStatistics sufficientStatistics = this.createZeroSufficientStatistics();
-        sufficientStatistics.set(0,0.1);
+        sufficientStatistics.set(0, 0.1);
         return sufficientStatistics;
+    }
+
+
+    public double cumulativeDistribution(double rho) {
+        double delta = this.getNaturalParameters().get(0);
+        return (Math.exp(delta * rho) - 1.0) / (Math.exp(delta) - 1.0);
+    }
+
+    public double inverserCumulativeDistribution(double uniform) {
+        double delta = this.getNaturalParameters().get(0);
+        if (delta>100){
+            return Math.log(uniform)/delta+1;
+        }else{
+            return Math.log(1+uniform*(Math.exp(delta)-1))/delta;
+        }
+    }
+
+    public double gradientInverserCumulativeDistribution(double uniform){
+        double delta = this.getNaturalParameters().get(0);
+        if (delta>100){
+            return -(Math.log(uniform)+delta)/Math.pow(delta,2) + Math.pow(delta*(Math.exp(-delta)*(1/uniform-1)+1),-1) ;
+        }else{
+            //return -Math.log(1+uniform*(Math.exp(delta)-1))/Math.pow(delta,2) + Math.pow(delta*(Math.exp(-delta)*(1/uniform-1)+1),-1);
+            return -Math.log(1+uniform*(Math.exp(delta)-1))/(delta*delta) + uniform*Math.exp(delta)/(delta*(1+uniform*(Math.exp(delta)-1)));
+
+        }
     }
 }
