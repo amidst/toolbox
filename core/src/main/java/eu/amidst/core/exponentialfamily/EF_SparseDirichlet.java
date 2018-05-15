@@ -49,7 +49,7 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
 
         this.parents = new ArrayList();
 
-        this.getSparseNaturalParameters().setDefaultValue(1.0);
+        this.getSparseNaturalParameters().setDefaultValue(0.0);
         this.fixNumericalInstability();
         updateMomentFromNaturalParameters();
     }
@@ -174,7 +174,7 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
     @Override
     public void updateMomentFromNaturalParameters() {
 
-        double sumOfU_i = this.naturalParameters.sum();
+        double sumOfU_i = this.naturalParameters.sum()+this.naturalParameters.size();
 
         this.momentParameters = this.createZeroMomentParameters();
 
@@ -183,7 +183,7 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
         this.getSparseMomentParameters().apply(new Function<Double, Double>() {
             @Override
             public Double apply(Double aDouble) {
-                return Gamma.digamma(aDouble) - Gamma.digamma(sumOfU_i);
+                return Gamma.digamma(aDouble+1) - Gamma.digamma(sumOfU_i);
             }
         });
 
@@ -209,11 +209,11 @@ public class EF_SparseDirichlet extends EF_UnivariateDistribution {
         double sumLogGammaOfU_i = this.getSparseNaturalParameters().sumApply(new Function<Double, Double>() {
             @Override
             public Double apply(Double aDouble) {
-                return Gamma.logGamma(aDouble);
+                return Gamma.logGamma(aDouble+1);
             }
         });
 
-        return sumLogGammaOfU_i - Gamma.logGamma(sumOfU_i);
+        return sumLogGammaOfU_i - Gamma.logGamma(sumOfU_i + this.naturalParameters.size());
 
     }
 

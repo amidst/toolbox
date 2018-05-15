@@ -65,9 +65,6 @@ public class EF_SparseDirichletTest extends TestCase {
         assertEquals(dist.computeLogBaseMeasure(1.0), distM.computeLogBaseMeasure(1.0));
 
         assertEquals(dist.computeLogNormalizer(), distM.computeLogNormalizer());
-
-        for (int i = 0; i < 10; i++) {
-            assertEquals(dist.computeLogProbabilityOf(i/10 +0.05), distM.computeLogProbabilityOf(i/10 +0.05));
-        }
+        
     }
 }
