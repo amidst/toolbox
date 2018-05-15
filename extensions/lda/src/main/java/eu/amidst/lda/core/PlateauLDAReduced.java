@@ -111,7 +111,7 @@ public class PlateauLDAReduced extends PlateuStructure {
         this.nonReplicatedVariablesList = this.replicatedVariables.entrySet().stream().filter(entry -> !entry.getValue()).map(entry -> entry.getKey()).sorted((a, b) -> a.getVarID() - b.getVarID()).collect(Collectors.toList());
 
         for (int i = 0; i < nTopics; i++) {
-            ef_learningmodel.getDistribution(dirichletMixingTopics).getNaturalParameters().set(i, MIXING_PRIOR);
+            ((EF_Dirichlet)ef_learningmodel.getDistribution(dirichletMixingTopics)).setAlphaParameter(i, MIXING_PRIOR);
         }
 
 
@@ -119,10 +119,10 @@ public class PlateauLDAReduced extends PlateuStructure {
 //            SparseVectorDefaultValue  vec = (SparseVectorDefaultValue)this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
 //            vec.setDefaultValue(0.01);
 
-            NaturalParameters vec = this.ef_learningmodel.getDistribution(variable).getNaturalParameters();
+            EF_Dirichlet dirichlet = this.ef_learningmodel.getDistribution(variable);
 
-            for (int i = 0; i < vec.size(); i++) {
-                vec.set(i, TOPIC_PRIOR);
+            for (int i = 0; i < dirichlet.getNaturalParameters().size(); i++) {
+                dirichlet.setAlphaParameter(i, TOPIC_PRIOR);
             }
         }
 

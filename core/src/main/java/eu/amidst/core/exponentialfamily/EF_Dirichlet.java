@@ -49,7 +49,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         for (int i = 0; i < nOfStates; i++) {
-            this.naturalParameters.set(i,1.0);
+            this.setAlphaParameter(i,1.0);
         }
         this.fixNumericalInstability();
         updateMomentFromNaturalParameters();
@@ -71,7 +71,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         for (int i = 0; i < nOfStates; i++) {
-            this.naturalParameters.set(i,scale - 1);
+            this.setAlphaParameter(i,scale);
         }
         fixNumericalInstability();
         updateMomentFromNaturalParameters();
@@ -109,12 +109,12 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         double sum =0;
 
         for (int i = 0; i < nOfStates; i++) {
-            sum+=this.naturalParameters.get(i)+1;
+            sum+=this.getAlphaParameter(i);
         }
 
         Vector vector = new ArrayVector(this.nOfStates);
         for (int i = 0; i < nOfStates; i++) {
-            vector.set(i,(this.naturalParameters.get(i)+1)/sum);
+            vector.set(i,(this.getAlphaParameter(i))/sum);
         }
 
         return vector;
@@ -178,11 +178,11 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
 
         double sumOfU_i = 0;
         for (int i = 0; i < nOfStates; i++) {
-            sumOfU_i += this.naturalParameters.get(i);
+            sumOfU_i += this.getAlphaParameter(i);
         }
 
         for (int i = 0; i < nOfStates; i++) {
-            this.momentParameters.set(i, Gamma.digamma(this.naturalParameters.get(i)) - Gamma.digamma(sumOfU_i));
+            this.momentParameters.set(i, Gamma.digamma(this.getAlphaParameter(i)) - Gamma.digamma(sumOfU_i));
         }
     }
 
@@ -203,8 +203,8 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         double sumOfU_i = 0;
         double sumLogGammaOfU_i = 0;
         for (int i = 0; i < nOfStates; i++) {
-            sumOfU_i += naturalParameters.get(i);
-            sumLogGammaOfU_i += Gamma.logGamma(naturalParameters.get(i));
+            sumOfU_i += this.getAlphaParameter(i);
+            sumLogGammaOfU_i += Gamma.logGamma(this.getAlphaParameter(i));
         }
 
         return sumLogGammaOfU_i - Gamma.logGamma(sumOfU_i);
@@ -234,4 +234,17 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     }
 
 
+    /**
+     * Get Alpha parameters of the Dirichlet
+     */
+    public double getAlphaParameter(int i){
+        return this.naturalParameters.get(i)+1;
+    }
+
+    /**
+     * Set Alpha parameters of the Dirichlet. Update to moment paramters must be performed.
+     */
+    public void setAlphaParameter(int i, double val){
+        this.naturalParameters.set(i,val-1.0);
+    }
 }

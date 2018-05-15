@@ -15,7 +15,6 @@ import com.sun.javafx.util.Utils;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.*;
-import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.io.BayesianNetworkLoader;
 import eu.amidst.core.learning.parametric.bayesian.SVB;
@@ -31,7 +30,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.math3.distribution.BetaDistribution;
 import org.apache.commons.math3.random.Well19937a;
 
@@ -45,7 +43,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
 
     public static int BETA  = 2;
 
-    private static final int NSAMPLES = 100;
+    private int nMCSamples = 100;
     EF_UnivariateDistribution[] ef_TExpP;
     EF_UnivariateDistribution[] ef_TExpQ;
 
@@ -69,18 +67,23 @@ public class MultiDriftSVB_BlackBox extends SVB {
     Well19937a randomBeta = new Well19937a(0);
 
     private boolean scoreGradient = true;
+    private boolean mapRhoEstiamte = false;
 
     public void setPriorDistribution(int type, double[] val) {
         this.type = type;
         this.hppVal = val;
     }
 
-    public double getDelta() {
-        return delta;
+    public void setScoreGradient(boolean scoreGradient) {
+        this.scoreGradient = scoreGradient;
     }
 
-    public void setDelta(double delta) {
-        this.delta = delta;
+    public void setnMCSamples(int nMCSamples) {
+        this.nMCSamples = nMCSamples;
+    }
+
+    public void setMapRhoEstiamte(boolean mapRhoEstiamte) {
+        this.mapRhoEstiamte = mapRhoEstiamte;
     }
 
     public void initHPP(int size){
@@ -285,7 +288,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
     }
 
 
-    private Vector estimateGradientLowerBound(int index, int nSamples, EF_UnivariateDistribution qRhoSampler, EF_UnivariateDistribution qBetaPosterior){
+    private Vector estimateGradientLowerBoundScoreGradient(int index, int nSamples, EF_UnivariateDistribution qRhoSampler, EF_UnivariateDistribution qBetaPosterior){
         EF_UnivariateDistribution qRhoModel = this.ef_TExpQ[index];
         EF_UnivariateDistribution pRhoModel = this.ef_TExpP[index];
 
@@ -298,6 +301,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
 
 
         Vector gradient = Serialization.deepCopy(qRhoModel.getNaturalParameters());
+
         for (int i = 0; i < rho_t.length; i++) {
             double partialLowerBound = 0;
             //Importance Sampling Weight
@@ -315,19 +319,20 @@ public class MultiDriftSVB_BlackBox extends SVB {
             pBetaPrior.getNaturalParameters().copy(newPrior);
             pBetaPrior.fixNumericalInstability();
             pBetaPrior.updateMomentFromNaturalParameters();
-            partialLowerBound+=pBetaPrior.getNaturalParameters().dotProduct(qBetaPosterior.getMomentParameters())-pBetaPrior.computeLogNormalizer();
+            double dataTerm = pBetaPrior.getNaturalParameters().dotProduct(qBetaPosterior.getMomentParameters())-pBetaPrior.computeLogNormalizer();
 
             //Compute E_q[\ln p(rho_t|\gamma))]
-            partialLowerBound+=pRhoModel.getNaturalParameters().dotProduct(pRhoModel.getSufficientStatistics(rho_t[i])) - pRhoModel.computeLogNormalizer();
+            double priorTerm=pRhoModel.getNaturalParameters().dotProduct(pRhoModel.getSufficientStatistics(rho_t[i])) - pRhoModel.computeLogNormalizer();
 
             //Compute -E_q[\ln q(rho_t|\gamma))]
-            partialLowerBound-=(qRhoModel.getNaturalParameters().dotProduct(qRhoModel.getSufficientStatistics(rho_t[i])) - qRhoModel.computeLogNormalizer());
+            double entropyTerm= -(qRhoModel.getNaturalParameters().dotProduct(qRhoModel.getSufficientStatistics(rho_t[i])) - qRhoModel.computeLogNormalizer());
 
 
             //Compute (t(\rho_t) - E_q[t(\rho_t)])*f(\rho_t)
             Vector localGradient = qRhoModel.getSufficientStatistics(rho_t[i]);
             localGradient.substract(qRhoModel.getMomentParameters());
 
+            partialLowerBound = dataTerm + priorTerm - entropyTerm;
             localGradient.multiplyBy(Math.exp(logWeight)*partialLowerBound);
 
             gradient.sum(localGradient);
@@ -341,7 +346,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
         return gradient;
     }
 
-    private double estimateLowerBound(int index, int nSamples, EF_UnivariateDistribution qRhoSampler, EF_UnivariateDistribution qBetaPosterior){
+    private double[] estimateLowerBound(int index, int nSamples, EF_UnivariateDistribution qRhoSampler, EF_UnivariateDistribution qBetaPosterior){
         EF_UnivariateDistribution qRhoModel = this.ef_TExpQ[index];
         EF_UnivariateDistribution pRhoModel = this.ef_TExpP[index];
 
@@ -354,14 +359,17 @@ public class MultiDriftSVB_BlackBox extends SVB {
         Vector naturalWeights = Serialization.deepCopy(qRhoSampler.getNaturalParameters());
 
 
-        double[] lowerbound = new double[nSamples];
+        double[] lowerbound = new double[4];
+        double logTerm = 0;
+        double mapTerm = 0;
+        double entropyTerm = 0;
         for (int i = 0; i < rho_t.length; i++) {
             double partialLowerBound = 0;
             //Importance Sampling Weight
-            naturalWeights.copy(qRhoModel.getNaturalParameters());
-            naturalWeights.substract(qRhoSampler.getNaturalParameters());
-            double logWeight=naturalWeights.dotProduct(qRhoSampler.getSufficientStatistics(rho_t[i]));
-            logWeight+=(qRhoSampler.computeLogNormalizer()-qRhoModel.computeLogNormalizer());
+            //naturalWeights.copy(qRhoModel.getNaturalParameters());
+            //naturalWeights.substract(qRhoSampler.getNaturalParameters());
+            //double logWeight=naturalWeights.dotProduct(qRhoSampler.getSufficientStatistics(rho_t[i]));
+            //logWeight+=(qRhoSampler.computeLogNormalizer()-qRhoModel.computeLogNormalizer());
 
             //Compute the E_q[ln\hat{p}(\beta_t|\bmlambda_{t-1},\rho_t)
             newPrior.copy(prior.getVectorByPosition(index));
@@ -372,18 +380,25 @@ public class MultiDriftSVB_BlackBox extends SVB {
             pBetaPrior.getNaturalParameters().copy(newPrior);
             pBetaPrior.fixNumericalInstability();
             pBetaPrior.updateMomentFromNaturalParameters();
-            partialLowerBound+=pBetaPrior.getNaturalParameters().dotProduct(qBetaPosterior.getMomentParameters())-pBetaPrior.computeLogNormalizer();
+            logTerm+=pBetaPrior.getNaturalParameters().dotProduct(qBetaPosterior.getMomentParameters())-pBetaPrior.computeLogNormalizer();
 
             //Compute E_q[\ln p(rho_t|\gamma))]
-            partialLowerBound+=pRhoModel.getNaturalParameters().dotProduct(pRhoModel.getSufficientStatistics(rho_t[i])) - pRhoModel.computeLogNormalizer();
+            mapTerm+=pRhoModel.getNaturalParameters().dotProduct(pRhoModel.getSufficientStatistics(rho_t[i])) - pRhoModel.computeLogNormalizer();
 
             //Compute -E_q[\ln q(rho_t|\gamma))]
-            partialLowerBound-=(qRhoModel.getNaturalParameters().dotProduct(qRhoModel.getSufficientStatistics(rho_t[i])) - qRhoModel.computeLogNormalizer());
-
-            lowerbound[i]=Math.exp(logWeight)*partialLowerBound;
+            entropyTerm-=(qRhoModel.getNaturalParameters().dotProduct(qRhoModel.getSufficientStatistics(rho_t[i])) - qRhoModel.computeLogNormalizer());
         }
 
-        return Utils.sum(lowerbound)/rho_t.length;
+        logTerm/=rho_t.length;
+        mapTerm/=rho_t.length;
+        entropyTerm/=rho_t.length;
+
+        lowerbound[0]=logTerm+mapTerm+entropyTerm;
+        lowerbound[1]=logTerm;
+        lowerbound[2]=mapTerm;
+        lowerbound[3]=entropyTerm;
+
+        return lowerbound;
     }
 
     private double estimateLowerBoundRho(int index, int nSamples, EF_UnivariateDistribution qRhoSampler, EF_UnivariateDistribution qBetaPosterior){
@@ -421,13 +436,13 @@ public class MultiDriftSVB_BlackBox extends SVB {
     private double estimateQRhoBackTracking(int index, int nSamples, EF_UnivariateDistribution qBetaPosterior){
 
         EF_UnivariateDistribution samplerQ = Serialization.deepCopy(this.ef_TExpQ[index]);
-        double lowerBound = this.estimateLowerBound(index, nSamples, samplerQ,qBetaPosterior);
+        double lowerBound = this.estimateLowerBound(index, nSamples, samplerQ,qBetaPosterior)[0];
 
         NaturalParameters naturalParametersQRhoModel = Serialization.deepCopy(this.ef_TExpQ[index].getNaturalParameters());
         double learningRate=1;
         boolean local_convergence = false;
         for (int iter = 0; iter < 1000 && !local_convergence; iter++) {
-            Vector gradient = this.estimateGradientLowerBound(index,nSamples,samplerQ,qBetaPosterior);
+            Vector gradient = this.estimateGradientLowerBoundScoreGradient(index,nSamples,samplerQ,qBetaPosterior);
             learningRate = this.checkGradient(naturalParametersQRhoModel, gradient, learningRate);
             for (int i = 0; i < naturalParametersQRhoModel.size(); i++) {
                 naturalParametersQRhoModel.set(i,naturalParametersQRhoModel.get(i)+learningRate*gradient.get(i));
@@ -438,7 +453,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
 
             samplerQ.getNaturalParameters().copy(naturalParametersQRhoModel);
             samplerQ.updateMomentFromNaturalParameters();
-            double newlowerBound = this.estimateLowerBound(index,nSamples,samplerQ,qBetaPosterior);
+            double newlowerBound = this.estimateLowerBound(index,nSamples,samplerQ,qBetaPosterior)[0];
 
             if (learningRate<0.01) {
                 local_convergence = true;
@@ -454,7 +469,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
             }else {
                 samplerQ.getNaturalParameters().copy(naturalParametersQRhoModel);
                 samplerQ.updateMomentFromNaturalParameters();
-                lowerBound = this.estimateLowerBound(index, nSamples, samplerQ,qBetaPosterior);
+                lowerBound = this.estimateLowerBound(index, nSamples, samplerQ,qBetaPosterior)[0];
             }
         }
 
@@ -487,24 +502,34 @@ public class MultiDriftSVB_BlackBox extends SVB {
 
     }
 
-    private void checkMaximum(int index, int nSamples, EF_UnivariateDistribution qBetaPosterior, double lowerBoundMax){
+    private void checkMaximum(int index, int nSamples, EF_UnivariateDistribution qBetaPosterior, double[] lowerBoundMax){
         EF_UnivariateDistribution tmpQ = Serialization.deepCopy(this.ef_TExpQ[index]);
-        double[] lowerBounds = new double[20];
+        double[][] lowerBounds = new double[20][];
         int count = 0;
         for (int i = 0; i < 10; i++) {
-            this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0)+(i+1)*10);
+            if (tmpQ.getClass().isAssignableFrom(EF_TruncatedExponential.class)) {
+                this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0) + (i + 1) * 10);
+            }else if (tmpQ.getClass().isAssignableFrom(EF_Dirichlet.class)) {
+                this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0) + (i + 1) * 1);
+            }
+
             this.ef_TExpQ[index].updateMomentFromNaturalParameters();
             lowerBounds[count++] = this.estimateLowerBound(index, nSamples, this.ef_TExpQ[index], qBetaPosterior);
         }
         for (int i = 0; i < 10; i++) {
-            this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0)-(i+1)*10);
+            if (tmpQ.getClass().isAssignableFrom(EF_TruncatedExponential.class)) {
+                this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0) - (i + 1) * 10);
+            }else if (tmpQ.getClass().isAssignableFrom(EF_Dirichlet.class)) {
+                this.ef_TExpQ[index].getNaturalParameters().set(0, tmpQ.getNaturalParameters().get(0) + (i + 1) * 1);
+                this.ef_TExpQ[index].getNaturalParameters().set(1, tmpQ.getNaturalParameters().get(0) + (i + 1) * 1);
+            }
             this.ef_TExpQ[index].updateMomentFromNaturalParameters();
             lowerBounds[count++] = this.estimateLowerBound(index, nSamples, this.ef_TExpQ[index], qBetaPosterior);
         }
 
-        OptionalDouble highest = Arrays.stream(lowerBounds).max();
+        OptionalDouble highest = Arrays.stream(lowerBounds).mapToDouble(val -> val[0]).max();
 
-        if (highest.getAsDouble()>lowerBoundMax)
+        if (highest.getAsDouble()>lowerBoundMax[0])
             System.out.println("ERROR!!");
 
         this.ef_TExpQ[index] = tmpQ;
@@ -514,7 +539,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
     private double checkGradient(NaturalParameters naturalParametersQRhoModel, Vector gradient, double learningRate) {
         if (type==BETA){
             for (int i = 0; i < naturalParametersQRhoModel.size(); i++) {
-                while (naturalParametersQRhoModel.get(i)+learningRate*gradient.get(i)<=0)
+                while (naturalParametersQRhoModel.get(i)+learningRate*gradient.get(i)<=-1.0)
                     learningRate/=2;
             }
         }
@@ -553,11 +578,11 @@ public class MultiDriftSVB_BlackBox extends SVB {
         NaturalParameters naturalParametersQRhoModel = Serialization.deepCopy(this.ef_TExpQ[index].getNaturalParameters());
         double learningRate=0.01;
         boolean local_convergence = false;
-        for (int iter = 0; iter < 50 && !local_convergence; iter++) {
+        for (int iter = 0; iter < 200 && !local_convergence; iter++) {
             learningRate = Math.pow(2+iter,-0.75);
             Vector gradient = null;
             if (scoreGradient)
-                gradient = this.estimateGradientLowerBound(index,nSamples,samplerQ,qBetaPosterior);
+                gradient = this.estimateGradientLowerBoundScoreGradient(index,nSamples,samplerQ,qBetaPosterior);
             else
                 gradient = this.estimateGradientLowerBoundTExpPathWise(index,nSamples,samplerQ,qBetaPosterior);
 
@@ -573,10 +598,10 @@ public class MultiDriftSVB_BlackBox extends SVB {
             samplerQ.getNaturalParameters().copy(naturalParametersQRhoModel);
             samplerQ.updateMomentFromNaturalParameters();
         }
-        double lowerBound = this.estimateLowerBound(index,nSamples,samplerQ,qBetaPosterior);
+        double[] lowerBound = this.estimateLowerBound(index,nSamples,samplerQ,qBetaPosterior);
         //checkMaximum(index, nSamples, qBetaPosterior, lowerBound);
 
-        return lowerBound;
+        return lowerBound[0];
     }
 
 
@@ -606,7 +631,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
         boolean convergence = false;
         double elbo = Double.NaN;
         double niter=0;
-        while(!convergence && niter<10) {
+        while(!convergence && niter<20) {
 
             //Messages for TExp to Theta
             double[] lambda = new double[prior.getNumberOfBaseVectors()];
@@ -641,7 +666,10 @@ public class MultiDriftSVB_BlackBox extends SVB {
             List<EF_UnivariateDistribution> qBetaPosterior = this.getBetaQPosteriors();
 
             for (int i = 0; i < this.ef_TExpQ.length; i++) {
-                newELBO+=this.estimateQRhoSGA(i,NSAMPLES,qBetaPosterior.get(i));
+                if (mapRhoEstiamte)
+                    newELBO+=this.estimateRhoSGA(i, nMCSamples,qBetaPosterior.get(i));
+                else
+                    newELBO+=this.estimateQRhoSGA(i, nMCSamples,qBetaPosterior.get(i));
             }
 
 
@@ -669,7 +697,7 @@ public class MultiDriftSVB_BlackBox extends SVB {
 
             elbo=newELBO;
             niter++;
-
+            convergence=false;
         }
 
         //System.out.println("end");

@@ -60,7 +60,7 @@ public class DirichletParameterType extends DistributionType {
      */
     @Override
     public EF_Dirichlet newEFUnivariateDistribution() {
-         return new EF_Dirichlet(this.variable,2);
+         return new EF_Dirichlet(this.variable,1);
     }
 
     /**
@@ -71,8 +71,9 @@ public class DirichletParameterType extends DistributionType {
     @Override
     public EF_Dirichlet newEFUnivariateDistribution(double... args) {
         EF_Dirichlet ef_Dirichlet = new EF_Dirichlet(this.variable);
+        int count = 0;
         for (double a : args) {
-            ef_Dirichlet.getNaturalParameters().set(0, a);
+            ef_Dirichlet.setAlphaParameter(count++, a);
         }
         ef_Dirichlet.fixNumericalInstability();
         ef_Dirichlet.updateMomentFromNaturalParameters();

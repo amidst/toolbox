@@ -35,7 +35,7 @@ public class Binomial {
 
     public static void main(String[] args) {
 
-        int nStates = 2;
+        int nStates = 10;
 
         Variables variables = new Variables();
 
@@ -49,7 +49,10 @@ public class Binomial {
 
         //
         //BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( DriftSVB.TRUNCATED_EXPONENTIAL, new double[]{-0.1});//initPopulation(0.01,100);
-        BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( MultiDriftSVB_BlackBox.BETA, new double[]{100.0, 100.0});//initPopulation(0.01,100);
+        BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( MultiDriftSVB_BlackBox.BETA, new double[]{1.0, 1.0});//initPopulation(0.01,100);
+        ((MultiDriftSVB_BlackBox)svb).setMapRhoEstiamte(false);
+        ((MultiDriftSVB_BlackBox)svb).setnMCSamples(100);
+        ((MultiDriftSVB_BlackBox)svb).setScoreGradient(true);
 
         //BayesianParameterLearningAlgorithm svb = initMultiDrift();//initPopulation(0.01,100);
 
@@ -76,6 +79,8 @@ public class Binomial {
 
         for (int i = 0; i < totalITER; i++) {
 
+            //sampler.setSeed(0);
+
             multinomialDist = bn.getConditionalDistribution(multinomialVar);
 
             /*if (i>=30){
@@ -99,9 +104,9 @@ public class Binomial {
                 }
             }*/
 
- /*           if (i%5==1) {
+            /*if (i%5==1) {
                 System.out.println("CHANGE!!");
-                double m = 100*rand.nextDouble()+10;
+                double m = 10*rand.nextDouble()+1;
 
                 k = 0;
                 multinomialDist.setProbabilityOfState(k,m/(m+nStates));
@@ -110,8 +115,8 @@ public class Binomial {
                         continue;
                     multinomialDist.setProbabilityOfState(j,1.0/(m+nStates));
                 }
-            }
-*/
+            }*/
+
             if (svb.getClass().getName().compareTo("eu.amidst.core.learning.parametric.bayesian.DriftSVB")==0){
 //                if (i<10){
 //                    ((DriftSVB)svb).updateModel(sampler.sampleToDataStream(sampleSize).toDataOnMemory());
