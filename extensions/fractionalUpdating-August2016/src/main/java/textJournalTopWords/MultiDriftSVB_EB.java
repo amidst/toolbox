@@ -245,19 +245,19 @@ public class MultiDriftSVB_EB extends SVB {
             }
             double percentageIncrease = 100*Math.abs((newELBO-elbo)/elbo);
 
-            System.out.print("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
-            if (this.type == TRUNCATED_NORMAL){
+            if (activateOutput) System.out.print("N Iter: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
+            if (activateOutput && this.type == TRUNCATED_NORMAL){
                 for (int i = 0; i < lambda.length; i++) {
                     System.out.print(", "+ lambda[i] + " - " + ((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision());
                 }
             }
 
-            System.out.println();
-            System.out.print("KL: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
+            if (activateOutput) System.out.println();
+            if (activateOutput) System.out.print("KL: " + niter + ", " + newELBO + ", "+ elbo + ", "+ percentageIncrease);
             for (int i = 0; i < lambda.length; i++) {
-                System.out.print(", "+ kl_q_p0[i] + " - " + kl_q_pt_1[i]);
+                if (activateOutput) System.out.print(", "+ kl_q_p0[i] + " - " + kl_q_pt_1[i]);
             }
-            System.out.println();
+            if (activateOutput) System.out.println();
             if (!Double.isNaN(elbo) && percentageIncrease<this.plateuStructure.getVMP().getThreshold()){
                 convergence=true;
             }
@@ -267,6 +267,7 @@ public class MultiDriftSVB_EB extends SVB {
 
             if (this.type == TRUNCATED_NORMAL) if (niter>0) learningP_Precision(kl_q_p0,kl_q_pt_1);
 
+            convergence=false;
         }
 
         //System.out.println("end");
@@ -335,7 +336,7 @@ public class MultiDriftSVB_EB extends SVB {
 
             double kl = ef_TExpP[i].getNaturalParameters().dotProduct(ef_TExpQ[i].getMomentParameters()) - ef_TExpP[i].computeLogNormalizer();
 
-            System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
+            if (activateOutput) System.out.println(((EF_TruncatedNormal)ef_TExpQ[i]).getPrecision() + " : " + ef_TExpQ[i].getMomentParameters().get(0) +" : " + " : " + kl + " : " + learningRate);
 
             boolean local_convergence = false;
             for (int iter = 0; iter < 1000 && !local_convergence; iter++) {
@@ -352,7 +353,7 @@ public class MultiDriftSVB_EB extends SVB {
 
 
 
-                if (learningRate<0.01) {
+                if (learningRate<0.001) {
                     local_convergence = true;
                 }else if (kl_new<kl){
                     precision -= learningRate*gradient;

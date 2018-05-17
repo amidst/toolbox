@@ -96,7 +96,7 @@ public class SVB implements BayesianParameterLearningAlgorithm, Serializable {
 
     /** Represents the natural vector posterior. */
     BatchOutput naturalVectorPosterior = null;
-    private boolean activateOutput = false;
+    protected boolean activateOutput = false;
 
     /**
      * Returns the window size.

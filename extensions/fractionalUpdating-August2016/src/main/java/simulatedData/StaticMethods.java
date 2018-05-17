@@ -13,6 +13,7 @@ package simulatedData;
 
 import eu.amidst.core.conceptdrift.SVBFading;
 import eu.amidst.core.learning.parametric.bayesian.*;
+import textJournalTopWords.MultiDriftSVB_EB;
 
 /**
  * Created by andresmasegosa on 10/11/16.
@@ -21,7 +22,7 @@ public class StaticMethods {
 
 
     static int sampleSize = 100;
-    static int totalITER = 100;
+    static int totalITER = 10;
 
     public static BayesianParameterLearningAlgorithm initSVBFading(double fadingFactor){
         SVBFading svb = new SVBFading();
@@ -63,6 +64,17 @@ public class StaticMethods {
 
         svb.setWindowsSize(sampleSize);
 
+        return svb;
+    }
+    public static BayesianParameterLearningAlgorithm initMultiDriftEB(){
+        MultiDriftSVB_EB svb = new MultiDriftSVB_EB();
+
+        svb.getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getPlateuStructure().getVMP().setMaxIter(100);
+        svb.getPlateuStructure().getVMP().setOutput(false);
+        svb.getPlateuStructure().getVMP().setThreshold(0.1);
+
+        svb.setWindowsSize(sampleSize);
         return svb;
     }
 
