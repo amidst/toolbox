@@ -247,4 +247,18 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     public void setAlphaParameter(int i, double val){
         this.naturalParameters.set(i,val-1.0);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void perMultiplyHessian(Vector vector){
+        double vectorSum = vector.sum();
+        double triGammaTotal = Gamma.trigamma(this.naturalParameters.sum()+this.naturalParameters.size());
+        for (int i = 0; i < vector.size(); i++) {
+            vector.set(i,vector.get(i)*Gamma.trigamma(this.getAlphaParameter(i)) - triGammaTotal*vectorSum);
+        }
+        throw new UnsupportedOperationException("Non implmented");
+    }
+
 }

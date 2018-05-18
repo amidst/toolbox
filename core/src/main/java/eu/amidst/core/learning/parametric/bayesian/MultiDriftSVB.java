@@ -28,6 +28,8 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -275,6 +277,10 @@ public class MultiDriftSVB extends SVB{
         }
 
         return out;
+    }
+
+    public List<EF_UnivariateDistribution> getRhoPosterior(){
+        return Arrays.asList(this.ef_TExpQ).stream().map(q -> Serialization.deepCopy(q)).collect(Collectors.toList());
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {

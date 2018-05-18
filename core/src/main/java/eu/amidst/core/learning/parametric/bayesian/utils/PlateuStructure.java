@@ -17,6 +17,7 @@ import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.inference.messagepassing.VMP;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.CompoundVector;
+import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 
@@ -326,6 +327,16 @@ public abstract class PlateuStructure implements Serializable {
         return this.replicatedVariables.get(var);
     }
 
+
+    public List<EF_UnivariateDistribution> getQPosteriors() {
+
+         return ef_learningmodel.getDistributionList().stream()
+                .map(dist -> dist.getVariable())
+                .filter(var -> isNonReplicatedVar(var))
+                .map(var -> Serialization.deepCopy(this.getNodeOfNonReplicatedVar(var).getQDist()))
+                .collect(Collectors.toList());
+         }
+
     public CompoundVector getPlateauNaturalParameterPrior() {
 
         List<Vector> naturalPlateauParametersPriors = ef_learningmodel.getDistributionList().stream()
@@ -340,6 +351,7 @@ public abstract class PlateuStructure implements Serializable {
 
         return new CompoundVector(naturalPlateauParametersPriors);
     }
+
 
     public CompoundVector getPlateauNaturalParameterPosterior() {
 
