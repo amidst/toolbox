@@ -23,7 +23,7 @@ import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_EXP
 public class StaticMethods {
 
 
-    static int sampleSize = 50;
+    static int sampleSize = 1000;
     static int totalITER = 20;
 
     public static BayesianParameterLearningAlgorithm initSVBFading(double fadingFactor){

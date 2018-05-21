@@ -31,17 +31,20 @@ import java.util.Random;
  */
 public class EF_Dirichlet extends EF_UnivariateDistribution {
 
-    /** Represents the number of parameter of this EF_Dirichlet distribution. */
+    /**
+     * Represents the number of parameter of this EF_Dirichlet distribution.
+     */
     int nOfStates;
 
     /**
      * Creates a new uniform EF_Dirichlet distribution for a given {@link Variable} object.
+     *
      * @param var1 a {@link Variable} object.
      */
     public EF_Dirichlet(Variable var1) {
         if (!var1.isDirichletParameter())
             throw new IllegalArgumentException("Non Dirichlet var");
-        this.var=var1;
+        this.var = var1;
         this.nOfStates = var.getNumberOfStates();
         this.naturalParameters = this.createZeroNaturalParameters();
         this.momentParameters = this.createZeroMomentParameters();
@@ -49,7 +52,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         for (int i = 0; i < nOfStates; i++) {
-            this.setAlphaParameter(i,1.0);
+            this.setAlphaParameter(i, 1.0);
         }
         this.fixNumericalInstability();
         updateMomentFromNaturalParameters();
@@ -57,13 +60,14 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
 
     /**
      * Creates a new uniform EF_Dirichlet distribution for a given {@link Variable} object with a given scale.
-     * @param var1 a {@link Variable} object with a Dirichlet distribution type
+     *
+     * @param var1  a {@link Variable} object with a Dirichlet distribution type
      * @param scale a positive double value defining the scale of the EF_Dirichlet.
      */
     public EF_Dirichlet(Variable var1, double scale) {
         if (!var1.isDirichletParameter())
             throw new IllegalArgumentException("The variable is not a Dirichlet parameter!");
-        this.var=var1;
+        this.var = var1;
         this.nOfStates = var.getNumberOfStates();
         this.naturalParameters = this.createZeroNaturalParameters();
         this.momentParameters = this.createZeroMomentParameters();
@@ -71,7 +75,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
         this.parents = new ArrayList();
 
         for (int i = 0; i < nOfStates; i++) {
-            this.setAlphaParameter(i,scale);
+            this.setAlphaParameter(i, scale);
         }
         fixNumericalInstability();
         updateMomentFromNaturalParameters();
@@ -90,13 +94,13 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
      */
     @Override
     public SufficientStatistics getSufficientStatistics(double val) {
-        if (val<0 || val>1)
+        if (val < 0 || val > 1)
             throw new IllegalArgumentException("Error");
-        if (this.nOfStates>2)
+        if (this.nOfStates > 2)
             throw new IllegalStateException("Error");
         SufficientStatistics vec = this.createZeroSufficientStatistics();
         vec.set(0, Math.log(val));
-        vec.set(1, Math.log(1-val));
+        vec.set(1, Math.log(1 - val));
         return vec;
     }
 
@@ -106,15 +110,15 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     @Override
     public Vector getExpectedParameters() {
 
-        double sum =0;
+        double sum = 0;
 
         for (int i = 0; i < nOfStates; i++) {
-            sum+=this.getAlphaParameter(i);
+            sum += this.getAlphaParameter(i);
         }
 
         Vector vector = new ArrayVector(this.nOfStates);
         for (int i = 0; i < nOfStates; i++) {
-            vector.set(i,(this.getAlphaParameter(i))/sum);
+            vector.set(i, (this.getAlphaParameter(i)) / sum);
         }
 
         return vector;
@@ -146,7 +150,7 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     public EF_UnivariateDistribution randomInitialization(Random random) {
 
         for (int i = 0; i < this.nOfStates; i++) {
-            this.getNaturalParameters().set(i, 5*random.nextDouble() + 1 + 1e-5);
+            this.getNaturalParameters().set(i, 5 * random.nextDouble() + 1 + 1e-5);
         }
         fixNumericalInstability();
         this.updateMomentFromNaturalParameters();
@@ -237,28 +241,38 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
     /**
      * Get Alpha parameters of the Dirichlet
      */
-    public double getAlphaParameter(int i){
-        return this.naturalParameters.get(i)+1;
+    public double getAlphaParameter(int i) {
+        return this.naturalParameters.get(i) + 1;
     }
 
     /**
      * Set Alpha parameters of the Dirichlet. Update to moment paramters must be performed.
      */
-    public void setAlphaParameter(int i, double val){
-        this.naturalParameters.set(i,val-1.0);
+    public void setAlphaParameter(int i, double val) {
+        this.naturalParameters.set(i, val - 1.0);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void perMultiplyHessian(Vector vector){
+    public void perMultiplyHessian(Vector vector) {
         double vectorSum = vector.sum();
-        double triGammaTotal = Gamma.trigamma(this.naturalParameters.sum()+this.naturalParameters.size());
+        double triGammaTotal = Gamma.trigamma(this.naturalParameters.sum() + this.naturalParameters.size());
         for (int i = 0; i < vector.size(); i++) {
-            vector.set(i,vector.get(i)*Gamma.trigamma(this.getAlphaParameter(i)) - triGammaTotal*vectorSum);
+            vector.set(i, vector.get(i) * Gamma.trigamma(this.getAlphaParameter(i)) - triGammaTotal * vectorSum);
         }
-        throw new UnsupportedOperationException("Non implmented");
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double checkGradient(double learningRate, Vector gradient) {
+        for (int k = 0; k < this.nOfStates; k++) {
+            while (this.getAlphaParameter(k)+learningRate*gradient.get(k)<0)
+                learningRate*=0.95;
+        }
+        return learningRate;
+    }
 }

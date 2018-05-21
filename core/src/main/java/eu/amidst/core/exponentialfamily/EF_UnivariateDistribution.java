@@ -211,4 +211,8 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
     public void perMultiplyHessian(Vector vector){
         throw new UnsupportedOperationException("Non implmented");
     }
+
+    public double checkGradient(double learningRate, Vector gradient) {
+        throw new UnsupportedOperationException("Non implmented");
+    }
 }

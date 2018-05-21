@@ -35,7 +35,7 @@ public class Binomial {
 
     public static void main(String[] args) {
 
-        int nStates = 10;
+        int nStates = 2;
 
         Variables variables = new Variables();
 
@@ -46,13 +46,13 @@ public class Binomial {
         bn.randomInitialization(new Random(0));
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
+        BayesianParameterLearningAlgorithm svb = initMultiDrift();//initPopulation(0.01,100);
 
-        //
         //BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( DriftSVB.TRUNCATED_EXPONENTIAL, new double[]{-0.1});//initPopulation(0.01,100);
-        BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( MultiDriftSVB_BlackBox.BETA, new double[]{1.0, 1.0});//initPopulation(0.01,100);
-        ((MultiDriftSVB_BlackBox)svb).setMapRhoEstiamte(false);
-        ((MultiDriftSVB_BlackBox)svb).setnMCSamples(100);
-        ((MultiDriftSVB_BlackBox)svb).setScoreGradient(true);
+       // BayesianParameterLearningAlgorithm svb = initMultiDriftBlackBox( MultiDriftSVB_BlackBox.BETA, new double[]{1.0, 1.0});//initPopulation(0.01,100);
+       // ((MultiDriftSVB_BlackBox)svb).setMapRhoEstiamte(false);
+       // ((MultiDriftSVB_BlackBox)svb).setnMCSamples(100);
+       // ((MultiDriftSVB_BlackBox)svb).setScoreGradient(true);
 
         //BayesianParameterLearningAlgorithm svb = initMultiDrift();//initPopulation(0.01,100);
 
@@ -67,8 +67,8 @@ public class Binomial {
         double total = 0;
 
         Multinomial multinomialDist = bn.getConditionalDistribution(multinomialVar);
-        multinomialDist.setProbabilityOfState(1,0.8);
-        multinomialDist.setProbabilityOfState(0, 0.2);
+//        multinomialDist.setProbabilityOfState(1,0.8);
+//        multinomialDist.setProbabilityOfState(0, 0.2);
 
         System.out.println(bn);
 

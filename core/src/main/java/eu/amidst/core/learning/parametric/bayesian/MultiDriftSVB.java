@@ -283,6 +283,10 @@ public class MultiDriftSVB extends SVB{
         return Arrays.asList(this.ef_TExpQ).stream().map(q -> Serialization.deepCopy(q)).collect(Collectors.toList());
     }
 
+    public EF_UnivariateDistribution getRhoPrior(){
+        return Serialization.deepCopy(this.ef_TExpP);
+    }
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         BayesianNetwork oneNormalVarBN = BayesianNetworkLoader.loadFromFile("./networks/simulated/Normal.bn");
