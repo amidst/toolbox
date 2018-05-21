@@ -35,7 +35,7 @@ public class Binomial {
 
     public static void main(String[] args) {
 
-        int nStates = 2;
+        int nStates = 20;
 
         Variables variables = new Variables();
 
