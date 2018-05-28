@@ -91,8 +91,10 @@ public class MultiDriftSVB_Smoothing  {
 
         for (int iter = 0; iter < totalIter; iter++) {
 
-            for (int t = 0; t < trainBatches.size(); t++) {
-            CompoundVector priorT_1 = null;
+            //for (int t = 0; t < trainBatches.size(); t++) {
+            for (int t = trainBatches.size()-1; t >=0 ; t--) {
+
+                CompoundVector priorT_1 = null;
             if (t>0)
                 priorT_1 = new CompoundVector(lambdaPosteriors.get(t-1).stream().map(q -> q.getNaturalParameters()).collect(Collectors.toList()));
             else
