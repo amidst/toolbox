@@ -420,7 +420,7 @@ public class PlateauLDAReduced extends PlateuStructure {
             convergence = true;
         }
 
-        if ((!convergence && (newelbo / this.vmp.getNodes().size() < (local_elbo / this.vmp.getNodes().size() - 0.01)) && local_iter > -1) || Double.isNaN(local_elbo)) {
+        if (this.getVMP().isTestELBO() && (!convergence && (newelbo / this.vmp.getNodes().size() < (local_elbo / this.vmp.getNodes().size() - 0.01)) && local_iter > -1) || Double.isNaN(local_elbo)) {
             throw new IllegalStateException("The elbo is not monotonically increasing at iter " + local_iter + ": " + percentage + ", " + local_elbo + ", " + newelbo);
         }
 

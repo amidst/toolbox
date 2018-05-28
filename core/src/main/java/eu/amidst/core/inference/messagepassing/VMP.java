@@ -106,6 +106,10 @@ public class VMP extends MessagePassingAlgorithm<NaturalParameters> implements I
         node.setIsDone(message.isDone());
     }
 
+    public boolean isTestELBO() {
+        return testELBO;
+    }
+
     /**
      * {@inheritDoc}
      */

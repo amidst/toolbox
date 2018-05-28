@@ -11,7 +11,6 @@
 
 package hpp;
 
-import com.sun.javafx.util.Utils;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.exponentialfamily.*;
@@ -25,13 +24,15 @@ import eu.amidst.core.utils.Serialization;
 import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
-
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import org.apache.commons.math3.distribution.BetaDistribution;
 import org.apache.commons.math3.random.Well19937a;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.OptionalDouble;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_EXPONENTIAL;
 import static eu.amidst.core.learning.parametric.bayesian.DriftSVB.TRUNCATED_NORMAL;

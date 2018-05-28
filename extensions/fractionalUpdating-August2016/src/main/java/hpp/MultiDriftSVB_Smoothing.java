@@ -14,13 +14,10 @@ package hpp;
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.Multinomial;
-import eu.amidst.core.exponentialfamily.*;
+import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
+import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.Node;
-import eu.amidst.core.inference.messagepassing.VMP;
-import eu.amidst.core.io.BayesianNetworkLoader;
-import eu.amidst.core.learning.parametric.bayesian.DriftSVB;
 import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
-import eu.amidst.core.learning.parametric.bayesian.SVB;
 import eu.amidst.core.learning.parametric.bayesian.utils.VMPLocalUpdates;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
@@ -86,7 +83,19 @@ public class MultiDriftSVB_Smoothing  {
 
     public void smooth(){
         VMPLocalUpdates vmpLocalUpdates = new VMPLocalUpdates(multiDriftSVB.getPlateuStructure());
+
+        double threshold = multiDriftSVB.getPlateuStructure().getVMP().getThreshold();
+        int iterVMP = multiDriftSVB.getPlateuStructure().getVMP().getMaxIter();
+
         multiDriftSVB.getPlateuStructure().setVmp(vmpLocalUpdates);
+
+        multiDriftSVB.getPlateuStructure().getVMP().setTestELBO(false);
+        multiDriftSVB.getPlateuStructure().getVMP().setMaxIter(iterVMP);
+        multiDriftSVB.getPlateuStructure().getVMP().setOutput(true);
+        multiDriftSVB.getPlateuStructure().getVMP().setThreshold(threshold);
+
+
+
         multiDriftSVB.initLearning();
 
         for (int iter = 0; iter < totalIter; iter++) {
@@ -197,7 +206,7 @@ public class MultiDriftSVB_Smoothing  {
 
     }
 
-    double[] predictedLogLikelihood(){
+    public double[] predictedLogLikelihood(){
 
         double[] testLL = new double[trainBatches.size()];
         for (int t = 0; t < testBatches.size(); t++) {
@@ -246,7 +255,7 @@ public class MultiDriftSVB_Smoothing  {
 
 
         MultiDriftSVB_Smoothing svb = new MultiDriftSVB_Smoothing();
-        svb.getMultiDriftSVB().getPlateuStructure().getVMP().setTestELBO(true);
+        svb.getMultiDriftSVB().getPlateuStructure().getVMP().setTestELBO(false);
         svb.getMultiDriftSVB().getPlateuStructure().getVMP().setMaxIter(100);
         svb.getMultiDriftSVB().getPlateuStructure().getVMP().setOutput(true);
         svb.getMultiDriftSVB().getPlateuStructure().getVMP().setThreshold(0.1);
