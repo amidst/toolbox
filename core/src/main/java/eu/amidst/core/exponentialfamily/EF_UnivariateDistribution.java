@@ -208,6 +208,10 @@ public abstract class EF_UnivariateDistribution extends EF_ConditionalDistributi
         return kl;
     }
 
+    public void perMultiplyInverseHessian(Vector vector){
+        throw new UnsupportedOperationException("Non implmented");
+    }
+
     public void perMultiplyHessian(Vector vector){
         throw new UnsupportedOperationException("Non implmented");
     }

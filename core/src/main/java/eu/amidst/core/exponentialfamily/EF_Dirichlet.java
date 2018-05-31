@@ -256,6 +256,36 @@ public class EF_Dirichlet extends EF_UnivariateDistribution {
      * {@inheritDoc}
      */
     @Override
+    public void perMultiplyInverseHessian(Vector vector) {
+        if (this.nOfStates>2)
+            throw new IllegalArgumentException("Non valid");
+        double triGammaTotal = Gamma.trigamma(this.naturalParameters.sum() + this.naturalParameters.size());
+
+
+        double a = Gamma.trigamma(this.getAlphaParameter(0)) - triGammaTotal;
+        double b = - triGammaTotal;
+        double c = - triGammaTotal;
+        double d = Gamma.trigamma(this.getAlphaParameter(1)) - triGammaTotal;
+
+        double quotien = (a*d - b*c);
+
+        double[][] matrix = new double[2][2];
+        matrix[0][0]=d/quotien;
+        matrix[0][1]=-b/quotien;
+        matrix[1][0]=-c/quotien;
+        matrix[1][1]=a/quotien;
+
+        double v0 = vector.get(0);
+        double v1 = vector.get(1);
+
+        vector.set(0, v0*matrix[0][0] + v1*matrix[0][1]);
+        vector.set(1, v0*matrix[1][0] + v1*matrix[1][1]);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void perMultiplyHessian(Vector vector) {
         double vectorSum = vector.sum();
         double triGammaTotal = Gamma.trigamma(this.naturalParameters.sum() + this.naturalParameters.size());

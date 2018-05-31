@@ -79,7 +79,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
      * @return a {@code Stream} of randomly sampled {@link Assignment}s.
      */
     private Stream<Assignment> getSampleStream(int nSamples) {
-        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(seed);
+        LocalRandomGenerator randomGenerator = new LocalRandomGenerator(this.random.nextInt());
         return IntStream.range(0, nSamples)
                 .mapToObj(i -> sample(network, causalOrder, randomGenerator.current()))
                 .map(this::filter);
@@ -258,7 +258,7 @@ public class BayesianNetworkSampler implements AmidstOptionsHandler, Serializabl
             }
         }
 
-        random = new Random(seed);
+        //random = new Random(seed);
 
         return new TemporalDataStream(this,nSamples);
     }

@@ -118,6 +118,10 @@ public class MultiDriftSVB extends SVB{
         firstBatch=true;
     }
 
+    public void setFirstBatch(boolean firstBatch) {
+        this.firstBatch = firstBatch;
+    }
+
     /**
      * {@inheritDoc}
      */

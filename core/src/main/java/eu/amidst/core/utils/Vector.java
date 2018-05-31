@@ -181,4 +181,12 @@ public interface Vector {
         return stringBuilder.toString();
     }
 
+    default double norm2(){
+        double norm=0;
+        for (int i = 0; i < this.size(); i++) {
+            norm+=Math.pow(this.get(i),2);
+        }
+        return norm;
+    }
+
 }
