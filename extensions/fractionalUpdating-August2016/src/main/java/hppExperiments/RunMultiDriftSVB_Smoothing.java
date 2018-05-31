@@ -16,6 +16,7 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.datastream.DataStream;
 import eu.amidst.core.io.DataStreamLoader;
+import eu.amidst.core.utils.CompoundVector;
 import eu.amidst.lda.core.BatchSpliteratorByID;
 import eu.amidst.lda.core.PlateauLDA;
 import hpp.MultiDriftSVB_Smoothing;
@@ -38,7 +39,7 @@ public class RunMultiDriftSVB_Smoothing {
         String[] yearsABSTRACT = {"90","91","92","93","94","95","96","97","98","99","00","01","02","03"};
         String[] yearsNIPS = {"0","1","2","3","4","5","6","7","8","9"};
         String[] yearsNIPSjournal = {"1987","1988","1989","1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015"};
-        //String[] yearsNIPSjournal = {"1987","1988","1989", "1990", "1991","1992","1993","1994","1995"};
+        //String[] yearsNIPSjournal = {"1987","1988","1989"};//, "1990", "1991","1992","1993","1994","1995"};
 
         String model = "NIPSjournal";
 
@@ -59,8 +60,8 @@ public class RunMultiDriftSVB_Smoothing {
         int niter = 50;
         double threshold = 0.0001;
 
-        double learningRate=0.01;
-        int totalIterSmoothing=10;
+        double learningRate=0.0001;
+        int totalIterSmoothing=2;
 
 
         if (args.length>1) {
@@ -147,6 +148,10 @@ public class RunMultiDriftSVB_Smoothing {
 //        }
 //        fw.write("\n");
 
+        FileWriter fw_topics = new FileWriter(dataPath+"MDSVBFilter_Topics_"+Arrays.toString(args)+".csv");
+
+        //Map<Integer,String> mapWords = Utils.loadWords(dataWords);
+
 
         double preSmoothLog = 0;
 
@@ -165,6 +170,26 @@ public class RunMultiDriftSVB_Smoothing {
 
 
             svb.aggregateTrainBatches(trainBatch);
+
+            CompoundVector posterior = svb.getMultiDriftSVB().getPlateuStructure().getPlateauNaturalParameterPosterior();
+
+            String textBlock = "";
+
+            for (int i = 0; i < ntopics; i++) {
+                textBlock = "";
+                textBlock += year + "\t" + i + "\t";
+                for (int j = 0; j < numberOfTopWords; j++) {
+                    double count = 1 + posterior.getVectorByPosition(i).get(j);
+                    textBlock += count + "\t";
+                }
+                textBlock += "\n";
+                fw_topics.write(textBlock);
+
+            }
+
+
+
+
             svb.aggregateTestBatches(testBatch);
 
 
@@ -192,6 +217,7 @@ public class RunMultiDriftSVB_Smoothing {
                 lambda+= svb.getMultiDriftSVB().getLambdaMomentParameters()[i];
                 expectedParameters = expectedParameters + svb.getMultiDriftSVB().getLambdaMomentParameters()[i] + "\t";
             }
+
             lambda+= svb.getMultiDriftSVB().getLambdaMomentParameters()[ntopics-1];
             expectedParameters = expectedParameters + svb.getMultiDriftSVB().getLambdaMomentParameters()[ntopics-1];
 
@@ -204,13 +230,14 @@ public class RunMultiDriftSVB_Smoothing {
 
         }
         fw.close();
+        fw_topics.close();
 
 //        System.out.println("TOTAL LOG: " + totalLog);
 
 
 
 
-        fw = new FileWriter(dataPath+"MDSVBSmooth_Output_"+Arrays.toString(args)+"_.txt");
+
 
 //        fw.write("\t\t\t\t");
 //        for (Variable var : svb.getMultiDriftSVB().getPlateuStructure().getNonReplicatedVariables()) {
@@ -218,8 +245,38 @@ public class RunMultiDriftSVB_Smoothing {
 //        }
 //        fw.write("\n");
 
+        try {
+            svb.smooth();
 
-        svb.smooth();
+            fw_topics = new FileWriter(dataPath + "MDSVBSmooth_Topics_" + Arrays.toString(args) + ".csv");
+
+            String textBlock = "";
+
+            for (int y = 0; y < years.length; y++) {
+                for (int i = 0; i < ntopics; i++) {
+                    textBlock = "";
+                    textBlock += y + "\t" + i + "\t";
+                    for (int j = 0; j < numberOfTopWords; j++) {
+                        double count = 1 + svb.getLambdaPosteriors().get(y).get(i).getNaturalParameters().get(j);
+                        textBlock += count + "\t";
+                    }
+                    textBlock += "\n";
+                    fw_topics.write(textBlock);
+                }
+            }
+
+
+            fw_topics.close();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        fw = new FileWriter(dataPath+"MDSVBSmooth_Output_"+Arrays.toString(args)+"_.txt");
+
+
         double[] testLL = svb.predictedLogLikelihood();
         for (int year = 0; year < years.length; year++) {
 

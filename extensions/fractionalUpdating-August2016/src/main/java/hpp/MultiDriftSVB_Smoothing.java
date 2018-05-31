@@ -56,6 +56,10 @@ public class MultiDriftSVB_Smoothing  {
         initialPrior=multiDriftSVB.getPlateuStructure().getPlateauNaturalParameterPrior();
     }
 
+    public List<List<EF_UnivariateDistribution>> getLambdaPosteriors() {
+        return lambdaPosteriors;
+    }
+
     public void setLearningRate(double learningRate) {
         this.learningRate = learningRate;
     }
@@ -127,7 +131,7 @@ public class MultiDriftSVB_Smoothing  {
                     newPrior.sum(newPosterior);
 
                     multiDriftSVB.getPlateuStructure().updateNaturalParameterPrior(newPrior);
-                }else{
+                } else{
                     multiDriftSVB.getPlateuStructure().updateNaturalParameterPrior(priorT_1);
                 }
 
