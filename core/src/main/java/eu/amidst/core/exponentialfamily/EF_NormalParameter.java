@@ -283,7 +283,8 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
      */
     @Override
     public double checkGradient(double learningRate, Vector gradient) {
-        while ( this.naturalParameters.get(1) + learningRate*gradient.get(1) <=0 )
+        double natural2 = -0.5*this.getPrecision();
+        while (natural2 + learningRate*gradient.get(1) >= 0)
             learningRate*=0.95;
         return learningRate;
     }
