@@ -261,6 +261,33 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
         this.momentParameters.set(EXPECTED_SQUARE, expt_square);
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void perMultiplyHessian(Vector vector) {
+        double mu =  this.getMean();
+        double prec = this.getPrecision();
+
+        double R0 = 1.0/prec * vector.get(0) + 2.0*mu/prec * vector.get(1);
+        double R1 = 2.0*mu/prec * vector.get(0) + ( 2.0/Math.pow(prec,2) + 4.0*Math.pow(mu,2)/prec ) * vector.get(1);
+
+        vector.set(0, R0);
+        vector.set(1, R1);
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double checkGradient(double learningRate, Vector gradient) {
+        while ( this.naturalParameters.get(1) + learningRate*gradient.get(1) <=0 )
+            learningRate*=0.95;
+        return learningRate;
+    }
+
     /**
      * {@inheritDoc}
      */
