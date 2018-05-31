@@ -38,13 +38,13 @@ public class RunMultiDriftSVB_Smoothing_Elec {
         //String dataPath = "/Users/andresmasegosa/Dropbox/Amidst/datasets/Geo/out_month_10/";
         //int docsPerBatch = 35000;
 
-        String model = "GPS0";
-        String dataPath = "/Users/dario/Desktop/dataHPPJournal/data/out_hour_100/";
-        int docsPerBatch = 8000;
+//        String model = "GPS0";
+//        String dataPath = "/Users/dario/Desktop/dataHPPJournal/data/out_hour_100/";
+//        int docsPerBatch = 8000;
 
-//        String model = "ELEC";
-//        String dataPath = "/Users/dario/Desktop/dataHPPJournal/data/electricityByMonth/";
-//        int docsPerBatch = 1600;
+        String model = "ELEC";
+        String dataPath = "/Users/dario/Desktop/dataHPPJournal/data/electricityByMonth/";
+        int docsPerBatch = 1600;
 
 
 /*      String model = "BCC1";
@@ -56,7 +56,7 @@ public class RunMultiDriftSVB_Smoothing_Elec {
         double threshold = 0.1;
 
 
-        double learningRate=0.001;
+        double learningRate=0.0001;
         int totalIterSmoothing=5;
 
 
