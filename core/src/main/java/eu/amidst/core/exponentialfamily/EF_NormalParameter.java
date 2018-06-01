@@ -270,6 +270,25 @@ public class EF_NormalParameter extends EF_UnivariateDistribution {
         vector.set(1, R1);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void perMultiplyInverseHessian(Vector vector) {
+        double mu =  this.getMean();
+        double prec = this.getPrecision();
+
+        double invH11 = prec * ( 1.0 + 2.0 * prec * Math.pow(mu,2) );
+        double invH12 = - Math.pow(prec,2) * Math.pow(mu,2);
+        double invH21 = invH12;
+        double invH22 = 0.5 * Math.pow(prec,2);
+
+        double R0 = invH11 * vector.get(0) + invH12 * vector.get(1);
+        double R1 = invH21 * vector.get(0) + invH22 * vector.get(1);
+
+        vector.set(0, R0);
+        vector.set(1, R1);
+    }
 
     /**
      * {@inheritDoc}
