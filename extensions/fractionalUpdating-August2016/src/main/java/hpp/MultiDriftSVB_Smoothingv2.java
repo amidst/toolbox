@@ -13,7 +13,6 @@ package hpp;
 
 import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
-import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
 import eu.amidst.core.exponentialfamily.MomentParameters;
 import eu.amidst.core.inference.messagepassing.Node;
@@ -35,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by andresmasegosa on 14/4/16.
@@ -457,7 +457,7 @@ public class MultiDriftSVB_Smoothingv2 {
 
             normGradient=Math.sqrt(normGradient);
 
-            //System.out.println("Iter: "+iter+", Norm Gradient:"+normGradient);
+            System.out.println("Iter: "+iter+", Norm Gradient:"+normGradient);
         }
 
     }
@@ -473,6 +473,7 @@ public class MultiDriftSVB_Smoothingv2 {
         }
         return testLL;
     }
+
 
     public void setDAG(DAG dag) {
         this.multiDriftSVB.setDAG(dag);
@@ -495,14 +496,22 @@ public class MultiDriftSVB_Smoothingv2 {
 
         Variables variables = new Variables();
 
-        Variable multinomialVar = variables.newMultinomialVariable("N", nStates);
+        //Variable multinomialVar = variables.newMultinomialVariable("N", nStates);
+        Variable normal = variables.newGaussianVariable("N");
+        List<Variable> parents = IntStream.range(1,6).mapToObj(i ->variables.newGaussianVariable("N"+i)).collect(Collectors.toList());
 
-        BayesianNetwork bn = new BayesianNetwork(new DAG(variables));
+        DAG dag = new DAG(variables);
+        parents.forEach(var -> dag.getParentSet(normal).addParent(var));
 
+        BayesianNetwork bn = new BayesianNetwork(dag);
         bn.randomInitialization(new Random(0));
+
+        //((ConditionalLinearGaussian)bn.getConditionalDistribution(normal)).setVariance(1);
+        //parents.forEach(p -> {((Normal)bn.getConditionalDistribution(p)).setMean(0);((Normal)bn.getConditionalDistribution(p)).setVariance(1);});
+        System.out.println(bn);
         BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
 
-        int batchSize = 100;
+        int batchSize = 10;
 
 
         MultiDriftSVB_Smoothingv2 svb = new MultiDriftSVB_Smoothingv2();
@@ -513,17 +522,17 @@ public class MultiDriftSVB_Smoothingv2 {
 
         //svb.getMultiDriftSVB().setPriorDistribution(DriftSVB.TRUNCATED_EXPONENTIAL,new double[]{10000});
 
-        svb.setNaturalGradient(false);
-        svb.setArcReversal(true);
-        svb.setLearningRate(0.01);
-        svb.setTotalIter(0);
+        svb.setNaturalGradient(true);
+        svb.setArcReversal(false);
+        svb.setLearningRate(0.1);
+        svb.setTotalIter(100);
         svb.setWindowsSize(1000);
 
         svb.setDAG(bn.getDAG());
 
         svb.initLearning();
 
-        Multinomial multinomialDist = bn.getConditionalDistribution(multinomialVar);
+        //Multinomial multinomialDist = bn.getConditionalDistribution(multinomialVar);
         //multinomialDist.setProbabilityOfState(0,0.5);
         //multinomialDist.setProbabilityOfState(1, 0.5);
 
@@ -536,7 +545,7 @@ public class MultiDriftSVB_Smoothingv2 {
 
             //sampler.setSeed(0);
 
-            multinomialDist = bn.getConditionalDistribution(multinomialVar);
+            //multinomialDist = bn.getConditionalDistribution(multinomialVar);
 
             /*if (i>=5){
                 multinomialDist.setProbabilityOfState(0,10.0/11.0);
@@ -582,7 +591,7 @@ public class MultiDriftSVB_Smoothingv2 {
 
             preSmoothLog[i]=svb.getMultiDriftSVB().predictedLogLikelihood(testBatch);
 
-            System.out.println("Filter:\t" +i+ "\t" + preSmoothLog[i]+"\t"+multinomialDist.getProbabilityOfState(k)+"\t"+svb.getMultiDriftSVB().getLearntBayesianNetwork().getConditionalDistribution(multinomialVar).getParameters()[k] +"\t"+((MultiDriftSVB)svb.getMultiDriftSVB()).getLambdaMomentParameters()[0]+"\t"+svb.getMultiDriftSVB().getPlateuStructure().getPlateauNaturalParameterPosterior().getVectorByPosition(0).get(0)+"\t"+svb.getMultiDriftSVB().getPlateuStructure().getPlateauNaturalParameterPosterior().getVectorByPosition(0).get(1));
+            System.out.println("Filter:\t" +i+ "\t" + preSmoothLog[i]+"\t"+((MultiDriftSVB)svb.getMultiDriftSVB()).getLambdaMomentParameters()[0]+"\t"+svb.getMultiDriftSVB().getPlateuStructure().getPlateauNaturalParameterPosterior().getVectorByPosition(0).get(0)+"\t"+svb.getMultiDriftSVB().getPlateuStructure().getPlateauNaturalParameterPosterior().getVectorByPosition(0).get(1));
 
 
         }
@@ -590,7 +599,7 @@ public class MultiDriftSVB_Smoothingv2 {
         svb.smooth();
         double[] testLL = svb.predictedLogLikelihood();
         for (int i = 0; i < timeSteps; i++) {
-            System.out.println("Smoothed:\t" +i+ "\t" + testLL[i] +"\t"+multinomialDist.getProbabilityOfState(k)+"\t"+Double.NaN+"\t"+svb.getOmegaPosteriors().get(i).get(0).getExpectedParameters().get(0)+"\t"+svb.getLambdaPosteriors().get(i).get(0).getNaturalParameters().get(0)+"\t"+svb.getLambdaPosteriors().get(i).get(0).getNaturalParameters().get(1));//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
+            System.out.println("Smoothed:\t" +i+ "\t" + testLL[i] +"\t"+"\t"+Double.NaN+"\t"+svb.getOmegaPosteriors().get(i).get(0).getExpectedParameters().get(0)+"\t"+svb.getLambdaPosteriors().get(i).get(0).getNaturalParameters().get(0)+"\t"+svb.getLambdaPosteriors().get(i).get(0).getNaturalParameters().get(1));//+"\t"+((MultiDriftSVB)svb).getLambdaMomentParameters()[1]);
         }
 
         System.out.println(Utils.sum(preSmoothLog));
