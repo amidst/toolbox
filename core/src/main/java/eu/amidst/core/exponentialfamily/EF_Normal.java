@@ -273,8 +273,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double mu =  this.getMean();
         double prec = this.getPrecision();
 
-        double R0 = 1.0/prec * vector.get(0) + 2.0*mu/prec * vector.get(1);
-        double R1 = 2.0*mu/prec * vector.get(0) + ( 2.0/Math.pow(prec,2) + 4.0*Math.pow(mu,2)/prec ) * vector.get(1);
+        double H_11 = 1.0/prec;
+        double H_12 = 2.0*mu/prec;
+        double H_21 = H_12;
+        double H_22 = 2.0/Math.pow(prec,2) + 4.0*Math.pow(mu,2)/prec;
+
+        double R0 = H_11 * vector.get(0) + H_12 * vector.get(1);
+        double R1 = H_21 * vector.get(0) + H_22 * vector.get(1);
 
         vector.set(0, R0);
         vector.set(1, R1);
@@ -288,13 +293,13 @@ public class EF_Normal extends EF_UnivariateDistribution {
         double mu =  this.getMean();
         double prec = this.getPrecision();
 
-        double invH11 = prec * ( 1.0 + 2.0 * prec * Math.pow(mu,2) );
-        double invH12 = - Math.pow(prec,2) * Math.pow(mu,2);
-        double invH21 = invH12;
-        double invH22 = 0.5 * Math.pow(prec,2);
+        double invH_11 = prec * ( 1.0 + 2.0 * prec * Math.pow(mu,2) );
+        double invH_12 = - Math.pow(prec,2) * mu;
+        double invH_21 = invH_12;
+        double invH_22 = 0.5 * Math.pow(prec,2);
 
-        double R0 = invH11 * vector.get(0) + invH12 * vector.get(1);
-        double R1 = invH21 * vector.get(0) + invH22 * vector.get(1);
+        double R0 = invH_11 * vector.get(0) + invH_12 * vector.get(1);
+        double R1 = invH_21 * vector.get(0) + invH_22 * vector.get(1);
 
         vector.set(0, R0);
         vector.set(1, R1);
