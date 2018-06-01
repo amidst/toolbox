@@ -15,16 +15,11 @@ import eu.amidst.core.datastream.DataInstance;
 import eu.amidst.core.datastream.DataOnMemory;
 import eu.amidst.core.distribution.Multinomial;
 import eu.amidst.core.exponentialfamily.EF_UnivariateDistribution;
-import eu.amidst.core.exponentialfamily.MomentParameters;
-import eu.amidst.core.inference.messagepassing.Node;
 import eu.amidst.core.learning.parametric.bayesian.MultiDriftSVB;
-import eu.amidst.core.learning.parametric.bayesian.utils.VMPLocalUpdates;
 import eu.amidst.core.models.BayesianNetwork;
 import eu.amidst.core.models.DAG;
 import eu.amidst.core.utils.BayesianNetworkSampler;
 import eu.amidst.core.utils.CompoundVector;
-import eu.amidst.core.utils.Serialization;
-import eu.amidst.core.utils.Vector;
 import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 import weka.core.Utils;
@@ -32,7 +27,6 @@ import weka.core.Utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -74,29 +68,21 @@ public class MultiDriftSVB_ArcReversal {
     public void smooth() {
 
         multiDriftSVB.getPlateuStructure().updateNaturalParameterPrior(this.initialPrior);
+        multiDriftSVB.setFirstBatch(true);
 
-        multiDriftSVB.updateModelWithConceptDrift(trainBatches.get(trainBatches.size() - 1));
-
-        for (int t = trainBatches.size() - 2; t >= 0; t--) {
+        for (int t = trainBatches.size() - 1; t >= 0; t--) {
             multiDriftSVB.updateModelWithConceptDrift(trainBatches.get(t));
             CompoundVector vector = multiDriftSVB.getPlateuStructure().getPlateauNaturalParameterPosterior();
             if (t>0){
                 for (int i = 0; i < this.lambdaPosteriors.get(t).size(); i++) {
-                    this.lambdaPosteriors.get(t).get(i).getNaturalParameters().sum(vector.getVectorByPosition(i));
-                    this.lambdaPosteriors.get(t).get(i).getNaturalParameters().substract(this.initialPrior.getVectorByPosition(i));
-                    this.lambdaPosteriors.get(t).get(i).updateMomentFromNaturalParameters();
-
-                    this.omegaPosteriors.get(t).get(i).getNaturalParameters().sum(multiDriftSVB.getRhoPosterior().get(i).getNaturalParameters());
-                    this.omegaPosteriors.get(t).get(i).getNaturalParameters().substract(multiDriftSVB.getRhoPrior().getNaturalParameters());
-                    this.omegaPosteriors.get(t).get(i).updateMomentFromNaturalParameters();
+                    this.lambdaPosteriors.get(t-1).get(i).getNaturalParameters().sum(vector.getVectorByPosition(i));
+                    this.lambdaPosteriors.get(t-1).get(i).getNaturalParameters().substract(this.initialPrior.getVectorByPosition(i));
+                    this.lambdaPosteriors.get(t-1).get(i).updateMomentFromNaturalParameters();
                 }
             }else{
                 for (int i = 0; i < this.lambdaPosteriors.get(t).size(); i++) {
                     this.lambdaPosteriors.get(t).get(i).getNaturalParameters().copy(vector.getVectorByPosition(i));
                     this.lambdaPosteriors.get(t).get(i).updateMomentFromNaturalParameters();
-
-                    this.omegaPosteriors.get(t).get(i).getNaturalParameters().copy(multiDriftSVB.getRhoPosterior().get(i).getNaturalParameters());
-                    this.omegaPosteriors.get(t).get(i).updateMomentFromNaturalParameters();
                 }
             }
 
