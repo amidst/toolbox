@@ -111,12 +111,11 @@ public class EF_NormalGivenIndependentNormalGamma extends EF_ConditionalDistribu
         double mean = momentParents.get(meanParameterVariable).get(0);
         double invVariance = momentParents.get(gammaParameterVariable).get(1);
 
-        NaturalParameters naturalParameters = new EF_Normal.ArrayVectorParameter(2);
+        EF_Normal ef_normal = new EF_Normal(meanParameterVariable);
 
-        naturalParameters.set(0,mean);
-        naturalParameters.set(1,invVariance);
+        ef_normal.setNaturalWithMeanPrecision(mean,invVariance);
 
-        return naturalParameters;
+        return ef_normal.getNaturalParameters();
     }
 
     /**
@@ -133,16 +132,11 @@ public class EF_NormalGivenIndependentNormalGamma extends EF_ConditionalDistribu
         if(meanParameterVariable == parent){
             double invVariance = momentChildCoParents.get(gammaParameterVariable).get(1);
 
-/*
-            naturalParameters.set(0,invVariance*X);
-            naturalParameters.set(1,-0.5*invVariance);
-*/
+            EF_NormalParameter ef_normalParameter = new EF_NormalParameter(parent);
+            ef_normalParameter.setNaturalWithMeanPrecision(X,invVariance);
+            naturalParameters=ef_normalParameter.getNaturalParameters();
 
-            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
-            naturalParameters.set(0, X);
-            naturalParameters.set(1, invVariance);
-
-            // Message to the gamma variable
+        // Message to the gamma variable
         }else{
             double XSquare = momentChildCoParents.get(var).get(1);
 

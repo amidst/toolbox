@@ -227,13 +227,13 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
                 double mean = factor * (X - (beta0 + dotProductBetaY - beta_i * Y_i));
                 double precision = Y_iSquared * invVariance;
 
-                naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
-                naturalParameters.set(0, mean);
-                naturalParameters.set(1, precision);
+                EF_NormalParameter ef_normalParameter = new EF_NormalParameter(parent);
+                ef_normalParameter.setNaturalWithMeanPrecision(mean,precision);
+                naturalParameters = ef_normalParameter.getNaturalParameters();
             }else{
-                naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
-                naturalParameters.set(0, -beta0 + X - (dotProductBetaY - beta_i * Y_i));
-                naturalParameters.set(1, 0);
+                EF_NormalParameter ef_normalParameter = new EF_NormalParameter(parent);
+                ef_normalParameter.setNaturalWithMeanPrecision(-beta0 + X - (dotProductBetaY - beta_i * Y_i), 0);
+                naturalParameters=ef_normalParameter.getNaturalParameters();
             }
 
             // Message to the Beta0 variable
@@ -242,9 +242,9 @@ public class EF_Normal_Normal_Gamma extends EF_ConditionalDistribution{
             //naturalParameters.set(0, X * invVariance - dotProductBetaY * invVariance);
             //naturalParameters.set(1, -0.5*invVariance);
 
-            naturalParameters = new EF_NormalParameter.ArrayVectorParameter(2);
-            naturalParameters.set(0, X - dotProductBetaY);
-            naturalParameters.set(1, invVariance);
+            EF_NormalParameter ef_normalParameter = new EF_NormalParameter(parent);
+            ef_normalParameter.setNaturalWithMeanPrecision(X - dotProductBetaY, invVariance);
+            naturalParameters=ef_normalParameter.getNaturalParameters();
 
         // Message to the inv-Gamma variable
         }else if (gammaVariable==parent){

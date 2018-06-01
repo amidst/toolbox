@@ -780,7 +780,7 @@ public class SVBTest extends TestCase {
             BayesianNetworkSampler sampler = new BayesianNetworkSampler(bn);
             sampler.setSeed(i);
             sampler.setMARVar(varB,0.7);
-            DataStream<DataInstance> data = sampler.sampleToDataStream(10000);
+            DataStream<DataInstance> data = sampler.sampleToDataStream(20000);
 
 
             SVB svb = new SVB();
@@ -788,8 +788,8 @@ public class SVBTest extends TestCase {
             svb.setSeed(i);
             VMP vmp = svb.getPlateuStructure().getVMP();
             vmp.setTestELBO(true);
-            vmp.setMaxIter(1000);
-            vmp.setThreshold(0.001);
+            vmp.setMaxIter(10000);
+            vmp.setThreshold(0.0001);
 
             svb.setDAG(bn.getDAG());
             svb.setDataStream(data);
