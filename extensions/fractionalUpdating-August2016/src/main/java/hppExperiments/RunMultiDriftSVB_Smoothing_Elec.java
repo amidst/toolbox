@@ -56,8 +56,8 @@ public class RunMultiDriftSVB_Smoothing_Elec {
         double threshold = 0.1;
 
 
-        double learningRate=0.0001;
-        int totalIterSmoothing=5;
+        double learningRate=0.01;
+        int totalIterSmoothing=50;
 
 
         if (args.length>1) {
@@ -132,6 +132,9 @@ public class RunMultiDriftSVB_Smoothing_Elec {
         svb.getMultiDriftSVB().randomInitialize();
 
 
+        svb.setNaturalGradient(true);
+        svb.setArcReversal(false);
+
         svb.setLearningRate(learningRate);
         svb.setTotalIter(totalIterSmoothing);
 
@@ -162,7 +165,7 @@ public class RunMultiDriftSVB_Smoothing_Elec {
             if (!string.endsWith(".arff"))
                 continue;
 
-            //System.out.println("EPOCH: " + count +", "+ string);
+            System.out.println("EPOCH: " + count +", "+ string);
 
             DataOnMemory<DataInstance> batch= DataStreamLoader.loadDataOnMemoryFromFile(path+string);
 
@@ -236,7 +239,7 @@ public class RunMultiDriftSVB_Smoothing_Elec {
 
             fw.flush();
 
-            preSmoothLog+=log/inst;
+            preSmoothLog+=log;
 
             //System.out.println(svb.getMultiDriftSVB().getLearntBayesianNetwork());
 
