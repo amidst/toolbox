@@ -287,7 +287,7 @@ public class BNConverterToHuginTest {
         //-----------------------------------------------------------------------------
         ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
         for (int j=0;j<parentsHuginVar.size();j++) {
-            Node huginParent = parentsHuginVar.get(j);
+            Node huginParent = (Node) parentsHuginVar.get(j);
             if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 multinomialParentsIndexes.add(j);
             }
@@ -295,7 +295,7 @@ public class BNConverterToHuginTest {
         Collections.reverse(multinomialParentsIndexes);
         ArrayList<Integer> parentsIndexes = new ArrayList();
         for (int j=0;j<parentsHuginVar.size();j++) {
-            Node huginParent = parentsHuginVar.get(j);
+            Node huginParent = (Node) parentsHuginVar.get(j);
             if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                 parentsIndexes.add(multinomialParentsIndexes.get(0));
                 multinomialParentsIndexes.remove(0);

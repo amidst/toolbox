@@ -1,0 +1,5 @@
+tool,network,instances,numvars,size,time
+hugin,mog,5000,10,957122.0,1515
+amidst,mog,5000,10,957122.0,1667
+hugin,mfa,5000,10,957122.0,10938
+amidst,mfa,5000,10,957122.0,9405

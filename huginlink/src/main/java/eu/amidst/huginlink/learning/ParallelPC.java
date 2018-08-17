@@ -165,7 +165,7 @@ public class ParallelPC implements AmidstOptionsHandler {
             // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
             for (int i = 0; i < nodeList.size(); i++) {
                 Variable var = bn.getDAG().getVariables().getVariableById(i);
-                Node n = nodeList.get(i);
+                Node n = (Node) nodeList.get(i);
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     ((DiscreteChanceNode) n).getExperienceTable();
                     for (int j = 0; j < numCases; j++) {
@@ -184,9 +184,7 @@ public class ParallelPC implements AmidstOptionsHandler {
             }
 
             //Structural learning
-            Stopwatch watch = Stopwatch.createStarted();
-            huginNetwork.learnStructureNPC();
-            System.out.println("Structural Learning in Hugin: " + watch.stop());
+            huginNetwork.learnStructure();
 
             DAG dagLearned = (BNConverterToAMIDST.convertToAmidst(huginNetwork)).getDAG();
             dagLearned.getVariables().setAttributes(dataStream.getAttributes());
@@ -312,9 +310,9 @@ public class ParallelPC implements AmidstOptionsHandler {
             //tan.loadOptionsFromFile("configurationFiles/conf.txt");
             parallelPC.setNumCores(numCores);
             parallelPC.setNumSamplesOnMemory(samplesOnMemory);
-            Stopwatch watch = Stopwatch.createStarted();
+        //    Stopwatch watch = Stopwatch.createStarted();
             BayesianNetwork model = parallelPC.learn(data);
-            System.out.println(watch.stop());
+        //    System.out.println(watch.stop());
         }
     }
 }

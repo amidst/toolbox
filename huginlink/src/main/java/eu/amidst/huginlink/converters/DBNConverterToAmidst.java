@@ -92,7 +92,7 @@ public class DBNConverterToAmidst {
                 //-----------------------------------------------------------------------------
                 ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
                 for (int j=0;j<huginParents.size();j++) {
-                    Node huginParent = huginParents.get(j);
+                    Node huginParent = (Node) huginParents.get(j);
                     if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                         multinomialParentsIndexes.add(j);
                     }
@@ -100,7 +100,7 @@ public class DBNConverterToAmidst {
                 Collections.reverse(multinomialParentsIndexes);
                 ArrayList<Integer> parentsIndexes = new ArrayList();
                 for (int j=0;j<huginParents.size();j++) {
-                    Node huginParent = huginParents.get(j);
+                    Node huginParent = (Node) huginParents.get(j);
                     if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                         parentsIndexes.add(multinomialParentsIndexes.get(0));
                         multinomialParentsIndexes.remove(0);

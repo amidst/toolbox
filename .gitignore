@@ -95,3 +95,6 @@ ignored/*
 #ignore target folders
 */target/*
 */*/target/*
+
+*.DS_Store
+

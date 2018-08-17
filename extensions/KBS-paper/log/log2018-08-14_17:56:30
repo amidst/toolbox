@@ -1,0 +1,3 @@
+tool,network,instances,numvars,size,time
+hugin,mog,5000000,10,9.56540144E8,525623
+hugin,mog,10000000,10,1.913098507E9,1069171

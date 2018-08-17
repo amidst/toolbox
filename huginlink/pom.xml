@@ -102,11 +102,11 @@
             <version>0.7.1</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
-            <groupId>com.hugin</groupId>
+            <groupId>COM.hugin</groupId>
             <artifactId>hugin</artifactId>
-            <version>8.3</version>
+            <version>8.6</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/huginlib/hgapi83_amidst-64.jar</systemPath>
+            <systemPath>/Users/rcabanas/Library/Java/Extensions/hapi86-64.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

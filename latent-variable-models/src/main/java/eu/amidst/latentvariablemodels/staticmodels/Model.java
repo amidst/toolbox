@@ -145,7 +145,7 @@ public abstract class Model<T extends Model> {
         else
             throw new IllegalArgumentException("Non provided dag or PlateauStructure");
 
-        learningAlgorithm.setOutput(true);
+        learningAlgorithm.setOutput(false);
         learningAlgorithm.initLearning();
         initialized=true;
     }

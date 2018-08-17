@@ -87,7 +87,7 @@ public class BNConverterToAMIDST {
         Variables amidstVariables = variables;
 
         for(int i=0;i<numNodes;i++){
-            Node huginChild = huginNodes.get(i);
+            Node huginChild = (Node) huginNodes.get(i);
             NodeList huginParents = huginChild.getParents();
             Variable amidstChild = amidstVariables.getVariableByName(huginChild.getName());
 
@@ -95,7 +95,7 @@ public class BNConverterToAMIDST {
             //-----------------------------------------------------------------------------
             ArrayList<Integer> multinomialParentsIndexes = new ArrayList();
             for (int j=0;j<huginParents.size();j++) {
-                Node huginParent = huginParents.get(j);
+                Node huginParent = (Node) huginParents.get(j);
                 if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     multinomialParentsIndexes.add(j);
                 }
@@ -103,7 +103,7 @@ public class BNConverterToAMIDST {
             Collections.reverse(multinomialParentsIndexes);
             ArrayList<Integer> parentsIndexes = new ArrayList();
             for (int j=0;j<huginParents.size();j++) {
-                Node huginParent = huginParents.get(j);
+                Node huginParent = (Node) huginParents.get(j);
                 if (huginParent.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
                     parentsIndexes.add(multinomialParentsIndexes.get(0));
                     multinomialParentsIndexes.remove(0);
@@ -114,7 +114,7 @@ public class BNConverterToAMIDST {
             }
             //-----------------------------------------------------------------------------
             for(int j=0;j<huginParents.size();j++) {
-                Node huginParent = huginParents.get(parentsIndexes.get(j));
+                Node huginParent = (Node) huginParents.get(parentsIndexes.get(j));
                 Variable amidstParent = amidstVariables.getVariableByName(huginParent.getName());
                 dag.getParentSet(amidstChild).addParent(amidstParent);
             }

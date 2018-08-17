@@ -123,7 +123,7 @@ public class DBNConverterToHugin {
         Multinomial_MultinomialParents dist = null;
         int nStates=0;
         for (int i = 0; i < numNodes; i++) {
-            Node huginNode = huginNodes.get(i);
+            Node huginNode = (Node) huginNodes.get(i);
 
             //Master nodes. TIME T from AMIDST
             if (huginNode.getTemporalMaster() == null) {

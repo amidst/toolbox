@@ -64,10 +64,10 @@ public interface ParameterLearningAlgorithm {
                 .sequential().mapToDouble(b -> {
 
 
-                    System.out.println("Processing batch "+batchCount.addAndGet(1)+":");
-                    System.out.println("\tTotal instance count: "+ instCount.addAndGet(b.getNumberOfDataInstances()));
+                  //  System.out.println("Processing batch "+batchCount.addAndGet(1)+":");
+                  //  System.out.println("\tTotal instance count: "+ instCount.addAndGet(b.getNumberOfDataInstances()));
 
-                    System.out.print("\t");
+                    //System.out.print("\t");
                     double ret =  this.updateModel(b);
                     return ret;
 

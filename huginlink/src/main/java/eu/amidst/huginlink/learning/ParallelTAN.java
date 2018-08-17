@@ -233,7 +233,7 @@ public class ParallelTAN implements AmidstOptionsHandler {
         // It is more efficient to loop the matrix of values in this way. 1st variables and 2nd cases
         for (int i = 0; i < nodeList.size(); i++) {
             Variable var = bn.getDAG().getVariables().getVariableById(i);
-            Node n = nodeList.get(i);
+            Node n = (Node) nodeList.get(i);
 
             try {
                 if (n.getKind().compareTo(NetworkModel.H_KIND_DISCRETE) == 0) {
@@ -281,15 +281,17 @@ public class ParallelTAN implements AmidstOptionsHandler {
         }
 
 
-        try {
+  /*      try {
             //root.getHome().getNodes().stream().forEach(node -> System.out.println(node.getName())
-            huginNetwork.learnChowLiuTree(root, target);
+//TODO: UNCOMMENT
+        //huginNetwork.learnChowLiuTree(root, target);
+
         } catch (ExceptionHugin exceptionHugin) {
             System.out.println("ParallelTan LearnDAG Error 5");
             exceptionHugin.printStackTrace();
             throw new IllegalStateException("Hugin Exception: " + exceptionHugin.getMessage());
         }
-
+*/
 
         DAG dagLearned;
         try {
