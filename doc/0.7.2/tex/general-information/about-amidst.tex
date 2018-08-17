@@ -90,8 +90,21 @@ from streaming data:  the rest of existing software for learning PGMs tools focu
 
 
 
+
+
 On the other hand, most of these toolboxes only deal with discrete-multinomial variables, and only few of them also support Gaussian and conditional lineal Gaussian random variables such as Hugin. However, {AMIDST} Toolbox can deal with general conjugate exponential Bayesian networks. In the current version, we support multinomial, Gaussian, Dirichlet, and  Gamma distributed random variables, and the implemented Bayesian learning algorithms are general enough to accommodate any other distribution belonging to the conjugate exponential family. Infer.net can deal with distributions in this family, however this tool is a proprietary non-portable software which cannot be run in a cluster.\newline 
 
+
+
+Hugin is a proprietary software which is considered to be one of the powerful tools for learning PGMs.  Even though efficient algorithms implemented in C++ are provided, it does not give any support for distributed processing and fails when learning from datasets  not fitting into the available memory. This can be seen in the image below where we compare the time required for learning two different PGMs using AMIDST and Hugin. Although the proprietary tool is more efficient, it cannot process datasets larger than 2GB approximately. As Hugin allows incremental learning, datasets of any size can be processed. The experiments were performed in a MacBook Pro with a 2.4 GHz Intel Core i5 and 8GB of memory.
+
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=15cm]{img/amidsthugin.png}
+	\caption{fig:amidsthugin.png}
+\end{figure}
 
 
 
