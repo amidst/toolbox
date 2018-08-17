@@ -1,0 +1,96 @@
+<h1 id="requirements-amidst-toolbox">Wekalink: using an AMIDST classifier in Weka</h1>
+<p>One of the greatests points of AMIDST is the integration with other tools for data analysis. This is the case of Weka whose integration fuctionality is provided by the module <em>wekalink</em>. We will be able to create a wrapper for evaluating an AMDIST classifier with Weka.</p>
+<h2 id="prepare-your-project">Prepare your project</h2>
+<p>The first thing we have to do is to load the required AMIDST dependencies in a Maven project. In this case, we will have to load the modules <strong>wekalink</strong> and <strong>latent-variable-models</strong>. For that, add the following code to the file pom.xml of your project.</p>
+<pre><code>    &lt;dependencies&gt;
+    
+      &lt;dependency&gt;
+        &lt;groupId&gt;eu.amidst&lt;/groupId&gt;
+        &lt;artifactId&gt;wekalink&lt;/artifactId&gt;
+        &lt;version&gt;0.7.1&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+     &lt;/dependency&gt;
+     
+      &lt;dependency&gt;
+        &lt;groupId&gt;eu.amidst&lt;/groupId&gt;
+        &lt;artifactId&gt;latent-variable-models&lt;/artifactId&gt;
+        &lt;version&gt;0.7.1&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+      &lt;/dependency&gt;
+    
+    &lt;!-- ... --&gt;
+    &lt;/dependencies&gt;</code></pre>
+<p>Further details for creating a project using AMIDST fuctionality is given in the <a href="../GettingStarted/">Getting Started</a> section.</p>
+<h2 id="create-the-wrapper-class">Create the wrapper class</h2>
+<p>A custom classifier that could be handled by weka should inherit from class <em>weka.classifiers.AbstractClassifier</em> and implement interface <em>weka.core.Randomizable</em>. Thus we should override at least the following methods:</p>
+<ul>
+<li><p><em>void buildClassifier(Instances data)</em>: builds the classifier from scratch with the given dataset.</p></li>
+<li><p><em>double[] distributionForInstance(Instance instance)</em>: returns a vector containing the probability for each label or state of the class.</p></li>
+</ul>
+<p>Here below we show a minimal example where the Naive Bayes classifier provided by AMIDST is used.</p>
+<pre><code>
+import eu.amidst.core.datastream.Attributes;
+import eu.amidst.core.datastream.DataInstance;
+import eu.amidst.core.datastream.DataOnMemoryListContainer;
+import eu.amidst.core.datastream.filereaders.DataInstanceFromDataRow;
+import eu.amidst.latentvariablemodels.staticmodels.classifiers.NaiveBayesClassifier;
+import eu.amidst.wekalink.converterFromWekaToAmidst.Converter;
+import eu.amidst.wekalink.converterFromWekaToAmidst.DataRowWeka;
+import weka.classifiers.AbstractClassifier;
+import weka.core.Instance;
+import weka.core.Instances;
+
+
+public class AmidstNaiveBayes extends AbstractClassifier  {
+    
+    private NaiveBayesClassifier model = null;
+    private Attributes attributes;
+    
+    @Override
+    public void buildClassifier(Instances data) throws Exception {
+        
+        attributes = Converter.convertAttributes(data.enumerateAttributes(), 
+                                data.classAttribute());
+        DataOnMemoryListContainer&lt;DataInstance&gt; dataAmidst = 
+                    new DataOnMemoryListContainer(attributes);
+                    
+        data.stream()
+            .forEach(instance -&gt; dataAmidst.add(
+                new DataInstanceFromDataRow(
+                    new DataRowWeka(instance, attributes)))
+        );
+        
+        model = new NaiveBayesClassifier(attributes);
+        model.updateModel(dataAmidst);
+    }
+    
+    
+    @Override
+    public double[] distributionForInstance(Instance instance) throws Exception {
+        DataInstance amidstInstance = 
+            new DataInstanceFromDataRow(new DataRowWeka(instance, 
+                                this.attributes));
+        return model.predict(amidstInstance).getParameters();
+        
+    }
+
+}</code></pre>
+<p>Note that previous code does not implement neither the learning nor the classification processes, it simply calls to the corresponding methods <em>eu.amidst.latentvariablemodels.NaiveBayesClassifier</em> performing such tasks.</p>
+<h2 id="testing-the-amidst-classifier-in-weka">Testing the AMIDST classifier in Weka</h2>
+<p>Now we can evaluate an AMIDST classifier using only calls to functions from Weka. Here we show an example where we load a dataset in format .arff, we learn a naive Bayes classifier and we show the confusion matrix:</p>
+<pre><code>        //Load the dataset
+        BufferedReader reader = 
+            new BufferedReader(new FileReader(&quot;exampleDS_d5_c0.arff&quot;));
+        Instances data = new Instances(reader);
+        data.setClassIndex(6);
+        
+        //Learn and evaluate the classifier
+        Evaluation eval = new Evaluation(data);
+        Debug.Random rand = new Debug.Random(1); 
+        int folds = 10;
+        Classifier cls = new AmidstNaiveBayes();
+        eval.crossValidateModel(cls, data, folds, rand);
+        
+        //Print the confusion matrix
+        System.out.println(eval.toMatrixString());</code></pre>
+

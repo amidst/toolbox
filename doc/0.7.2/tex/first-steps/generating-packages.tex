@@ -1,0 +1,80 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+\section{Generating the packages for each module and for
+	its
+	dependencies}
+
+Here we explain how can we generate the packages (i.e. jar files) for
+each module and also those corresponding to the dependencies. This will
+allow to use AMIDST toolbox in any java project. Alternatively, you can
+watch this
+\href{https://www.youtube.com/watch?v=6iLG17UPzX0}{video-tutorial}. First, you can download the source code using the following command:\newline 
+
+\begin{verbatim}
+$ git clone https://github.com/amidst/toolbox.git      
+\end{verbatim}
+
+Once the download has finished, enter into the downloaded
+folder:\newline
+
+\begin{verbatim}
+$ cd toolbox     
+\end{verbatim}
+
+For generating the packages for all the modules, use the following
+command:\newline 
+
+\begin{verbatim}
+$ mvn clean dependency:copy-dependencies package -Dmaven.test.skip=true    
+\end{verbatim}
+
+Note that the argument \textbf{-Dmaven.test.skip=true} is optional (its
+default value is false). If omitted, maven will run the unitary tests
+and hence the process will take much more time. If
+everything goes right, you will eventually obtain an output similar to
+the following one:\newline 
+
+\begin{verbatim}
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] AmidstToolbox ...................................... SUCCESS [  1.177 s]
+[INFO] core ............................................... SUCCESS [ 11.891 s]
+[INFO] core-dynamic ....................................... SUCCESS [  5.081 s]
+[INFO] huginlink .......................................... SUCCESS [  3.031 s]
+[INFO] standardmodels ..................................... SUCCESS [  2.976 s]
+[INFO] examples ........................................... SUCCESS [  4.563 s]
+[INFO] moalink ............................................ SUCCESS [  2.609 s]
+[INFO] wekalink ........................................... SUCCESS [  2.515 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 34.504 s
+[INFO] Finished at: 2016-05-10T16:41:23+02:00
+[INFO] Final Memory: 68M/670M
+[INFO] ------------------------------------------------------------------------  
+\end{verbatim}
+
+Now, at each module folder, a new folder called \textbf{target}
+containing the generated packages has been created. In addition the
+sub-folder {\textbf{target/dependency} }contains the dependencies for
+the given package. Now simply copy all these packages into a folder of
+your classpath and you will be able to use the functionality provided by
+AMIDST.
+
+
+\end{document}

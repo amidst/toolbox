@@ -1,0 +1,73 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+%%% formatting the code
+\usepackage{listings}
+
+
+\input{../settingsTexDoc.tex}
+
+
+\usepackage{hyperref}
+
+\begin{document}
+
+
+
+\section{Sparklink: Code Examples}\label{sec:sparklink}
+
+%\begin{itemize}
+%	\item \hyperref[sec:flinklink:io]{Input/output}
+%	\begin{itemize}
+%		\item \hyperref[sec:flinklink:io:read]{Reading data}
+%		\item \hyperref[sec:flinklink:io:write]{Write data}
+%	\end{itemize}
+%		\item \hyperref[sec:flinklink:learning]{Parametric Learning}
+%
+%		
+%	\begin{itemize}
+%		\item \hyperref[sec:flinklink:learning:pml]{Parallel Maximum Likelihood}
+%		\item \hyperref[sec:flinklink:learning:dvmp]{Distributed Variational Message Pasing}
+%		\item \hyperref[sec:flinklink:learning:dvi]{Distributed VI}
+%		\item \hyperref[sec:flinklink:learning:svi]{Stochastic VI}
+%	\end{itemize}
+%	\item \hyperref[sec:flinklink:ext]{ Extensions and applications}
+%	\begin{itemize}
+%			\item \hyperref[sec:flinklink:ext:models]{ Latent variable models with Flink}
+%			\item \hyperref[sec:flinklink:ext:conceptdrift]{Concept drift}
+%	\end{itemize}
+%\end{itemize}
+
+
+\subsection{Input/output}\label{sec:sparklink:io}
+
+
+
+
+\subsubsection{Reading data}\label{sec:sparklink:io:read}
+
+In this example we show how can we read a dataset using sparklink. This module supports reading files in formats \textit{json} and \textit{parquet}. Note that the method \textit{DataSparkLoader::open} automatically detects the format of the file (the indicated path should contain the extension). Finally all the instances in the data set are printed.
+
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/sparklink/examples/io/DataStreamLoaderExample.java}
+
+
+\subsubsection{Writing data}\label{sec:sparklink:io:write}
+
+Here we show how can we save spark data into a file. First a random data set is generated using the method \textit{DataSetGenerator::generate}. Afterwards, such data is save using the method \textit{DataSparkWriter::writeDataToFolder}
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/sparklink/examples/io/DataStreamWriterExample.java}
+
+\subsection{Parameter learning}\label{sec:sparklink:learning}
+
+AMIDST provides parameter learning using spark with the \textit{Maximum Likelihood} algorithm. In the following example, we load a data set in format json and we use it for learning a simple naive bayes (more complex DAGs can also be learnt).
+
+\includejavasource{../../../../examples/src/main/java/eu/amidst/sparklink/examples/learning/MaximumLikelihoodLearningExample.java}
+
+
+
+
+\end{document}
