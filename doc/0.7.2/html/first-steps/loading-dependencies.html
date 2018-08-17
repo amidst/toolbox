@@ -1,0 +1,67 @@
+<h1 id="loading-amidst-dependencies-from-a-remote-maven-repository">Loading AMIDST dependencies from a remote maven repository</h1>
+<p>Here we explain how to add the AMIDST dependencies in a maven project with Java 8 or higher. Alternatively, you might prefer following the video-tutorial in this <a href="https://www.youtube.com/watch?v=i_X6cFo91LE">link</a> .</p>
+<p>In this example, we will use a project containing only one class, though the procedure here explain could be used in any other maven project. You can check this <a href="https://www.jetbrains.com/help/idea/2016.1/getting-started-with-maven.html">link</a> for getting more information about how to create a new mavenproject.</p>
+<p>For using the AMIDST Toolbox, the <strong>pom.xlm</strong> file will be modified. First, in the Project view (located on the left) select the file pom.xml of your project and open it:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst05.png" alt="Capture of Maven project in IntelliJ and the initial pom.xml file" width="321" /><p class="caption" style="text-align:center">Capture of Maven project in IntelliJ and the initial pom.xml file<span data-label="fig:remoteDeps_initialPom"></span></p>
+</div>
+<p>Add the AMIDST repository by including the following code to your pom:</p>
+<pre><code>&lt;repositories&gt;
+&lt;!-- AMIDST repository in github --&gt;
+&lt;repository&gt;
+&lt;id&gt;amidstRepo&lt;/id&gt; &lt;!-- local identifier, it can be anything --&gt;
+&lt;url&gt;https://raw.github.com/amidst/toolbox/mvn-repo/&lt;/url&gt;
+&lt;/repository&gt;
+&lt;!-- ... --&gt;
+&lt;/repositories&gt;        </code></pre>
+<p>Then, add the dependencies of modules in AMIDST you want to use.  For each module, add an element <strong>&lt;dependency&gt;<strong>…&lt;/dependency&gt;</strong></strong> inside the labels <strong>&lt;dependencies&gt;&lt;/dependencies&gt;</strong>. For each one, we have to indicate the following information:</p>
+<ul>
+<li><p><strong>groupId</strong> is an identifier of the project’s module. In this case it should containt the value <em>“eu.amidst”.</em></p></li>
+<li><p><strong>artifactId</strong> is the name of the module we want to use. More precisely, it is the name of the jar file containing such module. You can see the list of AMIDST modules <a href="https://github.com/amidst/toolbox/tree/mvn-repo/eu/amidst">here</a>.</p></li>
+<li><p><strong>version</strong> is the identifier of  AMIDST Toolbox release. You can see <a href="mohttps://github.com/amidst/toolbox/blob/master/CHANGELOG.mddules%20here">here</a> the list of all versions available.</p></li>
+<li><p><strong>scope</strong>  allows you to only include dependencies appropriate for the current stage of the build. We will set this to <em>“compile”.</em></p></li>
+</ul>
+<p>For example, for using the <em>core-dynamic</em> module, include the following code:</p>
+<pre><code>&lt;dependencies&gt;
+&lt;!-- Load any of the modules from AMIDST Toolbox --&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;eu.amidst&lt;/groupId&gt;
+&lt;artifactId&gt;core-dynamic&lt;/artifactId&gt;
+&lt;version&gt;0.7.1&lt;/version&gt;
+&lt;scope&gt;compile&lt;/scope&gt;
+&lt;/dependency&gt;
+
+&lt;!-- ... --&gt;
+&lt;/dependencies&gt;        </code></pre>
+<p>Note that for using another module, simply change the value of the element artifactId (i.e. the content between the tags &lt;artifactId&gt; and &lt;artifactId&gt;). Now you can check in the <strong>Maven Projects panel</strong> that all the dependencies have been loaded:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst07.png" alt="List of loaded dependencies" width="321" /><p class="caption" style="text-align:center">List of loaded dependencies<span data-label="fig:remoteDeps_mavenPanel"></span></p>
+</div>
+<p>Note that the <em>core-dynamic module</em> depends on <span>core </span>that has been loaded as well. We recomend you to download the sources and the javadoc:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst08.png" alt="Download the JavaDoc and the source code" width="377" /><p class="caption" style="text-align:center">Download the JavaDoc and the source code<span data-label="fig:remoteDeps_downloadJD"></span></p>
+</div>
+<p>Finally, for testing purposes, we can run the code shown below that generates a random dynamic bayesian network (DBN) and prints its parameters.</p>
+<pre><code>import eu.amidst.dynamic.models.DynamicBayesianNetwork;
+import eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator;
+
+public class TestingAmidst {
+  public static void main(String[] args) throws WrongConfigurationException {
+    DynamicBayesianNetworkGenerator.setNumberOfContinuousVars(2);
+    DynamicBayesianNetworkGenerator.setNumberOfDiscreteVars(5);
+    DynamicBayesianNetworkGenerator.setNumberOfStates(3);
+
+    DynamicBayesianNetwork extendedDBN = 
+    DynamicBayesianNetworkGenerator.generateDynamicBayesianNetwork();    
+
+    System.out.println(extendedDBN.toString());
+
+
+  }
+
+}</code></pre>
+<p>If everything goes right, the following output will be generated:</p>
+<div class="figure" style="text-align:center">
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst09.png" alt="Ouput of the testing code that generates a random DBN" width="321" /><p class="caption" style="text-align:center">Ouput of the testing code that generates a random DBN<span data-label="fig:remoteDeps_output"></span></p>
+</div>
+

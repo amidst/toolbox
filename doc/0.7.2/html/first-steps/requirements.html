@@ -1,0 +1,24 @@
+<h1 id="requirements-amidst-toolbox">Requirements for AMIDST Toolbox</h1>
+<h2 id="for-toolbox-users">For toolbox users </h2>
+<p>This toolbox has been specifically designed for using the functional-style features provided by the Java 8 release. You can check the Java version installed in your system with the following command:</p>
+<pre><code>$ java -version    </code></pre>
+<p>If everything is right, the following output (or similar) will be generated:<br />
+</p>
+<pre><code>java version &quot;1.8.0_73&quot;
+Java(TM) SE Runtime Environment (build 1.8.0_73-b02)
+Java HotSpot(TM) 64-Bit Server VM (build 25.73-b02, mixed mode)   </code></pre>
+<p>Make sure that the Java version is 1.8 or higher. Otherwise you must install a <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html">more recent release of Java.</a></p>
+<p>The second requirement consists of having maven installed your system: <a href="http://maven.apache.org/download.cgi%20%28follow%20specific%20instructions%20for%20your%20OS%29">http://maven.apache.org/download.cgi</a>  (follow specific instructions for your OS). Use the following command for verifying that everything works properly:</p>
+<pre><code>$ mvn -v</code></pre>
+<p>which should generate an output similar to<br />
+</p>
+<pre><code>Apache Maven 3.2.3 (33f8c3e1027c3ddde99d3cdebad2656a31e8fdf4; 2014-08-11T22:58:10+02:00)
+Maven home: /sw/share/maven
+Java version: 1.8.0_73, vendor: Oracle Corporation
+Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_73.jdk/Contents/Home/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: &quot;mac os x&quot;, version: &quot;10.11.3&quot;, arch: &quot;x86_64&quot;, family: &quot;mac&quot;    </code></pre>
+<p>Having git installed is advisable for downloading relevant material (i.e., source code, example project, datasets, etc.) Further information can be found <a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git">here</a>.</p>
+<h2 id="for-amidst-developers">For AMIDST developers </h2>
+<p>AMIDST toolbox is hosted on <a href="https://github.com/amidst/toolbox">GitHub</a>. To work with AMIDST code you should follow the <a href="https://help.github.com/articles/using-pull-requests/">Fork &amp; Pull</a> collaboration model. Read this <a href="https://guides.github.com/activities/forking/">guide</a> for full details about how to fork a project and make a pull request. Once you have forked the project, you can clone to you computer and open it with Intellij by pointing at the pom.xml file, and everything will be ready to start. Further details about how to contribute to this project are given this <a href="http://amidst.github.io/toolbox/ContributingToAMIDST.html">link</a>.</p>
+
