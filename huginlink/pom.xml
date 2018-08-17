@@ -106,7 +106,7 @@
             <artifactId>hugin</artifactId>
             <version>8.6</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/hapi86-64.jar</systemPath>
+            <systemPath>${project.basedir}/huginlib/hapi86-64.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
