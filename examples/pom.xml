@@ -13,13 +13,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.7.1</version> <!-- AmidstVersion -->
+        <version>0.7.2</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.amidst</groupId>
     <artifactId>examples</artifactId>
-    <version>0.7.1</version> <!-- AmidstVersion -->
+    <version>0.7.2</version> <!-- AmidstVersion -->
 
 
 
@@ -104,34 +104,34 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <artifactId>huginlink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>latent-variable-models</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>sparklink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>flinklink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>dom4j</groupId>

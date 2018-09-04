@@ -1,10 +1,10 @@
 # AMIDST Toolbox ([http://www.amidsttoolbox.com](http://www.amidsttoolbox.com))
 <!-- version -->
-v.0.7.1
+v.0.7.2
 
 <!-- version -->
 [![GitHub version](https://badge.fury.io/gh/amidst%2Ftoolbox.svg)](https://badge.fury.io/gh/amidst%2Ftoolbox)
-[![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=release-0.7.1)](https://travis-ci.org/amidst/toolbox)
+[![Build Status](https://travis-ci.org/amidst/toolbox.svg?branch=release-0.7.2)](https://travis-ci.org/amidst/toolbox)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/71e9ce7f576e473fa7f4c6846293e9d6)](https://www.codacy.com/app/rafacabanas/toolbox?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amidst/toolbox&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -31,8 +31,8 @@ AMIDST provides tailored parallel (powered by Java 8 Streams) and distributed (p
 
 #Features<a name="features"></a>
 
-* **Probabilistic Graphical Models**: Specify your model using probabilistic graphical models with [latent variables](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/bnetworks-071/)
-and [temporal dependencies](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/dbnetworks-071/). AMIDST contains a  large list of predefined latent variable models: 
+* **Probabilistic Graphical Models**: Specify your model using probabilistic graphical models with [latent variables](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/bnetworks-072/)
+and [temporal dependencies](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/dbnetworks-072/). AMIDST contains a  large list of predefined latent variable models: 
 <!-- version -->
 
 
@@ -51,7 +51,7 @@ computer cluster using **Apache Flink** or (soon) **Apache Spark**.
 Flexible toolbox for researchers performing their experimentation in machine learning.
 
 * **Interoperability**: Leverage existing functionalities and algorithms by interfacing 
-to other software tools such as [Hugin](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/bnetworks-071/#sec:bns:huginlink), [MOA](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/bnetworks-071/#sec:bns:moalink), Weka, R, etc.
+to other software tools such as [Hugin](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/bnetworks-072/#sec:bns:huginlink), [MOA](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/bnetworks-072/#sec:bns:moalink), Weka, R, etc.
 <!-- version -->
 
 
@@ -122,7 +122,7 @@ in collaboration with one of our partners, DAIMLER.
 # Documentation<a name="documentation"></a>
 
 <!-- version -->
-* [Getting Started!](http://www.amidsttoolbox.com/documentation/0-7-1/first-steps-071/getting-started-071/) explains how to
+* [Getting Started!](http://www.amidsttoolbox.com/documentation/0-7-2/first-steps-072/getting-started-072/) explains how to
 install the AMIDST toolbox, how this toolbox makes use of Java 8 new functional style programming
 features, and why it is based on a module based architecture.
 
@@ -132,21 +132,21 @@ engines, etc.) of the AMIDST toolbox.
 
 <!-- version -->
 
-* [Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/bnetworks-071/) includes
+* [Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/bnetworks-072/) includes
 a list of source code examples explaining how to use some functionalities of the AMIDST toolbox.
 
 <!-- version -->
-* [Dynamic Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/dbnetworks-071/)
+* [Dynamic Bayesian networks: Code Examples](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/dbnetworks-072/)
 includes some source code examples of functionalities related to Dynamic Bayesian networks.
 
 <!-- version -->
 
-* [FlinkLink](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/flinklink-071/): Code Examples includes some 
+* [FlinkLink](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/flinklink-072/): Code Examples includes some 
 source code examples of functionalities related to the module that integrates Apache Flink with AMIDST.
 
 <!-- version -->
 
-* [SparkLink](http://www.amidsttoolbox.com/documentation/0-7-1/examples-071/sparklink-071/): some source code examples of 
+* [SparkLink](http://www.amidsttoolbox.com/documentation/0-7-2/examples-072/sparklink-072/): some source code examples of 
 functionalities related to the module that integrates Apache Spark with AMIDST.
 
 * [API JavaDoc](http://javadoc.amidsttoolbox.com/) of the AMIDST toolbox. 

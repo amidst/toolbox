@@ -5,13 +5,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.7.1</version> <!-- AmidstVersion -->
+        <version>0.7.2</version> <!-- AmidstVersion -->
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>module-all</artifactId>
     <groupId>eu.amidst</groupId>
-    <version>0.7.1</version> <!-- AmidstVersion -->
+    <version>0.7.2</version> <!-- AmidstVersion -->
 
 
 
@@ -77,57 +77,57 @@
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>core</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>examples</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>huginlink</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>flinklink</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>lda</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <groupId>eu.amidst</groupId>
             <artifactId>tutorials</artifactId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>latent-variable-models</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>moalink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>wekalink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
         <dependency>
             <artifactId>sparklink</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
     </dependencies>
 

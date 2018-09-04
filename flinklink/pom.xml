@@ -16,13 +16,13 @@
     <parent>
         <artifactId>AmidstToolbox</artifactId>
         <groupId>eu.amidst</groupId>
-        <version>0.7.1</version> <!-- AmidstVersion -->
+        <version>0.7.2</version> <!-- AmidstVersion -->
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>flinklink</artifactId>
     <groupId>eu.amidst</groupId>
-    <version>0.7.1</version> <!-- AmidstVersion -->
+    <version>0.7.2</version> <!-- AmidstVersion -->
 
 
 
@@ -38,13 +38,13 @@
         <dependency>
             <artifactId>core</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
             <artifactId>core-dynamic</artifactId>
             <groupId>eu.amidst</groupId>
-            <version>0.7.1</version> <!-- AmidstVersion -->
+            <version>0.7.2</version> <!-- AmidstVersion -->
         </dependency>
 
         <dependency>
