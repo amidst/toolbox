@@ -909,7 +909,7 @@
 <h3 id="sec:bns:moalink:moaclass">AMIDST Classifiers from MOA</h3>
 <p>The following command can be used to learn a Bayesian model with a latent Gaussian variable (HG) and a multinomial with 2 states (HM), as displayed in figure below. The VMP algorithm is used to learn the parameters of these two non-observed variables and make predictions over the class variable.</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/HODE.jpg" alt="HODE example" width="377" /><p class="caption" style="text-align:center">HODE example<span data-label="fig:bns:moalink:HODE"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/HODE.jpg" alt="HODE example" width="377" /><p class="caption" style="text-align:center">HODE example<span data-label="fig:bns:moalink:HODE"></span></p>
 </div>
 <pre><code>java -Xmx512m -cp &quot;../lib/*&quot; -javaagent:../lib/sizeofag-1.0.0.jar 
 moa.DoTask EvaluatePrequential -l \(bayes.AmidstClassifier -g 1 
@@ -918,7 +918,7 @@ moa.DoTask EvaluatePrequential -l \(bayes.AmidstClassifier -g 1
 <h3 id="sec:bns:moalink:moareg">AMIDST Classifiers from MOA</h3>
 <p>It is possible to learn an enriched naive Bayes model for regression if the class label is of a continuous nature. The following command uses the model in Figure [fig:bns:moalink:HODEreg] on a toy dataset from WEKA’s collection of <a href="http://prdownloads.sourceforge.net/weka/datasets-numeric.jar">regression problems</a>.</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/regressionHODE.jpg" alt="HODE regression example" width="377" /><p class="caption" style="text-align:center">HODE regression example<span data-label="fig:bns:moalink:HODEreg"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/regressionHODE.jpg" alt="HODE regression example" width="377" /><p class="caption" style="text-align:center">HODE regression example<span data-label="fig:bns:moalink:HODEreg"></span></p>
 </div>
 <pre><code>java -Xmx512m -cp &quot;../lib/*&quot; -javaagent:../lib/sizeofag-1.0.0.jar 
 moa.DoTask EvaluatePrequentialRegression -l bayes.AmidstRegressor

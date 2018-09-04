@@ -2,7 +2,7 @@
 #
 
 
-ver="0.7.1";
+ver="0.7.2";
 
 ./${ver}/scripts/generate
 

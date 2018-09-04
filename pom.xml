@@ -50,6 +50,7 @@
          <!-- github server corresponds to entry in ~/.m2/settings.xml -->
         <github.global.server>github</github.global.server>
         <additionalparam>-Xdoclint:none</additionalparam>
+        <doclint>none</doclint>
     </properties>
 
 

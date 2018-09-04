@@ -51,7 +51,7 @@ Scalability is a main concern for the AMIDST toolbox. Java 8 streams are used to
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=15cm]{img/multicore_res.png}
-	\caption{fig:multicoreres}
+%	\caption{fig:multicoreres}
 \end{figure}
 
 
@@ -63,7 +63,7 @@ If your data is really big and can not be stored in a single laptop, you can als
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=15cm]{img/cluster_res.png}
-		\caption{fig:clusterres}
+%		\caption{fig:clusterres}
 \end{figure}
 
 
@@ -79,7 +79,7 @@ Numerous tools for graphical models have been published during the last three de
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=15cm]{img/related_tools.png}
-		\caption{fig:relatedtools}
+%		\caption{fig:relatedtools}
 \end{figure}
 
 
@@ -96,18 +96,18 @@ On the other hand, most of these toolboxes only deal with discrete-multinomial v
 
 
 
-Hugin is a proprietary software which is considered to be one of the powerful tools for learning PGMs.  Even though efficient algorithms implemented in C++ are provided, it does not give any support for distributed processing and fails when learning from datasets  not fitting into the available memory. This can be seen in the image below where we compare the time required for learning two different PGMs using AMIDST and Hugin. Although the proprietary tool is more efficient, it cannot process datasets larger than 2GB approximately. As Hugin allows incremental learning, datasets of any size can be processed. The experiments were performed in a MacBook Pro with a 2.4 GHz Intel Core i5 and 8GB of memory.
+Hugin is a proprietary software which is considered to be one of the powerful tools for learning PGMs.  Even though efficient algorithms implemented in C++ are provided, it does not give any support for distributed processing. The advantage of AMIDST over Hugin is that our software does not fail when learning from datasets  not fitting into the available memory. This  can be seen in the image below where we compare the time required for learning two different models using AMIDST and Hugin. Although the proprietary tool is more efficient, it cannot process datasets larger than 2GB approximately. As AMIDST allows incremental learning, datasets of any size can be processed. 
 
 
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=15cm]{img/amidsthugin.png}
-	\caption{fig:amidsthugin.png}
+%	\caption{fig:amidsthugin.png}
 \end{figure}
 
 
-
+The experiments were run in a MacBook Pro with a 2.4 GHz Intel Core i5 and 8GB of memory. Each dataset is made of 10 continuous attributes. One of the models is a mixture of 3 Gaussian distribution of dimension 10. The second model is a factor analysis with 3 latent variables. 
 
 
 

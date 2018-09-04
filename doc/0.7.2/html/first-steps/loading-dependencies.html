@@ -3,7 +3,7 @@
 <p>In this example, we will use a project containing only one class, though the procedure here explain could be used in any other maven project. You can check this <a href="https://www.jetbrains.com/help/idea/2016.1/getting-started-with-maven.html">link</a> for getting more information about how to create a new mavenproject.</p>
 <p>For using the AMIDST Toolbox, the <strong>pom.xlm</strong> file will be modified. First, in the Project view (located on the left) select the file pom.xml of your project and open it:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst05.png" alt="Capture of Maven project in IntelliJ and the initial pom.xml file" width="321" /><p class="caption" style="text-align:center">Capture of Maven project in IntelliJ and the initial pom.xml file<span data-label="fig:remoteDeps_initialPom"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst05.png" alt="Capture of Maven project in IntelliJ and the initial pom.xml file" width="321" /><p class="caption" style="text-align:center">Capture of Maven project in IntelliJ and the initial pom.xml file<span data-label="fig:remoteDeps_initialPom"></span></p>
 </div>
 <p>Add the AMIDST repository by including the following code to your pom:</p>
 <pre><code>&lt;repositories&gt;
@@ -27,7 +27,7 @@
 &lt;dependency&gt;
 &lt;groupId&gt;eu.amidst&lt;/groupId&gt;
 &lt;artifactId&gt;core-dynamic&lt;/artifactId&gt;
-&lt;version&gt;0.7.1&lt;/version&gt;
+&lt;version&gt;0.7.2&lt;/version&gt;
 &lt;scope&gt;compile&lt;/scope&gt;
 &lt;/dependency&gt;
 
@@ -35,11 +35,11 @@
 &lt;/dependencies&gt;        </code></pre>
 <p>Note that for using another module, simply change the value of the element artifactId (i.e. the content between the tags &lt;artifactId&gt; and &lt;artifactId&gt;). Now you can check in the <strong>Maven Projects panel</strong> that all the dependencies have been loaded:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst07.png" alt="List of loaded dependencies" width="321" /><p class="caption" style="text-align:center">List of loaded dependencies<span data-label="fig:remoteDeps_mavenPanel"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst07.png" alt="List of loaded dependencies" width="321" /><p class="caption" style="text-align:center">List of loaded dependencies<span data-label="fig:remoteDeps_mavenPanel"></span></p>
 </div>
 <p>Note that the <em>core-dynamic module</em> depends on <span>core </span>that has been loaded as well. We recomend you to download the sources and the javadoc:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst08.png" alt="Download the JavaDoc and the source code" width="377" /><p class="caption" style="text-align:center">Download the JavaDoc and the source code<span data-label="fig:remoteDeps_downloadJD"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst08.png" alt="Download the JavaDoc and the source code" width="377" /><p class="caption" style="text-align:center">Download the JavaDoc and the source code<span data-label="fig:remoteDeps_downloadJD"></span></p>
 </div>
 <p>Finally, for testing purposes, we can run the code shown below that generates a random dynamic bayesian network (DBN) and prints its parameters.</p>
 <pre><code>import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -62,6 +62,6 @@ public class TestingAmidst {
 }</code></pre>
 <p>If everything goes right, the following output will be generated:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst09.png" alt="Ouput of the testing code that generates a random DBN" width="321" /><p class="caption" style="text-align:center">Ouput of the testing code that generates a random DBN<span data-label="fig:remoteDeps_output"></span></p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst09.png" alt="Ouput of the testing code that generates a random DBN" width="321" /><p class="caption" style="text-align:center">Ouput of the testing code that generates a random DBN<span data-label="fig:remoteDeps_output"></span></p>
 </div>
 

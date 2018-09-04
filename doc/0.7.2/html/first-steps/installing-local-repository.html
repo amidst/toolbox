@@ -34,7 +34,7 @@ core        examples    moalink     wekalink</code></pre>
 <p>Now we will see how can we use this local repository from a maven project (using IntelliJ IDEA). In this example, we will use a  project containing only one class, though the procedure here explain  could be used in any other maven project. You can check this <a href="https://www.jetbrains.com/help/idea/2016.1/getting-started-with-maven.html">link</a> for getting more information about how to create a new mavenproject.</p>
 <p>For using the AMIDST Toolbox, the <strong>pom.xlm</strong> file will be modified. First, in the Project view (located on the left) select the file pom.xml of your project and open it:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst05.png" alt="Initial view of an empty maven project in IntelliJ IDEA" width="453" /><p class="caption" style="text-align:center">Initial view of an empty maven project in IntelliJ IDEA</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst05.png" alt="Initial view of an empty maven project in IntelliJ IDEA" width="453" /><p class="caption" style="text-align:center">Initial view of an empty maven project in IntelliJ IDEA</p>
 </div>
 <p>In the file pom.xml, add the dependencies to the modules in AMIDST you want to use.  For each module, add an element <strong>&lt;dependency&gt;<strong>…&lt;/dependency&gt;</strong></strong> inside the labels <strong>&lt;dependencies&gt;&lt;/dependencies&gt;</strong>. For each one, we have to indicate the following information:</p>
 <ul>
@@ -49,7 +49,7 @@ core        examples    moalink     wekalink</code></pre>
 &lt;dependency&gt;
 &lt;groupId&gt;eu.amidst&lt;/groupId&gt;
 &lt;artifactId&gt;core-dynamic&lt;/artifactId&gt;
-&lt;version&gt;0.7.1&lt;/version&gt;
+&lt;version&gt;0.7.2&lt;/version&gt;
 &lt;scope&gt;compile&lt;/scope&gt;
 &lt;/dependency&gt;
 
@@ -57,11 +57,11 @@ core        examples    moalink     wekalink</code></pre>
 &lt;/dependencies&gt;        </code></pre>
 <p>Note that for using another module,  simply change the value of the element artifactId<span> </span>(i.e. the content between the tags &lt;artifactId&gt; and &lt;artifactId&gt;). Now you can check in the <strong>Maven Projects panel</strong> that all the dependencies have been loaded:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst07.png" alt="Loaded dependencies" width="453" /><p class="caption" style="text-align:center">Loaded dependencies</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst07.png" alt="Loaded dependencies" width="453" /><p class="caption" style="text-align:center">Loaded dependencies</p>
 </div>
 <p>Note that the <em>core-dynamic module</em> depends on <span>core </span>that has been loaded as well. We recomend you to download the sources and the javadoc as shown below.</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst08.png" alt="Downloading JavaDoc and source code" width="453" /><p class="caption" style="text-align:center">Downloading JavaDoc and source code</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst08.png" alt="Downloading JavaDoc and source code" width="453" /><p class="caption" style="text-align:center">Downloading JavaDoc and source code</p>
 </div>
 <p>Finally, for testing purposes, we can run the following code:</p>
 <pre><code>import eu.amidst.dynamic.models.DynamicBayesianNetwork;
@@ -84,6 +84,6 @@ public class TestingAmidst {
 }</code></pre>
 <p>If everything goes right, the following output will be generated:</p>
 <div class="figure" style="text-align:center">
-<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/04/use_amidst09.png" alt="Output generated when running the example code" width="453" /><p class="caption" style="text-align:center">Output generated when running the example code</p>
+<img src="http://www.amidsttoolbox.com/wp-content/uploads/2018/08/use_amidst09.png" alt="Output generated when running the example code" width="453" /><p class="caption" style="text-align:center">Output generated when running the example code</p>
 </div>
 
