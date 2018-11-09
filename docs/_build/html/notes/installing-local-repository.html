@@ -1,0 +1,531 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Installing a local AMIDST repository &mdash; InferPy 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/amidst_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generating the packages for each module and for its dependencies" href="generating-packages.html" />
+    <link rel="prev" title="Loading AMIDST dependencies from a remote maven repository" href="loading-dependencies.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo-doc.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about-amidst.html">About AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#what-is-amidst">What is AMIDST?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#scalability">Scalability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#multi-core-scalablity-using-java-8-streams">Multi-Core Scalablity using Java 8 Streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#distributed-scalablity-using-apache-flink">Distributed Scalablity using Apache Flink</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#related-software">Related Software</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sparklink.html">Sparklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#parameter-learning">Parameter learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wekalink.html">Wekalink: using an AMIDST classifier in Weka</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#prepare-your-project">Prepare your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#create-the-wrapper-class">Create the wrapper class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#testing-the-amidst-classifier-in-weka">Testing the AMIDST classifier in Weka</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="latent-variable-models.html">Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#setting-up">Setting up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#static-models">Static Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-and-saving-to-disk">Learning and saving to disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-from-flink">Learning from Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#inference">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-static-model">Custom static model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#dynamic-models">Dynamic Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#id1">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-dynamic-model">Custom dynamic model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flinklink.html">Flinklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#parametric-learning">Parametric learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-variational-message-passing">Distributed Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-vi">Distributed VI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#stochastic-vi">Stochastic VI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#extensions-and-applications">Extensions and applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#latent-variable-models-with-flink">Latent variable models with Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#concept-drift-detection">Concept drift detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbnetworks.html">Dynamic Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-random-variables">Dynamic Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-bayesian-networks">Dynamic Bayesian networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks">Creating Dynamic Bayesian networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks-with-latent-variables">Creating Dynamic Bayesian Networks with Latent Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#modifying-dynamic-bayesian-networks">Modifying Dynamic Bayesian Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#sampling-from-dynamic-bayesian-networks">Sampling from Dynamic Bayesian Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#inference-algorithms-for-dynamic-bayesian-networks">Inference Algorithms for Dynamic Bayesian Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-map-inference">The Dynamic MAP Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-variational-message-passing">The Dynamic Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-importance-sampling">The Dynamic Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-learning-algorithms">Dynamic Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#maximum-likelihood-for-dbns">Maximum Likelihood for DBNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#streaming-variational-bayes-for-dbns">Streaming Variational Bayes for DBNs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bnetworks.html">Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-randomvars">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bns">Creating BNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bayesian-networks-with-latent-variables">Creating Bayesian networks with latent variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#modifying-bayesian-networks">Modifying Bayesian networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#input-output">Input/Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-data-streams">I/O of data streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bns">I/O of BNs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#the-inference-engine">The inference engine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#variational-message-passing">Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#importance-sampling">Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#learning-algorithms">Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#maximum-likelihood">Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#streaming-variational-bayes">Streaming Variational Bayes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-streaming-variational-bayes">Parallel Streaming Variational Bayes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#concept-drift-methods">Concept Drift Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#naive-bayes-with-virtual-concept-drift-detection">Naive Bayes with Virtual Concept Drift Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#huginlink">HuginLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#models-conversion-between-amidst-and-hugin">Models conversion between AMiDST and Hugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bayesian-networks-with-hugin-net-format">I/O of Bayesian Networks with Hugin net format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-inference-engine">Invoking Hugin’s inference engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-parallel-tan">Invoking Hugin’s Parallel TAN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#moalink">MoaLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#amidst-classifiers-from-moa">AMIDST Classifiers from MOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#sec-bns-moalink-moareg">AMIDST Classifiers from MOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">First steps</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#getting-started-in-detail">Getting started in detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements for AMIDST Toolbox</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-toolbox-users">For toolbox users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-amidst-developers">For AMIDST developers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loading-dependencies.html">Loading AMIDST dependencies from a remote maven repository</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installing a local AMIDST repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating-packages.html">Generating the packages for each module and for its dependencies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contributing to AMIDST</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic-steps-contributing.html">Basic steps for contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#clone-the-repository">Clone the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#create-a-new-branch-from-develop">Create a new branch from develop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#modify-the-code-and-upload-your-changes">Modify the code and upload your changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#merge-the-new-branch-with-develop">Merge the new branch with develop</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="http://www.amidsttoolbox.com/documentation/0-7-2/other-072/javadoc/">JavaDoc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">InferPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Installing a local AMIDST repository</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notes/installing-local-repository.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="installing-a-local-amidst-repository">
+<h1>Installing a local AMIDST repository<a class="headerlink" href="#installing-a-local-amidst-repository" title="Permalink to this headline">¶</a></h1>
+<p>Here we explain how to install a local AMIDST repository and how to add
+them in a maven project with Java 8 or higher. Alternatively, you can
+follow this <a class="reference external" href="https://www.youtube.com/watch?v=WvPzJIvGACE">video
+tutorial</a>. In summary,
+we will download the source and use the appropriate maven commands for
+installing it.</p>
+<p>First, you can download the source code from the github repository using
+the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/amidst/toolbox.git
+</pre></div>
+</div>
+<p>Depending on your internet connection, the process may take several
+minutes. Once the it has finished, enter into the downloaded folder:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">$</span> <span class="n">cd</span> <span class="n">toolbox</span>
+</pre></div>
+</div>
+<p>Now, we should install the AMIDST artifact in our local Maven repository
+(this repository is automatically created when installing Maven). For
+that, type the following command:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">$</span> <span class="n">mvn</span> <span class="n">clean</span> <span class="n">install</span> <span class="o">-</span><span class="n">Dmaven</span><span class="o">.</span><span class="na">test</span><span class="o">.</span><span class="na">skip</span><span class="o">=</span><span class="kc">true</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">Note that you can avoid the argument <strong>-Dmaven.test.skip=true</strong>. In
+that case, the process will not skip the unitary tests and hence the
+installation process will take much longer (its default value is
+false). Once the process has finished, an output similar to the
+following one will be generated:</div>
+</div>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">Reactor</span> <span class="n">Summary</span><span class="o">:</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">AmidstToolbox</span> <span class="o">......................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">0.348</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">core</span> <span class="o">...............................................</span> <span class="n">SUCCESS</span> <span class="o">[</span> <span class="mf">12.300</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">core</span><span class="o">-</span><span class="n">dynamic</span> <span class="o">.......................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">5.352</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">huginlink</span> <span class="o">..........................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">3.255</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">standardmodels</span> <span class="o">.....................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">3.128</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">examples</span> <span class="o">...........................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">4.530</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">moalink</span> <span class="o">............................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">3.944</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">wekalink</span> <span class="o">...........................................</span> <span class="n">SUCCESS</span> <span class="o">[</span>  <span class="mf">2.388</span> <span class="n">s</span><span class="o">]</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="o">------------------------------------------------------------------------</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">BUILD</span> <span class="n">SUCCESS</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="o">------------------------------------------------------------------------</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">Total</span> <span class="n">time</span><span class="o">:</span> <span class="mf">35.681</span> <span class="n">s</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">Finished</span> <span class="n">at</span><span class="o">:</span> <span class="mi">2016</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mi">10</span><span class="n">T15</span><span class="o">:</span><span class="mi">58</span><span class="o">:</span><span class="mi">14</span><span class="o">+</span><span class="mo">02</span><span class="o">:</span><span class="mo">00</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="n">Final</span> <span class="n">Memory</span><span class="o">:</span> <span class="mi">63</span><span class="n">M</span><span class="o">/</span><span class="mi">539</span><span class="n">M</span>
+<span class="o">[</span><span class="n">INFO</span><span class="o">]</span> <span class="o">------------------------------------------------------------------------</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line">Now we can check that the libraries has been placed into the local
+maven repository, which is usually placed in <strong>~/.m2/repository/</strong>.
+Thus, type the following command:</div>
+</div>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">$</span> <span class="n">ls</span> <span class="o">~/.</span><span class="na">m2</span><span class="o">/</span><span class="n">repository</span><span class="o">/</span><span class="n">eu</span><span class="o">/</span><span class="n">amidst</span><span class="o">/</span>
+</pre></div>
+</div>
+<p>And you will find a folder for each module:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">AmidstToolbox</span>    <span class="n">core</span><span class="o">-</span><span class="n">dynamic</span>    <span class="n">huginlink</span>   <span class="n">standardmodels</span>
+<span class="n">core</span>        <span class="n">examples</span>    <span class="n">moalink</span>     <span class="n">wekalink</span>
+</pre></div>
+</div>
+<p>Now we will see how can we use this local repository from a maven
+project (using IntelliJ IDEA). In this example, we will use a&nbsp; project
+containing only one class, though the procedure here explain&nbsp; could be
+used in any other maven project. You can check this
+<a class="reference external" href="https://www.jetbrains.com/help/idea/2016.1/getting-started-with-maven.html">link</a>
+for getting more information about how to create a new mavenproject.</p>
+<p>For using the AMIDST Toolbox, the <strong>pom.xlm</strong> file will be modified.
+First, in the Project view (located on the left) select the file pom.xml
+of your project and open it:</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/use_amidst05.png"><img alt="Initial view of an empty maven project in IntelliJ IDEA" src="../_images/use_amidst05.png" style="width: 12cm;" /></a>
+<p class="caption"><span class="caption-text">Initial view of an empty maven project in IntelliJ IDEA</span></p>
+</div>
+<p>In the file pom.xml, add the dependencies to the modules in AMIDST you
+want to use.&nbsp; For each module, add an element
+<strong>&lt;dependency&gt;…&lt;/dependency&gt;</strong> inside the labels
+<strong>&lt;dependencies&gt;&lt;/dependencies&gt;</strong>. For each one, we have to indicate the
+following information:</p>
+<ul class="simple">
+<li>groupId is an identifier of the project’s module. In this case it
+should containt the value <em>“eu.amidst”.</em></li>
+<li>artifactIdis the name of the module we want to use. More precisely,
+it is the name of the jar file containing such module. You can see
+the list of AMIDST modules
+<a class="reference external" href="https://github.com/amidst/toolbox/tree/mvn-repo/eu/amidst">here</a>.</li>
+<li><strong>version</strong> is the identifier of&nbsp; AMIDST Toolbox release. You can see
+<a class="reference external" href="mohttps://github.com/amidst/toolbox/blob/master/CHANGELOG.mddules%20here">here</a>
+the list of all versions available.</li>
+<li><strong>scope</strong>&nbsp; allows you to only include dependencies appropriate for
+the current stage of the build. We will set this to <em>“compile”.</em></li>
+</ul>
+<p>For example, for using the core-dynamicmodule, include the following
+code:</p>
+<pre class="literal-block">
+&lt;dependencies&gt;
+&lt;!-- Load any of the modules from AMIDST Toolbox --&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;eu.amidst&lt;/groupId&gt;
+&lt;artifactId&gt;core-dynamic&lt;/artifactId&gt;
+&lt;version&gt; 0.7.2 &lt;/version&gt;
+&lt;scope&gt;compile&lt;/scope&gt;
+&lt;/dependency&gt;
+
+&lt;!-- ... --&gt;
+&lt;/dependencies&gt;
+</pre>
+<p>Note that for using another module,&nbsp; simply change the value of the
+element artifactId(i.e. the content between the tags &lt;artifactId&gt; and
+&lt;artifactId&gt;). Now you can check in the <strong>Maven Projects panel</strong> that
+all the dependencies have been loaded:</p>
+<div class="figure align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/use_amidst07.png"><img alt="Loaded dependencies" src="../_images/use_amidst07.png" style="width: 12cm;" /></a>
+<p class="caption"><span class="caption-text">Loaded dependencies</span></p>
+</div>
+<p>Note that the <em>core-dynamic module</em> depends on corethat has been loaded
+as well. We recomend you to download the sources and the javadoc as
+shown below.</p>
+<div class="figure align-center" id="id3">
+<a class="reference internal image-reference" href="../_images/use_amidst08.png"><img alt="Downloading JavaDoc and source code" src="../_images/use_amidst08.png" style="width: 12cm;" /></a>
+<p class="caption"><span class="caption-text">Downloading JavaDoc and source code</span></p>
+</div>
+<p>Finally, for testing purposes, we can run the following code:</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestingAmidst</span> <span class="o">{</span>
+ <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">WrongConfigurationException</span> <span class="o">{</span>
+  <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+  <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+  <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+
+  <span class="n">DynamicBayesianNetwork</span> <span class="n">extendedDBN</span> <span class="o">=</span>
+  <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicBayesianNetwork</span><span class="o">();</span>
+
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+ <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>If everything goes right, the following output will be generated:</p>
+<div class="figure align-center" id="id4">
+<a class="reference internal image-reference" href="../_images/use_amidst09.png"><img alt="Output generated when running the example code" src="../_images/use_amidst09.png" style="width: 12cm;" /></a>
+<p class="caption"><span class="caption-text">Output generated when running the example code</span></p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="generating-packages.html" class="btn btn-neutral float-right" title="Generating the packages for each module and for its dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="loading-dependencies.html" class="btn btn-neutral" title="Loading AMIDST dependencies from a remote maven repository" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Andrés R. Masegosa, Rafael Cabañas
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

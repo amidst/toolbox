@@ -1,0 +1,1021 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Flinklink: Code Examples &mdash; InferPy 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/amidst_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dynamic Bayesian Networks: Code Examples" href="dbnetworks.html" />
+    <link rel="prev" title="Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST" href="latent-variable-models.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo-doc.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about-amidst.html">About AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#what-is-amidst">What is AMIDST?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#scalability">Scalability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#multi-core-scalablity-using-java-8-streams">Multi-Core Scalablity using Java 8 Streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#distributed-scalablity-using-apache-flink">Distributed Scalablity using Apache Flink</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#related-software">Related Software</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sparklink.html">Sparklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#parameter-learning">Parameter learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wekalink.html">Wekalink: using an AMIDST classifier in Weka</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#prepare-your-project">Prepare your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#create-the-wrapper-class">Create the wrapper class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#testing-the-amidst-classifier-in-weka">Testing the AMIDST classifier in Weka</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="latent-variable-models.html">Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#setting-up">Setting up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#static-models">Static Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-and-saving-to-disk">Learning and saving to disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-from-flink">Learning from Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#inference">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-static-model">Custom static model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#dynamic-models">Dynamic Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#id1">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-dynamic-model">Custom dynamic model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Flinklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#parametric-learning">Parametric learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distributed-variational-message-passing">Distributed Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#distributed-vi">Distributed VI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stochastic-vi">Stochastic VI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extensions-and-applications">Extensions and applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#latent-variable-models-with-flink">Latent variable models with Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#concept-drift-detection">Concept drift detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbnetworks.html">Dynamic Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-random-variables">Dynamic Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-bayesian-networks">Dynamic Bayesian networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks">Creating Dynamic Bayesian networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks-with-latent-variables">Creating Dynamic Bayesian Networks with Latent Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#modifying-dynamic-bayesian-networks">Modifying Dynamic Bayesian Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#sampling-from-dynamic-bayesian-networks">Sampling from Dynamic Bayesian Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#inference-algorithms-for-dynamic-bayesian-networks">Inference Algorithms for Dynamic Bayesian Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-map-inference">The Dynamic MAP Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-variational-message-passing">The Dynamic Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-importance-sampling">The Dynamic Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-learning-algorithms">Dynamic Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#maximum-likelihood-for-dbns">Maximum Likelihood for DBNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#streaming-variational-bayes-for-dbns">Streaming Variational Bayes for DBNs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bnetworks.html">Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-randomvars">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bns">Creating BNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bayesian-networks-with-latent-variables">Creating Bayesian networks with latent variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#modifying-bayesian-networks">Modifying Bayesian networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#input-output">Input/Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-data-streams">I/O of data streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bns">I/O of BNs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#the-inference-engine">The inference engine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#variational-message-passing">Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#importance-sampling">Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#learning-algorithms">Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#maximum-likelihood">Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#streaming-variational-bayes">Streaming Variational Bayes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-streaming-variational-bayes">Parallel Streaming Variational Bayes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#concept-drift-methods">Concept Drift Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#naive-bayes-with-virtual-concept-drift-detection">Naive Bayes with Virtual Concept Drift Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#huginlink">HuginLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#models-conversion-between-amidst-and-hugin">Models conversion between AMiDST and Hugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bayesian-networks-with-hugin-net-format">I/O of Bayesian Networks with Hugin net format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-inference-engine">Invoking Hugin’s inference engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-parallel-tan">Invoking Hugin’s Parallel TAN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#moalink">MoaLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#amidst-classifiers-from-moa">AMIDST Classifiers from MOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#sec-bns-moalink-moareg">AMIDST Classifiers from MOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#getting-started-in-detail">Getting started in detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements for AMIDST Toolbox</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-toolbox-users">For toolbox users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-amidst-developers">For AMIDST developers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loading-dependencies.html">Loading AMIDST dependencies from a remote maven repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing-local-repository.html">Installing a local AMIDST repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating-packages.html">Generating the packages for each module and for its dependencies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contributing to AMIDST</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic-steps-contributing.html">Basic steps for contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#clone-the-repository">Clone the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#create-a-new-branch-from-develop">Create a new branch from develop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#modify-the-code-and-upload-your-changes">Modify the code and upload your changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#merge-the-new-branch-with-develop">Merge the new branch with develop</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="http://www.amidsttoolbox.com/documentation/0-7-2/other-072/javadoc/">JavaDoc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">InferPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Flinklink: Code Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notes/flinklink.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="flinklink-code-examples">
+<span id="sec-flinklink"></span><h1>Flinklink: Code Examples<a class="headerlink" href="#flinklink-code-examples" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first"><a class="reference internal" href="#input-output">Input/output</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#reading-data">Reading data</a></li>
+<li><a class="reference internal" href="#write-data">Write data</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#parametric-learning">Parametric Learning</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li><a class="reference internal" href="#distributed-variational-message-pasing">Distributed Variational Message Pasing</a></li>
+<li><a class="reference internal" href="#distributed-vi">Distributed VI</a></li>
+<li><a class="reference internal" href="#stochastic-vi">Stochastic VI</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#extensions-and-applications">Extensions and applications</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#latent-variable-models-with-flink">Latent variable models with Flink</a></li>
+<li><a class="reference internal" href="#concept-drift">Concept drift</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="input-output">
+<span id="id1"></span><h2>Input/output<a class="headerlink" href="#input-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="reading-data">
+<span id="sec-flinklink-io-read"></span><span id="id2"></span><h3>Reading data<a class="headerlink" href="#reading-data" title="Permalink to this headline">¶</a></h3>
+<p>In this example we show how can we read a dataset using Flink. Note that
+the process is the same regardless being a single or a distributed file.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.io</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.io.DataFlinkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 10/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataStreamLoaderExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">//Paths to datasets</span>
+        <span class="n">String</span> <span class="n">simpleFile</span> <span class="o">=</span> <span class="s">&quot;datasets/simulated/syntheticData.arff&quot;</span><span class="o">;</span>
+        <span class="n">String</span> <span class="n">distriFile</span> <span class="o">=</span> <span class="s">&quot;datasets/simulated/distributed.arff&quot;</span><span class="o">;</span>
+
+        <span class="c1">//Load the data</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataSimple</span> <span class="o">=</span> <span class="n">DataFlinkLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">env</span><span class="o">,</span> <span class="n">simpleFile</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataDistri</span> <span class="o">=</span> <span class="n">DataFlinkLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="n">distriFile</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+
+        <span class="c1">//Print the number of data samples</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dataSimple</span><span class="o">.</span><span class="na">getDataSet</span><span class="o">().</span><span class="na">count</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dataDistri</span><span class="o">.</span><span class="na">getDataSet</span><span class="o">().</span><span class="na">count</span><span class="o">());</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="writing-data">
+<span id="write-data"></span><span id="sec-flinklink-io-write"></span><h3>Writing data<a class="headerlink" href="#writing-data" title="Permalink to this headline">¶</a></h3>
+<p>Below we generate a random Flink dataset with 1000 instances, 2 discrete
+variables and 3 continuous ones. The seed used is 1234. Eventually, we
+save it as a distributed dataset (format ARFF folder).</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.io</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.io.DataFlinkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.utils.DataSetGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 09/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataStreamWriterExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="c1">//generate a random dataset</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataFlink</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSetGenerator</span><span class="o">().</span><span class="na">generate</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="mi">1234</span><span class="o">,</span><span class="mi">1000</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">);</span>
+
+        <span class="c1">//Saves it as a distributed arff file</span>
+        <span class="n">DataFlinkWriter</span><span class="o">.</span><span class="na">writeDataToARFFFolder</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">,</span> <span class="s">&quot;datasets/simulated/distributed.arff&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+
+<span class="c1">//TODO: Write to standard arff --&gt; convert to datastream??</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="parametric-learning">
+<span id="sec-flinklink-learning"></span><h2>Parametric learning<a class="headerlink" href="#parametric-learning" title="Permalink to this headline">¶</a></h2>
+<p>Here give examples of the provided algorithms by AMiDST for learning the
+probability distributions from a Flink data set. For shake of
+simplicity, we will consider the Naive Bayes DAG structure. Note that
+the code is almost the same of each of the algoritms, they only differ
+on the constructor used (e.g. <em>new ParallelMaximumLikelihood()</em>, <em>new
+dVMP()</em>, etc.)</p>
+<div class="section" id="parallel-maximum-likelihood">
+<span id="sec-flinklink-learning-pml"></span><span id="id3"></span><h3>Parallel Maximum Likelihood<a class="headerlink" href="#parallel-maximum-likelihood" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.ParallelMaximumLikelihood</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.utils.DataSetGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 14/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ParallelMLExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+
+
+        <span class="c1">//generate a random dataset</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataFlink</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSetGenerator</span><span class="o">().</span><span class="na">generate</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="mi">1234</span><span class="o">,</span><span class="mi">1000</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Creates a DAG with the NaiveBayes structure for the random dataset</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getNaiveBayesStructure</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span> <span class="s">&quot;DiscreteVar4&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="c1">//Create the  Learner object</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">learningAlgorithmFlink</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="n">ParallelMaximumLikelihood</span><span class="o">();</span>
+
+        <span class="c1">//Learning parameters</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setBatchSize</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+
+        <span class="c1">//Initialize the learning process</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="c1">//Learn from the flink data</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">);</span>
+
+        <span class="c1">//Print the learnt BN</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="distributed-variational-message-passing">
+<span id="distributed-variational-message-pasing"></span><span id="sec-flinklink-learning-dvmp"></span><h3>Distributed Variational Message Passing<a class="headerlink" href="#distributed-variational-message-passing" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.dVMP</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.utils.DataSetGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 14/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">dVMPExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">//generate a random dataset</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataFlink</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSetGenerator</span><span class="o">().</span><span class="na">generate</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="mi">1234</span><span class="o">,</span><span class="mi">1000</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Creates a DAG with the NaiveBayes structure for the random dataset</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getNaiveBayesStructure</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span> <span class="s">&quot;DiscreteVar4&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="c1">//Create the  Learner object</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">learningAlgorithmFlink</span> <span class="o">=</span>
+                 <span class="k">new</span> <span class="n">dVMP</span><span class="o">();</span>
+
+        <span class="c1">//Learning parameters</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setBatchSize</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+
+        <span class="c1">//Initialize the learning process</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="c1">//Learn from the flink data</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">);</span>
+
+        <span class="c1">//Print the learnt BN</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="distributed-vi">
+<span id="sec-flinklink-learning-dvi"></span><span id="id4"></span><h3>Distributed VI<a class="headerlink" href="#distributed-vi" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.DistributedVI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.utils.DataSetGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 14/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DistributedVIExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">//generate a random dataset</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataFlink</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSetGenerator</span><span class="o">().</span><span class="na">generate</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="mi">1234</span><span class="o">,</span><span class="mi">1000</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Creates a DAG with the NaiveBayes structure for the random dataset</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getNaiveBayesStructure</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span> <span class="s">&quot;DiscreteVar4&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="c1">//Create the  Learner object</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">learningAlgorithmFlink</span> <span class="o">=</span>
+                 <span class="k">new</span> <span class="n">DistributedVI</span><span class="o">();</span>
+
+        <span class="c1">//Learning parameters</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setBatchSize</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+
+        <span class="c1">//Initialize the learning process</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="c1">//Learn from the flink data</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">);</span>
+
+        <span class="c1">//Print the learnt BN</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stochastic-vi">
+<span id="sec-flinklink-learning-svi"></span><span id="id5"></span><h3>Stochastic VI<a class="headerlink" href="#stochastic-vi" title="Permalink to this headline">¶</a></h3>
+<p>An example of the learning algorithm Stochastic VI is given below. Note
+that two specific parameters must be set, namely the <em>learning factor</em>
+and the <em>data size</em>.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.learning.parametric.StochasticVI</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.utils.DataSetGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 14/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">StochasticVIExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">//generate a random dataset</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataFlink</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataSetGenerator</span><span class="o">().</span><span class="na">generate</span><span class="o">(</span><span class="n">env</span><span class="o">,</span><span class="mi">1234</span><span class="o">,</span><span class="mi">1000</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Creates a DAG with the NaiveBayes structure for the random dataset</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getNaiveBayesStructure</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span> <span class="s">&quot;DiscreteVar4&quot;</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="c1">//Create the  Learner object</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">learningAlgorithmFlink</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="n">StochasticVI</span><span class="o">();</span>
+
+        <span class="c1">//Learning parameters</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setBatchSize</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+
+        <span class="c1">//Initialize the learning process</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="c1">//Learn from the flink data</span>
+        <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">dataFlink</span><span class="o">);</span>
+
+        <span class="c1">//Specific parameters for the algorithm</span>
+        <span class="o">((</span><span class="n">StochasticVI</span><span class="o">)</span><span class="n">learningAlgorithmFlink</span><span class="o">).</span><span class="na">setLearningFactor</span><span class="o">(</span><span class="mf">0.7</span><span class="o">);</span>
+        <span class="o">((</span><span class="n">StochasticVI</span><span class="o">)</span><span class="n">learningAlgorithmFlink</span><span class="o">).</span><span class="na">setDataSetSize</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">dataFlink</span><span class="o">.</span><span class="na">getDataSet</span><span class="o">().</span><span class="na">count</span><span class="o">());</span>
+
+
+        <span class="c1">//Print the learnt BN</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">learningAlgorithmFlink</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="extensions-and-applications">
+<span id="sec-flinklink-ext"></span><span id="id6"></span><h2>Extensions and applications<a class="headerlink" href="#extensions-and-applications" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="sec-flinklink-ext-models"></span><div class="section" id="latent-variable-models-with-flink">
+<h3>Latent variable models with Flink<a class="headerlink" href="#latent-variable-models-with-flink" title="Permalink to this headline">¶</a></h3>
+<p>The module <em>latent-variable-models</em> contains a large set of classes that
+allow to easily learn some of the standard models with latent variables.
+These models can be learnt from not only from local datasets (e.g. a
+single ARFF file) but also from distributed ones (e.g. ARFF folder).
+These last ones are managed using Flink. In code example shown below the
+model <em>Factor Analysis</em> is learnt from a distributed dataset.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.extensions</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.io.DataFlinkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.latentvariablemodels.staticmodels.FactorAnalysis</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.latentvariablemodels.staticmodels.Model</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.FileNotFoundException</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 14/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LatentModelsFlink</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">FileNotFoundException</span> <span class="o">{</span>
+        <span class="kt">boolean</span> <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span><span class="o">.</span><span class="na">length</span><span class="o">&gt;</span><span class="mi">1</span><span class="o">){</span>
+            <span class="n">hadoop_cluster</span> <span class="o">=</span> <span class="n">Boolean</span><span class="o">.</span><span class="na">parseBoolean</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span><span class="o">;</span>
+
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">hadoop_cluster</span><span class="o">){</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">getExecutionEnvironment</span><span class="o">();</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+            <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+            <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.numberOfTaskSlots&quot;</span><span class="o">,</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+            <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="c1">//Load the datastream</span>
+        <span class="n">String</span> <span class="n">filename</span> <span class="o">=</span> <span class="s">&quot;datasets/simulated/exampleDS_d0_c5.arff&quot;</span><span class="o">;</span>
+        <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataFlinkLoader</span><span class="o">.</span><span class="na">loadDataFromFile</span><span class="o">(</span><span class="n">env</span><span class="o">,</span> <span class="n">filename</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+
+        <span class="c1">//Learn the model</span>
+        <span class="n">Model</span> <span class="n">model</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FactorAnalysis</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+        <span class="o">((</span><span class="n">FactorAnalysis</span><span class="o">)</span><span class="n">model</span><span class="o">).</span><span class="na">setNumberOfLatentVariables</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="na">getModel</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="concept-drift-detection">
+<span id="concept-drift"></span><span id="sec-flinklink-ext-conceptdrift"></span><h3>Concept drift detection<a class="headerlink" href="#concept-drift-detection" title="Permalink to this headline">¶</a></h3>
+<p>A salient aspect of streaming data is that the domain being modeled is
+often <em>non-stationary</em>. That is, the distribution governing the data
+changes over time. This situation is known as <em>concept drift</em> and if not
+carefully taken into account, the result can be a failure to capture and
+interpret intrinsic properties of the data during data exploration. The
+AMIDST toolbox can be used for detecting this situation as shown in the
+example below.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.flinklink.examples.reviewMeeting2015</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.Main</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.conceptdrift.IDAConceptDriftDetector</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.data.DataFlink</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.flinklink.core.io.DataFlinkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.api.java.ExecutionEnvironment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.flink.configuration.Configuration</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 18/01/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConceptDriftDetector</span> <span class="o">{</span>
+
+    <span class="c1">//public int NSETS = 15;</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">learnIDAConceptDriftDetector</span><span class="o">(</span><span class="kt">int</span> <span class="n">NSETS</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="c1">//Set-up Flink session.</span>
+        <span class="n">Configuration</span> <span class="n">conf</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Configuration</span><span class="o">();</span>
+        <span class="n">conf</span><span class="o">.</span><span class="na">setInteger</span><span class="o">(</span><span class="s">&quot;taskmanager.network.numberOfBuffers&quot;</span><span class="o">,</span> <span class="mi">12000</span><span class="o">);</span>
+        <span class="kd">final</span> <span class="n">ExecutionEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">ExecutionEnvironment</span><span class="o">.</span><span class="na">createLocalEnvironment</span><span class="o">(</span><span class="n">conf</span><span class="o">);</span>
+        <span class="n">env</span><span class="o">.</span><span class="na">getConfig</span><span class="o">().</span><span class="na">disableSysoutLogging</span><span class="o">();</span>
+        <span class="n">env</span><span class="o">.</span><span class="na">setParallelism</span><span class="o">(</span><span class="n">Main</span><span class="o">.</span><span class="na">PARALLELISM</span><span class="o">);</span>
+
+      <span class="c1">//  DataFlink&lt;DataInstance&gt; data0 = DataFlinkLoader.loadDataFromFolder(env,</span>
+      <span class="c1">//          &quot;hdfs:///tmp_conceptdrift_data0.arff&quot;, false);</span>
+
+          <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data0</span> <span class="o">=</span> <span class="n">DataFlinkLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">env</span><span class="o">,</span>
+                  <span class="s">&quot;./datasets/simulated/tmp_conceptdrift_data0.arff&quot;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+
+        <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">();</span>
+        <span class="n">IDAConceptDriftDetector</span> <span class="n">learn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IDAConceptDriftDetector</span><span class="o">();</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setBatchSize</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setClassIndex</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setAttributes</span><span class="o">(</span><span class="n">data0</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setNumberOfGlobalVars</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setTransitionVariance</span><span class="o">(</span><span class="mf">0.1</span><span class="o">);</span>
+        <span class="n">learn</span><span class="o">.</span><span class="na">setSeed</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="n">learn</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">learn</span><span class="o">.</span><span class="na">getGlobalDAG</span><span class="o">().</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="kt">double</span><span class="o">[]</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">double</span><span class="o">[</span><span class="n">NSETS</span><span class="o">];</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;--------------- LEARNING DATA &quot;</span> <span class="o">+</span> <span class="mi">0</span> <span class="o">+</span> <span class="s">&quot; --------------------------&quot;</span><span class="o">);</span>
+        <span class="kt">double</span><span class="o">[]</span> <span class="n">out</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="na">updateModelWithNewTimeSlice</span><span class="o">(</span><span class="n">data0</span><span class="o">);</span>
+        <span class="c1">//System.out.println(learn.getLearntDynamicBayesianNetwork());</span>
+        <span class="n">output</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">out</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NSETS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;--------------- LEARNING DATA &quot;</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&quot; --------------------------&quot;</span><span class="o">);</span>
+            <span class="n">DataFlink</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataNew</span> <span class="o">=</span> <span class="n">DataFlinkLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="n">env</span><span class="o">,</span>
+                    <span class="s">&quot;./datasets/simulated/tmp_conceptdrift_data&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;.arff&quot;</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">learn</span><span class="o">.</span><span class="na">updateModelWithNewTimeSlice</span><span class="o">(</span><span class="n">dataNew</span><span class="o">);</span>
+            <span class="c1">//System.out.println(learn.getLearntDynamicBayesianNetwork());</span>
+            <span class="n">output</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">out</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+
+        <span class="o">}</span>
+        <span class="kt">long</span> <span class="n">duration</span> <span class="o">=</span> <span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">nanoTime</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">)</span> <span class="o">/</span> <span class="mi">1</span><span class="o">;</span>
+        <span class="kt">double</span> <span class="n">seconds</span> <span class="o">=</span> <span class="n">duration</span> <span class="o">/</span> <span class="mf">1000000000.0</span><span class="o">;</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Running time&quot;</span> <span class="o">+</span> <span class="n">seconds</span> <span class="o">+</span> <span class="s">&quot; seconds&quot;</span><span class="o">);</span>
+
+        <span class="c1">//System.out.println(learn.getLearntDynamicBayesianNetwork());</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">NSETS</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;E(H_&quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s">&quot;) =\t&quot;</span> <span class="o">+</span> <span class="n">output</span><span class="o">[</span><span class="n">i</span><span class="o">]);</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="kt">int</span> <span class="n">NSETS</span> <span class="o">=</span> <span class="n">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">args</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+
+        <span class="n">learnIDAConceptDriftDetector</span><span class="o">(</span><span class="n">NSETS</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="dbnetworks.html" class="btn btn-neutral float-right" title="Dynamic Bayesian Networks: Code Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="latent-variable-models.html" class="btn btn-neutral" title="Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Andrés R. Masegosa, Rafael Cabañas
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

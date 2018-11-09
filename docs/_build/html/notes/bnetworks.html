@@ -1,0 +1,1802 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Bayesian Networks: Code Examples &mdash; InferPy 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/amidst_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Getting Started!" href="getting-started.html" />
+    <link rel="prev" title="Dynamic Bayesian Networks: Code Examples" href="dbnetworks.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo-doc.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about-amidst.html">About AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#what-is-amidst">What is AMIDST?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#scalability">Scalability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#multi-core-scalablity-using-java-8-streams">Multi-Core Scalablity using Java 8 Streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#distributed-scalablity-using-apache-flink">Distributed Scalablity using Apache Flink</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#related-software">Related Software</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sparklink.html">Sparklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#parameter-learning">Parameter learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wekalink.html">Wekalink: using an AMIDST classifier in Weka</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#prepare-your-project">Prepare your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#create-the-wrapper-class">Create the wrapper class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#testing-the-amidst-classifier-in-weka">Testing the AMIDST classifier in Weka</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="latent-variable-models.html">Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#setting-up">Setting up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#static-models">Static Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-and-saving-to-disk">Learning and saving to disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-from-flink">Learning from Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#inference">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-static-model">Custom static model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#dynamic-models">Dynamic Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#id1">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-dynamic-model">Custom dynamic model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flinklink.html">Flinklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#parametric-learning">Parametric learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-variational-message-passing">Distributed Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-vi">Distributed VI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#stochastic-vi">Stochastic VI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#extensions-and-applications">Extensions and applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#latent-variable-models-with-flink">Latent variable models with Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#concept-drift-detection">Concept drift detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dbnetworks.html">Dynamic Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-random-variables">Dynamic Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-bayesian-networks">Dynamic Bayesian networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks">Creating Dynamic Bayesian networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#creating-dynamic-bayesian-networks-with-latent-variables">Creating Dynamic Bayesian Networks with Latent Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#modifying-dynamic-bayesian-networks">Modifying Dynamic Bayesian Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#sampling-from-dynamic-bayesian-networks">Sampling from Dynamic Bayesian Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#inference-algorithms-for-dynamic-bayesian-networks">Inference Algorithms for Dynamic Bayesian Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-map-inference">The Dynamic MAP Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-variational-message-passing">The Dynamic Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#the-dynamic-importance-sampling">The Dynamic Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="dbnetworks.html#dynamic-learning-algorithms">Dynamic Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#maximum-likelihood-for-dbns">Maximum Likelihood for DBNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dbnetworks.html#streaming-variational-bayes-for-dbns">Streaming Variational Bayes for DBNs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sec-bns-randomvars">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-bns">Creating BNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-bayesian-networks-with-latent-variables">Creating Bayesian networks with latent variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-bayesian-networks">Modifying Bayesian networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#input-output">Input/Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-of-data-streams">I/O of data streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-of-bns">I/O of BNs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-inference-engine">The inference engine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sec-bns-inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#variational-message-passing">Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importance-sampling">Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#learning-algorithms">Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#maximum-likelihood">Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#streaming-variational-bayes">Streaming Variational Bayes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parallel-streaming-variational-bayes">Parallel Streaming Variational Bayes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#concept-drift-methods">Concept Drift Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#naive-bayes-with-virtual-concept-drift-detection">Naive Bayes with Virtual Concept Drift Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#huginlink">HuginLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#models-conversion-between-amidst-and-hugin">Models conversion between AMiDST and Hugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-of-bayesian-networks-with-hugin-net-format">I/O of Bayesian Networks with Hugin net format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#invoking-hugins-inference-engine">Invoking Hugin’s inference engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#invoking-hugins-parallel-tan">Invoking Hugin’s Parallel TAN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#moalink">MoaLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#amidst-classifiers-from-moa">AMIDST Classifiers from MOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sec-bns-moalink-moareg">AMIDST Classifiers from MOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#getting-started-in-detail">Getting started in detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements for AMIDST Toolbox</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-toolbox-users">For toolbox users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-amidst-developers">For AMIDST developers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loading-dependencies.html">Loading AMIDST dependencies from a remote maven repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing-local-repository.html">Installing a local AMIDST repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating-packages.html">Generating the packages for each module and for its dependencies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contributing to AMIDST</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic-steps-contributing.html">Basic steps for contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#clone-the-repository">Clone the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#create-a-new-branch-from-develop">Create a new branch from develop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#modify-the-code-and-upload-your-changes">Modify the code and upload your changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#merge-the-new-branch-with-develop">Merge the new branch with develop</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="http://www.amidsttoolbox.com/documentation/0-7-2/other-072/javadoc/">JavaDoc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">InferPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Bayesian Networks: Code Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notes/bnetworks.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="bayesian-networks-code-examples">
+<span id="sec-bns"></span><h1>Bayesian Networks: Code Examples<a class="headerlink" href="#bayesian-networks-code-examples" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first"><a class="reference internal" href="#data-streams">Data Streams</a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#models">Models</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#creating-bns">Creating BNs</a></li>
+<li><a class="reference internal" href="#creating-bayesian-networks-with-latent-variables">Creating Bayesian networks with latent variables</a></li>
+<li><a class="reference internal" href="#modifying-bayesian-networks">Modifying Bayesian Networks</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#input-output">Input/Output</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#i-o-of-data-streams">I/O of data streams</a></li>
+<li><a class="reference internal" href="#i-o-of-bns">I/O of BNs</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#inference">Inference</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#the-inference-engine">The inference engine</a></li>
+<li><a class="reference internal" href="#variational-message-passing">Variational Message Passing</a></li>
+<li><a class="reference internal" href="#importance-sampling">Importance Sampling</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#learning-algorithms">Learning Algorithms</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#maximum-likelihood">Maximum Likelihood</a></li>
+<li><a class="reference internal" href="#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li><a class="reference internal" href="#streaming-variational-bayes">Streaming Variational Bayes</a></li>
+<li><a class="reference internal" href="#parallel-streaming-variational-bayes">Parallel Streaming Variational Bayes</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#concept-drift-methods">Concept Drift Methods</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#naive-bayes-with-virtual-concept-drift-detection">Naive Bayes with Virtual Concept Drift Detection</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#huginlink">HuginLink</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#models-conversion-between-amidst-and-hugin">Models conversion between AMIDST and Hugin</a></li>
+<li><a class="reference internal" href="#i-o-of-bayesian-networks-with-hugin-net-format">I/O of Bayesian Networks with Hugin net format</a></li>
+<li><a class="reference internal" href="#invoking-hugin-s-inference-engine">Invoking Hugin’s inference engine</a></li>
+<li><a class="reference internal" href="#invoking-hugin-s-parallel-tan">Invoking Hugin’s Parallel TAN</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#moalink">MoaLink</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#amidst-classifiers-from-moa">AMIDST Classifiers from MOA</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="data-streams">
+<span id="id1"></span><h2>Data Streams<a class="headerlink" href="#data-streams" title="Permalink to this headline">¶</a></h2>
+<p>In this example we show how to use the main features of a DataStream
+object. More precisely, we show six different ways of iterating over the
+data samples of a DataStream object.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.datastream</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.Attribute</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataOnMemory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DataSetGenerator</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * An example showing how to use the main features of a DataStream object. More precisely, we show six different</span>
+<span class="cm"> * ways of iterating over the data samples of a DataStream object.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataStreamsExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="c1">//DataStream&lt;DataInstance&gt; data = DataStreamLoader.open(&quot;datasetsTests/data.arff&quot;);</span>
+
+        <span class="c1">//Generate the data stream using the class DataSetGenerator</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataSetGenerator</span><span class="o">.</span><span class="na">generate</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">10</span><span class="o">,</span><span class="mi">5</span><span class="o">,</span><span class="mi">5</span><span class="o">);</span>
+
+
+        <span class="c1">//Access to the attributes defining the data set</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Attributes defining the data set&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Attribute</span> <span class="n">attribute</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">attribute</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="n">Attribute</span> <span class="n">discreteVar0</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">().</span><span class="na">getAttributeByName</span><span class="o">(</span><span class="s">&quot;DiscreteVar0&quot;</span><span class="o">);</span>
+
+        <span class="c1">//1. Iterating over samples using a for loop</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;1. Iterating over samples using a for loop&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataInstance</span> <span class="n">dataInstance</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">));</span>
+        <span class="o">}</span>
+
+
+        <span class="c1">//2. Iterating using streams. We need to restart the data again as a DataStream can only be used once.</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;2. Iterating using streams.&quot;</span><span class="o">);</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">restart</span><span class="o">();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">dataInstance</span> <span class="o">-&gt;</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">))</span>
+        <span class="o">);</span>
+
+
+        <span class="c1">//3. Iterating using parallel streams.</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;3. Iterating using parallel streams.&quot;</span><span class="o">);</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">restart</span><span class="o">();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">parallelStream</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">dataInstance</span> <span class="o">-&gt;</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">))</span>
+        <span class="o">);</span>
+
+        <span class="c1">//4. Iterating over a stream of data batches.</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;4. Iterating over a stream of data batches.&quot;</span><span class="o">);</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">restart</span><span class="o">();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">streamOfBatches</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">batch</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">DataInstance</span> <span class="n">dataInstance</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">));</span>
+        <span class="o">});</span>
+
+        <span class="c1">//5. Iterating over a parallel stream of data batches.</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;5. Iterating over a parallel stream of data batches.&quot;</span><span class="o">);</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">restart</span><span class="o">();</span>
+        <span class="n">data</span><span class="o">.</span><span class="na">parallelStreamOfBatches</span><span class="o">(</span><span class="mi">10</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">batch</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">DataInstance</span> <span class="n">dataInstance</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">));</span>
+        <span class="o">});</span>
+
+
+        <span class="c1">//6. Iterating over data batches using a for loop</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;6. Iterating over data batches using a for loop.&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataOnMemory</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">iterableOverBatches</span><span class="o">(</span><span class="mi">10</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">for</span> <span class="o">(</span><span class="n">DataInstance</span> <span class="n">dataInstance</span> <span class="o">:</span> <span class="n">batch</span><span class="o">)</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute A for the current data instance is: &quot;</span> <span class="o">+</span> <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sec-bns-randomvars">
+<span id="id2"></span><h2>Data Streams<a class="headerlink" href="#sec-bns-randomvars" title="Permalink to this headline">¶</a></h2>
+<p>This example show the basic functionality of the classes Variables and
+Variable.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.variables</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variables</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.stateSpaceTypes.FiniteStateSpace</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example show the basic functionality of the classes Variables and Variable.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VariablesExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We first create an empty Variables object</span>
+        <span class="n">Variables</span> <span class="n">variables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Variables</span><span class="o">();</span>
+
+        <span class="c1">//We invoke the &quot;new&quot; methods of the object Variables to create new variables.</span>
+        <span class="c1">//Now we create a Gaussian variables</span>
+        <span class="n">Variable</span> <span class="n">gaussianVar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newGaussianVariable</span><span class="o">(</span><span class="s">&quot;Gaussian&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Now we create a Multinomial variable with two states</span>
+        <span class="n">Variable</span> <span class="n">multinomialVar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newMultinomialVariable</span><span class="o">(</span><span class="s">&quot;Multinomial&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+
+        <span class="c1">//Now we create a Multinomial variable with two states: TRUE and FALSE</span>
+        <span class="n">Variable</span> <span class="n">multinomialVar2</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newMultinomialVariable</span><span class="o">(</span><span class="s">&quot;Multinomial2&quot;</span><span class="o">,</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;TRUE, FALSE&quot;</span><span class="o">));</span>
+
+        <span class="c1">//For Multinomial variables we can iterate over their different states</span>
+        <span class="n">FiniteStateSpace</span> <span class="n">states</span> <span class="o">=</span> <span class="n">multinomialVar2</span><span class="o">.</span><span class="na">getStateSpaceType</span><span class="o">();</span>
+        <span class="n">states</span><span class="o">.</span><span class="na">getStatesNames</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+
+        <span class="c1">//Variable objects can also be used, for example, to know if one variable can be set as parent of some other variable</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Can a Gaussian variable be parent of Multinomial variable? &quot;</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">multinomialVar</span><span class="o">.</span><span class="na">getDistributionType</span><span class="o">().</span><span class="na">isParentCompatible</span><span class="o">(</span><span class="n">gaussianVar</span><span class="o">)));</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Can a Multinomial variable be parent of Gaussian variable? &quot;</span> <span class="o">+</span>
+                <span class="o">(</span><span class="n">gaussianVar</span><span class="o">.</span><span class="na">getDistributionType</span><span class="o">().</span><span class="na">isParentCompatible</span><span class="o">(</span><span class="n">multinomialVar</span><span class="o">)));</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="models">
+<span id="sec-bns-models"></span><span id="id3"></span><h2>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="creating-bns">
+<span id="id4"></span><h3>Creating BNs<a class="headerlink" href="#creating-bns" title="Permalink to this headline">¶</a></h3>
+<p>In this example, we take a data set, create a BN and we compute the
+log-likelihood of all the samples of this data set. The numbers defining
+the probability distributions of the BN are randomly fixed.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.models</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variables</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *  In this example, we take a data set, create a BN and we compute the log-likelihood of all the samples</span>
+<span class="cm"> *  of this data set. The numbers defining the probability distributions of the BN are randomly fixed.</span>
+<span class="cm"> *  Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreatingBayesianNetworks</span> <span class="o">{</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/syntheticData.arff&quot;</span><span class="o">);</span>
+
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)</span>
+<span class="cm">         * in our data.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates</span>
+<span class="cm">         * all the variables. We create the variables using Variables class to guarantee that each variable</span>
+<span class="cm">         * has a different ID number and make it transparent for the user.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We can extract the Variable objects by using the method getVariableByName();</span>
+<span class="cm">         */</span>
+        <span class="n">Variables</span> <span class="n">variables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Variables</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+
+        <span class="n">Variable</span> <span class="n">a</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">b</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">c</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">d</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;D&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">e</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;E&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">g</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;G&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">h</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;H&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">i</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;I&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once you have defined your {@link Variables} object, the next step is to create</span>
+<span class="cm">         * a DAG structure over this set of variables.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. To add parents to each variable, we first recover the ParentSet object by the method</span>
+<span class="cm">         * getParentSet(Variable var) and then call the method addParent().</span>
+<span class="cm">         */</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DAG</span><span class="o">(</span><span class="n">variables</span><span class="o">);</span>
+
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">e</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">e</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">h</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">h</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">a</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">g</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">c</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">g</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We first check if the graph contains cycles.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. We print out the created DAG. We can check that everything is as expected.</span>
+<span class="cm">         */</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">containCycles</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We now create the Bayesian network from the previous DAG.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. The BN object is created from the DAG. It automatically looks at the distribution tye</span>
+<span class="cm">         * of each variable and their parents to initialize the Distributions objects that are stored</span>
+<span class="cm">         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are</span>
+<span class="cm">         * properly initialized.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.</span>
+<span class="cm">         */</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BayesianNetwork</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We iterate over the data set sample by sample.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. For each sample or DataInstance object, we compute the log of the probability that the BN object</span>
+<span class="cm">         * assigns to this observation.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We accumulate these log-probs and finally we print the log-prob of the data set.</span>
+<span class="cm">         */</span>
+        <span class="kt">double</span> <span class="n">logProb</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataInstance</span> <span class="n">instance</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logProb</span> <span class="o">+=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getLogProbabiltyOf</span><span class="o">(</span><span class="n">instance</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">logProb</span><span class="o">);</span>
+
+        <span class="n">BayesianNetworkWriter</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">bn</span><span class="o">,</span> <span class="s">&quot;networks/simulated/BNExample.bn&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-bayesian-networks-with-latent-variables">
+<span id="id5"></span><h3>Creating Bayesian networks with latent variables<a class="headerlink" href="#creating-bayesian-networks-with-latent-variables" title="Permalink to this headline">¶</a></h3>
+<p>In this example, we simply show how to create a BN model with hidden
+variables. We simply create a BN for clustering, i.e., a naive-Bayes
+like structure with a single common hidden variable acting as parant of
+all the observable variables.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.models</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variables</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * In this example, we simply show how to create a BN model with latent variables. We simply</span>
+<span class="cm"> * create a BN for clustering, i.e.,  a naive-Bayes like structure with a single common latent or hidden variable</span>
+<span class="cm"> * acting as parent of all the observable variables.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreatingBayesianNetworksWithLatentVariables</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/syntheticData.arff&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)</span>
+<span class="cm">         * in our data.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. {@link Variables} is the class for doing that. It takes a list of Attributes and internally creates</span>
+<span class="cm">         * all the variables. We create the variables using Variables class to guarantee that each variable</span>
+<span class="cm">         * has a different ID number and make it transparent for the user.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We can extract the Variable objects by using the method getVariableByName();</span>
+<span class="cm">         */</span>
+        <span class="n">Variables</span> <span class="n">variables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Variables</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+
+        <span class="n">Variable</span> <span class="n">a</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">b</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">c</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">d</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;D&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">e</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;E&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">g</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;G&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">h</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;H&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">i</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;I&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We create the hidden variable. For doing that we make use of the method &quot;newMultinomialVariable&quot;. When</span>
+<span class="cm">         * a variable is created from an Attribute object, it contains all the information we need (e.g.</span>
+<span class="cm">         * the name, the type, etc). But hidden variables does not have an associated attribute</span>
+<span class="cm">         * and, for this reason, we use now this to provide this information.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. Using the &quot;newMultinomialVariable&quot; method, we define a variable called HiddenVar, which is</span>
+<span class="cm">         * not associated to any attribute and, then, it is a latent variable, its state space is a finite set with two elements, and its</span>
+<span class="cm">         * distribution type is multinomial.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We finally create the hidden variable using the method &quot;newVariable&quot;.</span>
+<span class="cm">         */</span>
+
+        <span class="n">Variable</span> <span class="n">hidden</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newMultinomialVariable</span><span class="o">(</span><span class="s">&quot;HiddenVar&quot;</span><span class="o">,</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;TRUE&quot;</span><span class="o">,</span> <span class="s">&quot;FALSE&quot;</span><span class="o">));</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once we have defined your {@link Variables} object, including the latent variable,</span>
+<span class="cm">         * the next step is to create a DAG structure over this set of variables.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. To add parents to each variable, we first recover the ParentSet object by the method</span>
+<span class="cm">         * getParentSet(Variable var) and then call the method addParent(Variable var).</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We just put the hidden variable as parent of all the other variables. Following a naive-Bayes</span>
+<span class="cm">         * like structure.</span>
+<span class="cm">         */</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DAG</span><span class="o">(</span><span class="n">variables</span><span class="o">);</span>
+
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">a</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">b</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">c</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">d</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">e</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">g</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">h</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSet</span><span class="o">(</span><span class="n">i</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">hidden</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * We print the graph to see if is properly created.</span>
+<span class="cm">         */</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dag</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We now create the Bayesian network from the previous DAG.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. The BN object is created from the DAG. It automatically looks at the distribution type</span>
+<span class="cm">         * of each variable and their parents to initialize the Distributions objects that are stored</span>
+<span class="cm">         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are</span>
+<span class="cm">         * properly initialized.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. The network is printed and we can have look at the kind of distributions stored in the BN object.</span>
+<span class="cm">         */</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BayesianNetwork</span><span class="o">(</span><span class="n">dag</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * Finally the Bayesian network is saved to a file.</span>
+<span class="cm">         */</span>
+        <span class="n">BayesianNetworkWriter</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">bn</span><span class="o">,</span> <span class="s">&quot;networks/simulated/BNHiddenExample.bn&quot;</span><span class="o">);</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-bayesian-networks">
+<span id="id6"></span><h3>Modifying Bayesian networks<a class="headerlink" href="#modifying-bayesian-networks" title="Permalink to this headline">¶</a></h3>
+<p>In this example we show how to access and modify the conditional
+probabilities of a Bayesian network model.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.models</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.Multinomial</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.Normal_MultinomialParents</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.BayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * In this example we show how to access and modify the conditional probabilities of a Bayesian network model.</span>
+<span class="cm"> * Created by andresmasegosa on 24/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ModifiyingBayesianNetworks</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span> <span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+
+        <span class="c1">//We first generate a Bayesian network with one multinomial, one Gaussian variable and one link</span>
+        <span class="n">BayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfGaussianVars</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">BayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfMultinomialVars</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">BayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfLinks</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateBayesianNetwork</span><span class="o">();</span>
+
+        <span class="c1">//We print the randomly generated Bayesian networks</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="c1">//We first access the variable we are interested in</span>
+        <span class="n">Variable</span> <span class="n">multiVar</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;DiscreteVar0&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Using the above variable we can get the associated distribution and modify it</span>
+        <span class="n">Multinomial</span> <span class="n">multinomial</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getConditionalDistribution</span><span class="o">(</span><span class="n">multiVar</span><span class="o">);</span>
+        <span class="n">multinomial</span><span class="o">.</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">});</span>
+
+        <span class="c1">//Same than before but accessing the another variable</span>
+        <span class="n">Variable</span> <span class="n">normalVar</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;GaussianVar0&quot;</span><span class="o">);</span>
+
+        <span class="c1">//In this case, the conditional distribtuion is of the type &quot;Normal given Multinomial Parents&quot;</span>
+        <span class="n">Normal_MultinomialParents</span> <span class="n">normalMultiDist</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getConditionalDistribution</span><span class="o">(</span><span class="n">normalVar</span><span class="o">);</span>
+        <span class="n">normalMultiDist</span><span class="o">.</span><span class="na">getNormal</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setMean</span><span class="o">(</span><span class="mf">1.0</span><span class="o">);</span>
+        <span class="n">normalMultiDist</span><span class="o">.</span><span class="na">getNormal</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setVariance</span><span class="o">(</span><span class="mf">1.0</span><span class="o">);</span>
+
+        <span class="n">normalMultiDist</span><span class="o">.</span><span class="na">getNormal</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setMean</span><span class="o">(</span><span class="mf">0.0</span><span class="o">);</span>
+        <span class="n">normalMultiDist</span><span class="o">.</span><span class="na">getNormal</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setVariance</span><span class="o">(</span><span class="mf">1.0</span><span class="o">);</span>
+
+        <span class="c1">//We print modified Bayesian network</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="input-output">
+<span id="id7"></span><h2>Input/Output<a class="headerlink" href="#input-output" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="i-o-of-data-streams">
+<span id="id8"></span><h3>I/O of data streams<a class="headerlink" href="#i-o-of-data-streams" title="Permalink to this headline">¶</a></h3>
+<p>In this example we show how to load and save data sets from .arff files.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.io</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamWriter</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * In this example we show how to load and save data sets from &quot;.arff&quot; files (http://www.cs.waikato.ac.nz/ml/weka/arff.html)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataStreamIOExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/syntheticData.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We can save this data set to a new file using the static class DataStreamWriter</span>
+        <span class="n">DataStreamWriter</span><span class="o">.</span><span class="na">writeDataToFile</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="s">&quot;datasets/simulated/tmp.arff&quot;</span><span class="o">);</span>
+
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="i-o-of-bns">
+<span id="id9"></span><h3>I/O of BNs<a class="headerlink" href="#i-o-of-bns" title="Permalink to this headline">¶</a></h3>
+<p>In this example we show how to load and save Bayesian networks models
+for a binary file with “.bn” extension. In this toolbox Bayesian
+networks models are saved as serialized objects.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.io</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * In this example we show how to load and save Bayesian networks models for a binary file with &quot;.bn&quot; extension. In</span>
+<span class="cm"> * this toolbox Bayesian networks models are saved as serialized objects.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">BayesianNetworkIOExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can load a Bayesian network using the static class BayesianNetworkLoader</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Now we print the loaded model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="c1">//Now we change the parameters of the model</span>
+        <span class="n">bn</span><span class="o">.</span><span class="na">randomInitialization</span><span class="o">(</span><span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">0</span><span class="o">));</span>
+
+        <span class="c1">//We can save this Bayesian network to using the static class BayesianNetworkWriter</span>
+        <span class="n">BayesianNetworkWriter</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">bn</span><span class="o">,</span> <span class="s">&quot;networks/simulated/tmp.bn&quot;</span><span class="o">);</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="inference">
+<span id="id10"></span><h2>Inference<a class="headerlink" href="#inference" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-inference-engine">
+<span id="id11"></span><h3>The inference engine<a class="headerlink" href="#the-inference-engine" title="Permalink to this headline">¶</a></h3>
+<p>This example show how to perform inference in a Bayesian network model
+using the InferenceEngine static class. This class aims to be a
+straigthfoward way to perform queries over a Bayesian network model. By
+the default the <em>VMP</em> inference method is invoked.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.inference</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.InferenceEngine</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.HashMapAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example show how to perform inference in a Bayesian network model using the InferenceEngine static class.</span>
+<span class="cm"> * This class aims to be a straigthfoward way to perform queries over a Bayesian network model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">InferenceEngineExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.</span>
+        <span class="n">Variable</span> <span class="n">varMout</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;Mout&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varW</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;W&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Set the evidence.</span>
+        <span class="n">Assignment</span> <span class="n">assignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapAssignment</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">assignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varW</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Then we query the posterior of</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(Mout|W=0) = &quot;</span> <span class="o">+</span> <span class="n">InferenceEngine</span><span class="o">.</span><span class="na">getPosterior</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">bn</span><span class="o">,</span> <span class="n">assignment</span><span class="o">));</span>
+
+        <span class="c1">//Or some more refined queries</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot;</span> <span class="o">+</span> <span class="n">InferenceEngine</span><span class="o">.</span><span class="na">getExpectedValue</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">bn</span><span class="o">,</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">6.59</span><span class="o">)</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span> <span class="o">));</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sec-bns-inference">
+<span id="id12"></span><h2>Inference<a class="headerlink" href="#sec-bns-inference" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="variational-message-passing">
+<span id="id13"></span><h3>Variational Message Passing<a class="headerlink" href="#variational-message-passing" title="Permalink to this headline">¶</a></h3>
+<p>This example we show how to perform inference on a general Bayesian
+network using the Variational Message Passing (VMP) algorithm detailed
+in</p>
+<blockquote>
+<div>Winn, J. M., Bishop, C. M. (2005). Variational message passing. In
+Journal of Machine Learning Research (pp. 661-694).</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.inference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.InferenceAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.messagepassing.VMP</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.HashMapAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example we show how to perform inference on a general Bayesian network using the Variational Message Passing (VMP)</span>
+<span class="cm"> * algorithm detailed in</span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;i&gt; Winn, J. M., and Bishop, C. M. (2005). Variational message passing. In Journal of Machine Learning Research (pp. 661-694). &lt;/i&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">VMPExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.</span>
+        <span class="n">Variable</span> <span class="n">varMout</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;Mout&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varW</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;W&quot;</span><span class="o">);</span>
+
+        <span class="c1">//First we create an instance of a inference algorithm. In this case, we use the VMP class.</span>
+        <span class="n">InferenceAlgorithm</span> <span class="n">inferenceAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VMP</span><span class="o">();</span>
+        <span class="c1">//Then, we set the BN model</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+        <span class="c1">//If exists, we also set the evidence.</span>
+        <span class="n">Assignment</span> <span class="n">assignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapAssignment</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">assignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varW</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setEvidence</span><span class="o">(</span><span class="n">assignment</span><span class="o">);</span>
+
+        <span class="c1">//Then we run inference</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+        <span class="c1">//Then we query the posterior of</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(Mout|W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getPosterior</span><span class="o">(</span><span class="n">varMout</span><span class="o">));</span>
+
+        <span class="c1">//Or some more refined queries</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getExpectedValue</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">6.59</span><span class="o">)</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span> <span class="o">));</span>
+
+        <span class="c1">//We can also compute the probability of the evidence</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(W=0) = &quot;</span><span class="o">+</span><span class="n">Math</span><span class="o">.</span><span class="na">exp</span><span class="o">(</span><span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getLogProbabilityOfEvidence</span><span class="o">()));</span>
+
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="importance-sampling">
+<span id="id14"></span><h3>Importance Sampling<a class="headerlink" href="#importance-sampling" title="Permalink to this headline">¶</a></h3>
+<p>This example we show how to perform inference on a general Bayesian
+network using an importance sampling algorithm detailed in</p>
+<blockquote>
+<div>Fung, R., Chang, K. C. (2013). Weighing and integrating evidence for
+stochastic simulation in Bayesian networks. arXiv preprint
+arXiv:1304.1504.</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.inference</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.ImportanceSampling</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.HashMapAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example we show how to perform inference on a general Bayesian network using an importance sampling</span>
+<span class="cm"> * algorithm detailed in</span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;i&gt; Fung, R., and Chang, K. C. (2013). Weighing and integrating evidence for</span>
+<span class="cm"> * stochastic simulation in Bayesian networks. arXiv preprint arXiv:1304.1504.</span>
+<span class="cm"> * &lt;/i&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ImportanceSamplingExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We first load the WasteIncinerator bayesian network which has multinomial and Gaussian variables.</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We recover the relevant variables for this example: Mout which is normally distributed, and W which is multinomial.</span>
+        <span class="n">Variable</span> <span class="n">varMout</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;Mout&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varW</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;W&quot;</span><span class="o">);</span>
+
+        <span class="c1">//First we create an instance of a inference algorithm. In this case, we use the ImportanceSampling class.</span>
+        <span class="n">ImportanceSampling</span> <span class="n">inferenceAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportanceSampling</span><span class="o">();</span>
+        <span class="c1">//Then, we set the BN model</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="c1">//If it exists, we also set the evidence.</span>
+        <span class="n">Assignment</span> <span class="n">assignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapAssignment</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">assignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varW</span><span class="o">,</span><span class="mi">0</span><span class="o">);</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setEvidence</span><span class="o">(</span><span class="n">assignment</span><span class="o">);</span>
+
+        <span class="c1">//We can also set to be run in parallel on multicore CPUs</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setParallelMode</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//To perform more than one operation, data should be keep in memory</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setKeepDataOnMemory</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//Then we run inference</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+        <span class="c1">//Then we query the posterior of</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(Mout|W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getPosterior</span><span class="o">(</span><span class="n">varMout</span><span class="o">));</span>
+
+        <span class="c1">//Or some more refined queries</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(0.7&lt;Mout&lt;6.59 | W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getExpectedValue</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">6.59</span><span class="o">)</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span> <span class="o">));</span>
+
+        <span class="c1">//We can also compute the probability of the evidence</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(W=0) = &quot;</span><span class="o">+</span><span class="n">Math</span><span class="o">.</span><span class="na">exp</span><span class="o">(</span><span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getLogProbabilityOfEvidence</span><span class="o">()));</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="learning-algorithms">
+<span id="id15"></span><h2>Learning Algorithms<a class="headerlink" href="#learning-algorithms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="maximum-likelihood">
+<span id="id16"></span><h3>Maximum Likelihood<a class="headerlink" href="#maximum-likelihood" title="Permalink to this headline">¶</a></h3>
+<p>This other example shows how to learn incrementally the parameters of a
+Bayesian network using data batches,</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.learning</span><span class="o">;</span>
+
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataOnMemory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.learning.parametric.ParallelMaximumLikelihood</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.DAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variables</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This other example shows how to learn incrementally the parameters of a Bayesian network using data batches</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MaximimumLikelihoodByBatchExample</span> <span class="o">{</span>
+
+
+    <span class="cm">/**</span>
+<span class="cm">     * This method returns a DAG object with naive Bayes structure for the attributes of the passed data stream.</span>
+<span class="cm">     * @param dataStream object of the class DataStream&lt;DataInstance&gt;</span>
+<span class="cm">     * @param classIndex integer value indicating the position of the class</span>
+<span class="cm">     * @return object of the class DAG</span>
+<span class="cm">     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">DAG</span> <span class="nf">getNaiveBayesStructure</span><span class="o">(</span><span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">dataStream</span><span class="o">,</span> <span class="kt">int</span> <span class="n">classIndex</span><span class="o">){</span>
+
+        <span class="c1">//We create a Variables object from the attributes of the data stream</span>
+        <span class="n">Variables</span> <span class="n">modelHeader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Variables</span><span class="o">(</span><span class="n">dataStream</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+
+        <span class="c1">//We define the predicitive class variable</span>
+        <span class="n">Variable</span> <span class="n">classVar</span> <span class="o">=</span> <span class="n">modelHeader</span><span class="o">.</span><span class="na">getVariableById</span><span class="o">(</span><span class="n">classIndex</span><span class="o">);</span>
+
+        <span class="c1">//Then, we create a DAG object with the defined model header</span>
+        <span class="n">DAG</span> <span class="n">dag</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DAG</span><span class="o">(</span><span class="n">modelHeader</span><span class="o">);</span>
+
+        <span class="c1">//We set the linkds of the DAG.</span>
+        <span class="n">dag</span><span class="o">.</span><span class="na">getParentSets</span><span class="o">().</span><span class="na">stream</span><span class="o">().</span><span class="na">filter</span><span class="o">(</span><span class="n">w</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">.</span><span class="na">getMainVar</span><span class="o">()</span> <span class="o">!=</span> <span class="n">classVar</span><span class="o">).</span><span class="na">forEach</span><span class="o">(</span><span class="n">w</span> <span class="o">-&gt;</span> <span class="n">w</span><span class="o">.</span><span class="na">addParent</span><span class="o">(</span><span class="n">classVar</span><span class="o">));</span>
+
+        <span class="k">return</span> <span class="n">dag</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/WasteIncineratorSample.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a ParameterLearningAlgorithm object with the MaximumLikehood builder</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">parameterLearningAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelMaximumLikelihood</span><span class="o">();</span>
+
+        <span class="c1">//We fix the DAG structure</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">getNaiveBayesStructure</span><span class="o">(</span><span class="n">data</span><span class="o">,</span><span class="mi">0</span><span class="o">));</span>
+
+        <span class="c1">//We should invoke this method before processing any data</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+
+        <span class="c1">//Then we show how we can perform parameter learnig by a sequential updating of data batches.</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataOnMemory</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">iterableOverBatches</span><span class="o">(</span><span class="mi">100</span><span class="o">)){</span>
+            <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">//And we get the model</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bnModel</span> <span class="o">=</span> <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bnModel</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parallel-maximum-likelihood">
+<span id="id17"></span><h3>Parallel Maximum Likelihood<a class="headerlink" href="#parallel-maximum-likelihood" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to learn in parallel the parameters of a Bayesian
+network from a stream of data using maximum likelihood.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.learning</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.learning.parametric.ParallelMaximumLikelihood</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example shows how to learn in parallel the parameters of a Bayesian network from a stream of data using maximum</span>
+<span class="cm"> * likelihood.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ParallelMaximumLikelihoodExample</span> <span class="o">{</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/WasteIncineratorSample.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a ParallelMaximumLikelihood object with the MaximumLikehood builder</span>
+        <span class="n">ParallelMaximumLikelihood</span> <span class="n">parameterLearningAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelMaximumLikelihood</span><span class="o">();</span>
+
+        <span class="c1">//We activate the parallel mode.</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setParallelMode</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//We desactivate the debug mode.</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDebug</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+
+        <span class="c1">//We fix the DAG structure</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">MaximimumLikelihoodByBatchExample</span><span class="o">.</span><span class="na">getNaiveBayesStructure</span><span class="o">(</span><span class="n">data</span><span class="o">,</span> <span class="mi">0</span><span class="o">));</span>
+
+        <span class="c1">//We set the batch size which will be employed to learn the model in parallel</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+
+        <span class="c1">//We set the data which is going to be used for leaning the parameters</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDataStream</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+
+        <span class="c1">//We perform the learning</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">runLearning</span><span class="o">();</span>
+
+        <span class="c1">//And we get the model</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bnModel</span> <span class="o">=</span> <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bnModel</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="streaming-variational-bayes">
+<span id="id18"></span><h3>Streaming Variational Bayes<a class="headerlink" href="#streaming-variational-bayes" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to learn incrementally the parameters of a
+Bayesian network from a stream of data with a Bayesian approach using
+the following algorithm,</p>
+<blockquote>
+<div>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M.
+I. (2013). Streaming variational Bayes. In Advances in Neural
+Information Processing Systems (pp. 1727-1735).</div></blockquote>
+<p>In this second example we show a alternative implementation which
+explicitly updates the model by batches by using the class SVB.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.learning</span><span class="o">;</span>
+
+
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataOnMemory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.learning.parametric.bayesian.SVB</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example shows how to learn incrementally the parameters of a Bayesian network from a stream of data with a Bayesian</span>
+<span class="cm"> * approach using the following algorithm</span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;i&gt; Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational bayes.</span>
+<span class="cm"> * In Advances in Neural Information Processing Systems (pp. 1727-1735). &lt;/i&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SVBByBatchExample</span> <span class="o">{</span>
+
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/WasteIncineratorSample.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a SVB object</span>
+        <span class="n">SVB</span> <span class="n">parameterLearningAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SVB</span><span class="o">();</span>
+
+        <span class="c1">//We fix the DAG structure</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getHiddenNaiveBayesStructure</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span><span class="s">&quot;H&quot;</span><span class="o">,</span><span class="mi">2</span><span class="o">));</span>
+
+        <span class="c1">//We fix the size of the window, which must be equal to the size of the data batches we use for learning</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+
+        <span class="c1">//We can activate the output</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setOutput</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//We should invoke this method before processing any data</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+
+        <span class="c1">//Then we show how we can perform parameter learning by a sequential updating of data batches.</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataOnMemory</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">iterableOverBatches</span><span class="o">(</span><span class="mi">100</span><span class="o">)){</span>
+            <span class="kt">double</span> <span class="n">log_likelhood_of_batch</span> <span class="o">=</span> <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Log-Likelihood of Batch: &quot;</span><span class="o">+</span> <span class="n">log_likelhood_of_batch</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">//And we get the model</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bnModel</span> <span class="o">=</span> <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bnModel</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="parallel-streaming-variational-bayes">
+<span id="id19"></span><h3>Parallel Streaming Variational Bayes<a class="headerlink" href="#parallel-streaming-variational-bayes" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to learn in the parameters of a Bayesian network
+from a stream of data with a Bayesian approach using the parallel
+version of the SVB algorithm,</p>
+<blockquote>
+<div>Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M.
+I. (2013). Streaming variational Bayes. In Advances in Neural
+Information Processing Systems (pp. 1727-1735).</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.learning</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.learning.parametric.bayesian.ParallelSVB</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.utils.DAGGenerator</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example shows how to learn the parameters of a Bayesian network from a stream of data with a Bayesian</span>
+<span class="cm"> * approach using a **parallel** version of the following algorithm</span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;i&gt; Broderick, T., Boyd, N., Wibisono, A., Wilson, A. C., and Jordan, M. I. (2013). Streaming variational Bayes.</span>
+<span class="cm"> * In Advances in Neural Information Processing Systems (pp. 1727-1735). &lt;/i&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by andresmasegosa on 18/6/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ParallelSVBExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;datasets/simulated/WasteIncineratorSample.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a ParallelSVB object</span>
+        <span class="n">ParallelSVB</span> <span class="n">parameterLearningAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelSVB</span><span class="o">();</span>
+
+        <span class="c1">//We fix the number of cores we want to exploit</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setNCores</span><span class="o">(</span><span class="mi">4</span><span class="o">);</span>
+
+        <span class="c1">//We fix the DAG structure, which is a Naive Bayes with a global latent binary variable</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDAG</span><span class="o">(</span><span class="n">DAGGenerator</span><span class="o">.</span><span class="na">getHiddenNaiveBayesStructure</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">(),</span> <span class="s">&quot;H&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">));</span>
+
+        <span class="c1">//We fix the size of the window</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">getSVBEngine</span><span class="o">().</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+
+        <span class="c1">//We can activate the output</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setOutput</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//We set the data which is going to be used for leaning the parameters</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">setDataStream</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+
+        <span class="c1">//We perform the learning</span>
+        <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">runLearning</span><span class="o">();</span>
+
+        <span class="c1">//And we get the model</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bnModel</span> <span class="o">=</span> <span class="n">parameterLearningAlgorithm</span><span class="o">.</span><span class="na">getLearntBayesianNetwork</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bnModel</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="concept-drift-methods">
+<span id="id20"></span><h2>Concept Drift Methods<a class="headerlink" href="#concept-drift-methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="naive-bayes-with-virtual-concept-drift-detection">
+<span id="id21"></span><h3>Naive Bayes with Virtual Concept Drift Detection<a class="headerlink" href="#naive-bayes-with-virtual-concept-drift-detection" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the class
+NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift
+detector detailed in</p>
+<blockquote>
+<div>Borchani et al. Modeling concept drift: A probabilistic graphical
+model based approach. IDA 2015.</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.core.examples.conceptdrift</span><span class="o">;</span>
+
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.conceptdrift.NaiveBayesVirtualConceptDriftDetector</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataOnMemory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example shows how to use the class NaiveBayesVirtualConceptDriftDetector to run the virtual concept drift</span>
+<span class="cm"> * detector detailed in</span>
+<span class="cm"> *</span>
+<span class="cm"> * &lt;i&gt;Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.&lt;/i&gt;</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">NaiveBayesVirtualConceptDriftDetectorExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DataStreamLoader</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;./datasets/DriftSets/sea.arff&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a NaiveBayesVirtualConceptDriftDetector object</span>
+        <span class="n">NaiveBayesVirtualConceptDriftDetector</span> <span class="n">virtualDriftDetector</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NaiveBayesVirtualConceptDriftDetector</span><span class="o">();</span>
+
+        <span class="c1">//We set class variable as the last attribute</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">setClassIndex</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We set the data which is going to be used</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+
+        <span class="c1">//We fix the size of the window</span>
+        <span class="kt">int</span> <span class="n">windowSize</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="n">windowSize</span><span class="o">);</span>
+
+        <span class="c1">//We fix the so-called transition variance</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">setTransitionVariance</span><span class="o">(</span><span class="mf">0.1</span><span class="o">);</span>
+
+        <span class="c1">//We fix the number of global latent variables</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">setNumberOfGlobalVars</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We should invoke this method before processing any data</span>
+        <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+
+        <span class="c1">//Some prints</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&quot;Batch&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Variable</span> <span class="n">hiddenVar</span> <span class="o">:</span> <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">getHiddenVars</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="s">&quot;\t&quot;</span> <span class="o">+</span> <span class="n">hiddenVar</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+
+
+        <span class="c1">//Then we show how we can perform the sequential processing of</span>
+        <span class="c1">// data batches. They must be of the same value than the window</span>
+        <span class="c1">// size parameter set above.</span>
+        <span class="kt">int</span> <span class="n">countBatch</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DataOnMemory</span><span class="o">&lt;</span><span class="n">DataInstance</span><span class="o">&gt;</span> <span class="n">batch</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">iterableOverBatches</span><span class="o">(</span><span class="n">windowSize</span><span class="o">)){</span>
+
+            <span class="c1">//We update the model by invoking this method. The output</span>
+            <span class="c1">// is an array with a value associated</span>
+            <span class="c1">// to each fo the global hidden variables</span>
+            <span class="kt">double</span><span class="o">[]</span> <span class="n">out</span> <span class="o">=</span> <span class="n">virtualDriftDetector</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">batch</span><span class="o">);</span>
+
+            <span class="c1">//We print the output</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">countBatch</span> <span class="o">+</span> <span class="s">&quot;\t&quot;</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">out</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">out</span><span class="o">[</span><span class="n">i</span><span class="o">]+</span><span class="s">&quot;\t&quot;</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+            <span class="n">countBatch</span><span class="o">++;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="huginlink">
+<span id="id22"></span><h2>HuginLink<a class="headerlink" href="#huginlink" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="models-conversion-between-amidst-and-hugin">
+<span id="id23"></span><h3>Models conversion between AMiDST and Hugin<a class="headerlink" href="#models-conversion-between-amidst-and-hugin" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the class BNConverterToAMIDST and
+BNConverterToHugin to convert a Bayesian network models between Hugin
+and AMIDST formats</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.huginlink</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">COM.hugin.HAPI.Domain</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">COM.hugin.HAPI.ExceptionHugin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.converters.BNConverterToAMIDST</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.converters.BNConverterToHugin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.io.BNLoaderFromHugin</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 24/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HuginConversionExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ExceptionHugin</span> <span class="o">{</span>
+        <span class="c1">//We load from Hugin format</span>
+        <span class="n">Domain</span> <span class="n">huginBN</span> <span class="o">=</span> <span class="n">BNLoaderFromHugin</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Then, it is converted to AMIDST BayesianNetwork object</span>
+        <span class="n">BayesianNetwork</span> <span class="n">amidstBN</span> <span class="o">=</span> <span class="n">BNConverterToAMIDST</span><span class="o">.</span><span class="na">convertToAmidst</span><span class="o">(</span><span class="n">huginBN</span><span class="o">);</span>
+
+        <span class="c1">//Then, it is converted to Hugin Bayesian Network object</span>
+        <span class="n">huginBN</span> <span class="o">=</span> <span class="n">BNConverterToHugin</span><span class="o">.</span><span class="na">convertToHugin</span><span class="o">(</span><span class="n">amidstBN</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">amidstBN</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">huginBN</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="i-o-of-bayesian-networks-with-hugin-net-format">
+<span id="id24"></span><h3>I/O of Bayesian Networks with Hugin net format<a class="headerlink" href="#i-o-of-bayesian-networks-with-hugin-net-format" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the class BNLoaderFromHugin and
+BNWriterToHugin classes to load and write Bayesian networks in Hugin
+format</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.huginlink</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">COM.hugin.HAPI.Domain</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">COM.hugin.HAPI.ExceptionHugin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.converters.BNConverterToAMIDST</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.io.BNLoaderFromHugin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.io.BayesianNetworkWriterToHugin</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 24/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HuginIOExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ExceptionHugin</span> <span class="o">{</span>
+        <span class="c1">//We load from Hugin format</span>
+        <span class="n">Domain</span> <span class="n">huginBN</span> <span class="o">=</span> <span class="n">BNLoaderFromHugin</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;networks/asia.net&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We save a AMIDST BN to Hugin format</span>
+        <span class="n">BayesianNetwork</span> <span class="n">amidstBN</span> <span class="o">=</span> <span class="n">BNConverterToAMIDST</span><span class="o">.</span><span class="na">convertToAmidst</span><span class="o">(</span><span class="n">huginBN</span><span class="o">);</span>
+        <span class="n">BayesianNetworkWriterToHugin</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">amidstBN</span><span class="o">,</span><span class="s">&quot;networks/tmp.net&quot;</span><span class="o">);</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="invoking-hugins-inference-engine">
+<span id="invoking-hugin-s-inference-engine"></span><h3>Invoking Hugin’s inference engine<a class="headerlink" href="#invoking-hugins-inference-engine" title="Permalink to this headline">¶</a></h3>
+<p>This example we show how to perform inference using
+<a class="reference external" href="http://www.hugin.com">Hugin</a> inference engine within the AMiDST
+toolbox</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.huginlink</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.InferenceAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.HashMapAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.inference.HuginInference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 24/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HuginInferenceExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+        <span class="c1">//We first load the WasteIncinerator bayesian network</span>
+        <span class="c1">//which has multinomial and Gaussian variables.</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We recover the relevant variables for this example:</span>
+        <span class="c1">//Mout which is normally distributed, and W which is multinomial.</span>
+        <span class="n">Variable</span> <span class="n">varMout</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;Mout&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varW</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;W&quot;</span><span class="o">);</span>
+
+        <span class="c1">//First we create an instance of a inference algorithm.</span>
+        <span class="c1">//In this case, we use the ImportanceSampling class.</span>
+        <span class="n">InferenceAlgorithm</span> <span class="n">inferenceAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HuginInference</span><span class="o">();</span>
+
+        <span class="c1">//Then, we set the BN model</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+        <span class="c1">//If exists, we also set the evidence.</span>
+        <span class="n">Assignment</span> <span class="n">assignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapAssignment</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">assignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varW</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setEvidence</span><span class="o">(</span><span class="n">assignment</span><span class="o">);</span>
+
+        <span class="c1">//Then we run inference</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+        <span class="c1">//Then we query the posterior of</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(Mout|W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getPosterior</span><span class="o">(</span><span class="n">varMout</span><span class="o">));</span>
+
+        <span class="c1">//Or some more refined queries</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(0.7&lt;Mout&lt;3.5 | W=0) = &quot;</span>
+                <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getExpectedValue</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">3.5</span><span class="o">)</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span><span class="o">));</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="invoking-hugins-parallel-tan">
+<span id="invoking-hugin-s-parallel-tan"></span><h3>Invoking Hugin’s Parallel TAN<a class="headerlink" href="#invoking-hugins-parallel-tan" title="Permalink to this headline">¶</a></h3>
+<p>This example we show how to perform inference using
+<a class="reference external" href="http://www.hugin.com">Hugin</a> inference engine within the AMIDST
+toolbox.</p>
+<p>This example shows how to use <a class="reference external" href="http://www.hugin.com">Hugin</a>’s
+functionality to learn in parallel a TAN model. An important remark is
+that Hugin only allows to learn the TAN model for a data set completely
+loaded into RAM memory. The case where our data set does not fit into
+memory, it solved in AMIDST in the following way. We learn the structure
+using a smaller data set produced by Reservoir sampling and, then, we
+use AMIDST’s ParallelMaximumLikelihood to learn the parameters of the
+TAN model over the whole data set.</p>
+<p>For further details about the implementation of the parallel TAN
+algorithm look at the following paper:</p>
+<blockquote>
+<div>Madsen, A.L. et al. A New Method for Vertical Parallelisation of TAN
+Learning Based on Balanced Incomplete Block Designs. Probabilistic
+Graphical Models. Lecture Notes in Computer Science Volume 8754,
+2014, pp 302-317.</div></blockquote>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">package</span> <span class="nn">eu.amidst.core.examples.huginlink</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.InferenceAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.BayesianNetworkLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.models.BayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.HashMapAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.huginlink.inference.HuginInference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by rcabanas on 24/06/16.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HuginInferenceExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+        <span class="c1">//We first load the WasteIncinerator bayesian network</span>
+        <span class="c1">//which has multinomial and Gaussian variables.</span>
+        <span class="n">BayesianNetwork</span> <span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetworkLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;./networks/simulated/WasteIncinerator.bn&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We recover the relevant variables for this example:</span>
+        <span class="c1">//Mout which is normally distributed, and W which is multinomial.</span>
+        <span class="n">Variable</span> <span class="n">varMout</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;Mout&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varW</span> <span class="o">=</span> <span class="n">bn</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;W&quot;</span><span class="o">);</span>
+
+        <span class="c1">//First we create an instance of a inference algorithm.</span>
+        <span class="c1">//In this case, we use the ImportanceSampling class.</span>
+        <span class="n">InferenceAlgorithm</span> <span class="n">inferenceAlgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HuginInference</span><span class="o">();</span>
+
+        <span class="c1">//Then, we set the BN model</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">bn</span><span class="o">);</span>
+
+        <span class="c1">//If exists, we also set the evidence.</span>
+        <span class="n">Assignment</span> <span class="n">assignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapAssignment</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="n">assignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varW</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">setEvidence</span><span class="o">(</span><span class="n">assignment</span><span class="o">);</span>
+
+        <span class="c1">//Then we run inference</span>
+        <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+        <span class="c1">//Then we query the posterior of</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(Mout|W=0) = &quot;</span> <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getPosterior</span><span class="o">(</span><span class="n">varMout</span><span class="o">));</span>
+
+        <span class="c1">//Or some more refined queries</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(0.7&lt;Mout&lt;3.5 | W=0) = &quot;</span>
+                <span class="o">+</span> <span class="n">inferenceAlgorithm</span><span class="o">.</span><span class="na">getExpectedValue</span><span class="o">(</span><span class="n">varMout</span><span class="o">,</span> <span class="n">v</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="mf">0.7</span> <span class="o">&lt;</span> <span class="n">v</span> <span class="o">&amp;&amp;</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">3.5</span><span class="o">)</span> <span class="o">?</span> <span class="mf">1.0</span> <span class="o">:</span> <span class="mf">0.0</span><span class="o">));</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="moalink">
+<span id="id25"></span><h2>MoaLink<a class="headerlink" href="#moalink" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="amidst-classifiers-from-moa">
+<span id="id26"></span><h3>AMIDST Classifiers from MOA<a class="headerlink" href="#amidst-classifiers-from-moa" title="Permalink to this headline">¶</a></h3>
+<p>The following command can be used to learn a Bayesian model with a
+latent Gaussian variable (HG) and a multinomial with 2 states (HM), as
+displayed in figure below. The VMP algorithm is used to learn the
+parameters of these two non-observed variables and make predictions over
+the class variable.</p>
+<div class="figure" id="fig-bns-moalink-hode">
+<a class="reference internal image-reference" href="notes/img/HODE.jpg"><img alt="HODE example" src="notes/img/HODE.jpg" style="width: 10cm;" /></a>
+<p class="caption"><span class="caption-text">HODE example</span></p>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>java -Xmx512m -cp <span class="s2">&quot;../lib/*&quot;</span> -javaagent:../lib/sizeofag-1.0.0.jar
+moa.DoTask EvaluatePrequential -l <span class="se">\(</span>bayes.AmidstClassifier -g <span class="m">1</span>
+-m <span class="m">2</span><span class="se">\)</span> -s generators.RandomRBFGenerator -i <span class="m">10000</span> -f <span class="m">1000</span> -q <span class="m">1000</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sec-bns-moalink-moareg">
+<span id="id27"></span><h3>AMIDST Classifiers from MOA<a class="headerlink" href="#sec-bns-moalink-moareg" title="Permalink to this headline">¶</a></h3>
+<p>It is possible to learn an enriched naive Bayes model for regression if
+the class label is of a continuous nature. The following command uses
+the model in Figure <a class="reference external" href="#fig:bns:moalink:HODEreg">2</a> on a toy dataset
+from WEKA’s collection of <a class="reference external" href="http://prdownloads.sourceforge.net/weka/datasets-numeric.jar">regression
+problems</a>.</p>
+<div class="figure" id="fig-bns-moalink-hodereg">
+<a class="reference internal image-reference" href="notes/img/regressionHODE.jpg"><img alt="HODE regression example" src="notes/img/regressionHODE.jpg" style="width: 10cm;" /></a>
+<p class="caption"><span class="caption-text">HODE regression example</span></p>
+</div>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="n">java</span> <span class="o">-</span><span class="n">Xmx512m</span> <span class="o">-</span><span class="n">cp</span> <span class="s">&quot;../lib/*&quot;</span> <span class="o">-</span><span class="n">javaagent</span><span class="o">:../</span><span class="n">lib</span><span class="o">/</span><span class="n">sizeofag</span><span class="o">-</span><span class="mf">1.0.0</span><span class="o">.</span><span class="na">jar</span>
+<span class="n">moa</span><span class="o">.</span><span class="na">DoTask</span> <span class="n">EvaluatePrequentialRegression</span> <span class="o">-</span><span class="n">l</span> <span class="n">bayes</span><span class="o">.</span><span class="na">AmidstRegressor</span>
+<span class="o">-</span><span class="n">s</span> <span class="o">(</span><span class="n">ArffFileStream</span> <span class="o">-</span><span class="n">f</span> <span class="o">./</span><span class="n">quake</span><span class="o">.</span><span class="na">arff</span><span class="o">)</span>
+</pre></div>
+</div>
+<p>Note that the simpler the dataset the less complex the model should be.
+In this case, <code class="docutils literal notranslate"><span class="pre">quake.arff</span></code> is a very simple and small dataset that
+should probably be learn with a more simple classifier, that is, a
+high-bias-low-variance classifier, in order to avoid overfitting. This
+aims at providing a simple running example.</p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="getting-started.html" class="btn btn-neutral float-right" title="Getting Started!" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="dbnetworks.html" class="btn btn-neutral" title="Dynamic Bayesian Networks: Code Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Andrés R. Masegosa, Rafael Cabañas
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

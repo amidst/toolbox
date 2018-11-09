@@ -1,0 +1,1628 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dynamic Bayesian Networks: Code Examples &mdash; InferPy 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/amidst_theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bayesian Networks: Code Examples" href="bnetworks.html" />
+    <link rel="prev" title="Flinklink: Code Examples" href="flinklink.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo-doc.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">General Information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about-amidst.html">About AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#what-is-amidst">What is AMIDST?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#scalability">Scalability</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#multi-core-scalablity-using-java-8-streams">Multi-Core Scalablity using Java 8 Streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="about-amidst.html#distributed-scalablity-using-apache-flink">Distributed Scalablity using Apache Flink</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="about-amidst.html#related-software">Related Software</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sparklink.html">Sparklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sparklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="sparklink.html#parameter-learning">Parameter learning</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="wekalink.html">Wekalink: using an AMIDST classifier in Weka</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#prepare-your-project">Prepare your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#create-the-wrapper-class">Create the wrapper class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wekalink.html#testing-the-amidst-classifier-in-weka">Testing the AMIDST classifier in Weka</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="latent-variable-models.html">Tutorial: Easy Machine Learning with Latent Variable Models in AMIDST</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#setting-up">Setting up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#static-models">Static Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-and-saving-to-disk">Learning and saving to disk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#learning-from-flink">Learning from Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#inference">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-static-model">Custom static model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="latent-variable-models.html#dynamic-models">Dynamic Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#id1">Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="latent-variable-models.html#custom-dynamic-model">Custom dynamic model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="flinklink.html">Flinklink: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#input-output">Input/output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#reading-data">Reading data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#writing-data">Writing data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#parametric-learning">Parametric learning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-variational-message-passing">Distributed Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#distributed-vi">Distributed VI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#stochastic-vi">Stochastic VI</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="flinklink.html#extensions-and-applications">Extensions and applications</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#latent-variable-models-with-flink">Latent variable models with Flink</a></li>
+<li class="toctree-l3"><a class="reference internal" href="flinklink.html#concept-drift-detection">Concept drift detection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dynamic Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-random-variables">Dynamic Random Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-bayesian-networks">Dynamic Bayesian networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-dynamic-bayesian-networks">Creating Dynamic Bayesian networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creating-dynamic-bayesian-networks-with-latent-variables">Creating Dynamic Bayesian Networks with Latent Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#modifying-dynamic-bayesian-networks">Modifying Dynamic Bayesian Networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sampling-from-dynamic-bayesian-networks">Sampling from Dynamic Bayesian Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inference-algorithms-for-dynamic-bayesian-networks">Inference Algorithms for Dynamic Bayesian Networks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-dynamic-map-inference">The Dynamic MAP Inference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-dynamic-variational-message-passing">The Dynamic Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#the-dynamic-importance-sampling">The Dynamic Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-learning-algorithms">Dynamic Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#maximum-likelihood-for-dbns">Maximum Likelihood for DBNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#streaming-variational-bayes-for-dbns">Streaming Variational Bayes for DBNs</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bnetworks.html">Bayesian Networks: Code Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#data-streams">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-randomvars">Data Streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bns">Creating BNs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#creating-bayesian-networks-with-latent-variables">Creating Bayesian networks with latent variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#modifying-bayesian-networks">Modifying Bayesian networks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#input-output">Input/Output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-data-streams">I/O of data streams</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bns">I/O of BNs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#the-inference-engine">The inference engine</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#sec-bns-inference">Inference</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#variational-message-passing">Variational Message Passing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#importance-sampling">Importance Sampling</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#learning-algorithms">Learning Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#maximum-likelihood">Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-maximum-likelihood">Parallel Maximum Likelihood</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#streaming-variational-bayes">Streaming Variational Bayes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#parallel-streaming-variational-bayes">Parallel Streaming Variational Bayes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#concept-drift-methods">Concept Drift Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#naive-bayes-with-virtual-concept-drift-detection">Naive Bayes with Virtual Concept Drift Detection</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#huginlink">HuginLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#models-conversion-between-amidst-and-hugin">Models conversion between AMiDST and Hugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#i-o-of-bayesian-networks-with-hugin-net-format">I/O of Bayesian Networks with Hugin net format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-inference-engine">Invoking Hugin’s inference engine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#invoking-hugins-parallel-tan">Invoking Hugin’s Parallel TAN</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="bnetworks.html#moalink">MoaLink</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#amidst-classifiers-from-moa">AMIDST Classifiers from MOA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnetworks.html#sec-bns-moalink-moareg">AMIDST Classifiers from MOA</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">First steps</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="getting-started.html">Getting Started!</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#quick-start">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting-started.html#getting-started-in-detail">Getting started in detail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">Requirements for AMIDST Toolbox</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-toolbox-users">For toolbox users</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#for-amidst-developers">For AMIDST developers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="loading-dependencies.html">Loading AMIDST dependencies from a remote maven repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installing-local-repository.html">Installing a local AMIDST repository</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generating-packages.html">Generating the packages for each module and for its dependencies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Contributing to AMIDST</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic-steps-contributing.html">Basic steps for contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#clone-the-repository">Clone the repository</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#create-a-new-branch-from-develop">Create a new branch from develop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#modify-the-code-and-upload-your-changes">Modify the code and upload your changes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic-steps-contributing.html#merge-the-new-branch-with-develop">Merge the new branch with develop</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Other</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="http://www.amidsttoolbox.com/documentation/0-7-2/other-072/javadoc/">JavaDoc</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">InferPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Dynamic Bayesian Networks: Code Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/notes/dbnetworks.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dynamic-bayesian-networks-code-examples">
+<span id="sec-dbns"></span><h1>Dynamic Bayesian Networks: Code Examples<a class="headerlink" href="#dynamic-bayesian-networks-code-examples" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first"><a class="reference internal" href="#data-streams">Data Streams</a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#dynamic-random-variables">Dynamic Random Variables</a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#dynamic-bayesian-networks">Dynamic Bayesian networks</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#creating-dynamic-bayesian-networks">Creating Dynamic Bayesian networks</a></li>
+<li><a class="reference internal" href="#creating-dynamic-bayesian-networks-with-latent-variables">Creating Dynamic Bayesian Networks with Latent Variables</a></li>
+<li><a class="reference internal" href="#modifying-dynamic-bayesian-networks">Modifying Dynamic Bayesian Networks</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#sampling-from-dynamic-bayesian-networks">Sampling from Dynamic Bayesian Networks</a></p>
+</li>
+<li><p class="first"><a class="reference internal" href="#inference-algorithms-for-dynamic-bayesian-networks">Inference Algorithms for Dynamic Bayesian Networks</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#the-dynamic-map-inference">The Dynamic MAP Inference</a></li>
+<li><a class="reference internal" href="#the-dynamic-variational-message-passing">The Dynamic Variational Message Passing</a></li>
+<li><a class="reference internal" href="#the-dynamic-importance-sampling">The Dynamic Importance sampling</a></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><a class="reference internal" href="#dynamic-learning-algorithms">Dynamic Learning Algorithms</a></p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="#maximum-likelihood-for-dbns">Maximum Likelihood for DBNs</a></li>
+<li><a class="reference internal" href="#streaming-variational-bayes-for-dbns">Streaming Variational Bayes for DBNS</a></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<div class="section" id="data-streams">
+<span id="id1"></span><h2>Data Streams<a class="headerlink" href="#data-streams" title="Permalink to this headline">¶</a></h2>
+<p>In this example we show how to use the main features of a <em>DataStream</em>
+object. More precisely, we show how to load a dynamic data stream and
+how to iterate over the <em>DynamicDataInstance</em> objects.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.datastream</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.Attribute</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicDataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DataSetGenerator</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * An example showing how to load an use a DataStream object. For more options refer to class</span>
+<span class="cm"> * eu.amidst.core.examples.datastream and simply change DataInstance by DynamicDataInstance</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 02/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataStreamsExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//Open the data stream using the class DynamicDataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DynamicDataStreamLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span><span class="s">&quot;datasets/simulated/exampleDS_d2_c3.arff&quot;</span><span class="o">);</span>
+
+
+        <span class="c1">//Access the attributes defining the data stream</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Attributes defining the data set&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">Attribute</span> <span class="n">attribute</span> <span class="o">:</span> <span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">attribute</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="n">Attribute</span> <span class="n">discreteVar0</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">().</span><span class="na">getAttributeByName</span><span class="o">(</span><span class="s">&quot;DiscreteVar0&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Iterate over dynamic data instances</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;1. Iterating over samples using a for loop&quot;</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DynamicDataInstance</span> <span class="n">dataInstance</span> <span class="o">:</span> <span class="n">data</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;SequenceID = &quot;</span><span class="o">+</span><span class="n">dataInstance</span><span class="o">.</span><span class="na">getSequenceID</span><span class="o">()+</span><span class="s">&quot;, TimeID = &quot;</span><span class="o">+</span><span class="n">dataInstance</span><span class="o">.</span><span class="na">getTimeID</span><span class="o">());</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;The value of attribute discreteVar0 for the current data instance is: &quot;</span> <span class="o">+</span>
+                    <span class="n">dataInstance</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">discreteVar0</span><span class="o">));</span>
+        <span class="o">}</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dynamic-random-variables">
+<span id="id2"></span><h2>Dynamic Random Variables<a class="headerlink" href="#dynamic-random-variables" title="Permalink to this headline">¶</a></h2>
+<p>This example show the basic functionalities related to dynamic
+variables.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.variables</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.DynamicVariables</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example show the basic functionalities related to dynamic variables.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicVariablesExample</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//Create an empty DynamicVariables object</span>
+        <span class="n">DynamicVariables</span> <span class="n">variables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicVariables</span><span class="o">();</span>
+
+        <span class="c1">//Invoke the &quot;new&quot; methods of the object DynamicVariables to create new dynamic variables.</span>
+
+        <span class="c1">//Create a Gaussian dynamic variables</span>
+        <span class="n">Variable</span> <span class="n">gaussianVar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newGaussianDynamicVariable</span><span class="o">(</span><span class="s">&quot;GaussianVar&quot;</span><span class="o">);</span>
+
+        <span class="c1">//Create a Multinomial dynamic variable with two states</span>
+        <span class="n">Variable</span> <span class="n">multinomialVar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newMultinomialDynamicVariable</span><span class="o">(</span><span class="s">&quot;MultinomialVar&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+
+        <span class="c1">//Create a Multinomial dynamic variable with two states: TRUE and FALSE</span>
+        <span class="n">Variable</span> <span class="n">multinomialVar2</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">newMultinomialDynamicVariable</span><span class="o">(</span><span class="s">&quot;MultinomialVar2&quot;</span><span class="o">,</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">&quot;TRUE, FALSE&quot;</span><span class="o">));</span>
+
+        <span class="c1">//We must block the object before we start to query.</span>
+        <span class="n">variables</span><span class="o">.</span><span class="na">block</span><span class="o">();</span>
+
+        <span class="c1">//All dynamic Variables have an interface variable</span>
+        <span class="n">Variable</span> <span class="n">gaussianVarInt</span> <span class="o">=</span> <span class="n">gaussianVar</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">();</span>
+        <span class="n">Variable</span> <span class="n">multinomialVarInt</span> <span class="o">=</span> <span class="n">multinomialVar</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">();</span>
+
+        <span class="c1">//Get the &quot;main&quot; Variable associated with each interface variable through the DynamicVariable object</span>
+        <span class="n">Variable</span> <span class="n">mainMultinomialVar</span> <span class="o">=</span> <span class="n">variables</span><span class="o">.</span><span class="na">getVariableFromInterface</span><span class="o">(</span><span class="n">multinomialVarInt</span><span class="o">);</span>
+
+        <span class="c1">//Check whether a variable is an interface variable</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Is Variable &quot;</span><span class="o">+</span><span class="n">gaussianVar</span><span class="o">.</span><span class="na">getName</span><span class="o">()+</span><span class="s">&quot; an interface variable? &quot;</span>
+                <span class="o">+</span><span class="n">gaussianVar</span><span class="o">.</span><span class="na">isInterfaceVariable</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Is Variable &quot;</span><span class="o">+</span><span class="n">gaussianVarInt</span><span class="o">.</span><span class="na">getName</span><span class="o">()+</span><span class="s">&quot; an interface variable? &quot;</span>
+                <span class="o">+</span><span class="n">gaussianVarInt</span><span class="o">.</span><span class="na">isInterfaceVariable</span><span class="o">());</span>
+
+        <span class="c1">//Check whether a variable is a dynamic variable</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Is Variable &quot;</span><span class="o">+</span><span class="n">multinomialVar</span><span class="o">.</span><span class="na">getName</span><span class="o">()+</span><span class="s">&quot; a dynamic variable? &quot;</span>
+                <span class="o">+</span><span class="n">gaussianVar</span><span class="o">.</span><span class="na">isDynamicVariable</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dynamic-bayesian-networks">
+<span id="id3"></span><h2>Dynamic Bayesian networks<a class="headerlink" href="#dynamic-bayesian-networks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="creating-dynamic-bayesian-networks">
+<span id="id4"></span><h3>Creating Dynamic Bayesian networks<a class="headerlink" href="#creating-dynamic-bayesian-networks" title="Permalink to this headline">¶</a></h3>
+<p>This example creates a dynamic BN, from a dynamic data stream, with
+randomly generated probability distributions, then saves it to a file.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.models</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicBayesianNetworkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicDataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicDAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.DynamicVariables</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example creates a dynamic BN from a dynamic data stream, with randomly generated probability distributions, then saves it to a file.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreatingDBNs</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+
+        <span class="c1">//Open the data stream using the static class DynamicDataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DynamicDataStreamLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span>
+                <span class="s">&quot;datasets/simulated/syntheticDataDiscrete.arff&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)</span>
+<span class="cm">         * in our data.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates</span>
+<span class="cm">         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable</span>
+<span class="cm">         * has a different ID number and make it transparent for the user. Each random variable has an associated</span>
+<span class="cm">         * interface variable.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We can extract the Variable objects by using the method getVariableByName();</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicVariables</span> <span class="n">dynamicVariables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicVariables</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+        <span class="n">DynamicDAG</span> <span class="n">dynamicDAG</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicDAG</span><span class="o">(</span><span class="n">dynamicVariables</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">A</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">C</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">D</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;D&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">E</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;E&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;G&quot;</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">A_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">B</span><span class="o">);</span>
+
+        <span class="c1">//Note that C_Interface and D_Interface are also created although they will not be used</span>
+        <span class="c1">//(we will not add temporal dependencies)</span>
+
+        <span class="n">Variable</span> <span class="n">E_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">E</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
+
+        <span class="c1">// Example of the dynamic DAG structure</span>
+        <span class="c1">// Time 0: Parents at time 0 are automatically created when adding parents at time T</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">C</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">D</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">A</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">B_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">E_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">G_Interface</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dynamicDAG</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type</span>
+<span class="cm">         * of each variable and their parents to initialize the Distributions objects that are stored</span>
+<span class="cm">         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are</span>
+<span class="cm">         * properly initialized.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetwork</span><span class="o">(</span><span class="n">dynamicDAG</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="n">dbn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * Finally teh Bayesian network is saved to a file.</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetworkWriter</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">dbn</span><span class="o">,</span> <span class="s">&quot;networks/simulated/DBNExample.dbn&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-dynamic-bayesian-networks-with-latent-variables">
+<span id="id5"></span><h3>Creating Dynamic Bayesian Networks with Latent Variables<a class="headerlink" href="#creating-dynamic-bayesian-networks-with-latent-variables" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to create a BN model with hidden variables. We
+simply create a BN for clustering, i.e., a naive Bayes like structure
+with a single hidden variable acting as parant of all the remaining
+observable variables.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.models</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicBayesianNetworkWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicDataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicDAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.DynamicVariables</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * In this example, we show how to create a DBN model with latent variables. We create a DBN a class and a hidden</span>
+<span class="cm"> * variable acting as parent of all the observable variables.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 02/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CreatingDBNsWithLatentVariables</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DynamicDataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DynamicDataStreamLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span>
+                <span class="s">&quot;datasets/simulated/syntheticDataDiscrete.arff&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)</span>
+<span class="cm">         * in our data.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates</span>
+<span class="cm">         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable</span>
+<span class="cm">         * has a different ID number and make it transparent for the user. Each random variable has an associated</span>
+<span class="cm">         * interface variable.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We can extract the Variable objects by using the method getVariableByName();</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicVariables</span> <span class="n">dynamicVariables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicVariables</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+
+        <span class="n">Variable</span> <span class="n">A</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">C</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">D</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;D&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">E</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;E&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;G&quot;</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">A_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">B</span><span class="o">);</span>
+
+        <span class="c1">//Note that C_Interface and D_Interface are also created although they will not be used</span>
+        <span class="c1">//(we will not add temporal dependencies)</span>
+
+        <span class="n">Variable</span> <span class="n">E_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">E</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * We add a hidden multinomial variable (with 2 states) as parent of all variables except A</span>
+<span class="cm">         */</span>
+
+        <span class="n">Variable</span> <span class="n">H</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">newMultinomialDynamicVariable</span><span class="o">(</span><span class="s">&quot;H&quot;</span><span class="o">,</span> <span class="mi">2</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">H_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">H</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once we have defined your {@link DynamicVariables} object, including the latent variable,</span>
+<span class="cm">         * the next step is to create a DynamicDAG structure over this set of variables.</span>
+<span class="cm">         *</span>
+<span class="cm">         */</span>
+
+        <span class="n">DynamicDAG</span> <span class="n">dynamicDAG</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicDAG</span><span class="o">(</span><span class="n">dynamicVariables</span><span class="o">);</span>
+
+        <span class="c1">// EXAMPLE OF THE DAG STRUCTURE</span>
+
+        <span class="cm">/*</span>
+
+<span class="cm">        DAG Time 0</span>
+<span class="cm">        H : {  }</span>
+<span class="cm">        A : {  }</span>
+<span class="cm">        B : { A, H }</span>
+<span class="cm">        C : { A, H }</span>
+<span class="cm">        D : { A, H }</span>
+<span class="cm">        E : { A, H }</span>
+<span class="cm">        G : { A, H }</span>
+
+<span class="cm">        DAG Time T</span>
+<span class="cm">        H : { H_Interface }</span>
+<span class="cm">        A : { A_Interface }</span>
+<span class="cm">        B : { H, A, B_Interface }</span>
+<span class="cm">        C : { H, A }</span>
+<span class="cm">        D : { H, A }</span>
+<span class="cm">        E : { H, A, E_Interface }</span>
+<span class="cm">        G : { H, A, G_Interface }</span>
+
+<span class="cm">        */</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * 1. To add parents to each variable, we first recover the ParentSet object by the method</span>
+<span class="cm">         * getParentSet(Variable var) and then call the method addParent(Variable var).</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. We just put the hidden variable as parent of all the other variables (except A), and</span>
+<span class="cm">         * link it temporally.</span>
+<span class="cm">         *</span>
+<span class="cm">         */</span>
+
+        <span class="c1">// Time 0: Parents at time 0 are automatically created when adding parents at time T</span>
+        <span class="c1">// Time t</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetsTimeT</span><span class="o">().</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">pset</span> <span class="o">-&gt;</span> <span class="n">pset</span><span class="o">.</span><span class="na">getMainVar</span><span class="o">().</span><span class="na">getVarID</span><span class="o">()</span> <span class="o">!=</span> <span class="n">A</span><span class="o">.</span><span class="na">getVarID</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">filter</span><span class="o">(</span><span class="n">pset</span> <span class="o">-&gt;</span> <span class="n">pset</span><span class="o">.</span><span class="na">getMainVar</span><span class="o">().</span><span class="na">getVarID</span><span class="o">()</span> <span class="o">!=</span> <span class="n">H</span><span class="o">.</span><span class="na">getVarID</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">pset</span> <span class="o">-&gt;</span> <span class="o">{</span>
+                    <span class="n">pset</span><span class="o">.</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+                    <span class="n">pset</span><span class="o">.</span><span class="na">addParent</span><span class="o">(</span><span class="n">H</span><span class="o">);</span>
+                <span class="o">});</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">A</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">B_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">E_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">G_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">H</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">H_Interface</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dynamicDAG</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type</span>
+<span class="cm">         * of each variable and their parents to initialize the Distributions objects that are stored</span>
+<span class="cm">         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are</span>
+<span class="cm">         * properly initialized.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetwork</span><span class="o">(</span><span class="n">dynamicDAG</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="n">dbn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * Finally teh Bayesian network is saved to a file.</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetworkWriter</span><span class="o">.</span><span class="na">save</span><span class="o">(</span><span class="n">dbn</span><span class="o">,</span> <span class="s">&quot;networks/simulated/DBNExample.dbn&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-dynamic-bayesian-networks">
+<span id="id6"></span><h3>Modifying Dynamic Bayesian Networks<a class="headerlink" href="#modifying-dynamic-bayesian-networks" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to create a BN model with hidden variables. We
+This example shows how to access and modify the conditional
+probabilities of a Dynamic Bayesian network model.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.models</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.Multinomial</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.Multinomial_MultinomialParents</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.io.DynamicDataStreamLoader</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicDAG</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.DynamicVariables</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * In this example we show how to access and modify the conditional probabilities of a Dynamic Bayesian network model.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 02/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ModifyingDBNs</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+        <span class="c1">//We can open the data stream using the static class DynamicDataStreamLoader</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">DynamicDataStreamLoader</span><span class="o">.</span><span class="na">loadFromFile</span><span class="o">(</span>
+                <span class="s">&quot;datasets/simulated/syntheticDataDiscrete.arff&quot;</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. Once the data is loaded, we create a random variable for each of the attributes (i.e. data columns)</span>
+<span class="cm">         * in our data.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. {@link DynamicVariables} is the class for doing that. It takes a list of Attributes and internally creates</span>
+<span class="cm">         * all the variables. We create the variables using DynamicVariables class to guarantee that each variable</span>
+<span class="cm">         * has a different ID number and make it transparent for the user. Each random variable has an associated</span>
+<span class="cm">         * interface variable.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. We can extract the Variable objects by using the method getVariableByName();</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicVariables</span> <span class="n">dynamicVariables</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicVariables</span><span class="o">(</span><span class="n">data</span><span class="o">.</span><span class="na">getAttributes</span><span class="o">());</span>
+        <span class="n">DynamicDAG</span> <span class="n">dynamicDAG</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicDAG</span><span class="o">(</span><span class="n">dynamicVariables</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">A</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;A&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;B&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">C</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;C&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">D</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;D&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">E</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;E&quot;</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;G&quot;</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">A_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">B_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">B</span><span class="o">);</span>
+
+        <span class="c1">//Note that C_Interface and D_Interface are also created although they will not be used</span>
+        <span class="c1">//(we will not add temporal dependencies)</span>
+
+        <span class="n">Variable</span> <span class="n">E_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">E</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">G_Interface</span> <span class="o">=</span> <span class="n">dynamicVariables</span><span class="o">.</span><span class="na">getInterfaceVariable</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
+
+        <span class="c1">// EXAMPLE OF THE DAG STRUCTURE</span>
+
+        <span class="cm">/*</span>
+
+<span class="cm">        DAG Time 0</span>
+<span class="cm">        A : {  }</span>
+<span class="cm">        B : { A }</span>
+<span class="cm">        C : { A }</span>
+<span class="cm">        D : { A }</span>
+<span class="cm">        E : { A }</span>
+<span class="cm">        G : { A }</span>
+
+<span class="cm">        DAG Time T</span>
+<span class="cm">        A : { A_Interface }</span>
+<span class="cm">        B : { A, B_Interface }</span>
+<span class="cm">        C : { A }</span>
+<span class="cm">        D : { A }</span>
+<span class="cm">        E : { A, E_Interface }</span>
+<span class="cm">        G : { A, G_Interface }</span>
+
+<span class="cm">        */</span>
+
+        <span class="c1">// Time 0: Parents at time 0 are automatically created when adding parents at time T</span>
+        <span class="c1">// Time t</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">C</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">D</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">A</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">A_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">B_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">E_Interface</span><span class="o">);</span>
+        <span class="n">dynamicDAG</span><span class="o">.</span><span class="na">getParentSetTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">).</span><span class="na">addParent</span><span class="o">(</span><span class="n">G_Interface</span><span class="o">);</span>
+
+        <span class="cm">/**</span>
+<span class="cm">         * 1. We now create the Dynamic Bayesian network from the previous Dynamic DAG.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 2. The DBN object is created from the DynamicDAG. It automatically looks at the distribution type</span>
+<span class="cm">         * of each variable and their parents to initialize the Distributions objects that are stored</span>
+<span class="cm">         * inside (i.e. Multinomial, Normal, CLG, etc). The parameters defining these distributions are</span>
+<span class="cm">         * properly initialized.</span>
+<span class="cm">         *</span>
+<span class="cm">         * 3. The network is printed and we can have a look at the kind of distributions stored in the DBN object.</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetwork</span><span class="o">(</span><span class="n">dynamicDAG</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="n">dbn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * We now modify the conditional probability distributions to assigned the values we want</span>
+<span class="cm">         */</span>
+
+        <span class="cm">/* IMPORTANT: The parents are indexed according to Koller (Chapter 10. Pag. 358). Example:</span>
+<span class="cm">           Parents: A = {A0,A1} and B = {B0,B1,B2}.</span>
+<span class="cm">           NumberOfPossibleAssignments = 6</span>
+
+<span class="cm">           Index   A    B</span>
+<span class="cm">             0     A0   B0</span>
+<span class="cm">             1     A1   B1</span>
+<span class="cm">             2     A0   B2</span>
+<span class="cm">             3     A1   B0</span>
+<span class="cm">             4     A0   B1</span>
+<span class="cm">             5     A1   B2</span>
+<span class="cm">        */</span>
+
+        <span class="c1">// ********************************************************************************************</span>
+        <span class="c1">// ************************************** TIME 0 **********************************************</span>
+        <span class="c1">// ********************************************************************************************</span>
+
+        <span class="c1">// Variable A</span>
+        <span class="n">Multinomial</span> <span class="n">distA_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">distA_Time0</span><span class="o">.</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.3</span><span class="o">,</span> <span class="mf">0.7</span><span class="o">});</span>
+
+        <span class="c1">// Variable B</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distB_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">B</span><span class="o">);</span>
+        <span class="n">distB_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.4</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.5</span><span class="o">});</span>
+        <span class="n">distB_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.5</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+
+        <span class="c1">// Variable C</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distC_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">C</span><span class="o">);</span>
+        <span class="n">distC_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.4</span><span class="o">,</span> <span class="mf">0.6</span><span class="o">});</span>
+        <span class="n">distC_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">});</span>
+
+        <span class="c1">// Variable D</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distD_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">D</span><span class="o">);</span>
+        <span class="n">distD_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.7</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+        <span class="n">distD_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.9</span><span class="o">});</span>
+
+        <span class="c1">// Variable E</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distE_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">E</span><span class="o">);</span>
+        <span class="n">distE_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.8</span><span class="o">,</span> <span class="mf">0.2</span><span class="o">});</span>
+        <span class="n">distE_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.9</span><span class="o">});</span>
+
+        <span class="c1">// Variable G</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distG_Time0</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTime0</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
+        <span class="n">distG_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.6</span><span class="o">,</span> <span class="mf">0.4</span><span class="o">});</span>
+        <span class="n">distG_Time0</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.7</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+
+        <span class="c1">// ********************************************************************************************</span>
+        <span class="c1">// ************************************** TIME T **********************************************</span>
+        <span class="c1">// ********************************************************************************************</span>
+
+        <span class="c1">// Variable A</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distA_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">A</span><span class="o">);</span>
+        <span class="n">distA_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.15</span><span class="o">,</span> <span class="mf">0.85</span><span class="o">});</span>
+        <span class="n">distA_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.9</span><span class="o">});</span>
+
+        <span class="c1">// Variable B</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distB_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">B</span><span class="o">);</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.7</span><span class="o">});</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.6</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.3</span><span class="o">,</span> <span class="mf">0.4</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">3</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.7</span><span class="o">});</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">4</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.5</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.4</span><span class="o">});</span>
+        <span class="n">distB_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">5</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">});</span>
+
+        <span class="c1">// Variable C: equals to the distribution at time 0 (C does not have temporal clone)</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distC_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">C</span><span class="o">);</span>
+        <span class="n">distC_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.4</span><span class="o">,</span> <span class="mf">0.6</span><span class="o">});</span>
+        <span class="n">distC_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">});</span>
+
+        <span class="c1">// Variable D: equals to the distribution at time 0 (D does not have temporal clone)</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distD_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">D</span><span class="o">);</span>
+        <span class="n">distD_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.7</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+        <span class="n">distD_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.1</span><span class="o">,</span> <span class="mf">0.9</span><span class="o">});</span>
+
+        <span class="c1">// Variable E</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distE_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">E</span><span class="o">);</span>
+        <span class="n">distE_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.3</span><span class="o">,</span> <span class="mf">0.7</span><span class="o">});</span>
+        <span class="n">distE_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.6</span><span class="o">,</span> <span class="mf">0.4</span><span class="o">});</span>
+        <span class="n">distE_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.7</span><span class="o">,</span> <span class="mf">0.3</span><span class="o">});</span>
+        <span class="n">distE_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">3</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.9</span><span class="o">,</span> <span class="mf">0.1</span><span class="o">});</span>
+
+        <span class="c1">// Variable G</span>
+        <span class="n">Multinomial_MultinomialParents</span> <span class="n">distG_TimeT</span> <span class="o">=</span> <span class="n">dbn</span><span class="o">.</span><span class="na">getConditionalDistributionTimeT</span><span class="o">(</span><span class="n">G</span><span class="o">);</span>
+        <span class="n">distG_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">0</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.2</span><span class="o">,</span> <span class="mf">0.8</span><span class="o">});</span>
+        <span class="n">distG_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.5</span><span class="o">,</span> <span class="mf">0.5</span><span class="o">});</span>
+        <span class="n">distG_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">2</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.3</span><span class="o">,</span> <span class="mf">0.7</span><span class="o">});</span>
+        <span class="n">distG_TimeT</span><span class="o">.</span><span class="na">getMultinomial</span><span class="o">(</span><span class="mi">3</span><span class="o">).</span><span class="na">setProbabilities</span><span class="o">(</span><span class="k">new</span> <span class="kt">double</span><span class="o">[]{</span><span class="mf">0.8</span><span class="o">,</span> <span class="mf">0.2</span><span class="o">});</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * We print the new DBN</span>
+<span class="cm">         */</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dbn</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="sampling-from-dynamic-bayesian-networks">
+<span id="id7"></span><h2>Sampling from Dynamic Bayesian Networks<a class="headerlink" href="#sampling-from-dynamic-bayesian-networks" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to use the <em>DynamicBayesianNetworkSampler</em> class
+to randomly generate a dynamic data stream from a given Dynamic Bayesian
+network.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.utils</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.io.DataStreamWriter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example shows how to use the DynamicBayesianNetworkSampler class to randomly generate a data sample</span>
+<span class="cm"> * for a given Dynamic Bayesian network.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 02/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicBayesianNetworkSamplerExample</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span><span class="o">{</span>
+
+        <span class="c1">//We first generate a DBN with 3 continuous and 3 discrete variables with 2 states</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span> <span class="n">dbnGenerator</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">();</span>
+        <span class="n">dbnGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">dbnGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">dbnGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+
+        <span class="c1">//Create a NB-like structure with temporal links in the children (leaves) and 2 states for</span>
+        <span class="c1">//the class variable</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">network</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span>
+                <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="mi">2</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//Create the sampler from this network</span>
+        <span class="n">DynamicBayesianNetworkSampler</span> <span class="n">sampler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkSampler</span><span class="o">(</span><span class="n">network</span><span class="o">);</span>
+        <span class="n">sampler</span><span class="o">.</span><span class="na">setSeed</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+
+        <span class="c1">//Sample a dataStream of 3 sequences of 1000 samples each</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">dataStream</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="na">sampleToDataBase</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">1000</span><span class="o">);</span>
+
+        <span class="c1">//Save the created data sample in a file</span>
+        <span class="n">DataStreamWriter</span><span class="o">.</span><span class="na">writeDataToFile</span><span class="o">(</span><span class="n">dataStream</span><span class="o">,</span> <span class="s">&quot;./datasets/simulated/dnb-samples.arff&quot;</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="inference-algorithms-for-dynamic-bayesian-networks">
+<span id="id8"></span><h2>Inference Algorithms for Dynamic Bayesian Networks<a class="headerlink" href="#inference-algorithms-for-dynamic-bayesian-networks" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-dynamic-map-inference">
+<span id="id9"></span><h3>The Dynamic MAP Inference<a class="headerlink" href="#the-dynamic-map-inference" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the Dynamic MAP Inference algorithm.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.inference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Assignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.DynamicAssignment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.variables.HashMapDynamicAssignment</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.stream.Collectors</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example shows how to use the Dynamic MAP Inference algorithm described in Deliverable 3.4 (Section 6).</span>
+<span class="cm"> * Created by dario on 11/11/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicMAPInference</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">arguments</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span><span class="o">,</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         * LOADS THE DYNAMIC NETWORK AND PRINTS IT</span>
+<span class="cm">         */</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfLinks</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dynamicBayesianNetwork</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span><span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="mi">2</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+
+        <span class="cm">/*</span>
+<span class="cm">         *  INITIALIZE THE DYNAMIC MAP OBJECT</span>
+<span class="cm">         */</span>
+        <span class="kt">int</span> <span class="n">nTimeSteps</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
+        <span class="n">eu</span><span class="o">.</span><span class="na">amidst</span><span class="o">.</span><span class="na">dynamic</span><span class="o">.</span><span class="na">inference</span><span class="o">.</span><span class="na">DynamicMAPInference</span> <span class="n">dynMAP</span> <span class="o">=</span> <span class="k">new</span> <span class="n">eu</span><span class="o">.</span><span class="na">amidst</span><span class="o">.</span><span class="na">dynamic</span><span class="o">.</span><span class="na">inference</span><span class="o">.</span><span class="na">DynamicMAPInference</span><span class="o">();</span>
+        <span class="n">dynMAP</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">dynamicBayesianNetwork</span><span class="o">);</span>
+        <span class="n">dynMAP</span><span class="o">.</span><span class="na">setNumberOfTimeSteps</span><span class="o">(</span><span class="n">nTimeSteps</span><span class="o">);</span>
+
+        <span class="n">Variable</span> <span class="n">mapVariable</span> <span class="o">=</span> <span class="n">dynamicBayesianNetwork</span><span class="o">.</span><span class="na">getDynamicVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;ClassVar&quot;</span><span class="o">);</span>
+        <span class="n">dynMAP</span><span class="o">.</span><span class="na">setMAPvariable</span><span class="o">(</span><span class="n">mapVariable</span><span class="o">);</span>
+
+
+        <span class="cm">/*</span>
+<span class="cm">         * GENERATE AN EVIDENCE FOR T=0,...,nTimeSteps-1</span>
+<span class="cm">         */</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Variable</span><span class="o">&gt;</span> <span class="n">varsDynamicModel</span> <span class="o">=</span> <span class="n">dynamicBayesianNetwork</span><span class="o">.</span><span class="na">getDynamicVariables</span><span class="o">().</span><span class="na">getListOfDynamicVariables</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;DYNAMIC VARIABLES:&quot;</span><span class="o">);</span>
+        <span class="n">varsDynamicModel</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">var</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Var ID &quot;</span> <span class="o">+</span> <span class="n">var</span><span class="o">.</span><span class="na">getVarID</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">var</span><span class="o">.</span><span class="na">getName</span><span class="o">()));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">indexVarEvidence1</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">indexVarEvidence2</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">indexVarEvidence3</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+        <span class="n">Variable</span> <span class="n">varEvidence1</span> <span class="o">=</span> <span class="n">varsDynamicModel</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">indexVarEvidence1</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varEvidence2</span> <span class="o">=</span> <span class="n">varsDynamicModel</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">indexVarEvidence2</span><span class="o">);</span>
+        <span class="n">Variable</span> <span class="n">varEvidence3</span> <span class="o">=</span> <span class="n">varsDynamicModel</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">indexVarEvidence3</span><span class="o">);</span>
+
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Variable</span><span class="o">&gt;</span> <span class="n">varsEvidence</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">varsEvidence</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span><span class="n">varEvidence1</span><span class="o">);</span>
+        <span class="n">varsEvidence</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="n">varEvidence2</span><span class="o">);</span>
+        <span class="n">varsEvidence</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span><span class="n">varEvidence3</span><span class="o">);</span>
+
+        <span class="kt">double</span> <span class="n">varEvidenceValue</span><span class="o">;</span>
+
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">4634</span><span class="o">);</span>
+
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">DynamicAssignment</span><span class="o">&gt;</span> <span class="n">evidence</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">nTimeSteps</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">nTimeSteps</span><span class="o">;</span> <span class="n">t</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">HashMapDynamicAssignment</span> <span class="n">dynAssignment</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashMapDynamicAssignment</span><span class="o">(</span><span class="n">varsEvidence</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">varsEvidence</span><span class="o">.</span><span class="na">size</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+
+                <span class="n">dynAssignment</span><span class="o">.</span><span class="na">setSequenceID</span><span class="o">(</span><span class="mi">12302253</span><span class="o">);</span>
+                <span class="n">dynAssignment</span><span class="o">.</span><span class="na">setTimeID</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+                <span class="n">Variable</span> <span class="n">varEvidence</span> <span class="o">=</span> <span class="n">varsEvidence</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">varEvidence</span><span class="o">.</span><span class="na">isMultinomial</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="n">varEvidenceValue</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="n">varEvidence1</span><span class="o">.</span><span class="na">getNumberOfStates</span><span class="o">());</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">varEvidenceValue</span> <span class="o">=</span> <span class="o">-</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="na">nextDouble</span><span class="o">();</span>
+                <span class="o">}</span>
+                <span class="n">dynAssignment</span><span class="o">.</span><span class="na">setValue</span><span class="o">(</span><span class="n">varEvidence</span><span class="o">,</span> <span class="n">varEvidenceValue</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">evidence</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">dynAssignment</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;EVIDENCE:&quot;</span><span class="o">);</span>
+        <span class="n">evidence</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">evid</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Evidence at time &quot;</span> <span class="o">+</span> <span class="n">evid</span><span class="o">.</span><span class="na">getTimeID</span><span class="o">());</span>
+            <span class="n">evid</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">forEach</span><span class="o">(</span><span class="n">variable</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">variable</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;: &quot;</span> <span class="o">+</span> <span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">evid</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">variable</span><span class="o">))));</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">();</span>
+        <span class="o">});</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         *  SET THE EVIDENCE AND MAKE INFERENCE</span>
+<span class="cm">         */</span>
+        <span class="n">dynMAP</span><span class="o">.</span><span class="na">setEvidence</span><span class="o">(</span><span class="n">evidence</span><span class="o">);</span>
+        <span class="n">dynMAP</span><span class="o">.</span><span class="na">runInference</span><span class="o">(</span><span class="n">eu</span><span class="o">.</span><span class="na">amidst</span><span class="o">.</span><span class="na">dynamic</span><span class="o">.</span><span class="na">inference</span><span class="o">.</span><span class="na">DynamicMAPInference</span><span class="o">.</span><span class="na">SearchAlgorithm</span><span class="o">.</span><span class="na">IS</span><span class="o">);</span>
+
+        <span class="cm">/*</span>
+<span class="cm">         *  SHOW RESULTS</span>
+<span class="cm">         */</span>
+        <span class="n">Assignment</span> <span class="n">MAPestimate</span> <span class="o">=</span> <span class="n">dynMAP</span><span class="o">.</span><span class="na">getMAPestimate</span><span class="o">();</span>
+        <span class="kt">double</span> <span class="n">MAPestimateProbability</span> <span class="o">=</span> <span class="n">dynMAP</span><span class="o">.</span><span class="na">getMAPestimateProbability</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;MAP sequence over &quot;</span> <span class="o">+</span> <span class="n">mapVariable</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;:&quot;</span><span class="o">);</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">Variable</span><span class="o">&gt;</span> <span class="n">MAPvarReplications</span> <span class="o">=</span> <span class="n">MAPestimate</span><span class="o">.</span><span class="na">getVariables</span><span class="o">().</span><span class="na">stream</span><span class="o">().</span><span class="na">sorted</span><span class="o">((</span><span class="n">var1</span><span class="o">,</span><span class="n">var2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">var1</span><span class="o">.</span><span class="na">getVarID</span><span class="o">()&gt;</span><span class="n">var2</span><span class="o">.</span><span class="na">getVarID</span><span class="o">()?</span> <span class="mi">1</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">)).</span><span class="na">collect</span><span class="o">(</span><span class="n">Collectors</span><span class="o">.</span><span class="na">toList</span><span class="o">());</span>
+
+        <span class="n">StringBuilder</span> <span class="n">sequence</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="o">();</span>
+        <span class="n">MAPvarReplications</span><span class="o">.</span><span class="na">stream</span><span class="o">().</span><span class="na">forEachOrdered</span><span class="o">(</span><span class="n">var</span> <span class="o">-&gt;</span> <span class="n">sequence</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">MAPestimate</span><span class="o">.</span><span class="na">getValue</span><span class="o">(</span><span class="n">var</span><span class="o">))</span> <span class="o">+</span> <span class="s">&quot;, &quot;</span><span class="o">));</span>
+        <span class="c1">//System.out.println(MAPestimate.outputString(MAPvarReplications));</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sequence</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;with probability prop. to: &quot;</span> <span class="o">+</span> <span class="n">MAPestimateProbability</span><span class="o">);</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-dynamic-variational-message-passing">
+<span id="id10"></span><h3>The Dynamic Variational Message Passing<a class="headerlink" href="#the-dynamic-variational-message-passing" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the Factored Frontier algorithm with
+Variational Message Passing for running inference on dynamic Bayesian
+networks.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.inference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.UnivariateDistribution</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.messagepassing.VMP</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.inference.FactoredFrontierForDBN</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.inference.InferenceEngineForDBN</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example shows how to use the Factored Frontier algorithm with Variational Message Passing described in</span>
+<span class="cm"> * Deliverable 3.4 (Section 6).</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 16/11/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicVMP_FactoredFrontier</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">extendedDBN</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span><span class="n">random</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="c1">//We select the target variable for inference, in this case the class variable</span>
+        <span class="n">Variable</span> <span class="n">classVar</span> <span class="o">=</span> <span class="n">extendedDBN</span><span class="o">.</span><span class="na">getDynamicVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;ClassVar&quot;</span><span class="o">);</span>
+
+
+        <span class="c1">//We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.</span>
+        <span class="n">DynamicBayesianNetworkSampler</span> <span class="n">dynamicSampler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkSampler</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">);</span>
+        <span class="n">dynamicSampler</span><span class="o">.</span><span class="na">setHiddenVar</span><span class="o">(</span><span class="n">classVar</span><span class="o">);</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">dataPredict</span> <span class="o">=</span> <span class="n">dynamicSampler</span><span class="o">.</span><span class="na">sampleToDataBase</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">10</span><span class="o">);</span>
+
+
+        <span class="c1">//We select VMP with the factored frontier algorithm as the Inference Algorithm</span>
+        <span class="n">FactoredFrontierForDBN</span> <span class="n">FFalgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FactoredFrontierForDBN</span><span class="o">(</span><span class="k">new</span> <span class="n">VMP</span><span class="o">());</span>
+        <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">setInferenceAlgorithmForDBN</span><span class="o">(</span><span class="n">FFalgorithm</span><span class="o">);</span>
+
+        <span class="c1">//Then, we set the DBN model</span>
+        <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">);</span>
+
+        <span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">;</span>
+        <span class="n">UnivariateDistribution</span> <span class="n">posterior</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DynamicDataInstance</span> <span class="n">instance</span> <span class="o">:</span> <span class="n">dataPredict</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//The InferenceEngineForDBN must be reset at the begining of each Sequence.</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">instance</span><span class="o">.</span><span class="na">getTimeID</span><span class="o">()==</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">posterior</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+                <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="c1">//We also set the evidence.</span>
+            <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">addDynamicEvidence</span><span class="o">(</span><span class="n">instance</span><span class="o">);</span>
+
+            <span class="c1">//Then we run inference</span>
+            <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+            <span class="c1">//Then we query the posterior of the target variable</span>
+            <span class="n">posterior</span> <span class="o">=</span> <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">getFilteredPosterior</span><span class="o">(</span><span class="n">classVar</span><span class="o">);</span>
+
+            <span class="c1">//We show the output</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(ClassVar|e[0:&quot;</span><span class="o">+(</span><span class="n">time</span><span class="o">++)+</span><span class="s">&quot;]) = &quot;</span><span class="o">+</span><span class="n">posterior</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-dynamic-importance-sampling">
+<span id="id11"></span><h3>The Dynamic Importance Sampling<a class="headerlink" href="#the-dynamic-importance-sampling" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to use the Factored Frontier algorithm with
+Importance Sampling for running inference in dynamic Bayesian networks.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.inference</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.distribution.UnivariateDistribution</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.ImportanceSampling</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.variables.Variable</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.inference.FactoredFrontierForDBN</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.inference.InferenceEngineForDBN</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * This example shows how to use the Factored Frontier algorithm with Importance Sampling described in</span>
+<span class="cm"> * Deliverable 3.4 (Section 6).</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 16/11/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DynamicIS_FactoredFrontier</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">extendedDBN</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span><span class="n">random</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+
+        <span class="c1">//We select the target variable for inference, in this case the class variable</span>
+        <span class="n">Variable</span> <span class="n">classVar</span> <span class="o">=</span> <span class="n">extendedDBN</span><span class="o">.</span><span class="na">getDynamicVariables</span><span class="o">().</span><span class="na">getVariableByName</span><span class="o">(</span><span class="s">&quot;ClassVar&quot;</span><span class="o">);</span>
+
+        <span class="c1">//We create a dynamic dataset with 3 sequences for prediction. The class var is made hidden.</span>
+        <span class="n">DynamicBayesianNetworkSampler</span> <span class="n">dynamicSampler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkSampler</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">);</span>
+        <span class="n">dynamicSampler</span><span class="o">.</span><span class="na">setHiddenVar</span><span class="o">(</span><span class="n">classVar</span><span class="o">);</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">dataPredict</span> <span class="o">=</span> <span class="n">dynamicSampler</span><span class="o">.</span><span class="na">sampleToDataBase</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
+
+        <span class="c1">//We select IS with the factored frontier algorithm as the Inference Algorithm</span>
+        <span class="n">ImportanceSampling</span> <span class="n">importanceSampling</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportanceSampling</span><span class="o">();</span>
+        <span class="n">importanceSampling</span><span class="o">.</span><span class="na">setKeepDataOnMemory</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">FactoredFrontierForDBN</span> <span class="n">FFalgorithm</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FactoredFrontierForDBN</span><span class="o">(</span><span class="n">importanceSampling</span><span class="o">);</span>
+        <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">setInferenceAlgorithmForDBN</span><span class="o">(</span><span class="n">FFalgorithm</span><span class="o">);</span>
+
+        <span class="c1">//Then, we set the DBN model</span>
+        <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">setModel</span><span class="o">(</span><span class="n">extendedDBN</span><span class="o">);</span>
+
+        <span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="n">UnivariateDistribution</span> <span class="n">posterior</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">DynamicDataInstance</span> <span class="n">instance</span> <span class="o">:</span> <span class="n">dataPredict</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">//The InferenceEngineForDBN must be reset at the begining of each Sequence.</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">instance</span><span class="o">.</span><span class="na">getTimeID</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">posterior</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">reset</span><span class="o">();</span>
+                <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+            <span class="o">}</span>
+
+            <span class="c1">//We also set the evidence.</span>
+            <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">addDynamicEvidence</span><span class="o">(</span><span class="n">instance</span><span class="o">);</span>
+
+            <span class="c1">//Then we run inference</span>
+            <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">runInference</span><span class="o">();</span>
+
+            <span class="c1">//Then we query the posterior of the target variable</span>
+            <span class="n">posterior</span> <span class="o">=</span> <span class="n">InferenceEngineForDBN</span><span class="o">.</span><span class="na">getFilteredPosterior</span><span class="o">(</span><span class="n">classVar</span><span class="o">);</span>
+
+
+            <span class="c1">//We show the output</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;P(ClassVar|e[0:&quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">time</span><span class="o">++)</span> <span class="o">+</span> <span class="s">&quot;]) = &quot;</span> <span class="o">+</span> <span class="n">posterior</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="dynamic-learning-algorithms">
+<span id="id12"></span><h2>Dynamic Learning Algorithms<a class="headerlink" href="#dynamic-learning-algorithms" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="maximum-likelihood-for-dbns">
+<span id="id13"></span><h3>Maximum Likelihood for DBNs<a class="headerlink" href="#maximum-likelihood-for-dbns" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to learn the parameters of a dynamic Bayesian
+network using maximum likelihood from a randomly sampled data stream.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.learning.parametric.ParallelMaximumLikelihood</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.learning.parametric.ParameterLearningAlgorithm</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> *</span>
+<span class="cm"> * This example shows how to learn the parameters of a dynamic Bayesian network using maximum likelihood</span>
+<span class="cm"> * from a sample data.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 01/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MLforDBNsampling</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbnRandom</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span><span class="n">random</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//Sample dynamic data from the created dbn with random parameters</span>
+        <span class="n">DynamicBayesianNetworkSampler</span> <span class="n">sampler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkSampler</span><span class="o">(</span><span class="n">dbnRandom</span><span class="o">);</span>
+        <span class="n">sampler</span><span class="o">.</span><span class="na">setSeed</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="c1">//Sample 3 sequences of 100K instances</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="na">sampleToDataBase</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">10000</span><span class="o">);</span>
+
+        <span class="cm">/*Parameter Learning with ML*/</span>
+
+        <span class="c1">//We fix the DAG structure, the data and learn the DBN</span>
+        <span class="n">ParameterLearningAlgorithm</span> <span class="n">parallelMaximumLikelihood</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ParallelMaximumLikelihood</span><span class="o">();</span>
+        <span class="n">parallelMaximumLikelihood</span><span class="o">.</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+        <span class="n">parallelMaximumLikelihood</span><span class="o">.</span><span class="na">setDynamicDAG</span><span class="o">(</span><span class="n">dbnRandom</span><span class="o">.</span><span class="na">getDynamicDAG</span><span class="o">());</span>
+        <span class="n">parallelMaximumLikelihood</span><span class="o">.</span><span class="na">initLearning</span><span class="o">();</span>
+        <span class="n">parallelMaximumLikelihood</span><span class="o">.</span><span class="na">updateModel</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbnLearnt</span> <span class="o">=</span> <span class="n">parallelMaximumLikelihood</span><span class="o">.</span><span class="na">getLearntDBN</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dbnLearnt</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="streaming-variational-bayes-for-dbns">
+<span id="id14"></span><h3>Streaming Variational Bayes for DBNs<a class="headerlink" href="#streaming-variational-bayes-for-dbns" title="Permalink to this headline">¶</a></h3>
+<p>This example shows how to learn the parameters of a dynamic Bayesian
+network using streaming variational Bayes from a randomly sampled data
+stream.</p>
+<div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.</span>
+<span class="cm"> *    See the NOTICE file distributed with this work for additional information regarding copyright ownership.</span>
+<span class="cm"> *    The ASF licenses this file to You under the Apache License, Version 2.0 (the &quot;License&quot;); you may not use</span>
+<span class="cm"> *    this file except in compliance with the License.  You may obtain a copy of the License at</span>
+<span class="cm"> *</span>
+<span class="cm"> *            http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="cm"> *</span>
+<span class="cm"> *    Unless required by applicable law or agreed to in writing, software distributed under the License is</span>
+<span class="cm"> *    distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="cm"> *    See the License for the specific language governing permissions and limitations under the License.</span>
+<span class="cm"> *</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="kn">package</span> <span class="nn">eu.amidst.dynamic.examples.learning</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">eu.amidst.core.datastream.DataStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.core.inference.messagepassing.VMP</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.datastream.DynamicDataInstance</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.learning.parametric.bayesian.SVB</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.models.DynamicBayesianNetwork</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkGenerator</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">eu.amidst.dynamic.utils.DynamicBayesianNetworkSampler</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Random</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by ana@cs.aau.dk on 01/12/15.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SVBforDBN</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="n">Random</span> <span class="n">random</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+        <span class="c1">//We first generate a dynamic Bayesian network (NB structure with class and attributes temporally linked)</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfContinuousVars</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfDiscreteVars</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">setNumberOfStates</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbnRandom</span> <span class="o">=</span> <span class="n">DynamicBayesianNetworkGenerator</span><span class="o">.</span><span class="na">generateDynamicNaiveBayes</span><span class="o">(</span><span class="n">random</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+
+        <span class="c1">//Sample dynamic data from the created dbn with random parameters</span>
+        <span class="n">DynamicBayesianNetworkSampler</span> <span class="n">sampler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DynamicBayesianNetworkSampler</span><span class="o">(</span><span class="n">dbnRandom</span><span class="o">);</span>
+        <span class="n">sampler</span><span class="o">.</span><span class="na">setSeed</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="c1">//Sample 3 sequences of 100K instances</span>
+        <span class="n">DataStream</span><span class="o">&lt;</span><span class="n">DynamicDataInstance</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="na">sampleToDataBase</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span><span class="mi">10000</span><span class="o">);</span>
+
+        <span class="cm">/*Parameter Learning with Streaming variational Bayes VMP*/</span>
+        <span class="n">SVB</span> <span class="n">svb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SVB</span><span class="o">();</span>
+        <span class="c1">//We set the desired options for the svb</span>
+        <span class="n">svb</span><span class="o">.</span><span class="na">setWindowsSize</span><span class="o">(</span><span class="mi">100</span><span class="o">);</span>
+        <span class="n">svb</span><span class="o">.</span><span class="na">setSeed</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="c1">//If desired, we also set some options for the VMP</span>
+        <span class="n">VMP</span> <span class="n">vmp</span> <span class="o">=</span> <span class="n">svb</span><span class="o">.</span><span class="na">getPlateauStructure</span><span class="o">().</span><span class="na">getVMPTimeT</span><span class="o">();</span>
+        <span class="n">vmp</span><span class="o">.</span><span class="na">setOutput</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        <span class="n">vmp</span><span class="o">.</span><span class="na">setTestELBO</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+        <span class="n">vmp</span><span class="o">.</span><span class="na">setMaxIter</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+        <span class="n">vmp</span><span class="o">.</span><span class="na">setThreshold</span><span class="o">(</span><span class="mf">0.0001</span><span class="o">);</span>
+
+        <span class="c1">//We set the dynamicDAG, the data and start learning</span>
+        <span class="n">svb</span><span class="o">.</span><span class="na">setDynamicDAG</span><span class="o">(</span><span class="n">dbnRandom</span><span class="o">.</span><span class="na">getDynamicDAG</span><span class="o">());</span>
+        <span class="n">svb</span><span class="o">.</span><span class="na">setDataStream</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="n">svb</span><span class="o">.</span><span class="na">runLearning</span><span class="o">();</span>
+
+        <span class="c1">//We get the learnt DBN</span>
+        <span class="n">DynamicBayesianNetwork</span> <span class="n">dbnLearnt</span> <span class="o">=</span> <span class="n">svb</span><span class="o">.</span><span class="na">getLearntDBN</span><span class="o">();</span>
+
+        <span class="c1">//We print the model</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dbnLearnt</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bnetworks.html" class="btn btn-neutral float-right" title="Bayesian Networks: Code Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="flinklink.html" class="btn btn-neutral" title="Flinklink: Code Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Andrés R. Masegosa, Rafael Cabañas
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
