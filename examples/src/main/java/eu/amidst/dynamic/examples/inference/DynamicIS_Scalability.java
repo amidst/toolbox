@@ -249,7 +249,7 @@ public class DynamicIS_Scalability implements AmidstOptionsHandler {
         for (int j = 0; j < 2; j++) {
             long start = System.nanoTime();
             for (DynamicDataInstance instance : dataPredictList) {
-                //The InferenceEngineForDBN must be reset at the begining of each Sequence.
+                //The InferenceEngineForDBN must be reset at the beginning of each Sequence.
                 if (instance.getTimeID() == 0 && posterior != null) {
                     InferenceEngineForDBN.reset();
                     time = 0;

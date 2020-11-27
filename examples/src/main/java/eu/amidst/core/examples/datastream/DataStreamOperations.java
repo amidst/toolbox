@@ -24,7 +24,7 @@ public class DataStreamOperations {
 		data.filter(d -> d.getValue(data.getAttributes().getAttributeByName("DiscreteVar0")) == 1)
 				.forEach(d -> System.out.println(d));
 
-		//Map example: new DataStream in which each instance has been multiplyed by 10
+		//Map example: new DataStream in which each instance has been multiplied by 10
 		data.map(d -> {
 			Attribute gaussianVar0 = d.getAttributes().getAttributeByName("GaussianVar0");
 			d.setValue(gaussianVar0, d.getValue(gaussianVar0)*10);

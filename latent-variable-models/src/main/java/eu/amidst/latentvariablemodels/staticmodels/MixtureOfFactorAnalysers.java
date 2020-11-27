@@ -46,7 +46,7 @@ public class MixtureOfFactorAnalysers extends Model<MixtureOfFactorAnalysers> {
 
     /**
      * Constructor from a list of attributes. By default, sets the number of  continuous latent
-     * variabels to 5 and the number of states of the discrete one to 2.
+     * variables to 5 and the number of states of the discrete one to 2.
      * @param attributes list of attributes (i.e. its variables)
      * @throws WrongConfigurationException
      */

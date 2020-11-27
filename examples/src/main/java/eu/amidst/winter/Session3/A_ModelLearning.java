@@ -24,7 +24,7 @@ import eu.amidst.core.variables.Variable;
 import eu.amidst.core.variables.Variables;
 
 /**
- * Session 3. Define and learnt the fire dectector model.
+ * Session 3. Define and learnt the fire detector model.
  * Created by andresmasegosa on 13/01/2018.
  */
 public class A_ModelLearning {
@@ -49,7 +49,7 @@ public class A_ModelLearning {
         Variable sensorT2 = variables.newGaussianVariable(attributes.getAttributeByName("SensorTemp2"));
         Variable sensorSmoke = variables.newGaussianVariable(attributes.getAttributeByName("SensorSmoke"));
 
-        //Create the directed acyclic graph object encoding the conditional independe relaionship among the variables of the model.
+        //Create the directed acyclic graph object encoding the conditional independence relationship among the variables of the model.
         DAG dag = new DAG(variables);
 
         //Define the parent set for each random variable

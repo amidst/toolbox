@@ -40,7 +40,7 @@ public class FactorAnalysis extends Model<FactorAnalysis> {
 
     /**
      * Constructor from a list of attributes. By default, sets the number of latent
-     * variabels to 5.
+     * variables to 5.
      * @param attributes list of attributes (i.e. its variables)
      * @throws WrongConfigurationException
      */

@@ -23,14 +23,14 @@
  * 1. getConditioningVariables change to getParentsVariables()
  *
  * 2. Rewrite the naturalmparameters and momementsparametes interfaces to allow sparse implementations and translage
- * that to the implemementaiton of setNatural and setMoments
+ * that to the implementation of setNatural and setMoments
  *
  *
  *
  * **********************************************************
  */
 
-//TODO: Condiser the log-base-measure when defining the base distribution.
+//TODO: Consider the log-base-measure when defining the base distribution.
 
 package eu.amidst.core.exponentialfamily;
 

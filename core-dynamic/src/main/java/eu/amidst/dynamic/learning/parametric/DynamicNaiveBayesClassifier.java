@@ -34,7 +34,7 @@ public class DynamicNaiveBayesClassifier {
     /** Represents the ID of class variable */
     int classVarID;
 
-    /** Represents the Dynmaic Naive Bayes Classifier model, which is considered as a {@link DynamicBayesianNetwork} object. */
+    /** Represents the Dynamic Naive Bayes Classifier model, which is considered as a {@link DynamicBayesianNetwork} object. */
     DynamicBayesianNetwork bnModel;
 
     /** Represents the parallel mode, which is initialized as true. */

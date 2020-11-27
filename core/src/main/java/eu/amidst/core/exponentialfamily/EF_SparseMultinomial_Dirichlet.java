@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class EF_SparseMultinomial_Dirichlet extends EF_ConditionalDistribution{
 
-    /** Represents the conditioninig Dirichlet variable of this EF_Multinomial_Dirichlet distribution. */
+    /** Represents the conditioning Dirichlet variable of this EF_Multinomial_Dirichlet distribution. */
     Variable dirichletVariable;
 
     /** Represents the number of states of the main multinomial variable. */

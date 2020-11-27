@@ -45,7 +45,7 @@ public class B_ModelUpdatingConceptDrift {
         svb.setOutput(true);
         svb.setWindowsSize(1000);
 
-        //Specify the associated constraints (econding prior knowledge)
+        //Specify the associated constraints (encoding prior knowledge)
         Variable sensorT1 = fireDetectorModel.getVariables().getVariableByName("SensorTemp1");
         Variable sensorT2 = fireDetectorModel.getVariables().getVariableByName("SensorTemp2");
         svb.addParameterConstraint(new Constraint("alpha", sensorT1, 0.0));

@@ -69,7 +69,7 @@ public class DynamicHugin_FactoredFrontier {
         int time = 0 ;
         UnivariateDistribution posterior = null;
         for (DynamicDataInstance instance : dataPredict) {
-            //The InferenceEngineForDBN must be reset at the begining of each Sequence.
+            //The InferenceEngineForDBN must be reset at the beginning of each Sequence.
             if (instance.getTimeID()==0 && posterior != null) {
                 InferenceEngineForDBN.reset();
                 time=0;
