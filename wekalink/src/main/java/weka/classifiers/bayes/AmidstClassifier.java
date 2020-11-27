@@ -44,7 +44,6 @@ import java.util.stream.IntStream;
  * This class extends the {@link weka.classifiers.AbstractClassifier} and defines the AMIDST Classifier that could be run using the MOA’s graphical user interface.
  * MOA (Massive Online Analysis) is an open source software available at http://moa.cms.waikato.ac.nz
  */
-@SuppressWarnings("SpellCheckingInspection")
 public class AmidstClassifier extends AbstractClassifier implements OptionHandler, Randomizable{
     /** Represents the number of Gaussian hidden variables in this AmidstClassifier. */
     protected  int nOfGaussianHiddenVars_ = 0;
