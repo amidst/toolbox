@@ -27,7 +27,7 @@ import eu.amidst.dynamic.variables.DynamicVariables;
 public class A_ModelDefinition {
 
     /**
-     * Define the Dynamic Fire Dectector Model's DAG.
+     * Define the Dynamic Fire Detector Model's DAG.
      * @param attributes
      * @return
      */
@@ -45,7 +45,7 @@ public class A_ModelDefinition {
         Variable sensorT2 = variables.newGaussianDynamicVariable(attributes.getAttributeByName("SensorTemp2"));
         Variable sensorSmoke = variables.newGaussianDynamicVariable(attributes.getAttributeByName("SensorSmoke"));
 
-        //Create the directed acyclic graph object encoding the conditional independe relaionship among the variables of the model.
+        //Create the directed acyclic graph object encoding the conditional independence relationship among the variables of the model.
         DynamicDAG dag = new DynamicDAG(variables);
 
         //Define the parent set for each random variable
@@ -56,7 +56,7 @@ public class A_ModelDefinition {
 
         dag.getParentSetTimeT(temperature).addParent(fire);
 
-        //Interface varible refers to the occurrence of this variable in the previous time step.
+        //Interface variable refers to the occurrence of this variable in the previous time step.
         dag.getParentSetTimeT(temperature).addParent(temperature.getInterfaceVariable());
 
         dag.getParentSetTimeT(smoke).addParent(fire);

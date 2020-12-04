@@ -30,7 +30,7 @@ import java.io.IOException;
 
 /**
  * This class contains examples about how we can create CajaMar's dynamic models using the AMIDST Toolbox.
- * It show how to create 2T-DBNs over multinomial, Gassuian and IndicatorDistribution variables.
+ * It show how to create 2T-DBNs over multinomial, Gaussian and IndicatorDistribution variables.
  *
  * Created by andresmasegosa on 22/11/14.
  */
@@ -45,7 +45,7 @@ public final class CajaMarModels {
      *
      * We show how to create indicator variables and use it in the model.
      *
-     * We finally compute the log-likelihood of the data according to the created model (i.e. the probabilty distributions
+     * We finally compute the log-likelihood of the data according to the created model (i.e. the probability distributions
      * are randomly initialized, there is no parametric learning). The data is a single long temporal sequence.
      */
     public static void cajaMarDefaulterPredictor() throws IOException, ClassNotFoundException {
@@ -170,7 +170,7 @@ public final class CajaMarModels {
          *
          * 2. We compute the following log probs:
          *      - if t=0, we compute log p(x_0)
-         *      - it t>0, we comptue log (x_t|x_{t-1)}
+         *      - it t>0, we compute log (x_t|x_{t-1)}
          *
          * 3. We accumulate these log-probs and obtain the log-probability that this dynamic model assigns to the provided
          * data sequence. .

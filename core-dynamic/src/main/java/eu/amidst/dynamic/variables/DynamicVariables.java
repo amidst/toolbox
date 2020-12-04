@@ -157,7 +157,7 @@ public class DynamicVariables  implements Iterable<Variable>, Serializable {
     }
 
     /**
-     * Returns the variable of a coressponding interface variable.
+     * Returns the variable of a corresponding interface variable.
      * @param var a {@link Variable} object.
      * @return a {@link Variable} object.
      */

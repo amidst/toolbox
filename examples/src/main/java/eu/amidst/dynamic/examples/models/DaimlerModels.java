@@ -35,7 +35,7 @@ import java.util.List;
 
 /**
  * This class contains examples about how we can create Daimler's dynamic models using the AMIDST Toolbox.
- * It shows how to create 2T-DBNs over multinomial and Gassuian variables.
+ * It shows how to create 2T-DBNs over multinomial and Gaussian variables.
  *
  * The models here included can be found on Figures 4.14 of Deliverable 2.1.
  *

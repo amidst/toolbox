@@ -90,7 +90,7 @@ public class EF_Normal_NormalParents extends EF_ConditionalDistribution  {
     public void updateNaturalFromMomentParameters() {
 
         /*
-         * First step: means and convariances
+         * First step: means and covariances
          */
         CompoundVector globalMomentParam = (CompoundVector)this.momentParameters;
         double mean_X = globalMomentParam.getXYbaseMatrix().getEntry(0);

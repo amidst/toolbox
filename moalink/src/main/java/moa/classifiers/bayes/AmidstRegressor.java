@@ -250,7 +250,7 @@ public class AmidstRegressor extends AbstractClassifier implements Regressor {
         System.out.println(dag.toString());
 
         /*
-        if(getnOfStatesMultHiddenVar_() == 0 && getnOfGaussianHiddenVars_() == 0){   //ML can be used when Lapalace is introduced
+        if(getnOfStatesMultHiddenVar_() == 0 && getnOfGaussianHiddenVars_() == 0){   //ML can be used when Laplace is introduced
             parameterLearningAlgorithm_ = new ParallelMaximumLikelihood();
         }else
             parameterLearningAlgorithm_ = new SVB();

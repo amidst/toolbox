@@ -49,7 +49,7 @@ public class A_ModelUpdating {
         Variable sensorT2 = variables.newGaussianVariable(attributes.getAttributeByName("SensorTemp2"));
         Variable sensorSmoke = variables.newGaussianVariable(attributes.getAttributeByName("SensorSmoke"));
 
-        //Create the directed acyclic graph object encoding the conditional independe relaionship among the variables of the model.
+        //Create the directed acyclic graph object encoding the conditional independence relationship among the variables of the model.
         DAG dag = new DAG(variables);
 
         //Define the parent set for each random variable
@@ -80,7 +80,7 @@ public class A_ModelUpdating {
         svb.setOutput(true);
         svb.setWindowsSize(1000);
 
-        //Specify the associated constraints (econding prior knowledge)
+        //Specify the associated constraints (encoding prior knowledge)
         Variable sensorT1 = fireDetectorModel.getVariables().getVariableByName("SensorTemp1");
         Variable sensorT2 = fireDetectorModel.getVariables().getVariableByName("SensorTemp2");
         svb.addParameterConstraint(new Constraint("alpha", sensorT1, 0.0));

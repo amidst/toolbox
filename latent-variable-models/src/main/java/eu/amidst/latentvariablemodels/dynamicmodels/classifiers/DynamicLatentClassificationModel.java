@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * safety of dynamic systems. Reliability Engineering and System Safety, 121:61–71, 2014.
  *
  * Shengtong Zhong, Ana M. Martínez, Thomas Dyhre Nielsen, and Helge Langseth. Towards a more expressive model for
- * dynamic classification. In Proceedings of the Twentythird International Florida Artificial Intelligence Research
+ * dynamic classification. In Proceedings of the Twenty third International Florida Artificial Intelligence Research
  * Symposium Conference, 2010.
  *
  * Created by ana@cs.aau.dk on 05/03/16.
@@ -105,7 +105,7 @@ public class DynamicLatentClassificationModel extends DynamicClassifier<DynamicL
                 .filter(v -> !v.equals(classVar)).collect(Collectors.toList());
 
 
-        //Create the hidden variabels
+        //Create the hidden variables
         hiddenMultinomial = variables.newMultinomialDynamicVariable("M", numStatesHidden);
 
         contHiddenList = new ArrayList<Variable>();

@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * This class constains the example code given at the demo session in BNAIC2015 about the AMIDST Toolbox. This code
+ * This class contains the example code given at the demo session in BNAIC2015 about the AMIDST Toolbox. This code
  * is based on the analysis performed in the following paper:
  *
  * <i>Borchani et al. Modeling concept drift: A probabilistic graphical model based approach. IDA 2015.</i>
@@ -47,7 +47,7 @@ public class BCC {
     public static int MONTHS = 60;
 
     /**
-     * This method constains the code needed to learn the model and produce the output.
+     * This method contains the code needed to learn the model and produce the output.
      * @param parallelSVB a parallel SVB (Streaming Variational Bayes) object
      * @return a Bayesian Network
      * @throws IOException if a file reading error occurs
@@ -89,7 +89,7 @@ public class BCC {
         //We access the hidden var
         Variable hiddenGaussian = dag.getVariables().getVariableByName("HiddenGaussian");
 
-        //We create the ParalleVB object which will perform the learning
+        //We create the ParallelSVB object which will perform the learning
         ParallelSVB parallelSVB = new ParallelSVB();
 
         //Set the DAG
@@ -108,10 +108,10 @@ public class BCC {
         //We set the maximum number of iteration of the VMP method
         parallelSVB.getSVBEngine().getPlateuStructure().getVMP().setMaxIter(100);
 
-        //We set the threshold definining the convergence of the VMP method
+        //We set the threshold defining the convergence of the VMP method
         parallelSVB.getSVBEngine().getPlateuStructure().getVMP().setThreshold(0.001);
 
-        //We do not allow for debuggin info.
+        //We do not allow for debugging info.
         parallelSVB.setOutput(false);
 
 
@@ -124,7 +124,7 @@ public class BCC {
     /**
      * This method contains the code needed to build the NaiveBayes DAG with a global hidden variable modelling
      * concept drift.
-     * @return A poperly created {@link DAG} object.
+     * @return A properly created {@link DAG} object.
      * @throws Exception if an error occurs while reading the file.
      */
     public static DAG modelBuilding() throws Exception {

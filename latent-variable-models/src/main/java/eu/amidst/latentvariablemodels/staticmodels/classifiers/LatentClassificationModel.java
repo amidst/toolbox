@@ -88,7 +88,7 @@ public class LatentClassificationModel extends Classifier<LatentClassificationMo
                 .filter(v -> !v.equals(classVar)).collect(Collectors.toList());
 
 
-        //Create the hidden variabels
+        //Create the hidden variables
         hiddenMultinomial = vars.newMultinomialVariable("M", numStatesHidden);
 
         contHiddenList = new ArrayList<Variable>();

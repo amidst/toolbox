@@ -51,7 +51,7 @@ public class DynamicDataInstanceSpliterator implements Spliterator<DynamicDataIn
     /** Represents a {@link NextDynamicDataInstance} object. */
     private NextDynamicDataInstance nextDynamicDataInstance;
 
-    /** Represents a {@link Spliterator} over {@link DataRow} elemenets. */
+    /** Represents a {@link Spliterator} over {@link DataRow} elements. */
     private final Spliterator<DataRow> spliterator;
 
     /** Represents the characteristics. */

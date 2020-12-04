@@ -65,7 +65,7 @@ public class C_ScalableModelLearning {
             sensorSmoke[i] = variables.newGaussianVariable(attributes.getAttributeByName("SensorSmoke_"+i));
         }
 
-        //Create the directed acyclic graph object encoding the conditional independe relaionship among the variables of the model.
+        //Create the directed acyclic graph object encoding the conditional independence relationship among the variables of the model.
         DAG dag = new DAG(variables);
         for (int i = 0; i < nRooms; i++) {
             //Define the parent set for each random variable
@@ -109,7 +109,7 @@ public class C_ScalableModelLearning {
         svb.setOutput(true);
         svb.setDAG(fireDetectorModel);
 
-        //Specify the associated constraints (econding prior knowledge)
+        //Specify the associated constraints (encoding prior knowledge)
         for (int i = 0; i < nRooms; i++) {
             Variable sensorT1 = fireDetectorModel.getVariables().getVariableByName("SensorTemp1_"+i);
             Variable sensorT2 = fireDetectorModel.getVariables().getVariableByName("SensorTemp2_"+i);

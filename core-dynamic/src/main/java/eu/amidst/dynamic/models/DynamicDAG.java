@@ -93,7 +93,7 @@ public class DynamicDAG implements Serializable {
 
     /**
      * Returns the set of dynamic variables in this DynamicDAG.
-     * @return {@link DynamicVariables} object containing the set of dynamic variables in this DynmaicDAG.
+     * @return {@link DynamicVariables} object containing the set of dynamic variables in this DynamicDAG.
      */
     public DynamicVariables getDynamicVariables() {
         return this.dynamicVariables;

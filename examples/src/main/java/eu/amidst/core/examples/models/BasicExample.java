@@ -43,7 +43,7 @@ public class BasicExample {
 
         BayesianNetwork bn = model.getModel();
 
-        //Variabeles of interest and evidence
+        //Variables of interest and evidence
         Variable varTarget = bn.getVariables().getVariableByName("codrna_Y");
         Variable varObserved = null;
         Assignment assignment = new HashMapAssignment(1);

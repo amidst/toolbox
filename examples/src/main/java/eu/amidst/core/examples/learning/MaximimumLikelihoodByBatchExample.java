@@ -33,13 +33,13 @@ public class MaximimumLikelihoodByBatchExample {
         //We create a Variables object from the attributes of the data stream
         Variables modelHeader = new Variables(dataStream.getAttributes());
 
-        //We define the predicitive class variable
+        //We define the predictive class variable
         Variable classVar = modelHeader.getVariableById(classIndex);
 
         //Then, we create a DAG object with the defined model header
         DAG dag = new DAG(modelHeader);
 
-        //We set the linkds of the DAG.
+        //We set the links of the DAG.
         dag.getParentSets().stream().filter(w -> w.getMainVar() != classVar).forEach(w -> w.addParent(classVar));
 
         return dag;
@@ -61,7 +61,7 @@ public class MaximimumLikelihoodByBatchExample {
         parameterLearningAlgorithm.initLearning();
 
 
-        //Then we show how we can perform parameter learnig by a sequential updating of data batches.
+        //Then we show how we can perform parameter learning by a sequential updating of data batches.
         for (DataOnMemory<DataInstance> batch : data.iterableOverBatches(100)){
             parameterLearningAlgorithm.updateModel(batch);
         }
